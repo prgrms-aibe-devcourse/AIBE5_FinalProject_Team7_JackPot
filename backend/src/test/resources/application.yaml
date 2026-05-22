@@ -1,0 +1,39 @@
+# =====================================================
+# [테스트 전용 설정 파일]
+# - src/test/resources 에 위치하여 테스트 실행 시에만 적용됩니다.
+# - H2 인메모리 DB를 사용하므로 MySQL 없이도 테스트 가능합니다.
+# - 이 파일은 GitHub에 올라가도 됩니다. (민감 정보 없음)
+# =====================================================
+
+spring:
+  application:
+    name: whiskeynote-test
+
+  # --------------------------------------------------
+  # H2 인메모리 DB 설정 (테스트 전용)
+  # MySQL 없이 Spring Context 로딩 및 JPA 테스트 가능
+  # --------------------------------------------------
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # --------------------------------------------------
+  # JPA 테스트 설정
+  # --------------------------------------------------
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # 테스트 시작 시 테이블 생성, 종료 시 삭제
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # --------------------------------------------------
+  # H2 콘솔 (테스트 중 브라우저로 DB 확인 가능, 선택사항)
+  # --------------------------------------------------
+  h2:
+    console:
+      enabled: true
