@@ -1,13 +1,23 @@
-import { PagePlaceholder } from '@/shared/components/ui/PagePlaceholder';
+import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { Button } from '@/shared/components/ui/Button';
 
 export default function TasteMatchPage() {
   return (
-    <PagePlaceholder
-      screenId="16-taste-match"
-      title="Taste Match · 취향 매칭"
-      phase="MVP+"
-      apiIds={['TM-01']}
-      description="와이어프레임 · 기능명세 기준 플레이스홀더 — 이 feature 폴더에서 UI/API 연동 구현"
-    />
+    <WireframePage scroll>
+      <p className="wf-breadcrumb">홈 / <strong>Taste Match</strong></p>
+      <h1 className="wf-title">취향 비슷한 유저</h1>
+      {[
+        { name: 'GlassOfWhisky', match: '94%' },
+        { name: 'peat_lover', match: '89%' },
+      ].map((u) => (
+        <div key={u.name} className="wf-box wf-panel" style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <strong>{u.name}</strong>
+            <p className="wf-text-sm">매칭 {u.match}</p>
+          </div>
+          <Button variant="ghost" style={{ height: 36 }}>프로필</Button>
+        </div>
+      ))}
+    </WireframePage>
   );
 }

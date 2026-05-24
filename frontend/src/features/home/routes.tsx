@@ -9,7 +9,7 @@ export const routes: FeatureRoute[] = [
     layout: 'app',
     meta: {
       screenId: '06-home',
-      title: 'Home · 라운지',
+      title: '라운지 · 타임라인',
       phase: 'MVP',
       apiIds: ['FEED-01', 'REC-03'],
     },

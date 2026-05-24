@@ -11,7 +11,7 @@ export const routes: FeatureRoute[] = [
       screenId: '09-detail',
       title: 'Whiskey Detail · 상세',
       phase: 'MVP',
-      apiIds: ['WH-02', 'TAG-01', 'NOTE-02'],
+      apiIds: ['WH-02', 'WH-02-1', 'TAG-01'],
     },
   },
   {

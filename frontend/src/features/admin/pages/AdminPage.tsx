@@ -1,13 +1,12 @@
-import { PagePlaceholder } from '@/shared/components/ui/PagePlaceholder';
+import { WireframePage } from '@/shared/components/layout/WireframePage';
 
 export default function AdminPage() {
   return (
-    <PagePlaceholder
-      screenId="admin"
-      title="Admin · 운영"
-      phase="P2"
-      apiIds={['ADM-01']}
-      description="와이어프레임 · 기능명세 기준 플레이스홀더 — 이 feature 폴더에서 UI/API 연동 구현"
-    />
+    <WireframePage scroll>
+      <h1 className="wf-title">Admin</h1>
+      <p className="wf-text-sm">운영 · 신고 · 위스키 등록 요청</p>
+      <div className="wf-box" style={{ padding: 16, marginTop: 16 }}>대기 중 등록 요청 3건</div>
+      <div className="wf-box" style={{ padding: 16, marginTop: 8 }}>미처리 신고 1건</div>
+    </WireframePage>
   );
 }
