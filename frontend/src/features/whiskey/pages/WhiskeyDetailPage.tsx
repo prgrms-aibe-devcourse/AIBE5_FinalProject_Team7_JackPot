@@ -1,56 +1,147 @@
+import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
+import { RelatedColumns } from '../components/RelatedColumns';
+import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
+import { TastingTagsBubble } from '../components/TastingTagsBubble';
+import { useRelatedColumns, useWhiskeyDetail } from '../hooks/useWhiskeyDetail';
+import type { TastingSummarySource } from '../types';
+import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
+
+function formatType(type: string): string {
+  const map: Record<string, string> = {
+    single_malt: '싱글몰트',
+    blended: '블렌디드',
+    bourbon: '버번',
+    rye: '라이',
+  };
+  return map[type] ?? type;
+}
 
 export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
-  const reviewPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', whiskeyId ?? '1');
+  const id = whiskeyId ?? '1';
+  const reviewPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
+  const notePath = PATHS.TASTING_NOTE.replace(':whiskeyId', id);
+
+  const { data: detail, isLoading, isError } = useWhiskeyDetail(id);
+  const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
+
+  const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
+
+  const effectiveSource = useMemo(() => {
+    if (!detail) return summarySource;
+    if (summarySource === 'official' && !hasOfficialNote(detail)) return 'userAvg';
+    return summarySource;
+  }, [detail, summarySource]);
+
+  const tastingAxes = useMemo(
+    () => (detail ? buildTastingAxes(detail, effectiveSource) : []),
+    [detail, effectiveSource],
+  );
+
+  if (isLoading) {
+    return (
+      <WireframePage scroll>
+        <PageLoader label="위스키 정보 불러오는 중…" />
+      </WireframePage>
+    );
+  }
+
+  if (isError || !detail) {
+    return (
+      <WireframePage scroll>
+        <p className="wf-text-sm">위스키 정보를 불러오지 못했습니다.</p>
+      </WireframePage>
+    );
+  }
+
+  const ageLabel = detail.age_years > 0 ? `${detail.age_years}년` : 'NAS';
+  const metaLine = [
+    formatType(detail.type),
+    detail.country,
+    `${detail.abv}%`,
+    '700ml',
+  ].join(' · ');
 
   return (
     <WireframePage scroll>
-      <p className="wf-breadcrumb">검색 / <strong>글렌피딕 12년</strong></p>
+      <header className="wf-detail-hero">
+        <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
+        <p className="wf-text-sm">{metaLine}</p>
+        <p className="wf-detail-hero__rating">
+          종합 {detail.avgRating ?? '—'} / 100
+          <span className="wf-text-sm"> · {detail.reviewCount ?? 0} 리뷰</span>
+        </p>
+      </header>
+
       <div className="wf-tabs">
         <span className="wf-tab-item wf-tab-item--on">정보</span>
-        <Link to={reviewPath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>리뷰 (128)</Link>
-        <Link to={PATHS.TASTING_NOTE.replace(':whiskeyId', whiskeyId ?? '1')} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>개인 노트</Link>
+        <Link to={reviewPath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+          리뷰 ({detail.reviewCount ?? 0})
+        </Link>
+        <Link to={notePath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+          개인 노트
+        </Link>
       </div>
-      <div className="wf-layout-detail">
-        <div>
-          <div className="wf-placeholder" style={{ height: 320, borderRadius: 'var(--wf-radius)' }} />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
-            <Button variant="ghost" style={{ flex: 1 }}>♡ 위시리스트</Button>
-            <Button style={{ flex: 1 }}>★ My Pick에 추가</Button>
-            <Button variant="ghost" style={{ flex: 1 }} to={PATHS.WRITE_REVIEW.replace(':whiskeyId', whiskeyId ?? '1')}>리뷰 쓰기</Button>
+
+      <div className="wf-layout-detail-v2">
+        <aside className="wf-detail-sidebar">
+          <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+          <div className="wf-detail-sidebar__actions">
+            <Button variant="ghost" style={{ width: '100%' }}>
+              ♡ 위시리스트
+            </Button>
+            <Button style={{ width: '100%' }}>★ My Pick</Button>
+            <Button variant="ghost" style={{ width: '100%' }} to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
+              리뷰 작성
+            </Button>
+            <Button variant="ghost" style={{ width: '100%' }} to={notePath}>
+              📝 My Note 작성
+            </Button>
           </div>
-          <p className="wf-text-xs" style={{ marginTop: 6 }}>위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
-          <div className="wf-grid2" style={{ marginTop: 16 }}>
+          <p className="wf-text-xs">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
+          <div className="wf-grid2">
             {[
-              ['숙성', '12년'],
-              ['도수', '40%'],
-              ['가격', '₩89,000'],
-              ['캐스크', '버번'],
+              ['숙성', ageLabel],
+              ['도수', `${detail.abv}%`],
+              ['지역', detail.region],
+              ['캐스크', detail.cask ?? '—'],
             ].map(([k, v]) => (
-              <div key={k} className="wf-box wf-grid2__item"><div className="wf-text-xs">{k}</div><div>{v}</div></div>
+              <div key={k} className="wf-box wf-grid2__item">
+                <div className="wf-text-xs">{k}</div>
+                <div>{v}</div>
+              </div>
             ))}
           </div>
-        </div>
-        <div>
-          <h1 className="wf-title">Glenfiddich 12</h1>
-          <p className="wf-text-sm">싱글몰트 · 스코틀랜드 · 스페이사이드</p>
-          <p style={{ fontSize: 32, fontWeight: 700, color: 'var(--wf-accent)', margin: '12px 0' }}>
-            4.2 <span className="wf-text-sm" style={{ fontWeight: 400 }}>/ 128 리뷰</span>
-          </p>
-          <div className="wf-radar wf-box" style={{ height: 200, margin: '16px 0' }}>
-            <div className="wf-radar__shape" />
-          </div>
-          <div className="wf-box wf-panel">
-            <p className="wf-section-title">제조·풍미</p>
-            <p className="wf-text-sm" style={{ marginTop: 8 }}>증류소 Glenfiddich · 맥아 100%<br />향: 사과·배, 꽃, 허니 · 맛: 부드러운 단맛, 오크</p>
-          </div>
-          <p className="wf-text-label">추천 이유</p>
-          <p className="wf-text-sm">입문자 설문(과일·부드러움)과 92% 일치</p>
-        </div>
+        </aside>
+
+        <main className="wf-detail-main">
+          <section className="wf-detail-info">
+            <h2 className="wf-section-title">제품 정보</h2>
+            {detail.description && <p className="wf-text-sm">{detail.description}</p>}
+            <p className="wf-text-sm wf-detail-info__meta">
+              증류소 · {detail.distillery ?? detail.name} · {detail.region} · 캐스크 {detail.cask ?? '—'}
+            </p>
+          </section>
+
+          <TastingSummaryPanel
+            axes={tastingAxes}
+            source={effectiveSource}
+            hasOfficial={hasOfficialNote(detail)}
+            onSourceChange={setSummarySource}
+            reviewPath={reviewPath}
+          />
+
+          <RelatedColumns posts={relatedPosts} isLoading={columnsLoading} />
+        </main>
+
+        <aside className="wf-detail-aside">
+          <TastingTagsBubble tags={detail.tags} />
+        </aside>
       </div>
     </WireframePage>
   );

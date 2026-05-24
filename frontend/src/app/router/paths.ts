@@ -18,6 +18,7 @@ export const PATHS = {
   MY_PAGE: '/me',
   USER_PROFILE: '/user/:userId',
   COMMUNITY: '/community',
+  COMMUNITY_POST: '/community/posts/:postId',
   TASTING_NOTE: '/whiskey/:whiskeyId/note',
   NOTE_PICK: '/note/pick',
   TASTE_MATCH: '/discover/taste-match',

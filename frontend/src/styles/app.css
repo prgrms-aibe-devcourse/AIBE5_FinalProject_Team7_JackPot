@@ -400,3 +400,255 @@ body {
     justify-self: end;
   }
 }
+
+/* 09-detail — 위스키 상세 (3열 + 태그 버블 + 관련 칼럼) */
+.wf-detail-hero {
+  margin-bottom: 8px;
+}
+
+.wf-detail-hero__title {
+  margin: 0 0 6px;
+  font-size: 31px;
+}
+
+.wf-detail-hero__rating {
+  margin: 8px 0 0;
+  color: var(--wf-accent);
+  font-weight: 600;
+}
+
+.wf-layout-detail-v2 {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) minmax(260px, 320px);
+  gap: 24px 32px;
+  align-items: start;
+  margin-top: 8px;
+}
+
+.wf-detail-sidebar__image {
+  height: 257px;
+  border-radius: var(--wf-radius);
+}
+
+.wf-detail-sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wf-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+.wf-detail-info__meta {
+  color: var(--wf-muted);
+  margin-top: 8px;
+}
+
+.wf-detail-tasting__toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+
+.wf-detail-tasting__note {
+  color: var(--wf-muted);
+  margin-bottom: 12px;
+}
+
+.wf-detail-tasting__axes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.wf-detail-tasting__axis-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.wf-detail-tasting__axis-score {
+  color: var(--wf-accent);
+  font-weight: 700;
+}
+
+.wf-detail-tasting__bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
+  overflow: hidden;
+}
+
+.wf-detail-tasting__bar-fill {
+  height: 100%;
+  background: var(--wf-accent);
+  border-radius: 4px;
+}
+
+.wf-detail-tasting__tags {
+  margin: 6px 0 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tasting__reviews-link {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px dashed var(--wf-border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--wf-muted);
+}
+
+.wf-detail-columns__list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wf-detail-columns__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.wf-detail-columns__item:hover {
+  border-color: var(--wf-accent);
+}
+
+.wf-detail-columns__title {
+  color: var(--wf-accent);
+  font-size: 13px;
+}
+
+.wf-detail-columns__subtitle {
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags {
+  padding: 18px 16px 14px;
+}
+
+.wf-detail-tags__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.wf-detail-tags__hint {
+  margin: 4px 0 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__sub {
+  margin: 4px 0 12px;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__empty {
+  padding: 24px 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 12px;
+}
+
+.wf-detail-tags__grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wf-detail-tags__bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  color: #f5f5f5;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.wf-detail-tags__bubble:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.35);
+}
+
+.wf-detail-tags__name {
+  font-size: 12px;
+  color: #9a9aa4;
+  text-align: center;
+}
+
+.wf-detail-tags__legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__legend-bar {
+  width: 34px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid var(--wf-border);
+}
+
+.wf-detail-tags__legend-bar--low {
+  background: #9b5a5a;
+}
+
+.wf-detail-tags__legend-bar--mid {
+  background: #8b7d52;
+}
+
+.wf-detail-tags__legend-bar--high {
+  background: #4a9b6e;
+}
+
+@media (max-width: 1100px) {
+  .wf-layout-detail-v2 {
+    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  }
+
+  .wf-detail-aside {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .wf-layout-detail-v2 {
+    grid-template-columns: 1fr;
+  }
+}
