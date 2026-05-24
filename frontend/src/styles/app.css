@@ -1,0 +1,151 @@
+/* App shell — full viewport (not Figma device frame) */
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--wf-bg);
+  color: var(--wf-text);
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--wf-bg);
+}
+
+.app-root .wf-page {
+  min-height: 0;
+}
+
+.app-root .wf-topnav__links a {
+  color: var(--wf-muted);
+  text-decoration: none;
+}
+
+.app-root .wf-topnav__links a.active,
+.app-root .wf-topnav__links a.is-active {
+  color: var(--wf-accent);
+  font-weight: 600;
+}
+
+.app-root .wf-btn {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.app-root .wf-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app-root .wf-input--field {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--wf-text);
+  font: inherit;
+  outline: none;
+}
+
+.app-root .wf-input--field::placeholder {
+  color: var(--wf-muted);
+}
+
+.app-root a.wf-btn {
+  text-decoration: none;
+}
+
+.app-root .wf-topnav__logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-root .wf-link {
+  color: var(--wf-accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  padding: 0;
+}
+
+.app-root .wf-tab-item {
+  cursor: pointer;
+}
+
+.app-root .wf-sidebar .wf-box {
+  cursor: pointer;
+}
+
+.app-root .wf-card--clickable {
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.app-root .wf-card--clickable:hover {
+  border-color: var(--wf-accent);
+}
+
+.app-root .wf-guest-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.app-root .wf-page--guest-landing {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-root .wf-mybar-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app-root .wf-mybar-tabs a {
+  text-decoration: none;
+}
+
+.app-root .wf-mybar-tabs .wf-chip {
+  cursor: pointer;
+}
+
+.app-root .wf-mybar-tabs .wf-chip--on {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
+}
+
+@media (max-width: 960px) {
+  .app-root .wf-layout-split,
+  .app-root .wf-layout-detail,
+  .app-root .wf-layout-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .app-root .wf-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .app-root .wf-topnav {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .app-root .wf-topnav__links {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
