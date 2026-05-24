@@ -8,8 +8,8 @@ export const routes: FeatureRoute[] = [
     Component: lazy(() => import('./pages/UserProfilePage')),
     layout: 'app',
     meta: {
-      screenId: '13b-user-profile',
-      title: 'User Profile · 타인 캐비넷',
+      screenId: '13b-cabinet-other-bar',
+      title: '타인 캐비넷',
       phase: 'MVP',
       apiIds: ['CAB-01', 'FOL-01'],
     },

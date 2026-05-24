@@ -22,8 +22,8 @@ export default function MyPage() {
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         취향 설문 다시하기
       </div>
-      <Button variant="ghost" to={PATHS.MY_BAR} style={{ marginTop: 16 }}>
-        My Bar로 이동
+      <Button variant="ghost" to={PATHS.CABINET} style={{ marginTop: 16 }}>
+        캐비넷으로 이동
       </Button>
     </WireframePage>
   );
