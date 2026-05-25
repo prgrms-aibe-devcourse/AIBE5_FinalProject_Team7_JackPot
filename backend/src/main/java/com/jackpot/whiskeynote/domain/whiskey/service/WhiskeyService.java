@@ -1,7 +1,9 @@
 package com.jackpot.whiskeynote.domain.whiskey.service;
 
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
+import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,18 @@ public class WhiskeyService {
         }
 
         return whiskeyRepository.findByNameContainingIgnoreCase(q.trim(), pageRequest)
+                .map(WhiskeyCardResponse::from);
+    }
+    // 위스키 필터링 검색
+    @Transactional(readOnly = true)
+    public Page<WhiskeyCardResponse> filterWhiskeys(WhiskeyFilterRequest request){
+        PageRequest pageRequest = PageRequest.of(
+                request.pageOrDefault(),
+                request.sizeOrDefault(),
+                Sort.by(Sort.Direction.ASC, "name")
+        );
+
+        return whiskeyRepository.findAll(WhiskeySpecification.filter(request), pageRequest)
                 .map(WhiskeyCardResponse::from);
     }
 }
