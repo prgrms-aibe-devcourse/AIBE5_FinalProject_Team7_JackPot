@@ -1,15 +1,13 @@
 package com.jackpot.whiskeynote.domain.whiskey.controller;
 
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeyType;
 import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class WhiskeyController {
     private final WhiskeyService whiskeyService;
     // 위스키 전체 조회 (페이징)
     @GetMapping("/api/v1/whiskeys")
-    public Page<WhiskeyCardResponse> getWhikeys(
+    public Page<WhiskeyCardResponse> getWhiskeys(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ){
@@ -62,5 +60,10 @@ public class WhiskeyController {
         );
 
         return whiskeyService.filterWhiskeys(request);
+    }
+    // 위스키 상세 조회
+    @GetMapping("/api/v1/whiskeys/{id}")
+    public WhiskeyDetailResponse getWhiskeyDetail(@PathVariable Long id) {
+        return whiskeyService.getWhiskeyDetail(id);
     }
 }

@@ -1,12 +1,34 @@
 import { Link } from 'react-router-dom';
 import type { TastingAxisView, TastingSummarySource } from '../types';
 
+const CHART_SIZE = 340;
+const CHART_CENTER = CHART_SIZE / 2;
+const CHART_RADIUS = 112;
+const GRID_LEVELS = [0.25, 0.5, 0.75, 1];
+
 interface TastingSummaryPanelProps {
   axes: TastingAxisView[];
   source: TastingSummarySource;
   hasOfficial: boolean;
   onSourceChange: (source: TastingSummarySource) => void;
   reviewPath: string;
+}
+
+function axisPoint(index: number, total: number, ratio: number) {
+  const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
+  return {
+    x: CHART_CENTER + Math.cos(angle) * CHART_RADIUS * ratio,
+    y: CHART_CENTER + Math.sin(angle) * CHART_RADIUS * ratio,
+  };
+}
+
+function pointsToString(points: { x: number; y: number }[]) {
+  return points.map((point) => `${point.x},${point.y}`).join(' ');
+}
+
+function displayLabel(axis: TastingAxisView) {
+  if (axis.key === 'sweet') return '단맛';
+  return axis.label;
 }
 
 export function TastingSummaryPanel({
@@ -43,25 +65,68 @@ export function TastingSummaryPanel({
       {axes.length === 0 ? (
         <p className="wf-text-sm">시음 데이터가 아직 없습니다.</p>
       ) : (
-        <ul className="wf-detail-tasting__axes">
-          {axes.map((axis) => (
-            <li key={axis.key} className="wf-detail-tasting__axis">
-              <div className="wf-detail-tasting__axis-head">
-                <span className="wf-detail-tasting__axis-label">{axis.label}</span>
-                <span className="wf-detail-tasting__axis-score">{axis.score}</span>
-              </div>
-              <div className="wf-detail-tasting__bar-track" aria-hidden>
-                <div
-                  className="wf-detail-tasting__bar-fill"
-                  style={{ width: `${Math.min(axis.score, 100)}%` }}
+        <div className="wf-detail-tasting__radar">
+          <svg
+            className="wf-detail-tasting__radar-chart"
+            viewBox={`0 0 ${CHART_SIZE} ${CHART_SIZE}`}
+            role="img"
+            aria-label="시음 요약 오각형 그래프"
+          >
+            {GRID_LEVELS.map((level) => (
+              <polygon
+                key={level}
+                points={pointsToString(axes.map((_, index) => axisPoint(index, axes.length, level)))}
+                className="wf-detail-tasting__radar-grid"
+              />
+            ))}
+            {axes.map((_, index) => {
+              const end = axisPoint(index, axes.length, 1);
+              return (
+                <line
+                  key={index}
+                  x1={CHART_CENTER}
+                  y1={CHART_CENTER}
+                  x2={end.x}
+                  y2={end.y}
+                  className="wf-detail-tasting__radar-axis"
                 />
-              </div>
-              {axis.tagLabels.length > 0 && (
-                <p className="wf-text-sm wf-detail-tasting__tags">{axis.tagLabels.join(', ')}</p>
+              );
+            })}
+            <polygon
+              points={pointsToString(
+                axes.map((axis, index) => axisPoint(index, axes.length, Math.min(Math.max(axis.score, 0), 100) / 100)),
               )}
-            </li>
-          ))}
-        </ul>
+              className="wf-detail-tasting__radar-fill"
+            />
+            {axes.map((axis, index) => {
+              const point = axisPoint(index, axes.length, 1.24);
+              const scorePoint = axisPoint(index, axes.length, Math.min(Math.max(axis.score, 0), 100) / 100);
+              return (
+                <g key={axis.key}>
+                  <circle cx={scorePoint.x} cy={scorePoint.y} r="4" className="wf-detail-tasting__radar-dot" />
+                  <text
+                    x={point.x}
+                    y={point.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="wf-detail-tasting__radar-label"
+                  >
+                    {displayLabel(axis)}
+                  </text>
+                  <text
+                    x={point.x}
+                    y={point.y + 16}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="wf-detail-tasting__radar-score"
+                  >
+                    {axis.score}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
       )}
 
       <Link to={reviewPath} className="wf-detail-tasting__reviews-link wf-text-sm">
