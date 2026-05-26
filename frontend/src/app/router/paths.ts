@@ -28,6 +28,9 @@ export const PATHS = {
   NOTE_PICK: '/note/pick',
   TASTE_MATCH: '/discover/taste-match',
   ADMIN: '/admin',
+  // 에러 페이지
+  NOT_FOUND: '/error/404',
+  SERVER_ERROR: '/error/500',
 } as const;
 
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];
