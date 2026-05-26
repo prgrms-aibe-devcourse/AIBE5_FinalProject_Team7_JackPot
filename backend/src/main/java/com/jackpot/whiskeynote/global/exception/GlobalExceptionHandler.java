@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleException(Exception ex) {
-        ex.printStackTrace(); // 임시: 콘솔에 스택트레이스 출력
-        return ApiResponse.fail("INTERNAL_ERROR", ex.getClass().getSimpleName() + ": " + ex.getMessage());
+        ex.printStackTrace(); // 서버 로그에만 출력
+        return ApiResponse.fail("INTERNAL_ERROR", "서버 오류가 발생했습니다.");
     }
 }
