@@ -1,10 +1,13 @@
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AppShell } from '@/shared/components/layout/AppShell';
 import { GuestLayout } from '@/shared/components/layout/GuestLayout';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { collectFeatureRoutes } from './collectFeatureRoutes';
 import { PATHS } from './paths';
+
+const NotFoundPage    = lazy(() => import('@/shared/components/error/NotFoundPage'));
+const ServerErrorPage = lazy(() => import('@/shared/components/error/ServerErrorPage'));
 
 const featureRoutes = collectFeatureRoutes();
 
@@ -39,7 +42,30 @@ const router = createBrowserRouter([
     element: <AppShell />,
     children: appChildren,
   },
-  { path: '*', element: <Navigate to={PATHS.LANDING} replace /> },
+  // 에러 페이지 (레이아웃 없이 단독 렌더링)
+  {
+    path: PATHS.NOT_FOUND,
+    element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: PATHS.SERVER_ERROR,
+    element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <ServerErrorPage />
+      </Suspense>
+    ),
+  },
+  // 등록되지 않은 경로 → 404
+  { path: '*', element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
+  },
 ]);
 
 export function AppRouter() {
