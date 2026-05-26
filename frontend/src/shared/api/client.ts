@@ -10,6 +10,7 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+// 요청 시 AccessToken 자동 첨부
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -17,3 +18,74 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// 응답 interceptor: 401 시 RefreshToken으로 자동 재발급
+let isRefreshing = false;
+let failedQueue: { resolve: (token: string) => void; reject: (err: unknown) => void }[] = [];
+
+const processQueue = (error: unknown, token: string | null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (token) resolve(token);
+    else reject(error);
+  });
+  failedQueue = [];
+};
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 401이고 재시도 아닌 경우 → 토큰 재발급 시도
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      // RefreshToken 없으면 바로 로그아웃
+      if (!refreshToken) {
+        localStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+
+      // 이미 재발급 중이면 큐에 대기
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(apiClient(originalRequest));
+            },
+            reject,
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post(`${baseURL}/auth/refresh`, { refreshToken });
+        const newAccessToken = res.data.data.accessToken;
+
+        localStorage.setItem('accessToken', newAccessToken);
+        apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+        processQueue(null, newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        // RefreshToken도 만료 → 강제 로그아웃
+        processQueue(refreshError, null);
+        localStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // 401 외 에러는 백엔드 메시지 추출
+    const message = error.response?.data?.error?.message ?? '요청에 실패했습니다.';
+    return Promise.reject(new Error(message));
+  },
+);

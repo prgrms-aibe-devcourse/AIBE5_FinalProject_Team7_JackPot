@@ -19,6 +19,8 @@ public class SecurityConfig {
 
     private static final String[] API_PUBLIC_PATHS = {
             "/api/v1/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
     };
 
     @Bean
