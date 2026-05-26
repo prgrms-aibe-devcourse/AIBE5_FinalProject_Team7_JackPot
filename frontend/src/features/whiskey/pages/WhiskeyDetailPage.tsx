@@ -21,6 +21,13 @@ function formatType(type: string): string {
   return map[type] ?? type;
 }
 
+function formatTenPointScore(score?: number): string {
+  if (score == null) return '—';
+
+  const normalized = score > 10 ? score / 10 : score;
+  return Number.isInteger(normalized) ? `${normalized}` : normalized.toFixed(1);
+}
+
 export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
   const id = whiskeyId ?? '1';
@@ -73,7 +80,7 @@ export default function WhiskeyDetailPage() {
         <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
         <p className="wf-text-sm">{metaLine}</p>
         <p className="wf-detail-hero__rating">
-          종합 {detail.noteSummary?.bodyScore ?? '—'} / 100
+          종합 {formatTenPointScore(detail.noteSummary?.bodyScore)} / 10
           <span className="wf-text-sm"> · {detail.noteSummary?.noteCount ?? 0} 노트</span>
         </p>
       </header>
