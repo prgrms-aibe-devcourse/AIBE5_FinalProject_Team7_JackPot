@@ -39,8 +39,8 @@ export default function WhiskeyDetailPage() {
   }, [detail, summarySource]);
 
   const tastingAxes = useMemo(
-    () => (detail ? buildTastingAxes(detail, effectiveSource) : []),
-    [detail, effectiveSource],
+    () => (detail ? buildTastingAxes(detail) : []),
+    [detail],
   );
 
   if (isLoading) {
@@ -59,7 +59,7 @@ export default function WhiskeyDetailPage() {
     );
   }
 
-  const ageLabel = detail.age_years > 0 ? `${detail.age_years}년` : 'NAS';
+  const ageLabel = detail.ageYears > 0 ? `${detail.ageYears}년` : 'NAS';
   const metaLine = [
     formatType(detail.type),
     detail.country,
@@ -73,15 +73,15 @@ export default function WhiskeyDetailPage() {
         <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
         <p className="wf-text-sm">{metaLine}</p>
         <p className="wf-detail-hero__rating">
-          종합 {detail.avgRating ?? '—'} / 100
-          <span className="wf-text-sm"> · {detail.reviewCount ?? 0} 리뷰</span>
+          종합 {detail.noteSummary?.bodyScore ?? '—'} / 100
+          <span className="wf-text-sm"> · {detail.noteSummary?.noteCount ?? 0} 노트</span>
         </p>
       </header>
 
       <div className="wf-tabs">
         <span className="wf-tab-item wf-tab-item--on">정보</span>
         <Link to={reviewPath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-          리뷰 ({detail.reviewCount ?? 0})
+          리뷰
         </Link>
         <Link to={notePath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
           개인 노트
@@ -140,7 +140,7 @@ export default function WhiskeyDetailPage() {
         </main>
 
         <aside className="wf-detail-aside">
-          <TastingTagsBubble tags={detail.tags} />
+          <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
       </div>
     </WireframePage>
