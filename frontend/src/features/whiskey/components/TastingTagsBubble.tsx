@@ -1,7 +1,7 @@
 import type { WhiskeyTagStat } from '../types';
 
-const MIN_RADIUS = 18;
-const MAX_RADIUS = 29;
+const MIN_RADIUS = 22;
+const MAX_RADIUS = 36;
 
 function heatColor(ratio: number): string {
   if (ratio >= 0.66) return '#4A9B6E';
@@ -54,6 +54,9 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
                   onClick={() => onTagClick?.(tag)}
                   title={`${tag.name} (${tag.count})`}
                 >
+                  {tag.imageUrl ? (
+                    <img src={tag.imageUrl} alt="" className="wf-detail-tags__image" />
+                  ) : null}
                   <span className="wf-detail-tags__count">{tag.count}</span>
                 </button>
                 <span className="wf-detail-tags__name">{tag.name}</span>

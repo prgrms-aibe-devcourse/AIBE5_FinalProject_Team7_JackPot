@@ -125,6 +125,14 @@ body {
   color: var(--wf-accent);
 }
 
+.app-root .wf-detail-tags__image {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  margin-bottom: 2px;
+  pointer-events: none;
+}
+
 .app-root .wf-dual-range {
   width: 100%;
 }
@@ -500,7 +508,7 @@ body {
 
 .wf-layout-detail-v2 {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) minmax(260px, 320px);
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) minmax(300px, 380px);
   gap: 24px 32px;
   align-items: start;
   margin-top: 8px;
@@ -580,6 +588,54 @@ body {
 .wf-detail-tasting__tags {
   margin: 6px 0 0;
   color: var(--wf-muted);
+}
+
+.wf-detail-tasting__radar {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px 0 4px;
+}
+
+.wf-detail-tasting__radar-chart {
+  width: 340px;
+  height: 340px;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.wf-detail-tasting__radar-grid {
+  fill: transparent;
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-detail-tasting__radar-axis {
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-detail-tasting__radar-fill {
+  fill: rgba(201, 162, 39, 0.28);
+  stroke: var(--wf-accent);
+  stroke-width: 2;
+}
+
+.wf-detail-tasting__radar-dot {
+  fill: var(--wf-accent);
+  stroke: var(--wf-bg);
+  stroke-width: 2;
+}
+
+.wf-detail-tasting__radar-label {
+  fill: var(--wf-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-tasting__radar-score {
+  fill: var(--wf-accent);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .wf-detail-tasting__reviews-link {

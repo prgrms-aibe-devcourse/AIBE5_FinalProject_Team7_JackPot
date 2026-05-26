@@ -5,17 +5,24 @@ export interface WhiskeyTagStat {
   tagId: number;
   name: string;
   category: TagCategory;
+  imageUrl: string | null;
   count: number;
 }
 
-export interface WhiskeyNoteScores {
-  body_score: number | null;
-  finish_score: number | null;
-  smoky_score: number | null;
-  spicy_score: number | null;
-  sweet_score: number | null;
-  memo?: string | null;
-  noteCount?: number;
+export interface TasteItem {
+  key: 'body' | 'finish' | 'smoky' | 'spicy' | 'sweet';
+  label: string;
+  score: number;
+}
+
+export interface WhiskeyNoteSummary {
+  noteCount: number;
+  bodyScore: number;
+  finishScore: number;
+  smokyScore: number;
+  spicyScore: number;
+  sweetScore: number;
+  tasteItems: TasteItem[];
 }
 
 export interface WhiskeyMyState {
@@ -29,10 +36,9 @@ export interface WhiskeyDetail {
   id: number;
   name: string;
   type: string;
-  etc_detail?: string | null;
-  image_url?: string | null;
+  imageUrl?: string | null;
   abv: number;
-  age_years: number;
+  ageYears: number;
   region: string;
   country: string;
   cask?: string | null;
@@ -40,9 +46,8 @@ export interface WhiskeyDetail {
   reviewCount?: number;
   description?: string | null;
   distillery?: string | null;
-  officialNote: WhiskeyNoteScores | null;
-  userAvgNote: WhiskeyNoteScores | null;
-  tags: WhiskeyTagStat[];
+  noteSummary: WhiskeyNoteSummary | null;
+  tastingTags: WhiskeyTagStat[];
   myState?: WhiskeyMyState;
 }
 
@@ -55,8 +60,8 @@ export interface RelatedColumnPost {
   like_count: number;
 }
 
-/** 화면용 N/P/F 시음 요약 (오피셜·사용자 평균 토글) */
-export type TastingAxisKey = 'nose' | 'palate' | 'finish';
+/** 화면용 시음 요약 */
+export type TastingAxisKey = TasteItem['key'];
 
 export interface TastingAxisView {
   key: TastingAxisKey;
