@@ -1,0 +1,33 @@
+# =====================================================
+# [테스트 전용 설정] application-test.yaml
+# - @ActiveProfiles("test") 로 활성화
+# - H2 인메모리 DB 사용 → MySQL 없이 테스트 가능
+# - 테스트 종료 시 DB 자동 소멸
+# =====================================================
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # 테스트 시작 시 테이블 생성, 종료 시 삭제
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    defer-datasource-initialization: true  # JPA 테이블 생성 후 data.sql 실행
+
+  sql:
+    init:
+      mode: never   # 테스트 환경에서는 data.sql 실행 안 함
+
+  h2:
+    console:
+      enabled: false
+
+jwt:
+  secret: "test-secret-key-must-be-at-least-32-characters-long!!"
+  access-token-expiry-ms: 1800000
+  refresh-token-expiry-ms: 1209600000

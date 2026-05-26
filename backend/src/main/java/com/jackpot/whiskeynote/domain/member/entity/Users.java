@@ -1,0 +1,116 @@
+package com.jackpot.whiskeynote.domain.member.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+/**
+ * 사용자 엔티티
+ * - MySQL users 테이블과 매핑
+ * - 소셜 로그인: auth_provider + provider_id 조합으로 식별
+ * - 로컬 로그인: email + password_hash 사용
+ */
+@Entity
+@Table(
+    name = "users",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_users_email",    columnNames = "email"),
+        @UniqueConstraint(name = "uk_users_nickname", columnNames = "nickname"),
+        @UniqueConstraint(name = "uk_users_provider", columnNames = {"auth_provider", "provider_id"})
+    }
+)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
+public class Users {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // 이메일 (로컬 가입 필수, 소셜 가입 NULL 허용)
+    @Column(length = 255)
+    private String email;
+
+    // BCrypt 해시 (소셜 가입자는 NULL)
+    @Column(name = "password_hash", length = 255)
+    private String passwordHash;
+
+    // 가입 방식: local / google / kakao / naver
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider", nullable = false, length = 32)
+    private AuthProvider authProvider;
+
+    // 소셜 로그인 시 provider 고유 ID
+    @Column(name = "provider_id", length = 255)
+    private String providerId;
+
+    // 닉네임 (유니크)
+    @Column(nullable = false, length = 64)
+    private String nickname;
+
+    // 실명 (선택)
+    @Column(length = 128)
+    private String name;
+
+    // 생년월일
+    @Column(nullable = false)
+    private LocalDate birthday;
+
+    // 프로필 이미지
+    @Column(name = "profile_image_url", length = 255)
+    private String profileImageUrl;
+
+    // 권한: user / admin / pro
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    @Builder.Default
+    private Role role = Role.USER;
+
+    // 온보딩 미완료 여부 (1=온보딩 필요, 0=완료)
+    @Column(name = "is_new_user", nullable = false)
+    @Builder.Default
+    private boolean isNewUser = true;
+
+    // 이메일 인증 여부
+    @Column(name = "is_email_verified", nullable = false)
+    @Builder.Default
+    private boolean isEmailVerified = false;
+
+    @Column(name = "email_verified_at")
+    private LocalDateTime emailVerifiedAt;
+
+    // 탈퇴 여부
+    @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    // 마지막 로그인 시각 갱신
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
+    public void completeOnboarding() {
+        this.isNewUser = false;
+    }
+}

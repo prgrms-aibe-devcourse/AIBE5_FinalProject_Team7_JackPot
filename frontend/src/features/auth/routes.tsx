@@ -9,9 +9,20 @@ export const routes: FeatureRoute[] = [
     layout: 'guest',
     meta: {
       screenId: '02-login',
-      title: 'Login / Sign up',
+      title: 'Login',
       phase: 'MVP',
-      apiIds: ['AUTH-01', 'AUTH-02'],
+      apiIds: ['AUTH-02'],
+    },
+  },
+  {
+    path: PATHS.REGISTER,
+    Component: lazy(() => import('./pages/RegisterPage')),
+    layout: 'guest',
+    meta: {
+      screenId: '02-register',
+      title: 'Sign up',
+      phase: 'MVP',
+      apiIds: ['AUTH-01'],
     },
   },
 ];
