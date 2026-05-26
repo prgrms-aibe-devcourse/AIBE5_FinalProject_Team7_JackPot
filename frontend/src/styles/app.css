@@ -125,6 +125,87 @@ body {
   color: var(--wf-accent);
 }
 
+.app-root .wf-dual-range {
+  width: 100%;
+}
+
+.app-root .wf-dual-range--disabled {
+  opacity: 0.55;
+}
+
+.app-root .wf-dual-range__track-wrap {
+  position: relative;
+  height: 28px;
+}
+
+.app-root .wf-dual-range__track,
+.app-root .wf-dual-range__active {
+  position: absolute;
+  top: 13px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.app-root .wf-dual-range__track {
+  left: 0;
+  right: 0;
+  background: var(--wf-border);
+}
+
+.app-root .wf-dual-range__active {
+  background: var(--wf-accent);
+}
+
+.app-root .wf-dual-range__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.app-root .wf-dual-range__input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.app-root .wf-dual-range__input::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.app-root .wf-dual-range__input::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border: 2px solid var(--wf-bg);
+  border-radius: 50%;
+  background: var(--wf-accent);
+  cursor: pointer;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.app-root .wf-dual-range__input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--wf-bg);
+  border-radius: 50%;
+  background: var(--wf-accent);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.app-root .wf-dual-range__input:disabled::-webkit-slider-thumb,
+.app-root .wf-dual-range__input:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+}
+
 @media (max-width: 960px) {
   .app-root .wf-layout-split,
   .app-root .wf-layout-detail,
