@@ -1,5 +1,6 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
+import { authApi } from '@/features/auth/api/authApi';
 
 const NAV = [
   { to: PATHS.LOUNGE, label: '라운지' },
@@ -14,6 +15,28 @@ interface TopNavProps {
 }
 
 export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) {
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem('accessToken');
+  const nickname = localStorage.getItem('nickname') || '';
+  const profileImageUrl = localStorage.getItem('profileImageUrl') || '';
+  const userId = localStorage.getItem('userId');
+  const isLoggedIn = !!accessToken;
+
+  const handleLogout = async () => {
+    try {
+      if (userId) await authApi.logout(Number(userId));
+    } catch {
+      // 서버 오류여도 클라이언트는 로그아웃 처리
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('nickname');
+      localStorage.removeItem('profileImageUrl');
+      navigate(PATHS.LOGIN);
+    }
+  };
+
   return (
     <nav className="wf-topnav">
       <Link to={PATHS.LOUNGE} className="wf-topnav__logo-link">
@@ -28,6 +51,88 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
             {label}
           </NavLink>
         ))}
+      </div>
+
+      {/* 로그인 상태 영역 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+        {isLoggedIn ? (
+          <>
+            {/* 프로필 아바타 */}
+            <Link to={PATHS.MY_PAGE} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                border: '2px solid var(--wf-accent)',
+                overflow: 'hidden',
+                background: 'var(--wf-surface-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                {profileImageUrl ? (
+                  <img src={profileImageUrl} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontSize: 16 }}>🥃</span>
+                )}
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--wf-text)', whiteSpace: 'nowrap' }}>
+                {nickname}
+              </span>
+            </Link>
+
+            {/* 로그아웃 버튼 */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                height: 32,
+                padding: '0 14px',
+                borderRadius: 8,
+                border: '1px solid var(--wf-border)',
+                background: 'transparent',
+                color: 'var(--wf-muted)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+              onMouseEnter={e => {
+                (e.target as HTMLButtonElement).style.borderColor = 'var(--wf-danger)';
+                (e.target as HTMLButtonElement).style.color = 'var(--wf-danger)';
+              }}
+              onMouseLeave={e => {
+                (e.target as HTMLButtonElement).style.borderColor = 'var(--wf-border)';
+                (e.target as HTMLButtonElement).style.color = 'var(--wf-muted)';
+              }}
+            >
+              로그아웃
+            </button>
+          </>
+        ) : (
+          <Link
+            to={PATHS.LOGIN}
+            style={{
+              height: 32,
+              padding: '0 16px',
+              borderRadius: 8,
+              border: '1px solid var(--wf-accent)',
+              background: 'var(--wf-accent-dim)',
+              color: 'var(--wf-accent)',
+              fontSize: 13,
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            로그인
+          </Link>
+        )}
       </div>
     </nav>
   );
