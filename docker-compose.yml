@@ -6,8 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: localroot
       MYSQL_DATABASE: whiskeynote
-    ports:
-      - "3306:3306"
+    # 호스트 3306 충돌 방지 — backend 는 docker 네트워크 mysql:3306 으로 접속
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:

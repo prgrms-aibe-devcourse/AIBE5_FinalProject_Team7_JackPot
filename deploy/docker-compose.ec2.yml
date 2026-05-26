@@ -1,0 +1,19 @@
+# EC2 배포용 (RDS + ECR). .env 는 서버에만 두고 git 에 올리지 않음.
+services:
+  backend:
+    image: 495264909330.dkr.ecr.ap-northeast-2.amazonaws.com/team7/whiskeynote-backend:latest
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    restart: unless-stopped
+    expose:
+      - "8080"
+
+  frontend:
+    image: 495264909330.dkr.ecr.ap-northeast-2.amazonaws.com/team7/whiskeynote-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
