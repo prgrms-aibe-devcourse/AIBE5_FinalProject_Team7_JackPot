@@ -48,17 +48,23 @@ export const MOCK_WHISKEY_DETAIL: WhiskeyDetail = {
 export const MOCK_RELATED_COLUMNS: RelatedColumnPost[] = [
   {
     id: 101,
+    authorId: 1,
+    postType: 'COLUMN',
+    category: 'F',
     title: '싱글몰트 입문 가이드',
-    subtitle: 'Glenfiddich vs Glenlivet',
-    post_type: 'COLUMN',
-    like_count: 86,
+    likeCount: 86,
+    commentCount: 12,
+    createdAt: '2025-01-01T00:00:00',
   },
   {
     id: 102,
+    authorId: 2,
+    postType: 'COLUMN',
+    category: 'F',
     title: '스페이사이드 특징',
-    subtitle: '부드러운 과일·꽃향의 고향',
-    post_type: 'COLUMN',
-    like_count: 54,
+    likeCount: 54,
+    commentCount: 7,
+    createdAt: '2025-01-02T00:00:00',
   },
 ];
 

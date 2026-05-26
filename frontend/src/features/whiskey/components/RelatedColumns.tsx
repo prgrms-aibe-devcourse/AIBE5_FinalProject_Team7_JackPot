@@ -25,9 +25,9 @@ export function RelatedColumns({ posts, isLoading }: RelatedColumnsProps) {
                 className="wf-detail-columns__item wf-box wf-box--solid"
               >
                 <span className="wf-detail-columns__title">{post.title}</span>
-                {post.subtitle && (
-                  <span className="wf-text-sm wf-detail-columns__subtitle">{post.subtitle}</span>
-                )}
+                <span className="wf-text-xs" style={{ color: '#888', marginTop: 4, display: 'block' }}>
+                  ♥ {post.likeCount} · 댓글 {post.commentCount}
+                </span>
               </Link>
             </li>
           ))}
