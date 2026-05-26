@@ -1,0 +1,120 @@
+package com.jackpot.whiskeynote.domain.community.service;
+
+import com.jackpot.whiskeynote.domain.community.dto.CommentCreateRequest;
+import com.jackpot.whiskeynote.domain.community.dto.CommentTreeResponse;
+import com.jackpot.whiskeynote.domain.community.entity.PostComment;
+import com.jackpot.whiskeynote.domain.community.entity.PostCommentTree;
+import com.jackpot.whiskeynote.domain.community.repository.PostCommentRepository;
+import com.jackpot.whiskeynote.domain.community.repository.PostCommentTreeRepository;
+import com.jackpot.whiskeynote.domain.community.repository.PostRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class CommentService {
+
+    private final PostCommentRepository postCommentRepository;
+    private final PostCommentTreeRepository postCommentTreeRepository;
+    private final PostRepository postRepository;
+
+    // CMT-01: 댓글 목록 (tree)
+    @Transactional(readOnly = true)
+    public List<CommentTreeResponse> getComments(Long postId) {
+        validatePostExists(postId);
+
+        List<PostComment> allComments = postCommentRepository.findByPostIdOrderByCreatedAtAsc(postId);
+        if (allComments.isEmpty()) return List.of();
+
+        List<Long> commentIds = allComments.stream().map(PostComment::getId).toList();
+
+        // depth=1 인 부모-자식 쌍 조회
+        Map<Long, List<Long>> parentToChildren = postCommentTreeRepository
+                .findByDepthAndDescendantIdIn(1, commentIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        PostCommentTree::getAncestorId,
+                        Collectors.mapping(PostCommentTree::getDescendantId, Collectors.toList())
+                ));
+
+        Map<Long, PostComment> commentMap = allComments.stream()
+                .collect(Collectors.toMap(PostComment::getId, c -> c));
+
+        // 자식 목록에 포함된 ID 집합 (root 제외 대상)
+        Set<Long> childIds = parentToChildren.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+
+        // root 댓글만 시작점으로 트리 구성
+        return allComments.stream()
+                .filter(c -> !childIds.contains(c.getId()))
+                .map(c -> buildTree(c, parentToChildren, commentMap))
+                .toList();
+    }
+
+    // CMT-02: 댓글 작성 (대댓글 지원)
+    @Transactional
+    public Long createComment(Long userId, Long postId, CommentCreateRequest request) {
+        validatePostExists(postId);
+
+        Long parentCommentId = request.parentCommentId();
+        if (parentCommentId != null && !postCommentRepository.existsById(parentCommentId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "부모 댓글을 찾을 수 없습니다.");
+        }
+
+        PostComment comment = PostComment.create(postId, userId, request.content());
+        postCommentRepository.save(comment);
+
+        // Closure Table 삽입: self-reference
+        postCommentTreeRepository.save(new PostCommentTree(comment.getId(), comment.getId(), 0));
+
+        // 부모가 있으면 조상 경로를 모두 새 댓글에 연결
+        if (parentCommentId != null) {
+            List<PostCommentTree> ancestorPaths =
+                    postCommentTreeRepository.findByDescendantId(parentCommentId);
+            for (PostCommentTree path : ancestorPaths) {
+                postCommentTreeRepository.save(
+                        new PostCommentTree(path.getAncestorId(), comment.getId(), path.getDepth() + 1));
+            }
+        }
+
+        return comment.getId();
+    }
+
+    // CMT-03: 댓글 삭제 (soft delete)
+    @Transactional
+    public void deleteComment(Long userId, Long commentId) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
+        if (comment.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "이미 삭제된 댓글입니다.");
+        }
+        if (!comment.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+        }
+        comment.softDelete();
+    }
+
+    private CommentTreeResponse buildTree(PostComment comment,
+                                          Map<Long, List<Long>> parentToChildren,
+                                          Map<Long, PostComment> commentMap) {
+        List<CommentTreeResponse> replies = parentToChildren
+                .getOrDefault(comment.getId(), List.of())
+                .stream()
+                .map(childId -> buildTree(commentMap.get(childId), parentToChildren, commentMap))
+                .toList();
+        return CommentTreeResponse.from(comment, replies);
+    }
+
+    private void validatePostExists(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다.");
+        }
+    }
+}
