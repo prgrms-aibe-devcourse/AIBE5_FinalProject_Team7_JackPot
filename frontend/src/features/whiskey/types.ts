@@ -51,13 +51,16 @@ export interface WhiskeyDetail {
   myState?: WhiskeyMyState;
 }
 
-/** WH-02-1 related-posts — Post[] 요약 */
+/** WH-02-1 related-posts — PostSummaryResponse (backend camelCase) */
 export interface RelatedColumnPost {
   id: number;
+  authorId: number;
+  postType: 'COLUMN' | 'NOTICE' | 'QA' | 'FREE' | 'FEED';
+  category: string;
   title: string;
-  subtitle?: string | null;
-  post_type: 'COLUMN' | 'NOTICE' | 'QA' | 'FREE' | 'FEED';
-  like_count: number;
+  likeCount: number;
+  commentCount: number;
+  createdAt: string;
 }
 
 /** 화면용 시음 요약 */

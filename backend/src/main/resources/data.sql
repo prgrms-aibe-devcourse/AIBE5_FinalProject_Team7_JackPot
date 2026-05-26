@@ -209,3 +209,60 @@ INSERT INTO avg_whiskey_tags (id, tag_id, cache_id, count) VALUES
 INSERT INTO avg_whiskey_tags (id, tag_id, cache_id, count) VALUES
     (131, 102, 10, 2),
     (132, 106, 10, 1);
+-- =====================================================
+-- 커뮤니티 테스트 데이터 (author_id=1~3 은 테스트용 임시 userId)
+-- =====================================================
+
+INSERT INTO posts
+(id, author_id, post_type, category, title, context, like_count, is_deleted, created_at, updated_at)
+VALUES
+    (1, 1, 'COLUMN',  'R', '글렌피딕 12년 심층 리뷰', '<p>글렌피딕 12년은 입문자에게 최고의 선택입니다...</p>', 5, 0, NOW(6), NOW(6)),
+    (2, 2, 'COLUMN',  'R', '아드벡 10년, 피트의 정수', '<p>아드벡 10년은 강렬한 피트향으로 유명합니다...</p>', 3, 0, NOW(6), NOW(6)),
+    (3, 1, 'FREE',    'F', '위스키 입문 어떤 걸로 시작할까요?', '<p>처음 위스키를 시작하려는데 추천 부탁드립니다.</p>', 2, 0, NOW(6), NOW(6)),
+    (4, 3, 'FREE',    'L', '서울 위스키 바 추천', '<p>강남에 괜찮은 위스키 바 아시는 분 있나요?</p>', 4, 0, NOW(6), NOW(6)),
+    (5, 2, 'FREE',    'G', '야마자키 나눔합니다', '<p>야마자키 한 병 나눔합니다. 댓글 주세요.</p>', 1, 0, NOW(6), NOW(6)),
+    (6, 1, 'QA',      'Q', '버번과 라이의 차이가 뭔가요?', '<p>버번 위스키와 라이 위스키의 차이점이 궁금합니다.</p>', 0, 0, NOW(6), NOW(6)),
+    (7, 3, 'QA',      'Q', '테이스팅 노트 작성하는 방법', '<p>테이스팅 노트를 처음 써보려는데 어떻게 하면 좋을까요?</p>', 2, 0, NOW(6), NOW(6));
+
+-- 게시글-위스키 연결 (칼럼 글에 위스키 태그)
+INSERT INTO post_whiskeys
+(id, post_id, whiskey_id, `order`)
+VALUES
+    (1, 1, 1, 1),
+    (2, 1, 3, 2),
+    (3, 2, 9, 1);
+
+-- 댓글 (post_id=3 자유게시판 글에 댓글 + 대댓글)
+INSERT INTO post_comments
+(id, post_id, user_id, content, is_deleted, created_at, updated_at)
+VALUES
+    (1, 3, 2, '글렌피딕 12년 강추합니다!', 0, NOW(6), NOW(6)),
+    (2, 3, 3, '저는 맥캘란으로 시작했어요. 달달해서 좋았습니다.', 0, NOW(6), NOW(6)),
+    (3, 3, 1, '글렌피딕 맞아요, 가성비도 좋아요.', 0, NOW(6), NOW(6)),
+    (4, 6, 2, '버번은 옥수수 51% 이상, 라이는 호밀 51% 이상입니다.', 0, NOW(6), NOW(6)),
+    (5, 6, 3, '맛도 달라요. 버번은 달고 라이는 스파이시해요.', 0, NOW(6), NOW(6));
+
+-- Closure Table (댓글 트리 구성)
+-- comment 1: root
+-- comment 2: root
+-- comment 3: comment 1 의 대댓글
+-- comment 4, 5: root (post_id=6)
+INSERT INTO post_comment_tree
+(id, ancestor_id, descendant_id, depth)
+VALUES
+    (1, 1, 1, 0),
+    (2, 2, 2, 0),
+    (3, 3, 3, 0),
+    (4, 1, 3, 1),
+    (5, 4, 4, 0),
+    (6, 5, 5, 0);
+
+-- 좋아요 데이터
+INSERT INTO post_likes
+(id, user_id, post_id, up, created_at)
+VALUES
+    (1, 2, 1, 1, NOW(6)),
+    (2, 3, 1, 1, NOW(6)),
+    (3, 1, 2, 1, NOW(6)),
+    (4, 1, 4, 1, NOW(6)),
+    (5, 2, 4, 1, NOW(6));
