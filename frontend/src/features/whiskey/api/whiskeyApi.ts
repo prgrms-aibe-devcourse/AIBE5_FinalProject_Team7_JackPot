@@ -1,8 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import { getMockWhiskeyDetail, MOCK_RELATED_COLUMNS } from '../mocks/whiskeyDetailMock';
 import type { RelatedColumnPost, WhiskeyDetail } from '../types';
-import type { ApiResponse } from '@/shared/api/types/response';
-import { unwrapApiData } from '@/shared/api/types/response';
 
 const USE_MOCK_ONLY = import.meta.env.VITE_API_MOCK === 'true';
 
@@ -29,14 +27,14 @@ export async function fetchWhiskeyDetail(whiskeyId: string): Promise<WhiskeyDeta
   );
 }
 
-/** WH-02-1 GET /api/v1/whiskeys/{id}/related-posts */
+/** WH-02-1 GET /api/v1/whiskeys/{id}/related-posts — raw array, no wrapper */
 export async function fetchRelatedColumns(whiskeyId: string): Promise<RelatedColumnPost[]> {
   return withMockFallback(
     async () => {
-      const { data } = await apiClient.get<ApiResponse<RelatedColumnPost[]>>(
+      const { data } = await apiClient.get<RelatedColumnPost[]>(
         `/whiskeys/${whiskeyId}/related-posts`,
       );
-      return unwrapApiData(data);
+      return data;
     },
     () => MOCK_RELATED_COLUMNS,
   );
