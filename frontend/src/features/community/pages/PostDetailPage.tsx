@@ -112,12 +112,20 @@ export default function PostDetailPage() {
           </div>
         </header>
 
-        <div
-          className="wf-box"
-          style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
-        >
-          {post.context}
-        </div>
+        {post.context.startsWith('<') ? (
+          <div
+            className="wf-box"
+            style={{ padding: 16, marginBottom: 24, lineHeight: 1.8 }}
+            dangerouslySetInnerHTML={{ __html: post.context }}
+          />
+        ) : (
+          <div
+            className="wf-box"
+            style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
+          >
+            {post.context}
+          </div>
+        )}
       </article>
 
       <section>
