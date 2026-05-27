@@ -4,6 +4,7 @@ import type { TastingAxisView, TastingSummarySource } from '../types';
 const CHART_SIZE = 340;
 const CHART_CENTER = CHART_SIZE / 2;
 const CHART_RADIUS = 112;
+const SCORE_MAX = 10;
 const GRID_LEVELS = [0.25, 0.5, 0.75, 1];
 
 interface TastingSummaryPanelProps {
@@ -29,6 +30,16 @@ function pointsToString(points: { x: number; y: number }[]) {
 function displayLabel(axis: TastingAxisView) {
   if (axis.key === 'sweet') return '단맛';
   return axis.label;
+}
+
+function normalizeScore(score: number) {
+  const tenPointScore = score > SCORE_MAX ? score / 10 : score;
+  return Math.min(Math.max(tenPointScore, 0), SCORE_MAX);
+}
+
+function formatScore(score: number) {
+  const normalized = normalizeScore(score);
+  return Number.isInteger(normalized) ? `${normalized}` : normalized.toFixed(1);
 }
 
 export function TastingSummaryPanel({
@@ -94,13 +105,13 @@ export function TastingSummaryPanel({
             })}
             <polygon
               points={pointsToString(
-                axes.map((axis, index) => axisPoint(index, axes.length, Math.min(Math.max(axis.score, 0), 100) / 100)),
+                axes.map((axis, index) => axisPoint(index, axes.length, normalizeScore(axis.score) / SCORE_MAX)),
               )}
               className="wf-detail-tasting__radar-fill"
             />
             {axes.map((axis, index) => {
               const point = axisPoint(index, axes.length, 1.24);
-              const scorePoint = axisPoint(index, axes.length, Math.min(Math.max(axis.score, 0), 100) / 100);
+              const scorePoint = axisPoint(index, axes.length, normalizeScore(axis.score) / SCORE_MAX);
               return (
                 <g key={axis.key}>
                   <circle cx={scorePoint.x} cy={scorePoint.y} r="4" className="wf-detail-tasting__radar-dot" />
@@ -117,10 +128,10 @@ export function TastingSummaryPanel({
                     x={point.x}
                     y={point.y + 16}
                     textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="wf-detail-tasting__radar-score"
-                  >
-                    {axis.score}
+                  dominantBaseline="middle"
+                  className="wf-detail-tasting__radar-score"
+                >
+                    {formatScore(axis.score)}
                   </text>
                 </g>
               );

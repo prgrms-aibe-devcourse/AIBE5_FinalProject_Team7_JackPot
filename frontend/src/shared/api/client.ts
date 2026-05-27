@@ -86,6 +86,12 @@ apiClient.interceptors.response.use(
 
     // 401 외 에러는 백엔드 메시지 추출
     const message = error.response?.data?.error?.message ?? '요청에 실패했습니다.';
+
+    // 500번대 서버 오류 → 에러 페이지로 이동
+    if (error.response?.status >= 500) {
+      window.location.href = '/error/500';
+    }
+
     return Promise.reject(new Error(message));
   },
 );

@@ -72,10 +72,15 @@ public class Users {
     @Builder.Default
     private Role role = Role.USER;
 
-    // 온보딩 미완료 여부 (1=온보딩 필요, 0=완료)
+    // 온보딩 미완료 여부 (true=온보딩 필요, false=완료)
     @Column(name = "is_new_user", nullable = false)
     @Builder.Default
-    private boolean isNewUser = true;
+    private boolean newUser = true;
+
+    // isNewUser getter 명시적 선언 (boolean + is 접두사 Lombok 충돌 방지)
+    public boolean isNewUser() {
+        return this.newUser;
+    }
 
     // 이메일 인증 여부
     @Column(name = "is_email_verified", nullable = false)
@@ -111,6 +116,6 @@ public class Users {
 
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
     public void completeOnboarding() {
-        this.isNewUser = false;
+        this.newUser = false;
     }
 }

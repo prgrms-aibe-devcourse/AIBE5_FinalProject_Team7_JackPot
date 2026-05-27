@@ -25,7 +25,7 @@ export const routes: FeatureRoute[] = [
     path: PATHS.COMMUNITY_NOTICES,
     Component: lazy(() => import('./pages/NoticePage')),
     layout: 'app',
-    meta: { screenId: '14-community-notices', title: '공지·가이드', phase: 'P2', apiIds: ['NOTICE-LIST-01'] },
+    meta: { screenId: '14-community-notices', title: '공지·FAQ', phase: 'P2', apiIds: ['NOTICE-LIST-01'] },
   },
   {
     path: PATHS.COMMUNITY_POST_NEW,

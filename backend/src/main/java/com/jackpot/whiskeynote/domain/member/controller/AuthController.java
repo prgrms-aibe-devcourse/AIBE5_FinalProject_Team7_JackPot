@@ -6,6 +6,7 @@ import com.jackpot.whiskeynote.domain.member.dto.RegisterRequest;
 import com.jackpot.whiskeynote.domain.member.dto.TokenResponse;
 import com.jackpot.whiskeynote.domain.member.service.AuthService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
+import com.jackpot.whiskeynote.global.security.JwtProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtProvider jwtProvider;
 
     // AUTH-01: 회원가입
     // 성공 응답: { success: true, data: { accessToken, refreshToken, userId, isNewUser }, error: null }
@@ -43,9 +45,13 @@ public class AuthController {
     }
 
     // AUTH-05: 로그아웃
+    // TODO: JWT 필터 구현 후 @AuthenticationPrincipal로 userId 추출하도록 교체
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(@RequestParam Long userId) {
+    public void logout(@RequestHeader("Authorization") String authHeader) {
+        // Bearer {token} 에서 userId 추출
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtProvider.getUserId(token);
         authService.logout(userId);
     }
 
