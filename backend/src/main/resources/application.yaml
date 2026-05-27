@@ -42,3 +42,11 @@ jwt:
   secret: "change-this-in-local-yaml-must-be-at-least-32-characters-long"
   access-token-expiry-ms: 1800000    # 30분
   refresh-token-expiry-ms: 1209600000 # 14일
+
+# S3 이미지 (EC2 IAM Role / 로컬은 aws configure 또는 비활성)
+aws:
+  s3:
+    region: ${AWS_REGION:ap-northeast-2}
+    bucket: ${AWS_S3_BUCKET:}
+    presign-duration-minutes: 10
+    max-size-bytes: 5242880  # 5MB

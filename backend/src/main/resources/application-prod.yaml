@@ -7,3 +7,7 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET:team7-whiskeynote-images}

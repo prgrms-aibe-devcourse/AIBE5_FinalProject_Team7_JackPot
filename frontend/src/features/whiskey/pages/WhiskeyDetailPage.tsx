@@ -9,6 +9,7 @@ import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
 import { useRelatedColumns, useWhiskeyDetail } from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource } from '../types';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 
 function formatType(type: string): string {
@@ -73,6 +74,7 @@ export default function WhiskeyDetailPage() {
     `${detail.abv}%`,
     '700ml',
   ].join(' · ');
+  const imageSrc = resolveMediaUrl(detail.imageUrl);
 
   return (
     <WireframePage scroll>
@@ -97,7 +99,16 @@ export default function WhiskeyDetailPage() {
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
-          <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={detail.name}
+              className="wf-detail-sidebar__image"
+              style={{ width: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+          )}
           <div className="wf-detail-sidebar__actions">
             <Button variant="ghost" style={{ width: '100%' }}>
               ♡ 위시리스트

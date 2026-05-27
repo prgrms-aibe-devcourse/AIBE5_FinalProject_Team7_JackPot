@@ -35,6 +35,12 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail("BAD_REQUEST", ex.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(IllegalStateException.class)
+    public ApiResponse<Void> handleIllegalState(IllegalStateException ex) {
+        return ApiResponse.fail("SERVICE_UNAVAILABLE", ex.getMessage());
+    }
+
     // 예상치 못한 서버 오류
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
