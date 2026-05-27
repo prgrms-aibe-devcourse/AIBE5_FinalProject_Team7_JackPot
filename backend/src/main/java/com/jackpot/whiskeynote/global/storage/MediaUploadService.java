@@ -27,8 +27,10 @@ public class MediaUploadService {
             "image/gif"
     );
 
+    /** API presign 업로드: whiskeys/ · S3 콘솔 수동 업로드: whiskey/ */
     private static final Set<String> ALLOWED_PREFIXES = Set.of(
             MediaPurpose.WHISKEY.prefix() + "/",
+            "whiskey/",
             MediaPurpose.POST.prefix() + "/",
             MediaPurpose.PROFILE.prefix() + "/"
     );
