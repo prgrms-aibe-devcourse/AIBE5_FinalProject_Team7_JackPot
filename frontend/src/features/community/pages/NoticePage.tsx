@@ -4,11 +4,11 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
 import { PostList } from '../components/PostList';
-import { useQnaPosts } from '../hooks/useCommunity';
+import { useNotices } from '../hooks/useCommunity';
 
-export default function QnaPage() {
+export default function NoticePage() {
   const [page, setPage] = useState(0);
-  const { data, isLoading } = useQnaPosts(page);
+  const { data, isLoading } = useNotices(page);
 
   return (
     <WireframePage scroll>
@@ -16,10 +16,9 @@ export default function QnaPage() {
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
         <Link to={PATHS.COMMUNITY_FREE} className="wf-chip">자유게시판</Link>
-        <span className="wf-chip wf-chip--on">Q&A</span>
-        <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
+        <span className="wf-chip wf-chip--on">공지·FAQ</span>
       </nav>
-      <h1 className="wf-title">Q&A</h1>
+      <h1 className="wf-title">공지·FAQ</h1>
       <PostList posts={data?.content ?? []} isLoading={isLoading} />
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>

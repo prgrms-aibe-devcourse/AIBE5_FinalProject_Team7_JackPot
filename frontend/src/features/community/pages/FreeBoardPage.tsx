@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
-import { PostList } from '../components/PostList';
 import { Pagination } from '../components/Pagination';
+import { PostList } from '../components/PostList';
 import { useFreePosts } from '../hooks/useCommunity';
 import type { PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
@@ -30,15 +30,16 @@ export default function FreeBoardPage() {
 
   return (
     <WireframePage scroll>
-      <nav style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
         <span className="wf-chip wf-chip--on">자유게시판</span>
-        <Link to={PATHS.COMMUNITY_QNA} className="wf-chip">Q&A</Link>
+        <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
-
-      <h1 className="wf-title">자유게시판</h1>
-
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h1 className="wf-title" style={{ margin: 0 }}>자유게시판</h1>
+        <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`} className="wf-chip wf-chip--on">글쓰기</Link>
+      </div>
       <div className="wf-chips" style={{ marginBottom: 12 }}>
         {CATEGORIES.map((c) => (
           <button
@@ -51,13 +52,8 @@ export default function FreeBoardPage() {
           </button>
         ))}
       </div>
-
       <PostList posts={data?.content ?? []} isLoading={isLoading} />
-      <Pagination
-        page={data?.number ?? 0}
-        totalPages={data?.totalPages ?? 1}
-        onPage={setPage}
-      />
+      <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>
   );
 }

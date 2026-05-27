@@ -239,7 +239,7 @@ class AuthControllerTest {
             restClient.post().uri("/login").body(loginRequest).retrieve().toEntity(Map.class);
         } catch (HttpClientErrorException e) {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-            assertThat(e.getResponseBodyAsString()).contains("이메일 또는 비밀번호가 올바르지 않습니다.");
+            assertThat(e.getResponseBodyAsString()).contains("등록되지 않은 이메일 입니다.");
         }
     }
 }

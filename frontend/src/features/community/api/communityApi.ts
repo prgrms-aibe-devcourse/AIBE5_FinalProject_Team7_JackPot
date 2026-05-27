@@ -2,12 +2,12 @@ import { apiClient } from '@/shared/api/client';
 import type {
   CommentCreateRequest,
   CommentTreeResponse,
+  PostCategory,
   PostCreateRequest,
   PostDetailDto,
   PostSummaryResponse,
   PostUpdateRequest,
   SpringPage,
-  PostCategory,
 } from '../types';
 
 export async function fetchColumns(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
@@ -30,6 +30,13 @@ export async function fetchFreePosts(
 
 export async function fetchQnaPosts(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
   const { data } = await apiClient.get<SpringPage<PostSummaryResponse>>('/community/qna', {
+    params: { page, size },
+  });
+  return data;
+}
+
+export async function fetchNotices(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
+  const { data } = await apiClient.get<SpringPage<PostSummaryResponse>>('/community/notices', {
     params: { page, size },
   });
   return data;
@@ -86,18 +93,3 @@ export async function createComment(
 export async function deleteComment(userId: number, commentId: number): Promise<void> {
   await apiClient.delete(`/comments/${commentId}`, { params: { userId } });
 }
-
-export const communityApi = {
-  fetchColumns,
-  fetchFreePosts,
-  fetchQnaPosts,
-  fetchPost,
-  createPost,
-  updatePost,
-  deletePost,
-  likePost,
-  unlikePost,
-  fetchComments,
-  createComment,
-  deleteComment,
-};
