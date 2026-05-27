@@ -11,6 +11,7 @@ class MediaUploadServiceTest {
     void validateObjectKey_acceptsAllowedPrefixes() {
         assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("posts/1/uuid.jpg"));
         assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("whiskeys/2/uuid.png"));
+        assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("whiskey/그란츠_트리플_우드.webp"));
         assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("profiles/3/uuid.webp"));
     }
 
