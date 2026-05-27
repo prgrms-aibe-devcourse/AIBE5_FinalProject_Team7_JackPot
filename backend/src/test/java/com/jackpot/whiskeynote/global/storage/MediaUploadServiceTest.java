@@ -21,4 +21,11 @@ class MediaUploadServiceTest {
         assertThrows(IllegalArgumentException.class, () -> MediaUploadService.validateObjectKey("secret/file.jpg"));
         assertThrows(IllegalArgumentException.class, () -> MediaUploadService.validateObjectKey("/posts/1.jpg"));
     }
+
+    @Test
+    void validateProfileObjectKeyForUser_acceptsOwnPrefixOnly() {
+        assertDoesNotThrow(() -> MediaUploadService.validateProfileObjectKeyForUser(3L, "profiles/3/uuid.webp"));
+        assertThrows(IllegalArgumentException.class,
+                () -> MediaUploadService.validateProfileObjectKeyForUser(3L, "profiles/99/uuid.webp"));
+    }
 }

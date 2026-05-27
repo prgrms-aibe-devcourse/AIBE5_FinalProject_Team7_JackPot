@@ -105,6 +105,15 @@ public class MediaUploadService {
         }
     }
 
+    /** 프로필 이미지는 본인 profiles/{userId}/ 경로만 허용 */
+    public static void validateProfileObjectKeyForUser(Long userId, String key) {
+        validateObjectKey(key);
+        String expectedPrefix = MediaPurpose.PROFILE.prefix() + "/" + userId + "/";
+        if (!key.startsWith(expectedPrefix)) {
+            throw new IllegalArgumentException("본인 프로필 이미지 경로만 등록할 수 있습니다.");
+        }
+    }
+
     private static String resolveExtension(String contentType, String fileName) {
         if (fileName != null && fileName.contains(".")) {
             String ext = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);

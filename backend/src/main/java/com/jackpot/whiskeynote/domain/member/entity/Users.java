@@ -119,6 +119,11 @@ public class Users {
         this.nickname = nickname;
     }
 
+    // USER-02: 프로필 이미지 (S3 object key)
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
     public void completeOnboarding() {
         this.newUser = false;

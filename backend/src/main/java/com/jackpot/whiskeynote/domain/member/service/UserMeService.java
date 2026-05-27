@@ -4,6 +4,7 @@ import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.global.storage.MediaUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,16 @@ public class UserMeService {
                 throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
             }
             user.updateNickname(newNickname);
+        }
+
+        if (request.getProfileImageUrl() != null) {
+            String key = request.getProfileImageUrl().trim();
+            if (key.isEmpty()) {
+                user.updateProfileImageUrl(null);
+            } else {
+                MediaUploadService.validateProfileObjectKeyForUser(userId, key);
+                user.updateProfileImageUrl(key);
+            }
         }
 
         // bottleShareOptIn: MVP에서는 저장 보류 (스키마 확정 후 반영)
