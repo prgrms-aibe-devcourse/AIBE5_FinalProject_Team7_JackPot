@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
+    public ApiResponse<Void> handleUnauthorized(UnauthorizedException ex) {
+        return ApiResponse.fail("UNAUTHORIZED", ex.getMessage());
+    }
+
     // @Valid 검증 실패 (이메일 형식 오류, 빈 값 등)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
