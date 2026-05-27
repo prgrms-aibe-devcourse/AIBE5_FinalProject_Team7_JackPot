@@ -62,7 +62,7 @@ export interface PostCreateRequest {
   category: PostCategory;
   title: string;
   context: string;
-  whiskeyIds: number[];
+  whiskeyIds?: number[];
 }
 
 export interface PostUpdateRequest {
