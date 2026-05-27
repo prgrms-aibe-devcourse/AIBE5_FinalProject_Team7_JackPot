@@ -48,3 +48,9 @@ aws:
     bucket: test-bucket
     presign-duration-minutes: 10
     max-size-bytes: 5242880
+
+# JWT 테스트용 더미 시크릿 (실제 운영 값과 무관)
+jwt:
+  secret: test-secret-key-for-unit-testing-only-minimum-32chars
+  access-token-expiry-ms: 3600000
+  refresh-token-expiry-ms: 604800000

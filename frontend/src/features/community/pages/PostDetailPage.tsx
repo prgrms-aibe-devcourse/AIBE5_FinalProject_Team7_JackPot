@@ -84,9 +84,7 @@ export default function PostDetailPage() {
             <span className="wf-chip" style={{ fontSize: 11 }}>
               {POST_CATEGORY_LABEL[post.category] ?? post.category}
             </span>
-            <span className="wf-chip" style={{ fontSize: 11 }}>
-              {post.postType}
-            </span>
+            <span className="wf-chip" style={{ fontSize: 11 }}>{post.postType}</span>
           </div>
           <h1 className="wf-title" style={{ marginBottom: 4 }}>{post.title}</h1>
           <p className="wf-text-xs" style={{ color: '#888', marginBottom: 8 }}>
@@ -101,24 +99,23 @@ export default function PostDetailPage() {
             >
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
             </button>
-            <span className="wf-text-xs" style={{ color: '#888' }}>
-              댓글 {post.commentCount}
-            </span>
+            <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
             {post.isOwner && (
-              <>
-                <button
-                  className="wf-chip"
-                  style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
-                  onClick={handleDelete}
-                >
-                  삭제
-                </button>
-              </>
+              <button
+                className="wf-chip"
+                style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
+                onClick={handleDelete}
+              >
+                삭제
+              </button>
             )}
           </div>
         </header>
 
-        <div className="wf-box" style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+        <div
+          className="wf-box"
+          style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
+        >
           {post.context}
         </div>
       </article>
@@ -158,7 +155,14 @@ export default function PostDetailPage() {
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="댓글을 입력하세요…"
               rows={3}
-              style={{ flex: 1, padding: 8, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical' }}
+              style={{
+                flex: 1,
+                padding: 8,
+                fontSize: 14,
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                resize: 'vertical',
+              }}
             />
             <button
               type="submit"

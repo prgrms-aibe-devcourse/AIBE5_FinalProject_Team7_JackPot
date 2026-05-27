@@ -22,13 +22,13 @@ export const PATHS = {
   COMMUNITY_COLUMNS: '/community/columns',
   COMMUNITY_FREE: '/community/free',
   COMMUNITY_QNA: '/community/qna',
+  COMMUNITY_NOTICES: '/community/notices',
   COMMUNITY_POST: '/community/posts/:postId',
   COMMUNITY_POST_NEW: '/community/posts/new',
   TASTING_NOTE: '/whiskey/:whiskeyId/note',
   NOTE_PICK: '/note/pick',
   TASTE_MATCH: '/discover/taste-match',
   ADMIN: '/admin',
-  // 에러 페이지
   NOT_FOUND: '/error/404',
   SERVER_ERROR: '/error/500',
 } as const;
