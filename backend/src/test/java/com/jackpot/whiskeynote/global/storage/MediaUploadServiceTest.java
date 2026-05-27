@@ -1,0 +1,23 @@
+package com.jackpot.whiskeynote.global.storage;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+class MediaUploadServiceTest {
+
+    @Test
+    void validateObjectKey_acceptsAllowedPrefixes() {
+        assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("posts/1/uuid.jpg"));
+        assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("whiskeys/2/uuid.png"));
+        assertDoesNotThrow(() -> MediaUploadService.validateObjectKey("profiles/3/uuid.webp"));
+    }
+
+    @Test
+    void validateObjectKey_rejectsUnsafePaths() {
+        assertThrows(IllegalArgumentException.class, () -> MediaUploadService.validateObjectKey("../etc/passwd"));
+        assertThrows(IllegalArgumentException.class, () -> MediaUploadService.validateObjectKey("secret/file.jpg"));
+        assertThrows(IllegalArgumentException.class, () -> MediaUploadService.validateObjectKey("/posts/1.jpg"));
+    }
+}

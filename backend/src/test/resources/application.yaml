@@ -41,3 +41,10 @@ spring:
   h2:
     console:
       enabled: true
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: test-bucket
+    presign-duration-minutes: 10
+    max-size-bytes: 5242880

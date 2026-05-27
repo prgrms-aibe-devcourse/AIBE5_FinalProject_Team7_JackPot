@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
@@ -362,11 +363,13 @@ export default function SearchPage() {
             </div>
           ) : null}
 
-          {results.map((whiskey) => (
+          {results.map((whiskey) => {
+            const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
+            return (
             <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable" style={{ padding: 16, textDecoration: 'none' }}>
-              {whiskey.imageUrl ? (
+              {thumbSrc ? (
                 <img
-                  src={whiskey.imageUrl}
+                  src={thumbSrc}
                   alt={whiskey.name}
                   className="wf-card__thumb"
                   style={{ width: 72, height: 96, objectFit: 'cover' }}
@@ -381,7 +384,8 @@ export default function SearchPage() {
                 <Button variant="ghost" style={{ height: 32, width: 100, marginTop: 8 }}>♡ 위시</Button>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
 
