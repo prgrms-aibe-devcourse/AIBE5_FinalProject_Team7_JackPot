@@ -114,6 +114,11 @@ public class Users {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    // USER-02: 내 프로필 닉네임 수정
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
     public void completeOnboarding() {
         this.newUser = false;
