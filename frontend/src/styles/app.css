@@ -701,6 +701,38 @@ body {
   color: var(--wf-muted);
 }
 
+.wf-detail-tags__filters {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.wf-detail-tags__filter-button {
+  min-width: 54px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.wf-detail-tags__filter-button:hover {
+  border-color: rgba(201, 162, 39, 0.55);
+  color: var(--wf-text);
+}
+
+.wf-detail-tags__filter-button--active {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.16);
+  color: var(--wf-accent);
+}
+
 .wf-detail-tags__empty {
   padding: 24px 0;
   color: var(--wf-muted);
