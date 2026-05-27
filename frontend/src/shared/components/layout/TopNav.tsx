@@ -1,6 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+
+/** MyPage 등에서 프로필 저장 후 TopNav 아바타 갱신용 */
+export const PROFILE_UPDATED_EVENT = 'whiskeynote:profile-updated';
 
 const NAV = [
   { to: PATHS.LOUNGE, label: '라운지' },
@@ -17,10 +22,20 @@ interface TopNavProps {
 export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
-  const nickname = localStorage.getItem('nickname') || '';
-  const profileImageUrl = localStorage.getItem('profileImageUrl') || '';
+  const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
+  const [profileImageKey, setProfileImageKey] = useState(() => localStorage.getItem('profileImageUrl') || '');
   const userId = localStorage.getItem('userId');
   const isLoggedIn = !!accessToken;
+  const avatarSrc = resolveMediaUrl(profileImageKey || null);
+
+  useEffect(() => {
+    const syncProfile = () => {
+      setNickname(localStorage.getItem('nickname') || '');
+      setProfileImageKey(localStorage.getItem('profileImageUrl') || '');
+    };
+    window.addEventListener(PROFILE_UPDATED_EVENT, syncProfile);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, syncProfile);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -71,8 +86,8 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
                 justifyContent: 'center',
                 flexShrink: 0,
               }}>
-                {profileImageUrl ? (
-                  <img src={profileImageUrl} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontSize: 16 }}>🥃</span>
                 )}

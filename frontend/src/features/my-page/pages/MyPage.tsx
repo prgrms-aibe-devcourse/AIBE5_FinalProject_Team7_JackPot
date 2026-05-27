@@ -4,6 +4,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { uploadImage } from '@/shared/api/mediaApi';
+import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
 
@@ -22,6 +23,9 @@ export default function MyPage() {
         const data = await userApi.getMe();
         setMe(data);
         setNickname(data.nickname ?? '');
+        localStorage.setItem('nickname', data.nickname ?? '');
+        localStorage.setItem('profileImageUrl', data.profileImageUrl ?? '');
+        window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       } catch {
         // MVP: 오류 시에도 페이지는 렌더링(로그인은 TopNav에서 처리)
       }
@@ -40,6 +44,7 @@ export default function MyPage() {
       setNickname(updated.nickname);
       localStorage.setItem('nickname', updated.nickname);
       localStorage.setItem('profileImageUrl', updated.profileImageUrl ?? '');
+      window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : '저장에 실패했습니다.');
     } finally {
@@ -63,6 +68,7 @@ export default function MyPage() {
       const updated = await userApi.updateMe({ profileImageUrl: presign.objectKey });
       setMe(updated);
       localStorage.setItem('profileImageUrl', updated.profileImageUrl ?? '');
+      window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : '프로필 이미지 업로드에 실패했습니다.');
     } finally {
