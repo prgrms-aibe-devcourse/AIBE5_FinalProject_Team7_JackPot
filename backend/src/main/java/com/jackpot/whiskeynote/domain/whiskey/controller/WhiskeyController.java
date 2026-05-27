@@ -1,5 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.controller;
 
+import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
+import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WhiskeyController {
     private final WhiskeyService whiskeyService;
+    private final ReviewService reviewService;
     // 위스키 전체 조회 (페이징)
     @GetMapping("/api/v1/whiskeys")
     public Page<WhiskeyCardResponse> getWhiskeys(
@@ -65,5 +68,14 @@ public class WhiskeyController {
     @GetMapping("/api/v1/whiskeys/{id}")
     public WhiskeyDetailResponse getWhiskeyDetail(@PathVariable Long id) {
         return whiskeyService.getWhiskeyDetail(id);
+    }
+    // 위스키 리뷰 조회
+    @GetMapping("/api/v1/whiskeys/{id}/reviews")
+    public Page<WhiskeyReviewResponse> getWhiskeyReviews(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return reviewService.getReviewsByWhiskey(id, page, size);
     }
 }
