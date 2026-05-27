@@ -86,3 +86,17 @@ jobs:
             docker compose pull
             docker compose up -d
             docker compose ps
+            echo "==> Smoke test (wait up to 60s)"
+            curl -fsS http://localhost/ >/dev/null || true
+            smoke_ok=0
+            for _ in $(seq 1 12); do
+              if curl -fsS "http://localhost/api/v1/whiskeys?page=0&size=1" >/dev/null; then
+                smoke_ok=1
+                break
+              fi
+              sleep 5
+            done
+            if [ "$smoke_ok" -ne 1 ]; then
+              echo "Smoke test failed"
+              exit 1
+            fi
