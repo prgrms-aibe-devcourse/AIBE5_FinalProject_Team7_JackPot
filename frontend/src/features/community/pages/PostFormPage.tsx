@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { createPost } from '../api/communityApi';
 import type { PostType, PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
@@ -31,12 +32,53 @@ export default function PostFormPage() {
   const [category, setCategory] = useState<PostCategory>('F');
   const [submitting, setSubmitting] = useState(false);
 
+  // 위스키 검색 (칼럼 전용)
+  const [whiskeyQuery, setWhiskeyQuery] = useState('');
+  const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
+  const [selectedWhiskeys, setSelectedWhiskeys] = useState<WhiskeyCard[]>([]);
+  const [searching, setSearching] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (postType !== 'COLUMN' || !whiskeyQuery.trim()) {
+      setWhiskeyResults([]);
+      return;
+    }
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const result = await searchWhiskeys({ q: whiskeyQuery.trim(), size: 5 });
+        setWhiskeyResults(result.content);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+  }, [whiskeyQuery, postType]);
+
+  function selectWhiskey(whiskey: WhiskeyCard) {
+    if (selectedWhiskeys.some((w) => w.id === whiskey.id)) return;
+    setSelectedWhiskeys((prev) => [...prev, whiskey]);
+    setWhiskeyQuery('');
+    setWhiskeyResults([]);
+  }
+
+  function removeWhiskey(id: number) {
+    setSelectedWhiskeys((prev) => prev.filter((w) => w.id !== id));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
     setSubmitting(true);
     try {
-      const postId = await createPost(DEMO_USER_ID, { title: title.trim(), context: content.trim(), postType, category });
+      const postId = await createPost(DEMO_USER_ID, {
+        title: title.trim(),
+        context: content.trim(),
+        postType,
+        category,
+        whiskeyIds: selectedWhiskeys.map((w) => w.id),
+      });
       navigate(`/community/posts/${postId}`);
     } finally {
       setSubmitting(false);
@@ -56,6 +98,7 @@ export default function PostFormPage() {
         {TYPE_LABEL[postType] ?? postType} 글쓰기
       </h1>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
         {postType === 'FREE' && (
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {CATEGORY_OPTIONS.map((opt) => (
@@ -71,6 +114,60 @@ export default function PostFormPage() {
             ))}
           </div>
         )}
+
+        {postType === 'COLUMN' && (
+          <div>
+            <p className="wf-text-sm" style={{ marginBottom: 6, color: '#555' }}>
+              관련 위스키 검색 (선택)
+            </p>
+            <div style={{ position: 'relative' }}>
+              <input
+                value={whiskeyQuery}
+                onChange={(e) => setWhiskeyQuery(e.target.value)}
+                placeholder="위스키 이름으로 검색…"
+                style={{ width: '100%', padding: 8, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', boxSizing: 'border-box' }}
+              />
+              {whiskeyResults.length > 0 && (
+                <ul style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0,
+                  background: '#fff', border: '1px solid #ccc', borderRadius: 4,
+                  listStyle: 'none', margin: 0, padding: 0, zIndex: 10,
+                }}>
+                  {whiskeyResults.map((w) => (
+                    <li
+                      key={w.id}
+                      onClick={() => selectWhiskey(w)}
+                      style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f0f0f0' }}
+                    >
+                      {w.name}
+                      {w.region && <span style={{ color: '#999', fontSize: 12, marginLeft: 6 }}>{w.region}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {searching && (
+                <p className="wf-text-xs" style={{ color: '#999', marginTop: 4 }}>검색 중…</p>
+              )}
+            </div>
+            {selectedWhiskeys.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                {selectedWhiskeys.map((w) => (
+                  <span key={w.id} className="wf-chip wf-chip--on" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    {w.name}
+                    <button
+                      type="button"
+                      onClick={() => removeWhiskey(w.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 12, color: 'inherit' }}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
