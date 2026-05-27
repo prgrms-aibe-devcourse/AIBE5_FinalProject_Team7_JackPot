@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { uploadImage } from '@/shared/api/mediaApi';
-import { searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
+import { fetchWhiskeys, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { createPost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
 import type { PostType, PostCategory } from '../types';
@@ -37,6 +37,7 @@ export default function PostFormPage() {
   // 위스키 검색 (칼럼 전용)
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
+  const [whiskeyDropdownOpen, setWhiskeyDropdownOpen] = useState(false);
   const [selectedWhiskeys, setSelectedWhiskeys] = useState<WhiskeyCard[]>([]);
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,15 +48,27 @@ export default function PostFormPage() {
   const freeImageRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (postType !== 'COLUMN' || !whiskeyQuery.trim()) {
-      setWhiskeyResults([]);
+    if (postType !== 'COLUMN') return;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+
+    if (!whiskeyQuery.trim()) {
+      // 검색어 없으면 전체 목록 표시
+      searchTimer.current = setTimeout(async () => {
+        setSearching(true);
+        try {
+          const result = await fetchWhiskeys({ size: 20 });
+          setWhiskeyResults(result.content);
+        } finally {
+          setSearching(false);
+        }
+      }, 100);
       return;
     }
-    if (searchTimer.current) clearTimeout(searchTimer.current);
+
     searchTimer.current = setTimeout(async () => {
       setSearching(true);
       try {
-        const result = await searchWhiskeys({ q: whiskeyQuery.trim(), size: 5 });
+        const result = await searchWhiskeys({ q: whiskeyQuery.trim(), size: 20 });
         setWhiskeyResults(result.content);
       } finally {
         setSearching(false);
@@ -67,7 +80,7 @@ export default function PostFormPage() {
     if (selectedWhiskeys.some((w) => w.id === whiskey.id)) return;
     setSelectedWhiskeys((prev) => [...prev, whiskey]);
     setWhiskeyQuery('');
-    setWhiskeyResults([]);
+    setWhiskeyDropdownOpen(false);
   }
 
   function removeWhiskey(id: number) {
@@ -152,21 +165,34 @@ export default function PostFormPage() {
           <div>
             <p className="wf-text-sm" style={{ marginBottom: 6, color: '#555' }}>관련 위스키 검색 (선택)</p>
             <div style={{ position: 'relative' }}>
-              <input value={whiskeyQuery} onChange={(e) => setWhiskeyQuery(e.target.value)}
-                placeholder="위스키 이름으로 검색…"
-                style={{ width: '100%', padding: 8, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              {whiskeyResults.length > 0 && (
-                <ul style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #ccc', borderRadius: 4, listStyle: 'none', margin: 0, padding: 0, zIndex: 10 }}>
-                  {whiskeyResults.map((w) => (
-                    <li key={w.id} onClick={() => selectWhiskey(w)}
-                      style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f0f0f0' }}>
-                      {w.name}
-                      {w.region && <span style={{ color: '#999', fontSize: 12, marginLeft: 6 }}>{w.region}</span>}
+              <input
+                value={whiskeyQuery}
+                onChange={(e) => setWhiskeyQuery(e.target.value)}
+                onFocus={() => setWhiskeyDropdownOpen(true)}
+                onBlur={() => setTimeout(() => setWhiskeyDropdownOpen(false), 150)}
+                placeholder="위스키 이름으로 검색… (클릭하면 전체 목록 표시)"
+                style={{ width: '100%', padding: 8, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', boxSizing: 'border-box' }}
+              />
+              {whiskeyDropdownOpen && (
+                <ul style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #ccc', borderRadius: 4, listStyle: 'none', margin: 0, padding: 0, zIndex: 10, maxHeight: 220, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  {searching && (
+                    <li style={{ padding: '10px 12px', color: '#999', fontSize: 13 }}>검색 중…</li>
+                  )}
+                  {!searching && whiskeyResults.length === 0 && (
+                    <li style={{ padding: '10px 12px', color: '#999', fontSize: 13 }}>검색 결과가 없습니다.</li>
+                  )}
+                  {!searching && whiskeyResults.map((w) => (
+                    <li key={w.id}
+                      onMouseDown={() => selectWhiskey(w)}
+                      style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>{w.name}</span>
+                      {(w.region || w.country) && (
+                        <span style={{ color: '#aaa', fontSize: 12 }}>{w.region ?? w.country}</span>
+                      )}
                     </li>
                   ))}
                 </ul>
               )}
-              {searching && <p className="wf-text-xs" style={{ color: '#999', marginTop: 4 }}>검색 중…</p>}
             </div>
             {selectedWhiskeys.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
