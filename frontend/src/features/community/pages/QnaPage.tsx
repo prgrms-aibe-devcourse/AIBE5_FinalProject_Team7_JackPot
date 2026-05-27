@@ -19,7 +19,10 @@ export default function QnaPage() {
         <span className="wf-chip wf-chip--on">Q&A</span>
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지</Link>
       </nav>
-      <h1 className="wf-title">Q&A</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h1 className="wf-title" style={{ margin: 0 }}>Q&A</h1>
+        <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=QA`} className="wf-chip wf-chip--on">글쓰기</Link>
+      </div>
       <PostList posts={data?.content ?? []} isLoading={isLoading} />
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>

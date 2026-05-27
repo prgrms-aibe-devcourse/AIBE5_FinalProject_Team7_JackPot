@@ -5,8 +5,7 @@ import { PATHS } from '@/app/router/paths';
 const BOARDS = [
   { path: PATHS.COMMUNITY_COLUMNS, label: '칼럼', desc: '전문가·운영자 콘텐츠' },
   { path: PATHS.COMMUNITY_FREE, label: '자유게시판', desc: '잡담·리뷰·추천·나눔' },
-  { path: PATHS.COMMUNITY_QNA, label: 'Q&A', desc: '위스키 궁금증을 해결해요' },
-  { path: PATHS.COMMUNITY_NOTICES, label: '공지·가이드', desc: '운영 공지 및 입문 콘텐츠' },
+  { path: PATHS.COMMUNITY_NOTICES, label: '공지·FAQ', desc: '운영 공지 및 자주 묻는 질문' },
 ];
 
 export default function CommunityPage() {

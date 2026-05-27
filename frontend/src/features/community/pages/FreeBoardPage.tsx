@@ -34,10 +34,12 @@ export default function FreeBoardPage() {
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
         <span className="wf-chip wf-chip--on">자유게시판</span>
-        <Link to={PATHS.COMMUNITY_QNA} className="wf-chip">Q&A</Link>
-        <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지</Link>
+        <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
-      <h1 className="wf-title">자유게시판</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h1 className="wf-title" style={{ margin: 0 }}>자유게시판</h1>
+        <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`} className="wf-chip wf-chip--on">글쓰기</Link>
+      </div>
       <div className="wf-chips" style={{ marginBottom: 12 }}>
         {CATEGORIES.map((c) => (
           <button

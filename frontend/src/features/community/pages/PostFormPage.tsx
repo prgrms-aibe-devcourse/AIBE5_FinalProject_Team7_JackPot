@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
-import { PATHS } from '@/app/router/paths';
 import { createPost } from '../api/communityApi';
 import type { PostType, PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
 const DEMO_USER_ID = 1;
 
-const POST_TYPE_OPTIONS: Array<{ value: PostType; label: string }> = [
-  { value: 'FREE', label: '자유게시판' },
-  { value: 'QA', label: 'Q&A' },
-];
+const TYPE_LABEL: Partial<Record<PostType, string>> = {
+  COLUMN: '칼럼',
+  FREE: '자유게시판',
+};
 
 const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
   { value: 'F', label: POST_CATEGORY_LABEL.F },
@@ -25,11 +24,10 @@ const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
 export default function PostFormPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const defaultType = (searchParams.get('type') as PostType) ?? 'FREE';
+  const postType = (searchParams.get('type') as PostType) ?? 'FREE';
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [postType, setPostType] = useState<PostType>(defaultType);
   const [category, setCategory] = useState<PostCategory>('F');
   const [submitting, setSubmitting] = useState(false);
 
@@ -54,23 +52,12 @@ export default function PostFormPage() {
       >
         ← 뒤로
       </button>
-      <h1 className="wf-title" style={{ marginBottom: 16 }}>글쓰기</h1>
+      <h1 className="wf-title" style={{ marginBottom: 16 }}>
+        {TYPE_LABEL[postType] ?? postType} 글쓰기
+      </h1>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {POST_TYPE_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              className={`wf-chip${postType === opt.value ? ' wf-chip--on' : ''}`}
-              style={{ cursor: 'pointer', border: 'none', background: 'none' }}
-              onClick={() => setPostType(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
         {postType === 'FREE' && (
-          <div className="wf-chips" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {CATEGORY_OPTIONS.map((opt) => (
               <button
                 key={opt.value}

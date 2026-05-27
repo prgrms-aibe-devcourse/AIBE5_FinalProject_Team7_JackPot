@@ -22,12 +22,6 @@ export const routes: FeatureRoute[] = [
     meta: { screenId: '14-community-free', title: '자유게시판', phase: 'P2', apiIds: ['FREE-LIST-01'] },
   },
   {
-    path: PATHS.COMMUNITY_QNA,
-    Component: lazy(() => import('./pages/QnaPage')),
-    layout: 'app',
-    meta: { screenId: '14-community-qna', title: 'Q&A', phase: 'P2', apiIds: ['QNA-LIST-01'] },
-  },
-  {
     path: PATHS.COMMUNITY_NOTICES,
     Component: lazy(() => import('./pages/NoticePage')),
     layout: 'app',
