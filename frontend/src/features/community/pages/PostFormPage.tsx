@@ -3,12 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { uploadImage } from '@/shared/api/mediaApi';
 import { fetchWhiskeys, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
+import { PATHS } from '@/app/router/paths';
+import { isLoggedIn } from '@/shared/lib/authSession';
 import { createPost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
 import type { PostType, PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
-
-const DEMO_USER_ID = 1;
 
 const TYPE_LABEL: Partial<Record<PostType, string>> = {
   COLUMN: '칼럼',
@@ -28,6 +28,12 @@ export default function PostFormPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const postType = (searchParams.get('type') as PostType) ?? 'FREE';
+
+  // 비로그인 시 로그인 페이지로
+  if (!isLoggedIn()) {
+    navigate(PATHS.LOGIN, { replace: true });
+    return null;
+  }
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -118,7 +124,7 @@ export default function PostFormPage() {
 
     setSubmitting(true);
     try {
-      const postId = await createPost(DEMO_USER_ID, {
+      const postId = await createPost({
         title: title.trim(),
         context: finalContent,
         postType,

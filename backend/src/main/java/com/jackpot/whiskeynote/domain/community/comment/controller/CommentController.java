@@ -4,9 +4,11 @@ import com.jackpot.whiskeynote.domain.community.comment.dto.CommentCreateRequest
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentTreeResponse;
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.service.CommentService;
+import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,10 +30,10 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long createComment(
             @PathVariable Long postId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody CommentCreateRequest request
     ) {
-        return commentService.createComment(userId, postId, request);
+        return commentService.createComment(principal.userId(), postId, request);
     }
 
     // CMT-03: 댓글 삭제 (soft)
@@ -39,9 +41,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(
             @PathVariable Long commentId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        commentService.deleteComment(userId, commentId);
+        commentService.deleteComment(principal.userId(), commentId);
     }
 
     // CMT-04: 댓글 수정
@@ -49,9 +51,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateComment(
             @PathVariable Long commentId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody CommentUpdateRequest request
     ) {
-        commentService.updateComment(userId, commentId, request);
+        commentService.updateComment(principal.userId(), commentId, request);
     }
 }

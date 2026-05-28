@@ -9,8 +9,6 @@ import { usePost } from '../hooks/useCommunity';
 import type { PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
-const DEMO_USER_ID = 1;
-
 const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
   { value: 'F', label: POST_CATEGORY_LABEL.F },
   { value: 'R', label: POST_CATEGORY_LABEL.R },
@@ -25,7 +23,7 @@ export default function PostEditPage() {
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
-  const { data: post, isLoading, isError } = usePost(numericId, DEMO_USER_ID);
+  const { data: post, isLoading, isError } = usePost(numericId);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -105,7 +103,7 @@ export default function PostEditPage() {
     if (!title.trim() || !content.trim()) return;
     setSubmitting(true);
     try {
-      await updatePost(DEMO_USER_ID, post!.id, {
+      await updatePost(post!.id, {
         title: title.trim(),
         context: content,
         category,
