@@ -41,13 +41,14 @@ public class Review {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public static Review create(Users user, Whiskey whiskey, BigDecimal rating, String publicText) {
+    public static Review create(Users user, Whiskey whiskey, BigDecimal rating, String publicText, Long attachedNoteId) {
         Review review = new Review();
         review.user = user;
         review.whiskey = whiskey;
         review.attachedNoteId = null;
         review.rating = rating;
         review.publicText = publicText;
+        review.attachedNoteId=attachedNoteId;
         return review;
     }
 

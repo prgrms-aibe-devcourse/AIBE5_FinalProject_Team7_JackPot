@@ -73,6 +73,7 @@ export interface WhiskeyReview {
   profileImageUrl: string | null;
   rating: number;
   publicText: string | null;
+  attachedNoteId: number | null;
   hasAttachedNote: boolean;
   createdAt: string;
   updatedAt: string;

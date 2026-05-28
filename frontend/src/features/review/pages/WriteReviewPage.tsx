@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -6,6 +7,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { StarRatingInput } from '../components/StarRatingInput';
 import { useCreateReview } from '../hooks/useReviews';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
+import { fetchMyTastingNoteForWhiskey } from '@/features/tasting-note/api/noteApi';
 
 function getCurrentUserId(): number | null {
   const value = localStorage.getItem('userId');
@@ -21,9 +23,15 @@ export default function WriteReviewPage() {
   const id = whiskeyId ?? '1';
   const currentUserId = getCurrentUserId();
   const { data: whiskey } = useWhiskeyDetail(id);
+  const { data: myNote, isLoading: noteLoading } = useQuery({
+    queryKey: ['tasting-note', 'my', currentUserId, id],
+    queryFn: () => fetchMyTastingNoteForWhiskey(currentUserId!, id),
+    enabled: currentUserId != null,
+  });
   const createReviewMutation = useCreateReview(currentUserId, id);
   const [rating, setRating] = useState(0);
   const [publicText, setPublicText] = useState('');
+  const [attachNote, setAttachNote] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const reviewListPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
@@ -46,6 +54,7 @@ export default function WriteReviewPage() {
       await createReviewMutation.mutateAsync({
         rating,
         publicText: publicText.trim(),
+        attachedNoteId: attachNote && myNote ? myNote.id : null,
       });
       navigate(reviewListPath);
     } catch (error) {
@@ -75,6 +84,44 @@ export default function WriteReviewPage() {
             rows={5}
           />
         </label>
+
+        <section className="wf-review-note-attach">
+          <div className="wf-review-note-attach__head">
+            <div>
+              <p className="wf-text-label">My Note 첨부</p>
+              <p className="wf-text-sm" style={{ margin: '4px 0 0' }}>
+                이 위스키에 작성한 시음 노트를 리뷰에 함께 표시할 수 있습니다.
+              </p>
+            </div>
+            <button
+              type="button"
+              className={`wf-review-note-attach__toggle${attachNote ? ' wf-review-note-attach__toggle--on' : ''}`}
+              disabled={!myNote}
+              onClick={() => setAttachNote((prev) => !prev)}
+            >
+              {attachNote ? '첨부됨' : '첨부'}
+            </button>
+          </div>
+
+          {noteLoading ? (
+            <p className="wf-text-sm wf-review-note-attach__message">시음 노트를 확인하는 중입니다.</p>
+          ) : myNote ? (
+            <div className="wf-review-note-attach__preview">
+              <p className="wf-text-sm">
+                바디 {myNote.bodyScore ?? '-'} · 피니시 {myNote.finishScore ?? '-'} ·
+                스모키 {myNote.smokyScore ?? '-'} · 스파이시 {myNote.spicyScore ?? '-'} ·
+                단맛 {myNote.sweetScore ?? '-'}
+              </p>
+              <p className="wf-text-sm wf-review-note-attach__memo">
+                {myNote.memo || '작성된 메모가 없습니다.'}
+              </p>
+            </div>
+          ) : (
+            <p className="wf-text-sm wf-review-note-attach__message">
+              이 위스키에 작성한 시음 노트가 없습니다.
+            </p>
+          )}
+        </section>
 
         {errorMessage && (
           <p className="wf-text-sm" style={{ color: '#ff8a8a', marginTop: 12 }}>

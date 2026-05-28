@@ -4,6 +4,7 @@ import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
+import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
 import { RelatedColumns } from '../components/RelatedColumns';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
@@ -38,6 +39,8 @@ function formatReviewDate(value: string): string {
 }
 
 function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
+  const [showNote, setShowNote] = useState(false);
+
   return (
     <li className="wf-detail-reviews__item wf-box">
       <div className="wf-detail-reviews__header">
@@ -50,8 +53,17 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
       <p className="wf-text-sm wf-detail-reviews__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
-      {review.hasAttachedNote && (
-        <span className="wf-detail-reviews__note-badge">My Note 첨부</span>
+      {review.hasAttachedNote && review.attachedNoteId && (
+        <>
+          <button
+            type="button"
+            className="wf-detail-reviews__note-button"
+            onClick={() => setShowNote((prev) => !prev)}
+          >
+            {showNote ? 'My Note 접기' : 'My Note 자세히'}
+          </button>
+          {showNote && <AttachedNotePanel noteId={review.attachedNoteId} />}
+        </>
       )}
     </li>
   );
