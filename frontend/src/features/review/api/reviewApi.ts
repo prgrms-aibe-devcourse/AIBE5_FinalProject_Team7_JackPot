@@ -1,6 +1,59 @@
 import { apiClient } from '@/shared/api/client';
+import type { PageResponse } from '@/shared/api/types/common';
+import type { WhiskeyReview } from '@/features/whiskey/types';
 
-/** TODO: WhiskeyNote_API명세서_v2 — review 도메인 연동 */
+export interface ReviewSaveRequest {
+  rating: number;
+  publicText: string;
+}
+
+export async function fetchMyReviews(
+  userId: number,
+  page = 0,
+  size = 20,
+): Promise<PageResponse<WhiskeyReview>> {
+  const { data } = await apiClient.get<PageResponse<WhiskeyReview>>('/reviews', {
+    params: { userId, page, size },
+  });
+  return data;
+}
+
+export async function createReview(
+  userId: number,
+  whiskeyId: string,
+  body: ReviewSaveRequest,
+): Promise<WhiskeyReview> {
+  const { data } = await apiClient.post<WhiskeyReview>(
+    `/whiskeys/${whiskeyId}/reviews`,
+    body,
+    { params: { userId } },
+  );
+  return data;
+}
+
+export async function updateReview(
+  userId: number,
+  reviewId: number,
+  body: ReviewSaveRequest,
+): Promise<WhiskeyReview> {
+  const { data } = await apiClient.patch<WhiskeyReview>(
+    `/reviews/${reviewId}`,
+    body,
+    { params: { userId } },
+  );
+  return data;
+}
+
+export async function deleteReview(userId: number, reviewId: number): Promise<void> {
+  await apiClient.delete(`/reviews/${reviewId}`, {
+    params: { userId },
+  });
+}
+
 export const reviewApi = {
   client: apiClient,
+  fetchMyReviews,
+  createReview,
+  updateReview,
+  deleteReview,
 };

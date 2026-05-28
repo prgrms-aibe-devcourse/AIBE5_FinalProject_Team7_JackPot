@@ -18,13 +18,14 @@ interface CabinetSubTabsProps {
 
 export function CabinetSubTabs({ active, basePath, hideWish }: CabinetSubTabsProps) {
   const tabs = hideWish ? TABS.filter((t) => t.key !== 'wish') : TABS;
+  const separator = basePath.includes('?') ? '&' : '?';
 
   return (
     <nav className="wf-cabinet-sub" aria-label="Bar 하위 탭">
       {tabs.map(({ key, label }) => (
         <Link
           key={key}
-          to={`${basePath}?tab=${key}`}
+          to={`${basePath}${separator}tab=${key}`}
           className={`wf-cabinet-sub__tab${active === key ? ' wf-cabinet-sub__tab--on' : ''}`}
         >
           {label}

@@ -40,4 +40,34 @@ public class Review {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public static Review create(Users user, Whiskey whiskey, BigDecimal rating, String publicText) {
+        Review review = new Review();
+        review.user = user;
+        review.whiskey = whiskey;
+        review.attachedNoteId = null;
+        review.rating = rating;
+        review.publicText = publicText;
+        return review;
+    }
+
+    public void update(BigDecimal rating, String publicText) {
+        this.rating = rating;
+        this.publicText = publicText;
+    }
+
+    public boolean isWrittenBy(Long userId){
+        return this.user.getId().equals(userId);
+    }
+
+    @PrePersist // 엔티티가 처음 저장될 때 실행
+    void onCreate(){
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate // 엔티티가 업데이트될 때 실행
+    void onUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
 }

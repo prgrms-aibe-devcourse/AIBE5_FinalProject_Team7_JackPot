@@ -67,6 +67,8 @@ export interface RelatedColumnPost {
 export interface WhiskeyReview {
   id: number;
   userId: number;
+  whiskeyId?: number;
+  whiskeyName?: string;
   nickname: string;
   profileImageUrl: string | null;
   rating: number;
