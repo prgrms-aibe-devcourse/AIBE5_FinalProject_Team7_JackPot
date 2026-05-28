@@ -1,7 +1,7 @@
 package com.jackpot.whiskeynote.global.storage;
 
 import com.jackpot.whiskeynote.global.response.ApiResponse;
-import com.jackpot.whiskeynote.global.security.JwtProvider;
+import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import com.jackpot.whiskeynote.global.storage.dto.PresignUploadRequest;
 import com.jackpot.whiskeynote.global.storage.dto.PresignUploadResponse;
 import jakarta.validation.Valid;
@@ -10,10 +10,10 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,18 +25,16 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 public class MediaController {
 
     private final MediaUploadService mediaUploadService;
-    private final JwtProvider jwtProvider;
 
     /**
      * 브라우저 → S3 직접 PUT 전 presigned URL 발급 (로그인 필요).
      */
     @PostMapping("/uploads/presign")
     public ApiResponse<PresignUploadResponse> presignUpload(
-            @RequestHeader("Authorization") String authHeader,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody PresignUploadRequest request
     ) {
-        Long userId = extractUserId(authHeader);
-        return ApiResponse.ok(mediaUploadService.createPresignedUpload(userId, request));
+        return ApiResponse.ok(mediaUploadService.createPresignedUpload(principal.userId(), request));
     }
 
     /**
@@ -59,13 +57,5 @@ public class MediaController {
         } catch (NoSuchKeyException ex) {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    private Long extractUserId(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-        String token = authHeader.substring("Bearer ".length()).trim();
-        return jwtProvider.getUserId(token);
     }
 }

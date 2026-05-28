@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
+import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 
 /** MyPage 등에서 프로필 저장 후 TopNav 아바타 갱신용 */
@@ -24,7 +25,6 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
   const accessToken = localStorage.getItem('accessToken');
   const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
   const [profileImageKey, setProfileImageKey] = useState(() => localStorage.getItem('profileImageUrl') || '');
-  const userId = localStorage.getItem('userId');
   const isLoggedIn = !!accessToken;
   const avatarSrc = resolveMediaUrl(profileImageKey || null);
 
@@ -39,15 +39,11 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
 
   const handleLogout = async () => {
     try {
-      if (userId) await authApi.logout(Number(userId));
+      await authApi.logout();
     } catch {
       // 서버 오류여도 클라이언트는 로그아웃 처리
     } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('nickname');
-      localStorage.removeItem('profileImageUrl');
+      clearAuthSession();
       navigate(PATHS.LOGIN);
     }
   };

@@ -5,6 +5,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { uploadImage } from '@/shared/api/mediaApi';
 import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
+import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
 
@@ -87,11 +88,7 @@ export default function MyPage() {
       return;
     }
 
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('nickname');
-    localStorage.removeItem('profileImageUrl');
+    clearAuthSession();
     window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     window.location.href = PATHS.LOGIN;
   }
