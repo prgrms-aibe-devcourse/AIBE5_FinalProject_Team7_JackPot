@@ -76,6 +76,26 @@ export default function MyPage() {
     }
   }
 
+  async function handleWithdraw() {
+    const ok = window.confirm('정말로 탈퇴하시겠습니까? 탈퇴 후에는 되돌릴 수 없습니다.');
+    if (!ok) return;
+
+    try {
+      await userApi.deleteMe();
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : '탈퇴에 실패했습니다.');
+      return;
+    }
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('nickname');
+    localStorage.removeItem('profileImageUrl');
+    window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
+    window.location.href = PATHS.LOGIN;
+  }
+
   const avatarSrc = resolveMediaUrl(me?.profileImageUrl ?? null);
 
   return (
@@ -158,6 +178,12 @@ export default function MyPage() {
       </div>
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         취향 설문 다시하기
+      </div>
+      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
+        <p className="wf-text-sm" style={{ marginBottom: 10 }}>회원</p>
+        <Button variant="ghost" block onClick={handleWithdraw} style={{ border: '1px solid #ff4d4f', color: '#ff4d4f' }}>
+          회원 탈퇴
+        </Button>
       </div>
       <Button variant="ghost" to={PATHS.CABINET} style={{ marginTop: 16 }}>
         캐비넷으로 이동

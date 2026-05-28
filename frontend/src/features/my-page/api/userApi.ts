@@ -26,9 +26,15 @@ export async function updateMe(body: UpdateUserMeRequest): Promise<UserMeDto> {
   return unwrapApiData(res.data);
 }
 
+export async function deleteMe(): Promise<void> {
+  const res = await apiClient.delete('/users/me');
+  unwrapApiData(res.data);
+}
+
 /** TODO: WhiskeyNote_API명세서_v2 — user 도메인 연동 */
 export const userApi = {
   client: apiClient,
   getMe,
   updateMe,
+  deleteMe,
 };
