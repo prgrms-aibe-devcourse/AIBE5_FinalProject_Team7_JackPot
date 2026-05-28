@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.member.repository;
 
 import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.entity.AuthProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -12,6 +13,8 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     // 이메일로 사용자 조회 (로컬 로그인 시 사용)
     Optional<Users> findByEmail(String email);
+
+    Optional<Users> findByAuthProviderAndProviderId(AuthProvider authProvider, String providerId);
 
     // 닉네임 중복 확인
     boolean existsByNickname(String nickname);

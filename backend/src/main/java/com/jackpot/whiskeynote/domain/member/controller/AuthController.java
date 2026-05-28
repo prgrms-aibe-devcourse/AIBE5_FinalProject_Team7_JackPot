@@ -1,11 +1,13 @@
 package com.jackpot.whiskeynote.domain.member.controller;
 
 import com.jackpot.whiskeynote.domain.member.dto.LoginRequest;
+import com.jackpot.whiskeynote.domain.member.dto.OauthCallbackRequest;
 import com.jackpot.whiskeynote.domain.member.dto.RefreshRequest;
 import com.jackpot.whiskeynote.domain.member.dto.RegisterRequest;
 import com.jackpot.whiskeynote.domain.member.dto.TokenResponse;
 import com.jackpot.whiskeynote.domain.member.entity.AuthProvider;
 import com.jackpot.whiskeynote.domain.member.oauth.OauthRedirectService;
+import com.jackpot.whiskeynote.domain.member.oauth.OauthLoginService;
 import com.jackpot.whiskeynote.domain.member.service.AuthService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
@@ -33,6 +35,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final OauthRedirectService oauthRedirectService;
+    private final OauthLoginService oauthLoginService;
 
     // AUTH-01: 회원가입
     @PostMapping("/register")
@@ -49,6 +52,16 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, location)
                 .build();
+    }
+
+    // 소셜 로그인 콜백: code -> provider token 교환 -> 우리 JWT 발급
+    @PostMapping("/oauth/{provider}/callback")
+    public ApiResponse<TokenResponse> oauthCallback(
+            @PathVariable String provider,
+            @Valid @RequestBody OauthCallbackRequest request
+    ) {
+        AuthProvider authProvider = parseProvider(provider);
+        return ApiResponse.ok(oauthLoginService.login(authProvider, request.code()));
     }
 
     // AUTH-02: 로그인
