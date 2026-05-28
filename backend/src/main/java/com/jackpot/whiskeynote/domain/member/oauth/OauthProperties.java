@@ -10,6 +10,7 @@ public record OauthProperties(
 ) {
     public record Provider(
             String clientId,
+            String clientSecret,
             String redirectUri
     ) {
     }

@@ -40,4 +40,9 @@ export const authApi = {
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout');
   },
+
+  oauthCallback: async (provider: string, code: string): Promise<AuthData> => {
+    const res = await apiClient.post<ApiResponse<AuthData>>(`/auth/oauth/${provider}/callback`, { code });
+    return unwrapApiData(res.data);
+  },
 };

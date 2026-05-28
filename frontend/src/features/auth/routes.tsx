@@ -25,4 +25,15 @@ export const routes: FeatureRoute[] = [
       apiIds: ['AUTH-01'],
     },
   },
+  {
+    path: PATHS.OAUTH_CALLBACK,
+    Component: lazy(() => import('./pages/OauthCallbackPage')),
+    layout: 'guest',
+    meta: {
+      screenId: '02-oauth-callback',
+      title: 'OAuth callback',
+      phase: 'MVP',
+      apiIds: ['AUTH-03'],
+    },
+  },
 ];

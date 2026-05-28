@@ -42,10 +42,13 @@ aws:
 oauth:
   google:
     client-id: test-google-client-id
+    client-secret: test-google-client-secret
     redirect-uri: http://localhost/test/oauth/google/callback
   kakao:
     client-id: test-kakao-client-id
+    client-secret: test-kakao-client-secret
     redirect-uri: http://localhost/test/oauth/kakao/callback
   naver:
     client-id: test-naver-client-id
+    client-secret: test-naver-client-secret
     redirect-uri: http://localhost/test/oauth/naver/callback

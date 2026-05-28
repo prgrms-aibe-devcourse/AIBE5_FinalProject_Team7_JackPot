@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class OauthRedirectService {
@@ -70,7 +68,8 @@ public class OauthRedirectService {
     }
 
     private static String randomState() {
-        return UUID.randomUUID().toString();
+        // MVP: state 검증까지 구현되지 않아 고정값 사용
+        return "state";
     }
 
     private static boolean isBlank(String s) {

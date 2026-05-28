@@ -3,6 +3,7 @@ export const PATHS = {
   LANDING: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  OAUTH_CALLBACK: '/oauth/:provider/callback',
   ONBOARDING: '/onboarding',
   SURVEY: '/survey',
   RECOMMEND: '/recommend',

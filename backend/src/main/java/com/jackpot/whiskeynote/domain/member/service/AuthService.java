@@ -39,6 +39,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final TokenIssuer tokenIssuer;
 
     // ── 회원가입 (AUTH-01) ──────────────────────────────
     @Transactional
@@ -66,7 +67,7 @@ public class AuthService {
         Users savedUser = usersRepository.save(user);
 
         // 토큰 발급 및 MySQL 저장
-        return issueTokens(savedUser);
+        return tokenIssuer.issueTokens(savedUser);
     }
 
     // ── 로그인 (AUTH-02) ──────────────────────────────
@@ -86,7 +87,7 @@ public class AuthService {
         user.updateLastLoginAt();
 
         // 토큰 발급 및 MySQL 저장
-        return issueTokens(user);
+        return tokenIssuer.issueTokens(user);
     }
 
     // ── 로그아웃 (AUTH-05) ──────────────────────────────
@@ -127,30 +128,4 @@ public class AuthService {
         );
     }
 
-    // ── 내부 공통: 토큰 발급 + MySQL 저장 ──────────────
-    private TokenResponse issueTokens(Users user) {
-        String accessToken  = jwtProvider.createAccessToken(user.getId(), user.getRole().name());
-        String refreshToken = jwtProvider.createRefreshToken(user.getId());
-
-        // 만료 시각 계산 (현재 시각 + 14일)
-        LocalDateTime expiresAt = LocalDateTime.now()
-                .plusSeconds(jwtProvider.getRefreshTokenExpiryMs() / 1000);
-
-        // 기존 RefreshToken이 있으면 갱신, 없으면 새로 저장
-        RefreshToken tokenEntity = refreshTokenRepository.findByUserId(user.getId())
-                .map(existing -> {
-                    existing.updateToken(refreshToken, expiresAt);
-                    return existing;
-                })
-                .orElseGet(() -> RefreshToken.builder()
-                        .userId(user.getId())
-                        .token(refreshToken)
-                        .expiresAt(expiresAt)
-                        .build()
-                );
-
-        refreshTokenRepository.saveAndFlush(tokenEntity);
-
-        return new TokenResponse(accessToken, refreshToken, user.getId(), user.isNewUser(), user.getNickname(), user.getProfileImageUrl());
-    }
 }

@@ -1,0 +1,76 @@
+package com.jackpot.whiskeynote.domain.member.oauth;
+
+import com.jackpot.whiskeynote.domain.member.dto.TokenResponse;
+import com.jackpot.whiskeynote.domain.member.entity.AuthProvider;
+import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.domain.member.service.TokenIssuer;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class OauthLoginService {
+
+    private static final LocalDate PLACEHOLDER_BIRTHDAY = LocalDate.of(1900, 1, 1);
+
+    private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenIssuer tokenIssuer;
+    private final List<OauthClient> oauthClients;
+
+    @Transactional
+    public TokenResponse login(AuthProvider provider, String code) {
+        OauthClient client = oauthClients.stream()
+                .filter(c -> c.provider() == provider)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 provider 입니다."));
+
+        OauthUserInfo userInfo = client.fetchUserInfo(code);
+        if (userInfo == null || isBlank(userInfo.providerUserId())) {
+            throw new IllegalStateException("OAuth 사용자 정보 조회에 실패했습니다.");
+        }
+
+        Users user = usersRepository.findByAuthProviderAndProviderId(provider, userInfo.providerUserId())
+                .orElseGet(() -> createUser(provider, userInfo));
+
+        return tokenIssuer.issueTokens(user);
+    }
+
+    private Users createUser(AuthProvider provider, OauthUserInfo userInfo) {
+        String nickname = normalizeNickname(userInfo.nickname());
+        while (usersRepository.existsByNickname(nickname)) {
+            nickname = nickname + "_" + UUID.randomUUID().toString().substring(0, 6);
+        }
+
+        Users user = Users.builder()
+                .email(userInfo.email())
+                .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .authProvider(provider)
+                .providerId(userInfo.providerUserId())
+                .nickname(nickname)
+                .birthday(PLACEHOLDER_BIRTHDAY)
+                .build();
+
+        return usersRepository.save(user);
+    }
+
+    private static String normalizeNickname(String nickname) {
+        if (isBlank(nickname)) {
+            return "user_" + UUID.randomUUID().toString().substring(0, 8);
+        }
+        return nickname.trim();
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+}
+
