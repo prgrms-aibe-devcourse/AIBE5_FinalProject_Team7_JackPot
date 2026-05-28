@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.member.dto;
 
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,10 @@ import lombok.Setter;
 public class UpdateUserMeRequest {
 
     @Size(min = 2, max = 20, message = "닉네임은 2자 이상 20자 이하여야 합니다.")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9가-힣_]+$",
+            message = "닉네임은 한글/영문/숫자/_(언더스코어)만 사용할 수 있습니다."
+    )
     private String nickname;
 
     /**
@@ -23,7 +28,12 @@ public class UpdateUserMeRequest {
     private String profileImageUrl;
 
     /**
-     * API 명세에 존재하나 현재 RDS(users)에 컬럼이 없어 MVP에서는 저장을 보류한다.
+     * 보틀 공유 참여 여부
      */
     private Boolean bottleShareOptIn;
+
+    /**
+     * 마케팅 수신 동의 여부
+     */
+    private Boolean marketingOptIn;
 }

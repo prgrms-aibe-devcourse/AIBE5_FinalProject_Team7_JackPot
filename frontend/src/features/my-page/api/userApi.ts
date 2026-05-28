@@ -6,6 +6,8 @@ export interface UserMeDto {
   email: string;
   nickname: string;
   profileImageUrl: string | null;
+  bottleShareOptIn: boolean;
+  marketingOptIn: boolean;
   flavorProfile: unknown | null;
 }
 
@@ -14,6 +16,7 @@ export interface UpdateUserMeRequest {
   /** S3 object key (profiles/{userId}/...) */
   profileImageUrl?: string | null;
   bottleShareOptIn?: boolean | null;
+  marketingOptIn?: boolean | null;
 }
 
 export async function getMe(): Promise<UserMeDto> {

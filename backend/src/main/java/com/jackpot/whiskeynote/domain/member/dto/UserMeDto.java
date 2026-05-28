@@ -9,6 +9,8 @@ public record UserMeDto(
         String email,
         String nickname,
         String profileImageUrl,
+        boolean bottleShareOptIn,
+        boolean marketingOptIn,
         Object flavorProfile
 ) {
     public static UserMeDto from( com.jackpot.whiskeynote.domain.member.entity.Users user) {
@@ -17,6 +19,8 @@ public record UserMeDto(
                 user.getEmail(),
                 user.getNickname(),
                 user.getProfileImageUrl(),
+                user.isBottleShareOptIn(),
+                user.isMarketingOptIn(),
                 null
         );
     }
