@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 public record WhiskeyReviewResponse(
         Long id,
         Long userId,
+        Long whiskeyId,
+        String whiskeyName,
         String nickname,
         String profileImageUrl,
         BigDecimal rating,
@@ -20,6 +22,8 @@ public record WhiskeyReviewResponse(
         return new WhiskeyReviewResponse(
                 review.getId(),
                 review.getUser().getId(),
+                review.getWhiskey().getId(),
+                review.getWhiskey().getName(),
                 review.getUser().getNickname(),
                 review.getUser().getProfileImageUrl(),
                 review.getRating(),

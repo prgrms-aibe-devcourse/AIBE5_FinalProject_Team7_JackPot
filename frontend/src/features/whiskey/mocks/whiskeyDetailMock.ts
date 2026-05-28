@@ -74,6 +74,8 @@ export const MOCK_WHISKEY_REVIEWS: PageResponse<WhiskeyReview> = {
     {
       id: 1,
       userId: 1,
+      whiskeyId: 1,
+      whiskeyName: 'Glenfiddich 12',
       nickname: '민구',
       profileImageUrl: null,
       rating: 4.5,
@@ -85,6 +87,8 @@ export const MOCK_WHISKEY_REVIEWS: PageResponse<WhiskeyReview> = {
     {
       id: 2,
       userId: 2,
+      whiskeyId: 1,
+      whiskeyName: 'Glenfiddich 12',
       nickname: 'WhiskyNote',
       profileImageUrl: null,
       rating: 4.0,
