@@ -60,7 +60,7 @@ public class GoogleOauthClient implements OauthClient {
 
     private static OauthProperties.Provider require(OauthProperties.Provider provider, String name) {
         if (provider == null || isBlank(provider.clientId()) || isBlank(provider.redirectUri())) {
-            throw new IllegalStateException("OAuth 설정이 누락되었습니다: oauth." + name + ".client-id / client-secret / redirect-uri");
+            throw new IllegalStateException("OAuth 설정이 누락되었습니다: oauth." + name + ".client-id / redirect-uri");
         }
         return provider;
     }
