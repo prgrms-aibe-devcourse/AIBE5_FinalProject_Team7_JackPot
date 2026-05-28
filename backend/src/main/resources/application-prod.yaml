@@ -11,3 +11,14 @@ spring:
 aws:
   s3:
     bucket: ${AWS_S3_BUCKET:team7-whiskeynote-images}
+
+oauth:
+  google:
+    client-id: ${OAUTH_GOOGLE_CLIENT_ID:}
+    redirect-uri: ${OAUTH_GOOGLE_REDIRECT_URI:}
+  kakao:
+    client-id: ${OAUTH_KAKAO_CLIENT_ID:}
+    redirect-uri: ${OAUTH_KAKAO_REDIRECT_URI:}
+  naver:
+    client-id: ${OAUTH_NAVER_CLIENT_ID:}
+    redirect-uri: ${OAUTH_NAVER_REDIRECT_URI:}
