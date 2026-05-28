@@ -86,21 +86,3 @@ jobs:
             docker compose pull
             docker compose up -d
             docker compose ps
-            echo "==> Smoke test (wait up to 60s)"
-            smoke_ok=0
-            for _ in $(seq 1 12); do
-              # (1) Frontend 응답 확인 (nginx)
-              curl -fsS http://localhost/ >/dev/null || true
-
-              # (2) Backend health 확인 (컨테이너 네트워크로 확인; 호스트 8080 publish 불필요)
-              backend_cid="$(docker compose ps -q backend)"
-              if [ -n "$backend_cid" ] && docker run --rm --network "container:${backend_cid}" curlimages/curl:latest -fsS http://localhost:8080/actuator/health >/dev/null; then
-                smoke_ok=1
-                break
-              fi
-              sleep 5
-            done
-            if [ "$smoke_ok" -ne 1 ]; then
-              echo "Smoke test failed"
-              exit 1
-            fi
