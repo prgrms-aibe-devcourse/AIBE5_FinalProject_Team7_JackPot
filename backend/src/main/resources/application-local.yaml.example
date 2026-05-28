@@ -35,4 +35,15 @@ spring:
 #
 # jwt:
 #   secret: your_jwt_secret_key
+# 
+# oauth:
+#   google:
+#     client-id: your_google_client_id
+#     redirect-uri: http://localhost:3000/oauth/google/callback
+#   kakao:
+#     client-id: your_kakao_client_id
+#     redirect-uri: http://localhost:3000/oauth/kakao/callback
+#   naver:
+#     client-id: your_naver_client_id
+#     redirect-uri: http://localhost:3000/oauth/naver/callback
 # --------------------------------------------------

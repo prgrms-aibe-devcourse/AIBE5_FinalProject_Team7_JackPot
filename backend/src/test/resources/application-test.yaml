@@ -38,3 +38,14 @@ aws:
     bucket: test-bucket
     presign-duration-minutes: 10
     max-size-bytes: 5242880
+
+oauth:
+  google:
+    client-id: test-google-client-id
+    redirect-uri: http://localhost/test/oauth/google/callback
+  kakao:
+    client-id: test-kakao-client-id
+    redirect-uri: http://localhost/test/oauth/kakao/callback
+  naver:
+    client-id: test-naver-client-id
+    redirect-uri: http://localhost/test/oauth/naver/callback
