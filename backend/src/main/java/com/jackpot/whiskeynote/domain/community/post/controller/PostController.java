@@ -5,9 +5,11 @@ import com.jackpot.whiskeynote.domain.community.post.dto.PostDetailDto;
 import com.jackpot.whiskeynote.domain.community.post.dto.PostSummaryResponse;
 import com.jackpot.whiskeynote.domain.community.post.dto.PostUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.post.service.PostService;
+import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +20,13 @@ public class PostController {
 
     private final PostService postService;
 
-    // POST-01: 글 상세
+    // POST-01: 글 상세 (비로그인 시 isLiked=false, isOwner=false)
     @GetMapping("/api/v1/posts/{postId}")
     public PostDetailDto getPost(
             @PathVariable Long postId,
-            @RequestParam(required = false) Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
+        Long userId = principal != null ? principal.userId() : null;
         return postService.getPost(postId, userId);
     }
 
@@ -31,20 +34,20 @@ public class PostController {
     @PostMapping("/api/v1/posts")
     @ResponseStatus(HttpStatus.CREATED)
     public Long createPost(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody PostCreateRequest request
     ) {
-        return postService.createPost(userId, request);
+        return postService.createPost(principal.userId(), request);
     }
 
     // POST-03: 글 수정
     @PatchMapping("/api/v1/posts/{postId}")
     public PostDetailDto updatePost(
             @PathVariable Long postId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody PostUpdateRequest request
     ) {
-        return postService.updatePost(userId, postId, request);
+        return postService.updatePost(principal.userId(), postId, request);
     }
 
     // POST-04: 글 삭제 (soft)
@@ -52,9 +55,9 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        postService.deletePost(userId, postId);
+        postService.deletePost(principal.userId(), postId);
     }
 
     // POST-05: 글 좋아요
@@ -62,9 +65,9 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public void likePost(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        postService.likePost(userId, postId);
+        postService.likePost(principal.userId(), postId);
     }
 
     // POST-06: 글 좋아요 취소
@@ -72,9 +75,9 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unlikePost(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        postService.unlikePost(userId, postId);
+        postService.unlikePost(principal.userId(), postId);
     }
 
     // WH-02-1: 위스키 관련 게시글 (좋아요 순 최대 3개)

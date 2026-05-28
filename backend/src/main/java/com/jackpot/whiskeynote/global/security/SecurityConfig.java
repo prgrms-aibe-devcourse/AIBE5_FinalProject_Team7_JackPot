@@ -43,6 +43,24 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/logout").authenticated()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/uploads/**").authenticated()
+                        // 커뮤니티 쓰기 (인증 필수)
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/posts",
+                                "/api/v1/posts/*/comments",
+                                "/api/v1/posts/*/likes"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.PATCH,
+                                "/api/v1/posts/*",
+                                "/api/v1/comments/*"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/posts/*",
+                                "/api/v1/posts/*/likes",
+                                "/api/v1/comments/*"
+                        ).authenticated()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
