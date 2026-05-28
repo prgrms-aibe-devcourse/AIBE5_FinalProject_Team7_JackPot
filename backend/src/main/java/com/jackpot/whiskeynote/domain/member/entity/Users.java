@@ -128,4 +128,13 @@ public class Users {
     public void completeOnboarding() {
         this.newUser = false;
     }
+
+    // USER-04: 탈퇴(소프트 삭제)
+    public void withdraw() {
+        if (this.isDeleted) {
+            return;
+        }
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

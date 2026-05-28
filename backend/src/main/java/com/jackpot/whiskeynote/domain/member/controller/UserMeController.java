@@ -43,5 +43,13 @@ public class UserMeController {
         Long userId = extractUserId(authHeader);
         return ApiResponse.ok(userMeService.updateMe(userId, request));
     }
+
+    // USER-04: 탈퇴
+    @DeleteMapping("/me")
+    public ApiResponse<Void> deleteMe(@RequestHeader("Authorization") String authHeader) {
+        Long userId = extractUserId(authHeader);
+        userMeService.deleteMe(userId);
+        return ApiResponse.ok(null);
+    }
 }
 
