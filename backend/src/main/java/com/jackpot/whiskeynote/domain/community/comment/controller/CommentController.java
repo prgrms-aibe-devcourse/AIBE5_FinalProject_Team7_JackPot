@@ -2,6 +2,7 @@ package com.jackpot.whiskeynote.domain.community.comment.controller;
 
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentCreateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentTreeResponse;
+import com.jackpot.whiskeynote.domain.community.comment.dto.CommentUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +42,16 @@ public class CommentController {
             @RequestParam Long userId
     ) {
         commentService.deleteComment(userId, commentId);
+    }
+
+    // CMT-04: 댓글 수정
+    @PatchMapping("/api/v1/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateComment(
+            @PathVariable Long commentId,
+            @RequestParam Long userId,
+            @Valid @RequestBody CommentUpdateRequest request
+    ) {
+        commentService.updateComment(userId, commentId, request);
     }
 }

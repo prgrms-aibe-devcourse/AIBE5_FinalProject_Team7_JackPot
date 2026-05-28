@@ -70,6 +70,12 @@ export async function searchWhiskeys(params: WhiskeySearchParams): Promise<PageR
   return data;
 }
 
+/** GET /api/v1/whiskeys/{id} - 위스키 단건 조회 */
+export async function fetchWhiskeyById(id: number): Promise<WhiskeyCard> {
+  const { data } = await apiClient.get<WhiskeyCard>(`/whiskeys/${id}`);
+  return data;
+}
+
 /** GET /api/v1/whiskeys/filter - 키워드와 사이드바 필터 조합 검색 */
 export async function filterWhiskeys(params: WhiskeyFilterParams): Promise<PageResponse<WhiskeyCard>> {
   const { data } = await apiClient.get<PageResponse<WhiskeyCard>>('/whiskeys/filter', {

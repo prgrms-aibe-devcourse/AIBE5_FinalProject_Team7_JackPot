@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
+import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
 import {
   useComments,
   useCreateComment,
   useDeleteComment,
+  useUpdateComment,
   useLikePost,
   usePost,
 } from '../hooks/useCommunity';
@@ -31,9 +33,18 @@ export default function PostDetailPage() {
   const likeMutation = useLikePost(numericId!, DEMO_USER_ID);
   const createCommentMutation = useCreateComment(numericId!, DEMO_USER_ID);
   const deleteCommentMutation = useDeleteComment(numericId!, DEMO_USER_ID);
+  const updateCommentMutation = useUpdateComment(numericId!, DEMO_USER_ID);
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
+  const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
+
+  useEffect(() => {
+    if (!post?.whiskeyIds?.length) return;
+    Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
+      .then(setLinkedWhiskeys)
+      .catch(() => {});
+  }, [post?.whiskeyIds]);
 
   if (isLoading) {
     return (
@@ -101,13 +112,22 @@ export default function PostDetailPage() {
             </button>
             <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
             {post.isOwner && (
-              <button
-                className="wf-chip"
-                style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
-                onClick={handleDelete}
-              >
-                삭제
-              </button>
+              <>
+                <button
+                  className="wf-chip"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+                  onClick={() => navigate(`/community/posts/${post.id}/edit`)}
+                >
+                  수정
+                </button>
+                <button
+                  className="wf-chip"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
+                  onClick={handleDelete}
+                >
+                  삭제
+                </button>
+              </>
             )}
           </div>
         </header>
@@ -126,6 +146,24 @@ export default function PostDetailPage() {
             {post.context}
           </div>
         )}
+
+        {linkedWhiskeys.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <p className="wf-text-xs" style={{ color: '#888', marginBottom: 6 }}>관련 위스키</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {linkedWhiskeys.map((w) => (
+                <Link
+                  key={w.id}
+                  to={`/whiskey/${w.id}`}
+                  className="wf-chip"
+                  style={{ textDecoration: 'none', fontSize: 13 }}
+                >
+                  {w.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </article>
 
       <section>
@@ -137,6 +175,7 @@ export default function PostDetailPage() {
             comments={comments}
             onReply={(parentId) => setReplyToId(parentId)}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
+            onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
             currentUserId={DEMO_USER_ID}
           />
         )}

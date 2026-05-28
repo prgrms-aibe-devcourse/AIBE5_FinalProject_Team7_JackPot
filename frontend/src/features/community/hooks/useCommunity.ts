@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createComment,
   deleteComment,
+  updateComment,
   fetchColumns,
   fetchComments,
   fetchFreePosts,
@@ -78,6 +79,15 @@ export function useDeleteComment(postId: number, userId: number) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (commentId: number) => deleteComment(userId, commentId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.comments(postId) }),
+  });
+}
+
+export function useUpdateComment(postId: number, userId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ commentId, content }: { commentId: number; content: string }) =>
+      updateComment(userId, commentId, content),
     onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.comments(postId) }),
   });
 }

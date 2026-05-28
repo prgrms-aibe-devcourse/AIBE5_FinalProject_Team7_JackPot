@@ -2,11 +2,14 @@ package com.jackpot.whiskeynote.domain.community.comment.service;
 
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentCreateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentTreeResponse;
+import com.jackpot.whiskeynote.domain.community.comment.dto.CommentUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.entity.PostComment;
 import com.jackpot.whiskeynote.domain.community.comment.entity.PostCommentTree;
 import com.jackpot.whiskeynote.domain.community.comment.repository.PostCommentRepository;
 import com.jackpot.whiskeynote.domain.community.comment.repository.PostCommentTreeRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
+import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ public class CommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostCommentTreeRepository postCommentTreeRepository;
     private final PostRepository postRepository;
+    private final UsersRepository usersRepository;
 
     // CMT-01: 댓글 목록 (tree)
     @Transactional(readOnly = true)
@@ -45,13 +49,20 @@ public class CommentService {
         Map<Long, PostComment> commentMap = allComments.stream()
                 .collect(Collectors.toMap(PostComment::getId, c -> c));
 
+        Set<Long> userIds = allComments.stream()
+                .filter(c -> !c.isDeleted())
+                .map(PostComment::getUserId)
+                .collect(Collectors.toSet());
+        Map<Long, String> nicknameMap = usersRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(Users::getId, Users::getNickname));
+
         Set<Long> childIds = parentToChildren.values().stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
 
         return allComments.stream()
                 .filter(c -> !childIds.contains(c.getId()))
-                .map(c -> buildTree(c, parentToChildren, commentMap))
+                .map(c -> buildTree(c, parentToChildren, commentMap, nicknameMap))
                 .toList();
     }
 
@@ -96,15 +107,31 @@ public class CommentService {
         comment.softDelete();
     }
 
+    // CMT-04: 댓글 수정
+    @Transactional
+    public void updateComment(Long userId, Long commentId, CommentUpdateRequest request) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
+        if (comment.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제된 댓글입니다.");
+        }
+        if (!comment.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+        }
+        comment.update(request.content());
+    }
+
     private CommentTreeResponse buildTree(PostComment comment,
                                           Map<Long, List<Long>> parentToChildren,
-                                          Map<Long, PostComment> commentMap) {
+                                          Map<Long, PostComment> commentMap,
+                                          Map<Long, String> nicknameMap) {
         List<CommentTreeResponse> replies = parentToChildren
                 .getOrDefault(comment.getId(), List.of())
                 .stream()
-                .map(childId -> buildTree(commentMap.get(childId), parentToChildren, commentMap))
+                .map(childId -> buildTree(commentMap.get(childId), parentToChildren, commentMap, nicknameMap))
                 .toList();
-        return CommentTreeResponse.from(comment, replies);
+        String nickname = nicknameMap.get(comment.getUserId());
+        return CommentTreeResponse.from(comment, nickname, replies);
     }
 
     private void validatePostExists(Long postId) {
