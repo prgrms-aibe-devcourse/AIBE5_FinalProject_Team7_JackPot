@@ -1,12 +1,14 @@
 package com.jackpot.whiskeynote.domain.member.controller;
 
 import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
+import com.jackpot.whiskeynote.domain.member.dto.UpdateMyPasswordRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
 import com.jackpot.whiskeynote.domain.member.service.UserMeService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +39,15 @@ public class UserMeController {
     public ApiResponse<Void> deleteMe(@AuthenticationPrincipal JwtUserPrincipal principal) {
         userMeService.deleteMe(principal.userId());
         return ApiResponse.ok(null);
+    }
+
+    // SET-01: 비밀번호 변경
+    @PatchMapping("/me/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateMyPassword(
+            @AuthenticationPrincipal JwtUserPrincipal principal,
+            @Valid @RequestBody UpdateMyPasswordRequest request
+    ) {
+        userMeService.updateMyPassword(principal.userId(), request);
     }
 }
