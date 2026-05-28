@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
+import { isLoggedIn, getStoredUserId } from '@/shared/lib/authSession';
 import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
@@ -16,8 +17,6 @@ import {
 } from '../hooks/useCommunity';
 import { POST_CATEGORY_LABEL } from '../types';
 
-const DEMO_USER_ID = 1;
-
 function formatDate(iso: string): string {
   return iso.slice(0, 16).replace('T', ' ');
 }
@@ -27,13 +26,13 @@ export default function PostDetailPage() {
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
-  const { data: post, isLoading, isError } = usePost(numericId, DEMO_USER_ID);
+  const { data: post, isLoading, isError } = usePost(numericId);
   const { data: comments = [], isLoading: commentsLoading } = useComments(numericId);
 
-  const likeMutation = useLikePost(numericId!, DEMO_USER_ID);
-  const createCommentMutation = useCreateComment(numericId!, DEMO_USER_ID);
-  const deleteCommentMutation = useDeleteComment(numericId!, DEMO_USER_ID);
-  const updateCommentMutation = useUpdateComment(numericId!, DEMO_USER_ID);
+  const likeMutation = useLikePost(numericId!);
+  const createCommentMutation = useCreateComment(numericId!);
+  const deleteCommentMutation = useDeleteComment(numericId!);
+  const updateCommentMutation = useUpdateComment(numericId!);
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
@@ -64,12 +63,21 @@ export default function PostDetailPage() {
 
   async function handleDelete() {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
-    await deletePost(DEMO_USER_ID, post!.id);
+    await deletePost(post!.id);
     navigate(PATHS.COMMUNITY);
+  }
+
+  function requireLogin(action: () => void) {
+    if (!isLoggedIn()) {
+      navigate(PATHS.LOGIN);
+      return;
+    }
+    action();
   }
 
   async function handleSubmitComment(e: React.FormEvent) {
     e.preventDefault();
+    if (!isLoggedIn()) { navigate(PATHS.LOGIN); return; }
     if (!commentText.trim()) return;
     await createCommentMutation.mutateAsync({
       content: commentText.trim(),
@@ -105,7 +113,7 @@ export default function PostDetailPage() {
             <button
               className="wf-chip"
               style={{ cursor: 'pointer', border: 'none', background: 'none' }}
-              onClick={() => likeMutation.mutate(post.isLiked)}
+              onClick={() => requireLogin(() => likeMutation.mutate(post.isLiked))}
               disabled={likeMutation.isPending}
             >
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
@@ -173,10 +181,10 @@ export default function PostDetailPage() {
         ) : (
           <CommentThread
             comments={comments}
-            onReply={(parentId) => setReplyToId(parentId)}
+            onReply={(parentId) => requireLogin(() => setReplyToId(parentId))}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
             onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
-            currentUserId={DEMO_USER_ID}
+            currentUserId={getStoredUserId() ?? undefined}
           />
         )}
 
@@ -200,7 +208,7 @@ export default function PostDetailPage() {
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="댓글을 입력하세요…"
+              placeholder={isLoggedIn() ? '댓글을 입력하세요…' : '로그인 후 댓글을 작성할 수 있어요'}
               rows={3}
               style={{
                 flex: 1,
