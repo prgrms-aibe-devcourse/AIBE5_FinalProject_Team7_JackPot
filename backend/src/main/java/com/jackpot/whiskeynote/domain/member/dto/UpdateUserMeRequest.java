@@ -21,9 +21,4 @@ public class UpdateUserMeRequest {
      */
     @Size(max = 255, message = "프로필 이미지 경로가 너무 깁니다.")
     private String profileImageUrl;
-
-    /**
-     * API 명세에 존재하나 현재 RDS(users)에 컬럼이 없어 MVP에서는 저장을 보류한다.
-     */
-    private Boolean bottleShareOptIn;
 }

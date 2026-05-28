@@ -29,8 +29,11 @@ public class UserMeService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        if (request.getNickname() != null && !request.getNickname().trim().isEmpty()) {
+        if (request.getNickname() != null) {
             String newNickname = request.getNickname().trim();
+            if (newNickname.isEmpty()) {
+                throw new IllegalArgumentException("닉네임은 비어있을 수 없습니다.");
+            }
             if (!newNickname.equals(user.getNickname()) && usersRepository.existsByNickname(newNickname)) {
                 throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
             }
@@ -46,8 +49,6 @@ public class UserMeService {
                 user.updateProfileImageUrl(key);
             }
         }
-
-        // bottleShareOptIn: MVP에서는 저장 보류 (스키마 확정 후 반영)
 
         return UserMeDto.from(user);
     }

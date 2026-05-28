@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,9 +56,7 @@ class UserMeControllerTest {
         usersRepository.deleteAll();
     }
 
-    @Test
-    @DisplayName("USER-04 | 회원 탈퇴 성공 → 200 + RefreshToken 삭제 + isDeleted=true")
-    void deleteMe_success() {
+    private String registerAndLoginAccessToken() {
         // register
         authClient.post()
                 .uri("/register")
@@ -80,8 +79,42 @@ class UserMeControllerTest {
                 .retrieve()
                 .toEntity(Map.class);
 
-        Map<String, Object> loginBody = loginRes.getBody();
+        Map<String, Object> loginBody = Objects.requireNonNull(loginRes.getBody());
         Map<String, Object> data = (Map<String, Object>) loginBody.get("data");
+        return (String) data.get("accessToken");
+    }
+
+    private Map<String, Object> registerAndLogin() {
+        // register
+        authClient.post()
+                .uri("/register")
+                .body(Map.of(
+                        "email", TEST_EMAIL,
+                        "password", TEST_PASSWORD,
+                        "nickname", TEST_NICKNAME,
+                        "birthday", TEST_BIRTHDAY
+                ))
+                .retrieve()
+                .toBodilessEntity();
+
+        // login
+        ResponseEntity<Map> loginRes = authClient.post()
+                .uri("/login")
+                .body(Map.of(
+                        "email", TEST_EMAIL,
+                        "password", TEST_PASSWORD
+                ))
+                .retrieve()
+                .toEntity(Map.class);
+
+        Map<String, Object> loginBody = Objects.requireNonNull(loginRes.getBody());
+        return (Map<String, Object>) loginBody.get("data");
+    }
+
+    @Test
+    @DisplayName("USER-04 | 회원 탈퇴 성공 → 200 + RefreshToken 삭제 + isDeleted=true")
+    void deleteMe_success() {
+        Map<String, Object> data = registerAndLogin();
         String accessToken = (String) data.get("accessToken");
         Number userIdNum = (Number) data.get("userId");
         long userId = userIdNum.longValue();

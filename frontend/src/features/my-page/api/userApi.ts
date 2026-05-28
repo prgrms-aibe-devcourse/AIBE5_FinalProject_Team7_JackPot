@@ -13,7 +13,6 @@ export interface UpdateUserMeRequest {
   nickname?: string | null;
   /** S3 object key (profiles/{userId}/...) */
   profileImageUrl?: string | null;
-  bottleShareOptIn?: boolean | null;
 }
 
 export async function getMe(): Promise<UserMeDto> {
