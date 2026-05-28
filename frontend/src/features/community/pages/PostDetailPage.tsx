@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
+import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
 import {
@@ -36,6 +37,14 @@ export default function PostDetailPage() {
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
+  const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
+
+  useEffect(() => {
+    if (!post?.whiskeyIds?.length) return;
+    Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
+      .then(setLinkedWhiskeys)
+      .catch(() => {});
+  }, [post?.whiskeyIds]);
 
   if (isLoading) {
     return (
@@ -135,6 +144,24 @@ export default function PostDetailPage() {
             style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
           >
             {post.context}
+          </div>
+        )}
+
+        {linkedWhiskeys.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <p className="wf-text-xs" style={{ color: '#888', marginBottom: 6 }}>관련 위스키</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {linkedWhiskeys.map((w) => (
+                <Link
+                  key={w.id}
+                  to={`/whiskey/${w.id}`}
+                  className="wf-chip"
+                  style={{ textDecoration: 'none', fontSize: 13 }}
+                >
+                  {w.name}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </article>

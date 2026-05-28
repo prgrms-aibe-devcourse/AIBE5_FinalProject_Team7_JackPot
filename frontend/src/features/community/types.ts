@@ -40,6 +40,7 @@ export interface PostDetailDto {
 export interface CommentTreeResponse {
   id: number;
   userId: number | null;
+  nickname: string | null;
   content: string;
   isDeleted: boolean;
   createdAt: string;
