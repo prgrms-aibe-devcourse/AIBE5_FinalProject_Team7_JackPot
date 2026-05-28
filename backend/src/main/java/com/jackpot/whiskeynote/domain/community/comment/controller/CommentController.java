@@ -4,7 +4,6 @@ import com.jackpot.whiskeynote.domain.community.comment.dto.CommentCreateRequest
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentTreeResponse;
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.service.CommentService;
-import com.jackpot.whiskeynote.global.security.SecurityUserAccessor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,16 +28,20 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long createComment(
             @PathVariable Long postId,
+            @RequestParam Long userId,
             @Valid @RequestBody CommentCreateRequest request
     ) {
-        return commentService.createComment(SecurityUserAccessor.requireUserId(), postId, request);
+        return commentService.createComment(userId, postId, request);
     }
 
     // CMT-03: 댓글 삭제 (soft)
     @DeleteMapping("/api/v1/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(SecurityUserAccessor.requireUserId(), commentId);
+    public void deleteComment(
+            @PathVariable Long commentId,
+            @RequestParam Long userId
+    ) {
+        commentService.deleteComment(userId, commentId);
     }
 
     // CMT-04: 댓글 수정
@@ -46,8 +49,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateComment(
             @PathVariable Long commentId,
+            @RequestParam Long userId,
             @Valid @RequestBody CommentUpdateRequest request
     ) {
-        commentService.updateComment(SecurityUserAccessor.requireUserId(), commentId, request);
+        commentService.updateComment(userId, commentId, request);
     }
 }

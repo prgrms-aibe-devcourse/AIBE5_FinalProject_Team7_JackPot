@@ -42,31 +42,39 @@ export async function fetchNotices(page = 0, size = 10): Promise<SpringPage<Post
   return data;
 }
 
-export async function fetchPost(postId: number): Promise<PostDetailDto> {
-  const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`);
+export async function fetchPost(postId: number, userId?: number): Promise<PostDetailDto> {
+  const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`, {
+    params: userId != null ? { userId } : {},
+  });
   return data;
 }
 
-export async function createPost(body: PostCreateRequest): Promise<number> {
-  const { data } = await apiClient.post<number>('/posts', body);
+export async function createPost(userId: number, body: PostCreateRequest): Promise<number> {
+  const { data } = await apiClient.post<number>('/posts', body, { params: { userId } });
   return data;
 }
 
-export async function updatePost(postId: number, body: PostUpdateRequest): Promise<PostDetailDto> {
-  const { data } = await apiClient.patch<PostDetailDto>(`/posts/${postId}`, body);
+export async function updatePost(
+  userId: number,
+  postId: number,
+  body: PostUpdateRequest,
+): Promise<PostDetailDto> {
+  const { data } = await apiClient.patch<PostDetailDto>(`/posts/${postId}`, body, {
+    params: { userId },
+  });
   return data;
 }
 
-export async function deletePost(postId: number): Promise<void> {
-  await apiClient.delete(`/posts/${postId}`);
+export async function deletePost(userId: number, postId: number): Promise<void> {
+  await apiClient.delete(`/posts/${postId}`, { params: { userId } });
 }
 
-export async function likePost(postId: number): Promise<void> {
-  await apiClient.post(`/posts/${postId}/likes`);
+export async function likePost(userId: number, postId: number): Promise<void> {
+  await apiClient.post(`/posts/${postId}/likes`, null, { params: { userId } });
 }
 
-export async function unlikePost(postId: number): Promise<void> {
-  await apiClient.delete(`/posts/${postId}/likes`);
+export async function unlikePost(userId: number, postId: number): Promise<void> {
+  await apiClient.delete(`/posts/${postId}/likes`, { params: { userId } });
 }
 
 export async function fetchComments(postId: number): Promise<CommentTreeResponse[]> {
@@ -74,14 +82,18 @@ export async function fetchComments(postId: number): Promise<CommentTreeResponse
   return data;
 }
 
-export async function createComment(postId: number, body: CommentCreateRequest): Promise<void> {
-  await apiClient.post(`/posts/${postId}/comments`, body);
+export async function createComment(
+  userId: number,
+  postId: number,
+  body: CommentCreateRequest,
+): Promise<void> {
+  await apiClient.post(`/posts/${postId}/comments`, body, { params: { userId } });
 }
 
-export async function deleteComment(commentId: number): Promise<void> {
-  await apiClient.delete(`/comments/${commentId}`);
+export async function deleteComment(userId: number, commentId: number): Promise<void> {
+  await apiClient.delete(`/comments/${commentId}`, { params: { userId } });
 }
 
-export async function updateComment(commentId: number, content: string): Promise<void> {
-  await apiClient.patch(`/comments/${commentId}`, { content });
+export async function updateComment(userId: number, commentId: number, content: string): Promise<void> {
+  await apiClient.patch(`/comments/${commentId}`, { content }, { params: { userId } });
 }

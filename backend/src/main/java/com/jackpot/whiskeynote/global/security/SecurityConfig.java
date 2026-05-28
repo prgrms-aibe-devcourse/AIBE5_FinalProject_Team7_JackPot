@@ -2,7 +2,6 @@ package com.jackpot.whiskeynote.global.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,8 +12,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * JWT 기반 stateless 인증.
- * - 공개: auth(register/login/refresh), 위스키/커뮤니티 조회, media GET
- * - 인증 필요: 그 외 /api/v1/**
+ * - 로그인/회원 도메인 위주로 적용: users/**, uploads/**, auth/logout
+ * - 그 외 API는 기존 동작을 깨지 않도록 기본 permitAll 유지
  */
 @Configuration
 @EnableWebSecurity
@@ -41,15 +40,12 @@ public class SecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/whiskeys/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/*/comments").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/media").permitAll()
+                        .requestMatchers("/api/v1/auth/logout").authenticated()
+                        .requestMatchers("/api/v1/users/**").authenticated()
+                        .requestMatchers("/api/v1/uploads/**").authenticated()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))

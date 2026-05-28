@@ -14,8 +14,9 @@ import {
   useLikePost,
   usePost,
 } from '../hooks/useCommunity';
-import { getStoredUserId } from '@/shared/lib/authSession';
 import { POST_CATEGORY_LABEL } from '../types';
+
+const DEMO_USER_ID = 1;
 
 function formatDate(iso: string): string {
   return iso.slice(0, 16).replace('T', ' ');
@@ -26,15 +27,13 @@ export default function PostDetailPage() {
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
-  const currentUserId = getStoredUserId();
-
-  const { data: post, isLoading, isError } = usePost(numericId);
+  const { data: post, isLoading, isError } = usePost(numericId, DEMO_USER_ID);
   const { data: comments = [], isLoading: commentsLoading } = useComments(numericId);
 
-  const likeMutation = useLikePost(numericId!);
-  const createCommentMutation = useCreateComment(numericId!);
-  const deleteCommentMutation = useDeleteComment(numericId!);
-  const updateCommentMutation = useUpdateComment(numericId!);
+  const likeMutation = useLikePost(numericId!, DEMO_USER_ID);
+  const createCommentMutation = useCreateComment(numericId!, DEMO_USER_ID);
+  const deleteCommentMutation = useDeleteComment(numericId!, DEMO_USER_ID);
+  const updateCommentMutation = useUpdateComment(numericId!, DEMO_USER_ID);
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
@@ -65,7 +64,7 @@ export default function PostDetailPage() {
 
   async function handleDelete() {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
-    await deletePost(post!.id);
+    await deletePost(DEMO_USER_ID, post!.id);
     navigate(PATHS.COMMUNITY);
   }
 
@@ -177,7 +176,7 @@ export default function PostDetailPage() {
             onReply={(parentId) => setReplyToId(parentId)}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
             onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
-            currentUserId={currentUserId ?? undefined}
+            currentUserId={DEMO_USER_ID}
           />
         )}
 

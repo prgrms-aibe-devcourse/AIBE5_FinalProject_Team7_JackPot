@@ -8,6 +8,8 @@ import { RichEditor } from '../components/RichEditor';
 import type { PostType, PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
+const DEMO_USER_ID = 1;
+
 const TYPE_LABEL: Partial<Record<PostType, string>> = {
   COLUMN: '칼럼',
   FREE: '자유게시판',
@@ -116,7 +118,7 @@ export default function PostFormPage() {
 
     setSubmitting(true);
     try {
-      const postId = await createPost({
+      const postId = await createPost(DEMO_USER_ID, {
         title: title.trim(),
         context: finalContent,
         postType,
