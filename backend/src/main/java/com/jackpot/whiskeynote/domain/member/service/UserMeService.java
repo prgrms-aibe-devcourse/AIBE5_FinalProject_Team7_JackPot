@@ -3,6 +3,7 @@ package com.jackpot.whiskeynote.domain.member.service;
 import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.global.storage.MediaUploadService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserMeService {
 
     private final UsersRepository usersRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public UserMeDto getMe(Long userId) {
         Users user = usersRepository.findById(userId)
@@ -48,6 +50,17 @@ public class UserMeService {
         // bottleShareOptIn: MVP에서는 저장 보류 (스키마 확정 후 반영)
 
         return UserMeDto.from(user);
+    }
+
+    // USER-04: 탈퇴
+    @Transactional
+    public void deleteMe(Long userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        user.withdraw();
+        // 탈퇴 시 RefreshToken 제거 → 재발급 불가
+        refreshTokenRepository.deleteByUserId(userId);
     }
 }
 
