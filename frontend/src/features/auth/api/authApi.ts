@@ -37,7 +37,7 @@ export const authApi = {
     return unwrapApiData(res.data);
   },
 
-  logout: async (userId: number): Promise<void> => {
-    await apiClient.post(`/auth/logout?userId=${userId}`);
+  logout: async (): Promise<void> => {
+    await apiClient.post('/auth/logout');
   },
 };

@@ -7,26 +7,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
- * 1주차 프로토타입: {@code /api/v1/**} 비인증 허용 (검색·상세·related-posts 등).
- * JWT 도입 시 permit 범위를 auth·공개 GET 등으로 좁힌다.
+ * JWT 기반 stateless 인증.
+ * - 로그인/회원 도메인 위주로 적용: users/**, uploads/**, auth/logout
+ * - 그 외 API는 기존 동작을 깨지 않도록 기본 permitAll 유지
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String[] API_PUBLIC_PATHS = {
-            "/api/v1/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-    };
-
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            CorsConfigurationSource corsConfigurationSource
+            CorsConfigurationSource corsConfigurationSource,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
     ) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -35,13 +33,23 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(API_PUBLIC_PATHS).permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh"
+                        ).permitAll()
+                        .requestMatchers("/api/v1/auth/logout").authenticated()
+                        .requestMatchers("/api/v1/users/**").authenticated()
+                        .requestMatchers("/api/v1/uploads/**").authenticated()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().permitAll()
                 )
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
