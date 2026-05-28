@@ -50,4 +50,9 @@ public class PostComment {
         this.isDeleted = true;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void update(String content) {
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

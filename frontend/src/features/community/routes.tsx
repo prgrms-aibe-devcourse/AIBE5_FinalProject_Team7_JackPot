@@ -39,4 +39,10 @@ export const routes: FeatureRoute[] = [
     layout: 'app',
     meta: { screenId: '14-community-post-detail', title: '게시글', phase: 'P2', apiIds: ['POST-DETAIL-01'] },
   },
+  {
+    path: PATHS.COMMUNITY_POST_EDIT,
+    Component: lazy(() => import('./pages/PostEditPage')),
+    layout: 'app',
+    meta: { screenId: '14-community-post-edit', title: '게시글 수정', phase: 'P2', apiIds: ['POST-UPDATE-01'] },
+  },
 ];

@@ -2,6 +2,7 @@ package com.jackpot.whiskeynote.domain.community.comment.service;
 
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentCreateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.dto.CommentTreeResponse;
+import com.jackpot.whiskeynote.domain.community.comment.dto.CommentUpdateRequest;
 import com.jackpot.whiskeynote.domain.community.comment.entity.PostComment;
 import com.jackpot.whiskeynote.domain.community.comment.entity.PostCommentTree;
 import com.jackpot.whiskeynote.domain.community.comment.repository.PostCommentRepository;
@@ -94,6 +95,20 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
         comment.softDelete();
+    }
+
+    // CMT-04: 댓글 수정
+    @Transactional
+    public void updateComment(Long userId, Long commentId, CommentUpdateRequest request) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."));
+        if (comment.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제된 댓글입니다.");
+        }
+        if (!comment.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+        }
+        comment.update(request.content());
     }
 
     private CommentTreeResponse buildTree(PostComment comment,

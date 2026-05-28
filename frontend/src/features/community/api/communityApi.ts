@@ -93,3 +93,7 @@ export async function createComment(
 export async function deleteComment(userId: number, commentId: number): Promise<void> {
   await apiClient.delete(`/comments/${commentId}`, { params: { userId } });
 }
+
+export async function updateComment(userId: number, commentId: number, content: string): Promise<void> {
+  await apiClient.patch(`/comments/${commentId}`, { content }, { params: { userId } });
+}

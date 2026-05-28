@@ -9,6 +9,7 @@ import {
   useComments,
   useCreateComment,
   useDeleteComment,
+  useUpdateComment,
   useLikePost,
   usePost,
 } from '../hooks/useCommunity';
@@ -31,6 +32,7 @@ export default function PostDetailPage() {
   const likeMutation = useLikePost(numericId!, DEMO_USER_ID);
   const createCommentMutation = useCreateComment(numericId!, DEMO_USER_ID);
   const deleteCommentMutation = useDeleteComment(numericId!, DEMO_USER_ID);
+  const updateCommentMutation = useUpdateComment(numericId!, DEMO_USER_ID);
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
@@ -101,13 +103,22 @@ export default function PostDetailPage() {
             </button>
             <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
             {post.isOwner && (
-              <button
-                className="wf-chip"
-                style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
-                onClick={handleDelete}
-              >
-                삭제
-              </button>
+              <>
+                <button
+                  className="wf-chip"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+                  onClick={() => navigate(`/community/posts/${post.id}/edit`)}
+                >
+                  수정
+                </button>
+                <button
+                  className="wf-chip"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
+                  onClick={handleDelete}
+                >
+                  삭제
+                </button>
+              </>
             )}
           </div>
         </header>
@@ -137,6 +148,7 @@ export default function PostDetailPage() {
             comments={comments}
             onReply={(parentId) => setReplyToId(parentId)}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
+            onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
             currentUserId={DEMO_USER_ID}
           />
         )}
