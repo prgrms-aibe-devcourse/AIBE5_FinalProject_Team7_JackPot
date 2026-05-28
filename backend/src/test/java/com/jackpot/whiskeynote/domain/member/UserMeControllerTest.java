@@ -133,48 +133,5 @@ class UserMeControllerTest {
         assertThat(usersRepository.findById(userId).orElseThrow().isDeleted()).isTrue();
         assertThat(usersRepository.findById(userId).orElseThrow().getDeletedAt()).isNotNull();
     }
-
-    @Test
-    @DisplayName("USER-02 | 설정/약관 동의 업데이트(bottleShareOptIn, marketingOptIn) 성공 → 200")
-    void updateMe_settings_success() {
-        String accessToken = registerAndLoginAccessToken();
-
-        ResponseEntity<Map> patchRes = userClient.patch()
-                .uri("/me")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .body(Map.of(
-                        "bottleShareOptIn", true,
-                        "marketingOptIn", true
-                ))
-                .retrieve()
-                .toEntity(Map.class);
-
-        assertThat(patchRes.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Map<String, Object> body = Objects.requireNonNull(patchRes.getBody());
-        Map<String, Object> data = (Map<String, Object>) body.get("data");
-
-        assertThat(data.get("bottleShareOptIn")).isEqualTo(true);
-        assertThat(data.get("marketingOptIn")).isEqualTo(true);
-    }
-
-    @Test
-    @DisplayName("닉네임 가용성 체크 | 사용 중 닉네임이면 available=false")
-    void nicknameAvailability_taken() {
-        registerAndLoginAccessToken();
-
-        ResponseEntity<Map> res = userClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/nickname/available")
-                        .queryParam("nickname", TEST_NICKNAME)
-                        .build())
-                .retrieve()
-                .toEntity(Map.class);
-
-        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Map<String, Object> body = Objects.requireNonNull(res.getBody());
-        Map<String, Object> data = (Map<String, Object>) body.get("data");
-
-        assertThat(data.get("nickname")).isEqualTo(TEST_NICKNAME);
-        assertThat(data.get("available")).isEqualTo(false);
-    }
 }
 

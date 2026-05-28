@@ -17,9 +17,6 @@ export default function MyPage() {
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [bottleShareOptIn, setBottleShareOptIn] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
-  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     const run = async () => {
@@ -27,8 +24,6 @@ export default function MyPage() {
         const data = await userApi.getMe();
         setMe(data);
         setNickname(data.nickname ?? '');
-        setBottleShareOptIn(Boolean(data.bottleShareOptIn));
-        setMarketingOptIn(Boolean(data.marketingOptIn));
         localStorage.setItem('nickname', data.nickname ?? '');
         localStorage.setItem('profileImageUrl', data.profileImageUrl ?? '');
         window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
@@ -55,20 +50,6 @@ export default function MyPage() {
       alert(e instanceof Error ? e.message : '저장에 실패했습니다.');
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleSaveSettings() {
-    setSavingSettings(true);
-    try {
-      const updated = await userApi.updateMe({ bottleShareOptIn, marketingOptIn });
-      setMe(updated);
-      setBottleShareOptIn(Boolean(updated.bottleShareOptIn));
-      setMarketingOptIn(Boolean(updated.marketingOptIn));
-    } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '저장에 실패했습니다.');
-    } finally {
-      setSavingSettings(false);
     }
   }
 
@@ -189,30 +170,6 @@ export default function MyPage() {
             onClick={handleSave}
           >
             {saving ? '저장 중...' : '닉네임 저장'}
-          </Button>
-        </div>
-      </div>
-      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
-        <p className="wf-text-sm" style={{ marginBottom: 10 }}>설정 / 약관 동의</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <label className="wf-text-sm" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input
-              type="checkbox"
-              checked={bottleShareOptIn}
-              onChange={(e) => setBottleShareOptIn(e.target.checked)}
-            />
-            보틀 공유 참여
-          </label>
-          <label className="wf-text-sm" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input
-              type="checkbox"
-              checked={marketingOptIn}
-              onChange={(e) => setMarketingOptIn(e.target.checked)}
-            />
-            마케팅 수신 동의
-          </label>
-          <Button variant="primary" block disabled={savingSettings} onClick={handleSaveSettings}>
-            {savingSettings ? '저장 중...' : '설정 저장'}
           </Button>
         </div>
       </div>

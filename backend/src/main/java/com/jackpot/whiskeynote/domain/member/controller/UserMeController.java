@@ -2,7 +2,6 @@ package com.jackpot.whiskeynote.domain.member.controller;
 
 import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
-import com.jackpot.whiskeynote.domain.member.dto.NicknameAvailabilityResponse;
 import com.jackpot.whiskeynote.domain.member.service.UserMeService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
@@ -17,11 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserMeController {
 
     private final UserMeService userMeService;
-
-    @GetMapping("/nickname/available")
-    public ApiResponse<NicknameAvailabilityResponse> checkNicknameAvailable(@RequestParam String nickname) {
-        return ApiResponse.ok(userMeService.checkNicknameAvailable(nickname));
-    }
 
     // USER-01: 내 프로필 조회
     @GetMapping("/me")

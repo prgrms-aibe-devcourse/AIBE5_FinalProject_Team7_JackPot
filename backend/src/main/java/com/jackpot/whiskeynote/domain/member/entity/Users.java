@@ -66,16 +66,6 @@ public class Users {
     @Column(name = "profile_image_url", length = 255)
     private String profileImageUrl;
 
-    // 설정: 보틀 공유 참여 여부
-    @Column(name = "bottle_share_opt_in", nullable = false)
-    @Builder.Default
-    private boolean bottleShareOptIn = false;
-
-    // 약관/동의: 마케팅 수신 동의 여부
-    @Column(name = "marketing_opt_in", nullable = false)
-    @Builder.Default
-    private boolean marketingOptIn = false;
-
     // 권한: user / admin / pro
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
@@ -132,14 +122,6 @@ public class Users {
     // USER-02: 프로필 이미지 (S3 object key)
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
-    }
-
-    public void updateBottleShareOptIn(boolean bottleShareOptIn) {
-        this.bottleShareOptIn = bottleShareOptIn;
-    }
-
-    public void updateMarketingOptIn(boolean marketingOptIn) {
-        this.marketingOptIn = marketingOptIn;
     }
 
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
