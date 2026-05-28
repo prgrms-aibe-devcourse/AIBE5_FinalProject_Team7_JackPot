@@ -124,6 +124,10 @@ public class Users {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void updatePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
     public void completeOnboarding() {
         this.newUser = false;
