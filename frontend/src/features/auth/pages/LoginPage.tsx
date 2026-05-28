@@ -37,6 +37,11 @@ export default function LoginPage() {
     }
   };
 
+  function handleOauth(provider: 'kakao' | 'google' | 'naver') {
+    // AUTH-03: 백엔드에서 Authorization URL로 302 redirect 처리
+    window.location.href = `/api/v1/auth/oauth/${provider}`;
+  }
+
   return (
     <>
       <TopNav searchPlaceholder="Whiskey Note" />
@@ -60,8 +65,9 @@ export default function LoginPage() {
           <Button block style={{ marginTop: 16 }} onClick={handleLogin} disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }}>카카오</Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }}>Google</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('kakao')}>카카오</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('google')}>Google</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('naver')}>네이버</Button>
           <p className="wf-text-xs" style={{ textAlign: 'center', marginTop: 16 }}>
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>
           </p>

@@ -15,6 +15,11 @@ export interface UpdateUserMeRequest {
   profileImageUrl?: string | null;
 }
 
+export interface UpdateMyPasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export async function getMe(): Promise<UserMeDto> {
   const res = await apiClient.get('/users/me');
   return unwrapApiData(res.data);
@@ -30,10 +35,15 @@ export async function deleteMe(): Promise<void> {
   unwrapApiData(res.data);
 }
 
+export async function updateMyPassword(body: UpdateMyPasswordRequest): Promise<void> {
+  await apiClient.patch('/users/me/password', body);
+}
+
 /** TODO: WhiskeyNote_API명세서_v2 — user 도메인 연동 */
 export const userApi = {
   client: apiClient,
   getMe,
   updateMe,
   deleteMe,
+  updateMyPassword,
 };

@@ -17,6 +17,10 @@ export default function MyPage() {
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
     const run = async () => {
@@ -91,6 +95,38 @@ export default function MyPage() {
     clearAuthSession();
     window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     window.location.href = PATHS.LOGIN;
+  }
+
+  async function handleChangePassword() {
+    if (savingPassword) return;
+    if (!currentPassword.trim() || !newPassword.trim()) {
+      alert('현재 비밀번호와 새 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (newPassword.trim().length < 8) {
+      alert('새 비밀번호는 최소 8자 이상이어야 합니다.');
+      return;
+    }
+    if (newPassword !== newPasswordConfirm) {
+      alert('새 비밀번호 확인이 일치하지 않습니다.');
+      return;
+    }
+
+    setSavingPassword(true);
+    try {
+      await userApi.updateMyPassword({
+        currentPassword: currentPassword.trim(),
+        newPassword: newPassword.trim(),
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConfirm('');
+      alert('비밀번호가 변경되었습니다.');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : '비밀번호 변경에 실패했습니다.');
+    } finally {
+      setSavingPassword(false);
+    }
   }
 
   const avatarSrc = resolveMediaUrl(me?.profileImageUrl ?? null);
@@ -175,6 +211,35 @@ export default function MyPage() {
       </div>
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         취향 설문 다시하기
+      </div>
+      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
+        <p className="wf-text-sm" style={{ marginBottom: 10 }}>비밀번호 변경</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <Input
+            label="현재 비밀번호"
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="현재 비밀번호"
+          />
+          <Input
+            label="새 비밀번호"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="새 비밀번호 (8자 이상)"
+          />
+          <Input
+            label="새 비밀번호 확인"
+            type="password"
+            value={newPasswordConfirm}
+            onChange={(e) => setNewPasswordConfirm(e.target.value)}
+            placeholder="새 비밀번호 확인"
+          />
+          <Button variant="primary" block disabled={savingPassword} onClick={handleChangePassword}>
+            {savingPassword ? '변경 중...' : '비밀번호 변경'}
+          </Button>
+        </div>
       </div>
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         <p className="wf-text-sm" style={{ marginBottom: 10 }}>회원</p>
