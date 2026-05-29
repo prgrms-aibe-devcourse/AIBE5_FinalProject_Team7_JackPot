@@ -3,14 +3,10 @@ package com.jackpot.whiskeynote.domain.member.oauth;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * OAuth 설정 바인딩 — env → YAML → Java
- *
- * <p>로컬/EC2: 루트 {@code .env}의 {@code OAUTH_GOOGLE_CLIENT_ID} 등
- * → {@code application-prod.yaml}의 {@code oauth.google.client-id}
- * → 이 record.
- *
- * <p>redirect-uri는 Authorization 요청·token 교환·provider 콘솔·프론트 callback 경로가 모두 같아야 함.
- * client-secret은 Kakao 등 선택 사항(있으면 token 요청에 포함).
+ * OAuth 설정 바인딩
+ * - .env OAUTH_* → application-prod.yaml oauth.* → 이 record
+ * - redirect-uri: provider 콘솔 = 프론트 /oauth/{provider}/callback = env 값 일치 필수
+ * - client-secret: 선택 (Kakao 등, 있으면 token 요청에 포함)
  */
 @ConfigurationProperties(prefix = "oauth")
 public record OauthProperties(

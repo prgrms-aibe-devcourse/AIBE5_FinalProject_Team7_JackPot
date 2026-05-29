@@ -1,12 +1,11 @@
 /**
- * 마이페이지 API (USER-01/02/04, SET-01)
+ * 마이페이지 API 클라이언트 (프론트)
+ * - USER-01: getMe            → GET /users/me
+ * - USER-02: updateMe         → PATCH /users/me (profileImageUrl = S3 object key)
+ * - USER-04: deleteMe         → DELETE /users/me
+ * - SET-01:  updateMyPassword → PATCH /users/me/password (LOCAL만)
  *
- * - getMe / updateMe: MyPage 프로필 조회·닉네임 수정
- * - updateMe({ profileImageUrl }): presign 업로드 후 S3 object key 저장
- * - updateMyPassword: LOCAL 계정만 (소셜 계정은 UI에서 숨기거나 비활성화 권장)
- * - deleteMe: 탈퇴 후 clearAuthSession() 호출
- *
- * apiClient가 accessToken을 Authorization 헤더에 자동 첨부.
+ * Authorization Bearer 자동 첨부 (apiClient)
  */
 import { apiClient } from '@/shared/api/client';
 import { unwrapApiData } from '@/shared/api/types/response';

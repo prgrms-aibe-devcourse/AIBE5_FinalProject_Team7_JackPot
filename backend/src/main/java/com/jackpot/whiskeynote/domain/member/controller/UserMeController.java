@@ -13,18 +13,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 내 계정 API (USER-01, USER-02, USER-04, SET-01)
+ * 내 계정 API 컨트롤러
+ * - USER-01: GET    /api/v1/users/me           (내 프로필 조회)
+ * - USER-02: PATCH  /api/v1/users/me           (내 프로필 수정)
+ * - USER-04: DELETE /api/v1/users/me           (탈퇴)
+ * - SET-01:  PATCH  /api/v1/users/me/password   (비밀번호 변경, LOCAL만)
  *
- * <p>공통: {@code Authorization: Bearer {accessToken}} 필수 ({@link SecurityConfig}).
- * userId는 JWT에서 {@link JwtUserPrincipal}로 주입 — 요청 body에 userId 넣지 않음.
- *
- * <p>프론트 연동:
- * <ul>
- *   <li>조회/수정 → {@code userApi.getMe / updateMe} (MyPage)</li>
- *   <li>프로필 이미지 → presign 업로드 후 {@code profileImageUrl}에 S3 object key 전달</li>
- *   <li>비밀번호 변경(SET-01) → {@code PATCH /users/me/password}, LOCAL 계정만 가능</li>
- *   <li>탈퇴(USER-04) → {@code DELETE /users/me} 후 프론트 {@code clearAuthSession()}</li>
- * </ul>
+ * 공통: Authorization Bearer 필수, userId는 JWT에서 주입 (body에 userId 넣지 않음)
+ * 프론트: userApi (MyPage) — profileImageUrl은 S3 object key
  */
 @RestController
 @RequiredArgsConstructor

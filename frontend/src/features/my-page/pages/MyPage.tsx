@@ -10,12 +10,11 @@ import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
 
 /**
- * 마이페이지 (USER-01/02/04, SET-01 프론트)
- *
- * userApi.getMe → 닉네임·프로필 표시
- * userApi.updateMe → 닉네임 저장 / presign 후 profileImageUrl(object key) 저장
- * userApi.updateMyPassword → LOCAL 계정 비밀번호 변경
- * userApi.deleteMe + clearAuthSession → 탈퇴
+ * 마이페이지 화면
+ * - USER-01: userApi.getMe — 프로필 조회
+ * - USER-02: userApi.updateMe — 닉네임·프로필 이미지(S3 key)
+ * - SET-01: userApi.updateMyPassword — 비밀번호 변경
+ * - USER-04: userApi.deleteMe + clearAuthSession — 탈퇴
  */
 const ACCEPT_IMAGE = 'image/jpeg,image/png,image/webp,image/gif';
 

@@ -15,20 +15,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * AUTH-03 2단계: authorization code → JWT 발급
- *
- * <p>흐름: {@code OauthClient.fetchUserInfo(code)} → DB upsert → {@link TokenIssuer#issueTokens}.
- *
- * <p>신규 사용자 자동 가입 규칙:
- * <ul>
- *   <li>매칭 키: {@code (authProvider, providerId)} — {@code UsersRepository.findByAuthProviderAndProviderId}</li>
- *   <li>닉네임: provider에서 받은 값, 없으면 {@code user_xxxxxxxx}, 중복 시 접미사 추가</li>
- *   <li>birthday: MVP placeholder {@code 1900-01-01} (온보딩/설문에서 갱신 예정)</li>
- *   <li>passwordHash: OAuth 전용 랜덤 값 (로컬 로그인 불가)</li>
- * </ul>
- *
- * <p>새 provider 추가: {@link OauthClient} 구현 + {@code @Component} 등록 →
- * {@code List<OauthClient>}에 자동 주입. {@code AuthProvider} enum·SecurityConfig 변경 불필요.
+ * AUTH-03 2단계 — authorization code → JWT 발급
+ * - 호출: POST /api/v1/auth/oauth/{provider}/callback
+ * - 흐름: OauthClient.fetchUserInfo → Users upsert → TokenIssuer
+ * - 신규 가입: (authProvider, providerId) 매칭, 닉네임 중복 시 접미사, birthday placeholder
+ * - provider 추가: OauthClient 구현 + @Component 등록 (List 자동 주입)
  */
 @Service
 @RequiredArgsConstructor

@@ -1,13 +1,11 @@
 /**
- * 인증 API 클라이언트 (AUTH-01 ~ AUTH-05)
+ * 인증 API 클라이언트 (프론트)
+ * - AUTH-01: register → POST /auth/register
+ * - AUTH-02: login    → POST /auth/login
+ * - AUTH-03: LoginPage redirect → OauthCallbackPage oauthCallback → POST /auth/oauth/{provider}/callback
+ * - AUTH-05: logout   → POST /auth/logout
  *
- * 이메일 로그인: login/register → AuthData → localStorage 저장 (LoginPage)
- *
- * 소셜 로그인 (2단계 — redirect는 authApi가 아닌 브라우저 navigation):
- * 1. LoginPage: window.location.href = `/api/v1/auth/oauth/${provider}`
- * 2. OauthCallbackPage: oauthCallback(provider, code) → localStorage 저장
- *
- * 로그아웃: logout() — apiClient가 Bearer 헤더 자동 첨부
+ * 성공 시 accessToken 등 localStorage 저장 (LoginPage, OauthCallbackPage)
  */
 import { apiClient } from '@/shared/api/client';
 import { unwrapApiData } from '@/shared/api/types/response';

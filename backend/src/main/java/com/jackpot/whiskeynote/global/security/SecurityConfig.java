@@ -12,23 +12,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * JWT 기반 stateless 인증
- *
- * <p>인증 필요 (Bearer JWT):
- * <ul>
- *   <li>{@code /api/v1/users/**} — 마이페이지 (USER-01~04, SET-01)</li>
- *   <li>{@code /api/v1/uploads/**} — presign 업로드</li>
- *   <li>{@code POST /api/v1/auth/logout} — 로그아웃</li>
- *   <li>커뮤니티 POST/PATCH/DELETE — 글·댓글·좋아요 쓰기</li>
- * </ul>
- *
- * <p>인증 불필요 (permitAll):
- * <ul>
- *   <li>{@code /api/v1/auth/register, login, refresh, oauth/**} — 회원가입·로그인·소셜</li>
- *   <li>그 외 대부분 GET API — MVP 단계에서 기존 동작 유지</li>
- * </ul>
- *
- * <p>프론트: {@code apiClient}가 localStorage accessToken을 Authorization 헤더에 자동 첨부.
- * 새 보호 API 추가 시 여기 {@code requestMatchers}에 등록 필요.
+ * - permitAll: /api/v1/auth/register, login, refresh, oauth/**
+ * - authenticated: /api/v1/users/**, /uploads/**, auth/logout, 커뮤니티 쓰기
+ * - 그 외 GET: MVP permitAll 유지
+ * - 새 보호 API 추가 시 requestMatchers에 등록
  */
 @Configuration
 @EnableWebSecurity
