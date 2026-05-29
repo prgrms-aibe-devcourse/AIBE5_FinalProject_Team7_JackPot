@@ -1,3 +1,12 @@
+/**
+ * 마이페이지 API 클라이언트 (프론트)
+ * - USER-01: getMe            → GET /users/me
+ * - USER-02: updateMe         → PATCH /users/me (profileImageUrl = S3 object key)
+ * - USER-04: deleteMe         → DELETE /users/me
+ * - SET-01:  updateMyPassword → PATCH /users/me/password (LOCAL만)
+ *
+ * Authorization Bearer 자동 첨부 (apiClient)
+ */
 import { apiClient } from '@/shared/api/client';
 import { unwrapApiData } from '@/shared/api/types/response';
 
@@ -39,7 +48,6 @@ export async function updateMyPassword(body: UpdateMyPasswordRequest): Promise<v
   await apiClient.patch('/users/me/password', body);
 }
 
-/** TODO: WhiskeyNote_API명세서_v2 — user 도메인 연동 */
 export const userApi = {
   client: apiClient,
   getMe,

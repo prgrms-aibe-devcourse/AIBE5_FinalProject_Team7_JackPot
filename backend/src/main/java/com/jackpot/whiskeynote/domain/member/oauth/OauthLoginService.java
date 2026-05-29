@@ -14,6 +14,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * AUTH-03 2단계 — authorization code → JWT 발급
+ * - 호출: POST /api/v1/auth/oauth/{provider}/callback
+ * - 흐름: OauthClient.fetchUserInfo → Users upsert → TokenIssuer
+ * - 신규 가입: (authProvider, providerId) 매칭, 닉네임 중복 시 접미사, birthday placeholder
+ * - provider 추가: OauthClient 구현 + @Component 등록 (List 자동 주입)
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

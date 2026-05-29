@@ -1,3 +1,12 @@
+/**
+ * 인증 API 클라이언트 (프론트)
+ * - AUTH-01: register → POST /auth/register
+ * - AUTH-02: login    → POST /auth/login
+ * - AUTH-03: LoginPage redirect → OauthCallbackPage oauthCallback → POST /auth/oauth/{provider}/callback
+ * - AUTH-05: logout   → POST /auth/logout
+ *
+ * 성공 시 accessToken 등 localStorage 저장 (LoginPage, OauthCallbackPage)
+ */
 import { apiClient } from '@/shared/api/client';
 import { unwrapApiData } from '@/shared/api/types/response';
 import type { ApiResponse } from '@/shared/api/types/response';

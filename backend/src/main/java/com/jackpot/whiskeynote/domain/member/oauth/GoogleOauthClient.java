@@ -8,6 +8,11 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
+/**
+ * Google OAuth 클라이언트
+ * - env: OAUTH_GOOGLE_CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+ * - token: accounts.google.com, userinfo: oauth2.googleapis.com/tokeninfo
+ */
 @Component
 @RequiredArgsConstructor
 public class GoogleOauthClient implements OauthClient {

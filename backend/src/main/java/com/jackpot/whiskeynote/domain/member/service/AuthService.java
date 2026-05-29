@@ -18,17 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * 회원가입 / 로그인 / 로그아웃 비즈니스 로직
+ * 인증 비즈니스 로직
+ * - AUTH-01: register — 이메일·닉네임 중복 확인 → BCrypt → TokenIssuer
+ * - AUTH-02: login    — 비밀번호 검증 → TokenIssuer
+ * - AUTH-04: refresh  — RefreshToken 검증 → AccessToken만 재발급
+ * - AUTH-05: logout   — RefreshToken 삭제
  *
- * [토큰 전략]
- * - AccessToken  : 30분 유효 / 매 요청 Authorization 헤더에 포함
- * - RefreshToken : 14일 유효 / MySQL refresh_tokens 테이블에 저장
- *                  만료되면 재로그인 필요
- *
- * [흐름]
- * 회원가입 → 이메일·닉네임 중복 확인 → BCrypt 해시 → MySQL 저장 → 토큰 발급
- * 로그인   → 이메일 조회 → 비밀번호 검증 → 토큰 발급 → RefreshToken MySQL 저장
- * 로그아웃 → MySQL에서 RefreshToken 삭제
+ * 토큰: Access 30분 / Refresh 14일 (refresh_tokens 테이블)
  */
 @Service
 @RequiredArgsConstructor

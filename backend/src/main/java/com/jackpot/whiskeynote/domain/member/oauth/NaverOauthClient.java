@@ -8,6 +8,11 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
+/**
+ * Naver OAuth 클라이언트
+ * - env: OAUTH_NAVER_CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+ * - token: nid.naver.com/oauth2.0/token, userinfo: openapi.naver.com/v1/nid/me
+ */
 @Component
 @RequiredArgsConstructor
 public class NaverOauthClient implements OauthClient {

@@ -24,7 +24,12 @@ import org.springframework.web.bind.annotation.*;
  * - AUTH-01: POST /api/v1/auth/register (회원가입)
  * - AUTH-02: POST /api/v1/auth/login    (로그인)
  * - AUTH-03: GET  /api/v1/auth/oauth/{provider} (소셜 로그인 redirect)
+ * - AUTH-03: POST /api/v1/auth/oauth/{provider}/callback (소셜 code → JWT)
+ * - AUTH-04: POST /api/v1/auth/refresh  (AccessToken 재발급)
  * - AUTH-05: POST /api/v1/auth/logout   (로그아웃)
+ *
+ * 소셜 로그인: LoginPage → GET oauth/{provider} → provider → /oauth/{provider}/callback → POST callback
+ * OAuth 설정: .env OAUTH_* → application-prod.yaml → OauthProperties (redirect-uri 3곳 일치)
  *
  * 모든 응답은 프론트 unwrapApiData() 와 맞춰 ApiResponse 래퍼로 반환
  */

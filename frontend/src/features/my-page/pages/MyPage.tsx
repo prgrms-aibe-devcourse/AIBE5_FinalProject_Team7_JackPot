@@ -9,6 +9,13 @@ import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
 
+/**
+ * 마이페이지 화면
+ * - USER-01: userApi.getMe — 프로필 조회
+ * - USER-02: userApi.updateMe — 닉네임·프로필 이미지(S3 key)
+ * - SET-01: userApi.updateMyPassword — 비밀번호 변경
+ * - USER-04: userApi.deleteMe + clearAuthSession — 탈퇴
+ */
 const ACCEPT_IMAGE = 'image/jpeg,image/png,image/webp,image/gif';
 
 export default function MyPage() {

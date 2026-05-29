@@ -11,6 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * JWT 발급 공통 (로컬·소셜 공용)
+ * - 호출: AuthService.register/login, OauthLoginService.login
+ * - 반환: accessToken, refreshToken, userId, isNewUser, nickname, profileImageUrl
+ * - refresh 재발급은 AuthService.refresh에서 별도 처리
+ */
 @Component
 @RequiredArgsConstructor
 public class TokenIssuer {

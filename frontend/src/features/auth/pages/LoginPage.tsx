@@ -37,8 +37,8 @@ export default function LoginPage() {
     }
   };
 
+  // AUTH-03 1단계: GET /api/v1/auth/oauth/{provider} → provider 로그인
   function handleOauth(provider: 'kakao' | 'google' | 'naver') {
-    // AUTH-03: 백엔드에서 Authorization URL로 302 redirect 처리
     window.location.href = `/api/v1/auth/oauth/${provider}`;
   }
 

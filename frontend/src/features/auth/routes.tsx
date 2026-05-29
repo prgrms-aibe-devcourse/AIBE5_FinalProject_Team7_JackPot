@@ -25,6 +25,7 @@ export const routes: FeatureRoute[] = [
       apiIds: ['AUTH-01'],
     },
   },
+  // AUTH-03: /oauth/:provider/callback — OAUTH_*_REDIRECT_URI와 동일
   {
     path: PATHS.OAUTH_CALLBACK,
     Component: lazy(() => import('./pages/OauthCallbackPage')),

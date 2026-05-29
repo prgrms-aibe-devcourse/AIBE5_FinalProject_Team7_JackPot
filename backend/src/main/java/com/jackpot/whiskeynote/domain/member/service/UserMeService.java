@@ -13,6 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 마이페이지 비즈니스 로직
+ * - USER-01: getMe — 프로필 조회
+ * - USER-02: updateMe — nickname, profileImageUrl(S3 key, 소유 검증)
+ * - USER-04: deleteMe — 탈퇴 + RefreshToken 삭제
+ * - SET-01: updateMyPassword — LOCAL 계정만
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

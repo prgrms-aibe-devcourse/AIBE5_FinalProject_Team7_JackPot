@@ -1,3 +1,8 @@
+/**
+ * AUTH-03 콜백 페이지 (프론트 2단계)
+ * - 라우트: /oauth/{provider}/callback?code=... (OAUTH_*_REDIRECT_URI와 동일)
+ * - authApi.oauthCallback → JWT localStorage → 온보딩/라운지
+ */
 import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';

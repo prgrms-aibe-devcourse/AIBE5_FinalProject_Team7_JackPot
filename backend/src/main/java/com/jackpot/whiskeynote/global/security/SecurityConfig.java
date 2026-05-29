@@ -11,9 +11,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
- * JWT 기반 stateless 인증.
- * - 로그인/회원 도메인 위주로 적용: users/**, uploads/**, auth/logout
- * - 그 외 API는 기존 동작을 깨지 않도록 기본 permitAll 유지
+ * JWT 기반 stateless 인증
+ * - permitAll: /api/v1/auth/register, login, refresh, oauth/**
+ * - authenticated: /api/v1/users/**, /uploads/**, auth/logout, 커뮤니티 쓰기
+ * - 그 외 GET: MVP permitAll 유지
+ * - 새 보호 API 추가 시 requestMatchers에 등록
  */
 @Configuration
 @EnableWebSecurity

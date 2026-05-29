@@ -8,6 +8,11 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
+/**
+ * Kakao OAuth 클라이언트
+ * - env: OAUTH_KAKAO_CLIENT_ID, CLIENT_SECRET(선택), REDIRECT_URI
+ * - token: kauth.kakao.com/oauth/token, userinfo: kapi.kakao.com/v2/user/me
+ */
 @Component
 @RequiredArgsConstructor
 public class KakaoOauthClient implements OauthClient {
