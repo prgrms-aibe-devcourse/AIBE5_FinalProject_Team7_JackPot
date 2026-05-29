@@ -87,4 +87,5 @@ Content-Type: {{contentType}}
 ### userId는 로그인 응답의 data.userId 값으로 변경
 ### 성공 시 → 204 No Content
 ### ======================================================
-POST {{baseUrl}}/auth/logout?userId=1
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{accessToken}}

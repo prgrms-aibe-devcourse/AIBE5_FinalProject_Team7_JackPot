@@ -2,34 +2,56 @@ import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import { useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
 
-const REVIEWS = [
-  { user: 'GlassOfWhisky', score: 87, note: '부드럽고 과일향이 좋아요' },
-  { user: 'z-imaging', score: 88, note: '입문용으로 추천' },
-];
+function formatReviewDate(value: string): string {
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(value));
+}
 
 export default function WhiskeyReviewsPage() {
   const { whiskeyId } = useParams();
-  const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', whiskeyId ?? '1');
+  const id = whiskeyId ?? '1';
+  const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
+  const { data: reviews, isLoading } = useWhiskeyReviews(id, 0, 5);
 
   return (
     <WireframePage scroll>
-      <p className="wf-breadcrumb"><Link to={detailPath}>글렌피딕 12년</Link> / <strong>리뷰</strong></p>
-      <div className="wf-box wf-panel" style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-        <div><span className="wf-text-label">Nose</span><strong> 4.1</strong></div>
-        <div><span className="wf-text-label">Palate</span><strong> 4.2</strong></div>
-        <div><span className="wf-text-label">Finish</span><strong> 4.0</strong></div>
-        <Button to={PATHS.WRITE_REVIEW.replace(':whiskeyId', whiskeyId ?? '1')}>리뷰 쓰기</Button>
-      </div>
-      {REVIEWS.map((r) => (
-        <div key={r.user} className="wf-box" style={{ padding: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <strong>{r.user}</strong>
-            <span style={{ color: 'var(--wf-accent)' }}>{r.score}점</span>
-          </div>
-          <p className="wf-text-sm" style={{ marginTop: 8 }}>{r.note}</p>
+      <p className="wf-breadcrumb"><Link to={detailPath}>위스키 상세</Link> / <strong>리뷰</strong></p>
+      <div className="wf-box wf-panel" style={{ display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <span className="wf-text-label">리뷰</span>
+          <strong> {reviews?.totalElements ?? 0}개</strong>
         </div>
-      ))}
+        <Button to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>리뷰 쓰기</Button>
+      </div>
+
+      {isLoading ? (
+        <p className="wf-text-sm">리뷰를 불러오는 중입니다.</p>
+      ) : reviews?.content.length ? (
+        reviews.content.map((review) => (
+          <div key={review.id} className="wf-box" style={{ padding: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+              <div>
+                <strong>{review.nickname}</strong>
+                <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
+              </div>
+              <span style={{ color: 'var(--wf-accent)' }}>{Number(review.rating).toFixed(1)}점</span>
+            </div>
+            <p className="wf-text-sm" style={{ marginTop: 8 }}>
+              {review.publicText || '작성된 리뷰 내용이 없습니다.'}
+            </p>
+            {review.hasAttachedNote && (
+              <span className="wf-detail-reviews__note-badge">My Note 첨부</span>
+            )}
+          </div>
+        ))
+      ) : (
+        <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
+      )}
     </WireframePage>
   );
 }

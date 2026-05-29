@@ -20,6 +20,8 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
+  // AUTH-02: 로그인
+  // 의도: JWT 저장 후 신규 사용자면 온보딩, 아니면 라운지
   const handleLogin = async () => {
     setLoading(true);
     try {
@@ -36,6 +38,12 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // AUTH-03: 소셜 로그인 redirect
+  // 의도: SPA 라우터 대신 전체 페이지 이동으로 백엔드 redirect 체인 시작
+  function handleOauth(provider: 'kakao' | 'google' | 'naver') {
+    window.location.href = `/api/v1/auth/oauth/${provider}`;
+  }
 
   return (
     <>
@@ -60,8 +68,9 @@ export default function LoginPage() {
           <Button block style={{ marginTop: 16 }} onClick={handleLogin} disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }}>카카오</Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }}>Google</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('kakao')}>카카오</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('google')}>Google</Button>
+          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('naver')}>네이버</Button>
           <p className="wf-text-xs" style={{ textAlign: 'center', marginTop: 16 }}>
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>
           </p>

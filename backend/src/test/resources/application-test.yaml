@@ -31,3 +31,24 @@ jwt:
   secret: "test-secret-key-must-be-at-least-32-characters-long!!"
   access-token-expiry-ms: 1800000
   refresh-token-expiry-ms: 1209600000
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: test-bucket
+    presign-duration-minutes: 10
+    max-size-bytes: 5242880
+
+oauth:
+  google:
+    client-id: test-google-client-id
+    client-secret: test-google-client-secret
+    redirect-uri: http://localhost/test/oauth/google/callback
+  kakao:
+    client-id: test-kakao-client-id
+    client-secret: test-kakao-client-secret
+    redirect-uri: http://localhost/test/oauth/kakao/callback
+  naver:
+    client-id: test-naver-client-id
+    client-secret: test-naver-client-secret
+    redirect-uri: http://localhost/test/oauth/naver/callback

@@ -1,31 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  createComment,
+  deleteComment,
+  updateComment,
   fetchColumns,
   fetchComments,
   fetchFreePosts,
+  fetchNotices,
   fetchPost,
   fetchQnaPosts,
   likePost,
   unlikePost,
-  createComment,
-  deleteComment,
 } from '../api/communityApi';
 import type { CommentCreateRequest, PostCategory } from '../types';
 
 export const communityKeys = {
   columns: (page: number) => ['community', 'columns', page] as const,
-  free: (page: number, category?: PostCategory) =>
-    ['community', 'free', page, category] as const,
+  free: (page: number, category?: PostCategory) => ['community', 'free', page, category] as const,
   qna: (page: number) => ['community', 'qna', page] as const,
-  post: (postId: number, userId?: number) => ['community', 'post', postId, userId] as const,
+  notices: (page: number) => ['community', 'notices', page] as const,
+  post: (postId: number) => ['community', 'post', postId] as const,
   comments: (postId: number) => ['community', 'comments', postId] as const,
 };
 
 export function useColumns(page = 0) {
-  return useQuery({
-    queryKey: communityKeys.columns(page),
-    queryFn: () => fetchColumns(page),
-  });
+  return useQuery({ queryKey: communityKeys.columns(page), queryFn: () => fetchColumns(page) });
 }
 
 export function useFreePosts(page = 0, category?: PostCategory) {
@@ -36,16 +35,17 @@ export function useFreePosts(page = 0, category?: PostCategory) {
 }
 
 export function useQnaPosts(page = 0) {
-  return useQuery({
-    queryKey: communityKeys.qna(page),
-    queryFn: () => fetchQnaPosts(page),
-  });
+  return useQuery({ queryKey: communityKeys.qna(page), queryFn: () => fetchQnaPosts(page) });
 }
 
-export function usePost(postId: number | undefined, userId?: number) {
+export function useNotices(page = 0) {
+  return useQuery({ queryKey: communityKeys.notices(page), queryFn: () => fetchNotices(page) });
+}
+
+export function usePost(postId: number | undefined) {
   return useQuery({
-    queryKey: communityKeys.post(postId!, userId),
-    queryFn: () => fetchPost(postId!, userId),
+    queryKey: communityKeys.post(postId!),
+    queryFn: () => fetchPost(postId!),
     enabled: postId != null,
   });
 }
@@ -58,33 +58,36 @@ export function useComments(postId: number | undefined) {
   });
 }
 
-export function useLikePost(postId: number, userId: number) {
+export function useLikePost(postId: number) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (liked: boolean) =>
-      liked ? unlikePost(userId, postId) : likePost(userId, postId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: communityKeys.post(postId, userId) });
-    },
+    mutationFn: (isLiked: boolean) =>
+      isLiked ? unlikePost(postId) : likePost(postId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.post(postId) }),
   });
 }
 
-export function useCreateComment(postId: number, userId: number) {
+export function useCreateComment(postId: number) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: CommentCreateRequest) => createComment(userId, postId, body),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: communityKeys.comments(postId) });
-    },
+    mutationFn: (body: CommentCreateRequest) => createComment(postId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.comments(postId) }),
   });
 }
 
-export function useDeleteComment(postId: number, userId: number) {
+export function useDeleteComment(postId: number) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (commentId: number) => deleteComment(userId, commentId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: communityKeys.comments(postId) });
-    },
+    mutationFn: (commentId: number) => deleteComment(commentId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.comments(postId) }),
+  });
+}
+
+export function useUpdateComment(postId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ commentId, content }: { commentId: number; content: string }) =>
+      updateComment(commentId, content),
+    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.comments(postId) }),
   });
 }

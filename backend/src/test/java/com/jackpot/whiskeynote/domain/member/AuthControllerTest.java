@@ -13,7 +13,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -239,7 +244,47 @@ class AuthControllerTest {
             restClient.post().uri("/login").body(loginRequest).retrieve().toEntity(Map.class);
         } catch (HttpClientErrorException e) {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-            assertThat(e.getResponseBodyAsString()).contains("이메일 또는 비밀번호가 올바르지 않습니다.");
+            assertThat(e.getResponseBodyAsString()).contains("등록되지 않은 이메일 입니다.");
         }
     }
+
+    @Test
+    @DisplayName("AUTH-03 | 소셜 로그인 redirect → 302 + Location 헤더 포함")
+    void oauthRedirect_success() throws Exception {
+        HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:" + port + "/api/v1/auth/oauth/google"))
+                .GET()
+                .build();
+
+        HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+
+        assertThat(response.statusCode()).isEqualTo(302);
+        Optional<String> location = response.headers().firstValue("location");
+        assertThat(location).isPresent();
+        assertThat(location.get()).contains("accounts.google.com");
+        assertThat(location.get()).contains("client_id=test-google-client-id");
+    }
+
+    @Test
+    @DisplayName("AUTH-03 | 지원하지 않는 provider → 400")
+    void oauthRedirect_invalidProvider() throws Exception {
+        HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:" + port + "/api/v1/auth/oauth/unknown"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body()).contains("BAD_REQUEST");
+    }
+
 }

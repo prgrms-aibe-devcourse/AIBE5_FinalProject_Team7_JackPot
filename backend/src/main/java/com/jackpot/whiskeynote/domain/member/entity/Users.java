@@ -114,8 +114,31 @@ public class Users {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    // USER-02: 내 프로필 닉네임 수정
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    // USER-02: 프로필 이미지 (S3 object key)
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void updatePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     // 온보딩 완료 처리 (SUR-01 설문 제출 시 호출)
     public void completeOnboarding() {
         this.newUser = false;
+    }
+
+    // USER-04: 탈퇴(소프트 삭제)
+    public void withdraw() {
+        if (this.isDeleted) {
+            return;
+        }
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AppShell } from '@/shared/components/layout/AppShell';
 import { GuestLayout } from '@/shared/components/layout/GuestLayout';
 import { PageLoader } from '@/shared/components/ui/PageLoader';

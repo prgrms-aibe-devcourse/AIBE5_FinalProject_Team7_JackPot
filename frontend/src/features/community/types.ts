@@ -40,6 +40,7 @@ export interface PostDetailDto {
 export interface CommentTreeResponse {
   id: number;
   userId: number | null;
+  nickname: string | null;
   content: string;
   isDeleted: boolean;
   createdAt: string;
@@ -62,7 +63,7 @@ export interface PostCreateRequest {
   category: PostCategory;
   title: string;
   context: string;
-  whiskeyIds: number[];
+  whiskeyIds?: number[];
 }
 
 export interface PostUpdateRequest {

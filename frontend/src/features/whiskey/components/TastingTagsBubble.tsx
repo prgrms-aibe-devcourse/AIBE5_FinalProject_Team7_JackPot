@@ -1,7 +1,15 @@
+import { useMemo, useState } from 'react';
 import type { WhiskeyTagStat } from '../types';
 
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 36;
+const TAG_FILTERS = [
+  { value: 'all', label: '전체' },
+  { value: 'nose', label: '향' },
+  { value: 'taste', label: '맛' },
+] as const;
+
+type TagFilter = (typeof TAG_FILTERS)[number]['value'];
 
 function heatColor(ratio: number): string {
   if (ratio >= 0.66) return '#4A9B6E';
@@ -22,7 +30,12 @@ interface TastingTagsBubbleProps {
 }
 
 export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) {
-  const sorted = [...tags].sort((a, b) => b.count - a.count);
+  const [selectedFilter, setSelectedFilter] = useState<TagFilter>('all');
+  const sorted = useMemo(() => {
+    return [...tags]
+      .filter((tag) => selectedFilter === 'all' || tag.category === selectedFilter)
+      .sort((a, b) => b.count - a.count);
+  }, [selectedFilter, tags]);
   const maxCount = sorted[0]?.count ?? 1;
 
   return (
@@ -33,6 +46,20 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
       <p className="wf-text-xs wf-detail-tags__sub">
         이 위스키에서 인식한 맛을 클릭해 태그 추가
       </p>
+      <div className="wf-detail-tags__filters" role="group" aria-label="태그 종류 선택">
+        {TAG_FILTERS.map((filter) => (
+          <button
+            key={filter.value}
+            type="button"
+            className={`wf-detail-tags__filter-button ${
+              selectedFilter === filter.value ? 'wf-detail-tags__filter-button--active' : ''
+            }`}
+            onClick={() => setSelectedFilter(filter.value)}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
 
       {sorted.length === 0 ? (
         <p className="wf-text-sm wf-detail-tags__empty">아직 등록된 My Note 태그가 없습니다.</p>

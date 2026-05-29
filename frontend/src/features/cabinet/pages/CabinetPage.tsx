@@ -1,10 +1,14 @@
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
 import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
 import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
+import { StarRatingInput } from '@/features/review/components/StarRatingInput';
+import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/review/hooks/useReviews';
+import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 
@@ -28,14 +32,125 @@ function parseTab(v: string | null): CabinetTab {
   return 'pick';
 }
 
+function getCurrentUserId(): number | null {
+  const value = localStorage.getItem('userId');
+  if (!value) return null;
+
+  const userId = Number(value);
+  return Number.isFinite(userId) ? userId : null;
+}
+
+function MyReviewItem({
+  review,
+  onUpdate,
+  onDelete,
+  isBusy,
+}: {
+  review: WhiskeyReview;
+  onUpdate: (reviewId: number, rating: number, publicText: string) => void;
+  onDelete: (reviewId: number) => void;
+  isBusy: boolean;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [rating, setRating] = useState(Number(review.rating));
+  const [publicText, setPublicText] = useState(review.publicText ?? '');
+  const whiskeyLabel = review.whiskeyName ?? (review.whiskeyId ? `위스키 #${review.whiskeyId}` : `리뷰 #${review.id}`);
+
+  const handleUpdate = () => {
+    if (rating < 0 || rating > 5) {
+      alert('별점은 0점부터 5점 사이로 선택해주세요.');
+      return;
+    }
+
+    onUpdate(review.id, rating, publicText.trim());
+    setIsEditing(false);
+  };
+
+  return (
+    <article className="wf-cabinet-post wf-box">
+      <div className="wf-review-card__head">
+        <div>
+          <h3 className="wf-cabinet-post__title">{whiskeyLabel}</h3>
+          <p className="wf-text-sm">별점 {Number(review.rating).toFixed(1)} · 공개 리뷰</p>
+        </div>
+        {review.whiskeyId && (
+          <Link
+            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
+            className="wf-link wf-text-sm"
+          >
+            상세
+          </Link>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div className="wf-review-card__edit">
+          <div>
+            <p className="wf-text-label">별점</p>
+            <StarRatingInput value={rating} onChange={setRating} />
+            <p className="wf-text-sm" style={{ margin: '8px 0 0' }}>{rating}점</p>
+          </div>
+          <textarea
+            className="wf-review-textarea"
+            value={publicText}
+            onChange={(event) => setPublicText(event.target.value)}
+            rows={4}
+          />
+          <div className="wf-review-card__actions">
+            <Button className="wf-review-card__action-button" onClick={handleUpdate} disabled={isBusy}>저장</Button>
+            <Button className="wf-review-card__action-button" variant="ghost" onClick={() => setIsEditing(false)}>취소</Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="wf-text-sm">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
+          <footer className="wf-cabinet-post__foot">
+            <button type="button" className="wf-link wf-text-sm" onClick={() => setIsEditing(true)}>
+              수정
+            </button>
+            <button type="button" className="wf-link wf-text-sm" onClick={() => onDelete(review.id)} disabled={isBusy}>
+              삭제
+            </button>
+          </footer>
+        </>
+      )}
+    </article>
+  );
+}
+
 /** svg/pages/12-cabinet-me-bar.svg · 12-cabinet-me-community.svg */
 export default function CabinetPage() {
   const [params] = useSearchParams();
   const section = parseSection(params.get('section'));
   const tab = parseTab(params.get('tab'));
+  const currentUserId = getCurrentUserId();
+  const { data: myReviews, isLoading: reviewsLoading } = useMyReviews(currentUserId, 0, 20);
+  const updateReviewMutation = useUpdateReview(currentUserId);
+  const deleteReviewMutation = useDeleteReview(currentUserId);
 
   const barHref = `${PATHS.CABINET}?section=bar&tab=${tab}`;
   const communityHref = `${PATHS.CABINET}?section=community`;
+
+  const handleUpdateReview = async (reviewId: number, rating: number, publicText: string) => {
+    try {
+      await updateReviewMutation.mutateAsync({
+        reviewId,
+        body: { rating, publicText },
+      });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '리뷰 수정에 실패했습니다.');
+    }
+  };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    if (!confirm('리뷰를 삭제할까요?')) return;
+
+    try {
+      await deleteReviewMutation.mutateAsync(reviewId);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.');
+    }
+  };
 
   return (
     <WireframePage scroll>
@@ -63,9 +178,31 @@ export default function CabinetPage() {
           <label className="wf-cabinet-share">
             <input type="checkbox" defaultChecked /> 보틀 쉐어 공개
           </label>
-          {PICKS.map((p) => (
-            <CabinetPickItem key={p.id} {...p} />
-          ))}
+          {tab === 'reviews' ? (
+            <>
+              {currentUserId == null ? (
+                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+              ) : reviewsLoading ? (
+                <p className="wf-text-sm">내 리뷰를 불러오는 중입니다.</p>
+              ) : myReviews?.content.length ? (
+                myReviews.content.map((review) => (
+                  <MyReviewItem
+                    key={review.id}
+                    review={review}
+                    onUpdate={handleUpdateReview}
+                    onDelete={handleDeleteReview}
+                    isBusy={updateReviewMutation.isPending || deleteReviewMutation.isPending}
+                  />
+                ))
+              ) : (
+                <p className="wf-text-sm">아직 작성한 리뷰가 없습니다.</p>
+              )}
+            </>
+          ) : (
+            PICKS.map((p) => (
+              <CabinetPickItem key={p.id} {...p} />
+            ))
+          )}
         </>
       ) : (
         <>

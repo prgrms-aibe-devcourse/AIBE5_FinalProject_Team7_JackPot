@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
+import { isLoggedIn, getStoredUserId } from '@/shared/lib/authSession';
+import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
 import {
   useComments,
   useCreateComment,
   useDeleteComment,
+  useUpdateComment,
   useLikePost,
   usePost,
 } from '../hooks/useCommunity';
 import { POST_CATEGORY_LABEL } from '../types';
-
-const DEMO_USER_ID = 1;
 
 function formatDate(iso: string): string {
   return iso.slice(0, 16).replace('T', ' ');
@@ -25,15 +26,24 @@ export default function PostDetailPage() {
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
-  const { data: post, isLoading, isError } = usePost(numericId, DEMO_USER_ID);
+  const { data: post, isLoading, isError } = usePost(numericId);
   const { data: comments = [], isLoading: commentsLoading } = useComments(numericId);
 
-  const likeMutation = useLikePost(numericId!, DEMO_USER_ID);
-  const createCommentMutation = useCreateComment(numericId!, DEMO_USER_ID);
-  const deleteCommentMutation = useDeleteComment(numericId!, DEMO_USER_ID);
+  const likeMutation = useLikePost(numericId!);
+  const createCommentMutation = useCreateComment(numericId!);
+  const deleteCommentMutation = useDeleteComment(numericId!);
+  const updateCommentMutation = useUpdateComment(numericId!);
 
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
+  const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
+
+  useEffect(() => {
+    if (!post?.whiskeyIds?.length) return;
+    Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
+      .then(setLinkedWhiskeys)
+      .catch(() => {});
+  }, [post?.whiskeyIds]);
 
   if (isLoading) {
     return (
@@ -53,12 +63,21 @@ export default function PostDetailPage() {
 
   async function handleDelete() {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
-    await deletePost(DEMO_USER_ID, post!.id);
+    await deletePost(post!.id);
     navigate(PATHS.COMMUNITY);
+  }
+
+  function requireLogin(action: () => void) {
+    if (!isLoggedIn()) {
+      navigate(PATHS.LOGIN);
+      return;
+    }
+    action();
   }
 
   async function handleSubmitComment(e: React.FormEvent) {
     e.preventDefault();
+    if (!isLoggedIn()) { navigate(PATHS.LOGIN); return; }
     if (!commentText.trim()) return;
     await createCommentMutation.mutateAsync({
       content: commentText.trim(),
@@ -84,9 +103,7 @@ export default function PostDetailPage() {
             <span className="wf-chip" style={{ fontSize: 11 }}>
               {POST_CATEGORY_LABEL[post.category] ?? post.category}
             </span>
-            <span className="wf-chip" style={{ fontSize: 11 }}>
-              {post.postType}
-            </span>
+            <span className="wf-chip" style={{ fontSize: 11 }}>{post.postType}</span>
           </div>
           <h1 className="wf-title" style={{ marginBottom: 4 }}>{post.title}</h1>
           <p className="wf-text-xs" style={{ color: '#888', marginBottom: 8 }}>
@@ -96,16 +113,21 @@ export default function PostDetailPage() {
             <button
               className="wf-chip"
               style={{ cursor: 'pointer', border: 'none', background: 'none' }}
-              onClick={() => likeMutation.mutate(post.isLiked)}
+              onClick={() => requireLogin(() => likeMutation.mutate(post.isLiked))}
               disabled={likeMutation.isPending}
             >
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
             </button>
-            <span className="wf-text-xs" style={{ color: '#888' }}>
-              댓글 {post.commentCount}
-            </span>
+            <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
             {post.isOwner && (
               <>
+                <button
+                  className="wf-chip"
+                  style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+                  onClick={() => navigate(`/community/posts/${post.id}/edit`)}
+                >
+                  수정
+                </button>
                 <button
                   className="wf-chip"
                   style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#c00' }}
@@ -118,9 +140,38 @@ export default function PostDetailPage() {
           </div>
         </header>
 
-        <div className="wf-box" style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-          {post.context}
-        </div>
+        {post.context.startsWith('<') ? (
+          <div
+            className="wf-box"
+            style={{ padding: 16, marginBottom: 24, lineHeight: 1.8 }}
+            dangerouslySetInnerHTML={{ __html: post.context }}
+          />
+        ) : (
+          <div
+            className="wf-box"
+            style={{ padding: 16, marginBottom: 24, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}
+          >
+            {post.context}
+          </div>
+        )}
+
+        {linkedWhiskeys.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <p className="wf-text-xs" style={{ color: '#888', marginBottom: 6 }}>관련 위스키</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {linkedWhiskeys.map((w) => (
+                <Link
+                  key={w.id}
+                  to={`/whiskey/${w.id}`}
+                  className="wf-chip"
+                  style={{ textDecoration: 'none', fontSize: 13 }}
+                >
+                  {w.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </article>
 
       <section>
@@ -130,9 +181,10 @@ export default function PostDetailPage() {
         ) : (
           <CommentThread
             comments={comments}
-            onReply={(parentId) => setReplyToId(parentId)}
+            onReply={(parentId) => requireLogin(() => setReplyToId(parentId))}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
-            currentUserId={DEMO_USER_ID}
+            onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
+            currentUserId={getStoredUserId() ?? undefined}
           />
         )}
 
@@ -156,9 +208,16 @@ export default function PostDetailPage() {
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="댓글을 입력하세요…"
+              placeholder={isLoggedIn() ? '댓글을 입력하세요…' : '로그인 후 댓글을 작성할 수 있어요'}
               rows={3}
-              style={{ flex: 1, padding: 8, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical' }}
+              style={{
+                flex: 1,
+                padding: 8,
+                fontSize: 14,
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                resize: 'vertical',
+              }}
             />
             <button
               type="submit"

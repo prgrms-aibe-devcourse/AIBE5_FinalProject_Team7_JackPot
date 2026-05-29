@@ -1,6 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
+import { clearAuthSession } from '@/shared/lib/authSession';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+
+/** MyPage 등에서 프로필 저장 후 TopNav 아바타 갱신용 */
+export const PROFILE_UPDATED_EVENT = 'whiskeynote:profile-updated';
 
 const NAV = [
   { to: PATHS.LOUNGE, label: '라운지' },
@@ -17,22 +23,27 @@ interface TopNavProps {
 export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
-  const nickname = localStorage.getItem('nickname') || '';
-  const profileImageUrl = localStorage.getItem('profileImageUrl') || '';
-  const userId = localStorage.getItem('userId');
+  const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
+  const [profileImageKey, setProfileImageKey] = useState(() => localStorage.getItem('profileImageUrl') || '');
   const isLoggedIn = !!accessToken;
+  const avatarSrc = resolveMediaUrl(profileImageKey || null);
+
+  useEffect(() => {
+    const syncProfile = () => {
+      setNickname(localStorage.getItem('nickname') || '');
+      setProfileImageKey(localStorage.getItem('profileImageUrl') || '');
+    };
+    window.addEventListener(PROFILE_UPDATED_EVENT, syncProfile);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, syncProfile);
+  }, []);
 
   const handleLogout = async () => {
     try {
-      if (userId) await authApi.logout(Number(userId));
+      await authApi.logout();
     } catch {
       // 서버 오류여도 클라이언트는 로그아웃 처리
     } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('nickname');
-      localStorage.removeItem('profileImageUrl');
+      clearAuthSession();
       navigate(PATHS.LOGIN);
     }
   };
@@ -71,8 +82,8 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
                 justifyContent: 'center',
                 flexShrink: 0,
               }}>
-                {profileImageUrl ? (
-                  <img src={profileImageUrl} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontSize: 16 }}>🥃</span>
                 )}

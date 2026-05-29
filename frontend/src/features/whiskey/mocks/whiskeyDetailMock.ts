@@ -1,4 +1,5 @@
-import type { RelatedColumnPost, WhiskeyDetail } from '../types';
+import type { PageResponse } from '@/shared/api/types/common';
+import type { RelatedColumnPost, WhiskeyDetail, WhiskeyReview } from '../types';
 
 export const MOCK_WHISKEY_DETAIL: WhiskeyDetail = {
   id: 1,
@@ -67,6 +68,41 @@ export const MOCK_RELATED_COLUMNS: RelatedColumnPost[] = [
     createdAt: '2025-01-02T00:00:00',
   },
 ];
+
+export const MOCK_WHISKEY_REVIEWS: PageResponse<WhiskeyReview> = {
+  content: [
+    {
+      id: 1,
+      userId: 1,
+      whiskeyId: 1,
+      whiskeyName: 'Glenfiddich 12',
+      nickname: '민구',
+      profileImageUrl: null,
+      rating: 4.5,
+      publicText: '부드럽고 달콤한 과실향이 좋아요. 피니시도 꽤 길게 남습니다.',
+      hasAttachedNote: false,
+      createdAt: '2026-05-27T13:00:00',
+      updatedAt: '2026-05-27T13:00:00',
+    },
+    {
+      id: 2,
+      userId: 2,
+      whiskeyId: 1,
+      whiskeyName: 'Glenfiddich 12',
+      nickname: 'WhiskyNote',
+      profileImageUrl: null,
+      rating: 4.0,
+      publicText: '향은 풍부한데 생각보다 가볍게 넘어갑니다. 천천히 마시기 좋은 느낌이에요.',
+      hasAttachedNote: false,
+      createdAt: '2026-05-27T13:05:00',
+      updatedAt: '2026-05-27T13:05:00',
+    },
+  ],
+  page: 0,
+  size: 5,
+  totalElements: 2,
+  totalPages: 1,
+};
 
 export function getMockWhiskeyDetail(whiskeyId: string): WhiskeyDetail {
   const id = Number(whiskeyId);

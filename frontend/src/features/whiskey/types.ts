@@ -63,6 +63,21 @@ export interface RelatedColumnPost {
   createdAt: string;
 }
 
+/** GET /api/v1/whiskeys/{id}/reviews */
+export interface WhiskeyReview {
+  id: number;
+  userId: number;
+  whiskeyId?: number;
+  whiskeyName?: string;
+  nickname: string;
+  profileImageUrl: string | null;
+  rating: number;
+  publicText: string | null;
+  hasAttachedNote: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** 화면용 시음 요약 */
 export type TastingAxisKey = TasteItem['key'];
 

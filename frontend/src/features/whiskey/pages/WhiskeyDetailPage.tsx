@@ -7,8 +7,9 @@ import { Button } from '@/shared/components/ui/Button';
 import { RelatedColumns } from '../components/RelatedColumns';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
-import { useRelatedColumns, useWhiskeyDetail } from '../hooks/useWhiskeyDetail';
-import type { TastingSummarySource } from '../types';
+import { useRelatedColumns, useWhiskeyDetail, useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
+import type { TastingSummarySource, WhiskeyReview } from '../types';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 
 function formatType(type: string): string {
@@ -28,6 +29,34 @@ function formatTenPointScore(score?: number): string {
   return Number.isInteger(normalized) ? `${normalized}` : normalized.toFixed(1);
 }
 
+function formatReviewDate(value: string): string {
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(value));
+}
+
+function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
+  return (
+    <li className="wf-detail-reviews__item wf-box">
+      <div className="wf-detail-reviews__header">
+        <div>
+          <strong>{review.nickname}</strong>
+          <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
+        </div>
+        <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>
+      </div>
+      <p className="wf-text-sm wf-detail-reviews__text">
+        {review.publicText || '작성된 리뷰 내용이 없습니다.'}
+      </p>
+      {review.hasAttachedNote && (
+        <span className="wf-detail-reviews__note-badge">My Note 첨부</span>
+      )}
+    </li>
+  );
+}
+
 export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
   const id = whiskeyId ?? '1';
@@ -36,6 +65,7 @@ export default function WhiskeyDetailPage() {
 
   const { data: detail, isLoading, isError } = useWhiskeyDetail(id);
   const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
+  const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
 
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
 
@@ -73,6 +103,7 @@ export default function WhiskeyDetailPage() {
     `${detail.abv}%`,
     '700ml',
   ].join(' · ');
+  const imageSrc = resolveMediaUrl(detail.imageUrl);
 
   return (
     <WireframePage scroll>
@@ -97,7 +128,16 @@ export default function WhiskeyDetailPage() {
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
-          <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={detail.name}
+              className="wf-detail-sidebar__image"
+              style={{ width: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+          )}
           <div className="wf-detail-sidebar__actions">
             <Button variant="ghost" style={{ width: '100%' }}>
               ♡ 위시리스트
@@ -142,6 +182,27 @@ export default function WhiskeyDetailPage() {
             onSourceChange={setSummarySource}
             reviewPath={reviewPath}
           />
+
+          <section className="wf-detail-reviews" aria-label="리뷰">
+            <div className="wf-detail-reviews__title-row">
+              <h2 className="wf-section-title">리뷰</h2>
+              <Link to={reviewPath} className="wf-detail-reviews__more">
+                전체 보기 →
+              </Link>
+            </div>
+
+            {reviewsLoading ? (
+              <p className="wf-text-sm">리뷰를 불러오는 중입니다.</p>
+            ) : reviews?.content.length ? (
+              <ul className="wf-detail-reviews__list">
+                {reviews.content.map((review) => (
+                  <ReviewPreviewCard key={review.id} review={review} />
+                ))}
+              </ul>
+            ) : (
+              <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
+            )}
+          </section>
 
           <RelatedColumns posts={relatedPosts} isLoading={columnsLoading} />
         </main>

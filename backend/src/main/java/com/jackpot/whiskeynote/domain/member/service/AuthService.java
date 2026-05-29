@@ -18,17 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * 회원가입 / 로그인 / 로그아웃 비즈니스 로직
+ * 인증 비즈니스 로직
+ * - AUTH-01: register — 이메일·닉네임 중복 확인 → BCrypt → TokenIssuer
+ * - AUTH-02: login    — 비밀번호 검증 → TokenIssuer
+ * - AUTH-04: refresh  — RefreshToken 검증 → AccessToken만 재발급
+ * - AUTH-05: logout   — RefreshToken 삭제
  *
- * [토큰 전략]
- * - AccessToken  : 30분 유효 / 매 요청 Authorization 헤더에 포함
- * - RefreshToken : 14일 유효 / MySQL refresh_tokens 테이블에 저장
- *                  만료되면 재로그인 필요
- *
- * [흐름]
- * 회원가입 → 이메일·닉네임 중복 확인 → BCrypt 해시 → MySQL 저장 → 토큰 발급
- * 로그인   → 이메일 조회 → 비밀번호 검증 → 토큰 발급 → RefreshToken MySQL 저장
- * 로그아웃 → MySQL에서 RefreshToken 삭제
+ * 토큰: Access 30분 / Refresh 14일 (refresh_tokens 테이블)
  */
 @Service
 @RequiredArgsConstructor
@@ -39,8 +35,10 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final TokenIssuer tokenIssuer;
 
-    // ── 회원가입 (AUTH-01) ──────────────────────────────
+    // AUTH-01: 회원가입
+    // 의도: 중복 검증 후 LOCAL 계정 생성, 가입=로그인으로 TokenIssuer 호출
     @Transactional
     public TokenResponse register(RegisterRequest request) {
 
@@ -66,10 +64,11 @@ public class AuthService {
         Users savedUser = usersRepository.save(user);
 
         // 토큰 발급 및 MySQL 저장
-        return issueTokens(savedUser);
+        return tokenIssuer.issueTokens(savedUser);
     }
 
-    // ── 로그인 (AUTH-02) ──────────────────────────────
+    // AUTH-02: 로그인
+    // 의도: BCrypt 검증 + lastLoginAt 갱신 후 JWT 발급
     @Transactional
     public TokenResponse login(LoginRequest request) {
 
@@ -86,17 +85,19 @@ public class AuthService {
         user.updateLastLoginAt();
 
         // 토큰 발급 및 MySQL 저장
-        return issueTokens(user);
+        return tokenIssuer.issueTokens(user);
     }
 
-    // ── 로그아웃 (AUTH-05) ──────────────────────────────
+    // AUTH-05: 로그아웃
+    // 의도: refresh_tokens 행 삭제로 refresh 기반 재발급 차단
     @Transactional
     public void logout(Long userId) {
         // MySQL에서 RefreshToken 삭제 → 재발급 불가
         refreshTokenRepository.deleteByUserId(userId);
     }
 
-    // ── AccessToken 재발급 (AUTH-06) ──────────────────────────────
+    // AUTH-04: AccessToken 재발급
+    // 의도: 유효한 Refresh만으로 Access 재발급 — Refresh는 교체하지 않음
     @Transactional
     public TokenResponse refresh(RefreshRequest request) {
 
@@ -127,30 +128,4 @@ public class AuthService {
         );
     }
 
-    // ── 내부 공통: 토큰 발급 + MySQL 저장 ──────────────
-    private TokenResponse issueTokens(Users user) {
-        String accessToken  = jwtProvider.createAccessToken(user.getId(), user.getRole().name());
-        String refreshToken = jwtProvider.createRefreshToken(user.getId());
-
-        // 만료 시각 계산 (현재 시각 + 14일)
-        LocalDateTime expiresAt = LocalDateTime.now()
-                .plusSeconds(jwtProvider.getRefreshTokenExpiryMs() / 1000);
-
-        // 기존 RefreshToken이 있으면 갱신, 없으면 새로 저장
-        RefreshToken tokenEntity = refreshTokenRepository.findByUserId(user.getId())
-                .map(existing -> {
-                    existing.updateToken(refreshToken, expiresAt);
-                    return existing;
-                })
-                .orElseGet(() -> RefreshToken.builder()
-                        .userId(user.getId())
-                        .token(refreshToken)
-                        .expiresAt(expiresAt)
-                        .build()
-                );
-
-        refreshTokenRepository.saveAndFlush(tokenEntity);
-
-        return new TokenResponse(accessToken, refreshToken, user.getId(), user.isNewUser(), user.getNickname(), user.getProfileImageUrl());
-    }
 }

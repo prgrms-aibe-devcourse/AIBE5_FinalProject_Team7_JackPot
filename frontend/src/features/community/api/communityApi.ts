@@ -2,12 +2,12 @@ import { apiClient } from '@/shared/api/client';
 import type {
   CommentCreateRequest,
   CommentTreeResponse,
+  PostCategory,
   PostCreateRequest,
   PostDetailDto,
   PostSummaryResponse,
   PostUpdateRequest,
   SpringPage,
-  PostCategory,
 } from '../types';
 
 export async function fetchColumns(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
@@ -35,39 +35,42 @@ export async function fetchQnaPosts(page = 0, size = 10): Promise<SpringPage<Pos
   return data;
 }
 
-export async function fetchPost(postId: number, userId?: number): Promise<PostDetailDto> {
-  const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`, {
-    params: userId != null ? { userId } : {},
+export async function fetchNotices(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
+  const { data } = await apiClient.get<SpringPage<PostSummaryResponse>>('/community/notices', {
+    params: { page, size },
   });
   return data;
 }
 
-export async function createPost(userId: number, body: PostCreateRequest): Promise<number> {
-  const { data } = await apiClient.post<number>('/posts', body, { params: { userId } });
+// userId 파라미터 제거 — 인증은 Authorization 헤더로 처리
+export async function fetchPost(postId: number): Promise<PostDetailDto> {
+  const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`);
+  return data;
+}
+
+export async function createPost(body: PostCreateRequest): Promise<number> {
+  const { data } = await apiClient.post<number>('/posts', body);
   return data;
 }
 
 export async function updatePost(
-  userId: number,
   postId: number,
   body: PostUpdateRequest,
 ): Promise<PostDetailDto> {
-  const { data } = await apiClient.patch<PostDetailDto>(`/posts/${postId}`, body, {
-    params: { userId },
-  });
+  const { data } = await apiClient.patch<PostDetailDto>(`/posts/${postId}`, body);
   return data;
 }
 
-export async function deletePost(userId: number, postId: number): Promise<void> {
-  await apiClient.delete(`/posts/${postId}`, { params: { userId } });
+export async function deletePost(postId: number): Promise<void> {
+  await apiClient.delete(`/posts/${postId}`);
 }
 
-export async function likePost(userId: number, postId: number): Promise<void> {
-  await apiClient.post(`/posts/${postId}/likes`, null, { params: { userId } });
+export async function likePost(postId: number): Promise<void> {
+  await apiClient.post(`/posts/${postId}/likes`, null);
 }
 
-export async function unlikePost(userId: number, postId: number): Promise<void> {
-  await apiClient.delete(`/posts/${postId}/likes`, { params: { userId } });
+export async function unlikePost(postId: number): Promise<void> {
+  await apiClient.delete(`/posts/${postId}/likes`);
 }
 
 export async function fetchComments(postId: number): Promise<CommentTreeResponse[]> {
@@ -76,28 +79,16 @@ export async function fetchComments(postId: number): Promise<CommentTreeResponse
 }
 
 export async function createComment(
-  userId: number,
   postId: number,
   body: CommentCreateRequest,
 ): Promise<void> {
-  await apiClient.post(`/posts/${postId}/comments`, body, { params: { userId } });
+  await apiClient.post(`/posts/${postId}/comments`, body);
 }
 
-export async function deleteComment(userId: number, commentId: number): Promise<void> {
-  await apiClient.delete(`/comments/${commentId}`, { params: { userId } });
+export async function deleteComment(commentId: number): Promise<void> {
+  await apiClient.delete(`/comments/${commentId}`);
 }
 
-export const communityApi = {
-  fetchColumns,
-  fetchFreePosts,
-  fetchQnaPosts,
-  fetchPost,
-  createPost,
-  updatePost,
-  deletePost,
-  likePost,
-  unlikePost,
-  fetchComments,
-  createComment,
-  deleteComment,
-};
+export async function updateComment(commentId: number, content: string): Promise<void> {
+  await apiClient.patch(`/comments/${commentId}`, { content });
+}
