@@ -1,15 +1,14 @@
-package com.jackpot.whiskeynote.domain.taste.vo;
+package com.jackpot.whiskeynote.domain.taste.note.vo;
 
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteCreateRequest;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteUpdateRequest;
-import com.jackpot.whiskeynote.domain.taste.entity.TastingNote;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteUpdateRequest;
 
 public record WhiskeyScoreVo(
-    Integer bodyScore,
-    Integer finishScore,
-    Integer smokyScore,
-    Integer spicyScore,
-    Integer sweetScore
+    Short bodyScore,
+    Short finishScore,
+    Short smokyScore,
+    Short spicyScore,
+    Short sweetScore
 ) {
     public static WhiskeyScoreVo from(TastingNoteCreateRequest request) {
         return new WhiskeyScoreVo(

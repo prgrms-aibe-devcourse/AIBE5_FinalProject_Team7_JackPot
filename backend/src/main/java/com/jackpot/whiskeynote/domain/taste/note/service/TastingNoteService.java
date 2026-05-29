@@ -1,20 +1,19 @@
-package com.jackpot.whiskeynote.domain.taste.service;
+package com.jackpot.whiskeynote.domain.taste.note.service;
 
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteCreateRequest;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteResponse;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteUpdateRequest;
-import com.jackpot.whiskeynote.domain.taste.entity.Tag;
-import com.jackpot.whiskeynote.domain.taste.entity.TastingNote;
-import com.jackpot.whiskeynote.domain.taste.entity.TastingNoteTag;
-import com.jackpot.whiskeynote.domain.taste.repository.TagRepository;
-import com.jackpot.whiskeynote.domain.taste.repository.TastingNoteRepository;
-import com.jackpot.whiskeynote.domain.taste.repository.TastingNoteTagRepository;
-import com.jackpot.whiskeynote.domain.taste.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteResponse;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteUpdateRequest;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteTagResponse;
+import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
+import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
+import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNoteTag;
+import com.jackpot.whiskeynote.domain.taste.tag.repository.TagRepository;
+import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepository;
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
-import com.jackpot.whiskeynote.domain.whiskey.repository.AvgWhiskeyTagRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -74,7 +73,10 @@ public class TastingNoteService {
             whiskeysNoteCacheRepository.save(cache);
         }
 
-        return TastingNoteResponse.from(note, tags);
+        List<TastingNoteTagResponse> tagResponses = tags.stream()
+            .map(TastingNoteTagResponse::from)
+            .toList();
+        return TastingNoteResponse.from(note, tagResponses);
     }
 
     /**
@@ -143,7 +145,10 @@ public class TastingNoteService {
             whiskeysNoteCacheRepository.save(cache);
         }
 
-        return TastingNoteResponse.from(note, newTags);
+        List<TastingNoteTagResponse> tagResponses = newTags.stream()
+            .map(TastingNoteTagResponse::from)
+            .toList();
+        return TastingNoteResponse.from(note, tagResponses);
     }
 
     // TODO: TastingNote 삭제 시 로직 구현

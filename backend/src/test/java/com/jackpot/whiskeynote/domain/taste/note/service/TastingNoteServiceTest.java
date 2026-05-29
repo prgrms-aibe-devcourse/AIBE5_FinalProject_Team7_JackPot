@@ -1,15 +1,15 @@
-package com.jackpot.whiskeynote.domain.taste.service;
+package com.jackpot.whiskeynote.domain.taste.note.service;
 
 import com.jackpot.whiskeynote.domain.member.entity.AuthProvider;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteCreateRequest;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteResponse;
-import com.jackpot.whiskeynote.domain.taste.dto.TastingNoteUpdateRequest;
-import com.jackpot.whiskeynote.domain.taste.entity.Tag;
-import com.jackpot.whiskeynote.domain.taste.entity.TastingNote;
-import com.jackpot.whiskeynote.domain.taste.repository.TagRepository;
-import com.jackpot.whiskeynote.domain.taste.repository.TastingNoteRepository;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteResponse;
+import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteUpdateRequest;
+import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
+import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
+import com.jackpot.whiskeynote.domain.taste.tag.repository.TagRepository;
+import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
@@ -18,7 +18,6 @@ import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheReposi
 import com.jackpot.whiskeynote.global.security.SecurityConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,7 +112,7 @@ class TastingNoteServiceTest {
         Users user = users.get(0);
         TastingNoteCreateRequest request = new TastingNoteCreateRequest(
             whiskey.getId(),
-            3, 4, 5, 2, 3,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3,
             "테스트 메모",
             false,
             tags.stream().map(Tag::getId).toList()
@@ -145,7 +144,7 @@ class TastingNoteServiceTest {
         Users user = users.get(0);
         TastingNoteCreateRequest request = new TastingNoteCreateRequest(
             whiskey.getId(),
-            3, 4, 5, 2, 3,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3,
             "임시저장 메모",
             true,
             tags.stream().map(Tag::getId).toList()
@@ -165,7 +164,7 @@ class TastingNoteServiceTest {
         Users user1 = users.get(0);
         TastingNoteCreateRequest request1 = new TastingNoteCreateRequest(
             whiskey.getId(),
-            3, 4, 5, 2, 3,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3,
             "메모",
             false,
             tags.stream().map(Tag::getId).toList()
@@ -173,7 +172,7 @@ class TastingNoteServiceTest {
         Users user2 = users.get(1);
         TastingNoteCreateRequest request2 = new TastingNoteCreateRequest(
             whiskey.getId(),
-            4, 2, 5, 2, 3,
+            (short) 4, (short) 2, (short) 5, (short) 2, (short) 3,
             "메모",
             false,
             tags.stream().map(Tag::getId).toList()
@@ -198,7 +197,7 @@ class TastingNoteServiceTest {
         // given
         TastingNoteCreateRequest request = new TastingNoteCreateRequest(
             whiskey.getId(),
-            3, 4, 5, 2, 3,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3,
             "메모",
             false,
             tags.stream().map(Tag::getId).toList()
@@ -217,7 +216,7 @@ class TastingNoteServiceTest {
         Users user = users.get(0);
         TastingNoteCreateRequest request = new TastingNoteCreateRequest(
             whiskey.getId(),
-            3, 4, 5, 2, 3,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3,
             "메모",
             false,
             List.of()
@@ -241,13 +240,13 @@ class TastingNoteServiceTest {
         // given
         Users user = users.get(0);
         TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
-            whiskey.getId(), 3, 4, 5, 2, 3, "메모", false,
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
             tags.stream().map(Tag::getId).toList()
         );
         TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
 
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            5, 5, 5, 5, 5, "수정 메모", false,
+            (short) 5, (short) 5, (short) 5, (short) 5, (short) 5, "수정 메모", false,
             tags.stream().map(Tag::getId).toList()
         );
 
@@ -267,13 +266,13 @@ class TastingNoteServiceTest {
         // given
         Users user = users.get(0);
         TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
-            whiskey.getId(), 3, 4, 5, 2, 3, "메모", true,
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", true,
             tags.stream().map(Tag::getId).toList()
         );
         TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
 
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            3, 4, 5, 2, 3, "메모", false,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
             tags.stream().map(Tag::getId).toList()
         );
 
@@ -295,13 +294,13 @@ class TastingNoteServiceTest {
         // given
         Users user = users.get(0);
         TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
-            whiskey.getId(), 3, 4, 5, 2, 3, "메모", false,
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
             tags.stream().map(Tag::getId).toList()
         );
         TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
 
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            3, 4, 5, 2, 3, "메모", true,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", true,
             tags.stream().map(Tag::getId).toList()
         );
 
@@ -322,13 +321,13 @@ class TastingNoteServiceTest {
         // given
         Users user = users.get(0);
         TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
-            whiskey.getId(), 3, 4, 5, 2, 3, "메모", true,
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", true,
             tags.stream().map(Tag::getId).toList()
         );
         TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
 
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            5, 5, 5, 5, 5, "수정 메모", true,
+            (short) 5, (short) 5, (short) 5, (short) 5, (short) 5, "수정 메모", true,
             tags.stream().map(Tag::getId).toList()
         );
 
@@ -345,7 +344,7 @@ class TastingNoteServiceTest {
         // given — 태그 3개로 공개 노트 생성
         Users user = users.get(0);
         TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
-            whiskey.getId(), 3, 4, 5, 2, 3, "메모", false,
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
             tags.stream().map(Tag::getId).toList()
         );
         TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
@@ -353,7 +352,7 @@ class TastingNoteServiceTest {
         // when — 태그 1개만 남기고 수정
         List<Long> newTagIds = List.of(tags.get(0).getId());
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            3, 4, 5, 2, 3, "메모", false, newTagIds
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false, newTagIds
         );
         tastingNoteService.updateTastingNote(user.getId(), created.id(), updateRequest);
 
@@ -378,7 +377,7 @@ class TastingNoteServiceTest {
         // given
         Users user = users.get(0);
         TastingNoteUpdateRequest updateRequest = new TastingNoteUpdateRequest(
-            3, 4, 5, 2, 3, "메모", false,
+            (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
             tags.stream().map(Tag::getId).toList()
         );
 

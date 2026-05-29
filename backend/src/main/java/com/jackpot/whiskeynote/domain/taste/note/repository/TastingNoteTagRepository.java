@@ -1,4 +1,4 @@
-package com.jackpot.whiskeynote.domain.taste.note.repositoryy;
+package com.jackpot.whiskeynote.domain.taste.note.repository;
 
 import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNoteTag;
 import org.springframework.data.jpa.repository.EntityGraph;

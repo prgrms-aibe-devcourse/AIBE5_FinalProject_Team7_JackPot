@@ -4,8 +4,8 @@ import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteResponse;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteTagResponse;
 import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
-import com.jackpot.whiskeynote.domain.taste.note.repositoryy.TastingNoteRepository;
-import com.jackpot.whiskeynote.domain.taste.note.repositoryy.TastingNoteTagRepository;
+import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepository;
+import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteTagRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class TastingNoteController {
         }
 
         return tastingNoteRepository
-                .findFirstByUserIdAndWhiskeyIdAndDraftFalseOrderByUpdatedAtDesc(userId, whiskeyId)
+                .findFirstByUserIdAndWhiskeyIdAndIsDraftFalseOrderByUpdatedAtDesc(userId, whiskeyId)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());

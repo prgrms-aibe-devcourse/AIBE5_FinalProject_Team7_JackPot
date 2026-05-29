@@ -1,6 +1,6 @@
 package com.jackpot.whiskeynote.domain.whiskey.repository;
 
-import com.jackpot.whiskeynote.domain.taste.entity.TagCategory;
+import com.jackpot.whiskeynote.domain.taste.tag.entity.TagCategory;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
