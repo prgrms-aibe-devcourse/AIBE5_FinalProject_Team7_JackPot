@@ -8,6 +8,12 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
+/**
+ * Google OAuth — code 교환 및 사용자 정보 조회
+ *
+ * <p>Google Cloud Console → OAuth 2.0 클라이언트 ID/Secret → {@code OAUTH_GOOGLE_*} env.
+ * Redirect URI 예: {@code http://{host}/oauth/google/callback}
+ */
 @Component
 @RequiredArgsConstructor
 public class GoogleOauthClient implements OauthClient {

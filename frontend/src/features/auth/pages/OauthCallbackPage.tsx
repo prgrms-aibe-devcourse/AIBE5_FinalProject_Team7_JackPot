@@ -1,3 +1,11 @@
+/**
+ * OAuth callback 페이지 (AUTH-03 2단계 — 프론트)
+ *
+ * Provider가 redirect하는 URL: /oauth/{provider}/callback?code=...
+ * (PATHS.OAUTH_CALLBACK — 백엔드 OAUTH_*_REDIRECT_URI와 동일해야 함)
+ *
+ * code를 authApi.oauthCallback으로 POST → JWT localStorage 저장 → 온보딩/라운지 이동
+ */
 import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';

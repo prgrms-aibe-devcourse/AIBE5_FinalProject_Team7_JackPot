@@ -13,6 +13,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 마이페이지 비즈니스 로직 (USER-01/02/04, SET-01)
+ *
+ * <p>PATCH /me: null 필드는 무시(부분 업데이트). API 명세 기준 nickname·profileImageUrl만 처리.
+ * profileImageUrl은 CDN URL이 아닌 S3 object key — {@code MediaUploadService.validateProfileObjectKeyForUser}로 소유 검증.
+ *
+ * <p>SET-01: {@code authProvider == LOCAL}만 비밀번호 변경 가능. 소셜 계정은 각 provider에서 관리.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

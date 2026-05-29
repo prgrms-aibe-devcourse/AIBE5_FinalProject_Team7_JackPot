@@ -3,6 +3,7 @@ export const PATHS = {
   LANDING: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  /** OAuth provider callback — OAUTH_*_REDIRECT_URI와 동일 (예: /oauth/kakao/callback) */
   OAUTH_CALLBACK: '/oauth/:provider/callback',
   ONBOARDING: '/onboarding',
   SURVEY: '/survey',

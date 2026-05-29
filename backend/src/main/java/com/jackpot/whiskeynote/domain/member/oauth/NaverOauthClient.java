@@ -8,6 +8,12 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
+/**
+ * Naver OAuth — code 교환 및 사용자 정보 조회
+ *
+ * <p>Naver Developers → Application Client ID/Secret → {@code OAUTH_NAVER_*} env.
+ * Redirect URI 예: {@code http://{host}/oauth/naver/callback}
+ */
 @Component
 @RequiredArgsConstructor
 public class NaverOauthClient implements OauthClient {

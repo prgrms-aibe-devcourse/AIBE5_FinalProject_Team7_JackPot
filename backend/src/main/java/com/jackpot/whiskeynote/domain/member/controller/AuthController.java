@@ -20,13 +20,29 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 인증 API 컨트롤러
- * - AUTH-01: POST /api/v1/auth/register (회원가입)
- * - AUTH-02: POST /api/v1/auth/login    (로그인)
- * - AUTH-03: GET  /api/v1/auth/oauth/{provider} (소셜 로그인 redirect)
- * - AUTH-05: POST /api/v1/auth/logout   (로그아웃)
+ * 인증 API 컨트롤러 (AUTH-01 ~ AUTH-05)
  *
- * 모든 응답은 프론트 unwrapApiData() 와 맞춰 ApiResponse 래퍼로 반환
+ * <p>프론트 연동 요약:
+ * <ul>
+ *   <li>이메일 로그인/회원가입 → {@code authApi.login/register} → {@code TokenResponse}를 localStorage에 저장</li>
+ *   <li>소셜 로그인(AUTH-03) → 2단계 흐름 (아래 참고)</li>
+ *   <li>로그아웃 → Authorization Bearer + {@code POST /auth/logout}</li>
+ *   <li>토큰 갱신 → {@code POST /auth/refresh} (아직 프론트 자동 갱신 미구현)</li>
+ * </ul>
+ *
+ * <p>소셜 로그인 흐름 (프론트·백엔드 협업):
+ * <ol>
+ *   <li>프론트: {@code window.location.href = '/api/v1/auth/oauth/kakao'} (LoginPage.handleOauth)</li>
+ *   <li>백엔드: {@code OauthRedirectService}가 provider Authorization URL로 302 redirect</li>
+ *   <li>Provider: 사용자 동의 후 {@code /oauth/kakao/callback?code=...} 로 redirect (프론트 라우트)</li>
+ *   <li>프론트: {@code OauthCallbackPage}가 code를 읽어 {@code POST /auth/oauth/kakao/callback} 호출</li>
+ *   <li>백엔드: {@code OauthLoginService} → JWT 발급 → 프론트가 localStorage 저장 후 라운지/온보딩 이동</li>
+ * </ol>
+ *
+ * <p>설정: EC2 {@code .env}의 {@code OAUTH_*_*} 값 → {@code application-prod.yaml} → {@code OauthProperties}.
+ * redirect-uri는 provider 콘솔·프론트 {@code PATHS.OAUTH_CALLBACK}·백엔드 env 세 곳이 동일해야 함.
+ *
+ * <p>모든 응답은 프론트 {@code unwrapApiData()}와 맞춰 {@code ApiResponse} 래퍼로 반환.
  */
 @RestController
 @RequestMapping("/api/v1/auth")

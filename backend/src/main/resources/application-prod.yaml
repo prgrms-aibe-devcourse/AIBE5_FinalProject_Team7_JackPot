@@ -12,6 +12,8 @@ aws:
   s3:
     bucket: ${AWS_S3_BUCKET:team7-whiskeynote-images}
 
+# OAuth — 루트 .env의 OAUTH_* 변수 바인딩 (OauthProperties)
+# EC2: .env 수정 후 docker compose up -d
 oauth:
   google:
     client-id: ${OAUTH_GOOGLE_CLIENT_ID:}

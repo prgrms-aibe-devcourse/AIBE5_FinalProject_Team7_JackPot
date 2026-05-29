@@ -5,6 +5,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * AUTH-03 1단계: Provider Authorization URL 생성
+ *
+ * <p>호출: {@code AuthController.oauthRedirect} → 302 Location 헤더로 반환.
+ * 프론트는 이 URL을 직접 만들지 않고 {@code GET /api/v1/auth/oauth/{provider}}만 호출.
+ *
+ * <p>필수 설정 ({@code OauthProperties}):
+ * {@code oauth.{provider}.client-id}, {@code redirect-uri}
+ * — 누락 시 {@code IllegalStateException} (프론트에 SERVICE_UNAVAILABLE 등으로 노출될 수 있음).
+ *
+ * <p>redirect-uri 예: {@code http://{EC2_IP}/oauth/kakao/callback}
+ * (카카오/Google/네이버 개발자 콘솔 등록 URI와 byte-level 일치 필요)
+ */
 @Service
 @RequiredArgsConstructor
 public class OauthRedirectService {

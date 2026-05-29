@@ -37,8 +37,8 @@ export default function LoginPage() {
     }
   };
 
+  /** AUTH-03 1단계: 백엔드 redirect 엔드포인트로 이동 (프론트에서 provider URL 직접 조립하지 않음) */
   function handleOauth(provider: 'kakao' | 'google' | 'naver') {
-    // AUTH-03: 백엔드에서 Authorization URL로 302 redirect 처리
     window.location.href = `/api/v1/auth/oauth/${provider}`;
   }
 

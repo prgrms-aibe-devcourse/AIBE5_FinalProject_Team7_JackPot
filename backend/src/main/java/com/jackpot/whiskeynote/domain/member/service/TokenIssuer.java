@@ -11,6 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Access/Refresh JWT 발급 공통 컴포넌트
+ *
+ * <p>호출처: {@link AuthService} (회원가입·로그인), {@link OauthLoginService} (소셜 로그인).
+ * refresh는 {@link AuthService#refresh}에서 별도 처리 — access만 재발급.
+ *
+ * <p>프론트가 기대하는 {@link TokenResponse} 필드:
+ * accessToken, refreshToken, userId, isNewUser, nickname, profileImageUrl
+ */
 @Component
 @RequiredArgsConstructor
 public class TokenIssuer {
