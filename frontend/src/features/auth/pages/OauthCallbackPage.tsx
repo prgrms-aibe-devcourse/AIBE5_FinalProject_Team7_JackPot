@@ -15,6 +15,7 @@ export default function OauthCallbackPage() {
   const { provider } = useParams();
   const [searchParams] = useSearchParams();
 
+  // AUTH-03 2단계 | 의도: provider가 넘긴 code로 JWT 받아 이메일 로그인과 동일하게 세션 저장
   useEffect(() => {
     const run = async () => {
       const code = searchParams.get('code');

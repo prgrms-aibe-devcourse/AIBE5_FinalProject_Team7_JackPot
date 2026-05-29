@@ -21,6 +21,7 @@ export interface AuthData {
 }
 
 export const authApi = {
+  // AUTH-01 | 의도: RegisterPage → 가입 성공 시 토큰 반환 (호출부에서 localStorage 저장)
   register: async (
     email: string,
     password: string,
@@ -38,6 +39,7 @@ export const authApi = {
     return unwrapApiData(res.data);
   },
 
+  // AUTH-02 | 의도: LoginPage → JWT 수신 후 라운지/온보딩 분기
   login: async (email: string, password: string): Promise<AuthData> => {
     const res = await apiClient.post<ApiResponse<AuthData>>('/auth/login', {
       email,
@@ -46,10 +48,12 @@ export const authApi = {
     return unwrapApiData(res.data);
   },
 
+  // AUTH-05 | 의도: 서버 RefreshToken 폐기 + localStorage는 호출부에서 clear
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout');
   },
 
+  // AUTH-03 2단계 | 의도: OauthCallbackPage가 URL의 code를 서버에 넘겨 JWT 수신
   oauthCallback: async (provider: string, code: string): Promise<AuthData> => {
     const res = await apiClient.post<ApiResponse<AuthData>>(`/auth/oauth/${provider}/callback`, { code });
     return unwrapApiData(res.data);

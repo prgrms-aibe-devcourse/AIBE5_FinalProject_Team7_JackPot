@@ -29,12 +29,14 @@ public class UserMeService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // USER-01 | 의도: Entity → DTO 변환 (프론트에 passwordHash 등 노출 방지)
     public UserMeDto getMe(Long userId) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return UserMeDto.from(user);
     }
 
+    // USER-02 | 의도: 명세 필드만 갱신, profileImageUrl은 본인 S3 key인지 검증
     @Transactional
     public UserMeDto updateMe(Long userId, UpdateUserMeRequest request) {
         Users user = usersRepository.findById(userId)
@@ -64,7 +66,7 @@ public class UserMeService {
         return UserMeDto.from(user);
     }
 
-    // USER-04: 탈퇴
+    // USER-04 | 의도: soft withdraw + RefreshToken 삭제로 세션 완전 종료
     @Transactional
     public void deleteMe(Long userId) {
         Users user = usersRepository.findById(userId)
@@ -75,7 +77,7 @@ public class UserMeService {
         refreshTokenRepository.deleteByUserId(userId);
     }
 
-    // SET-01: 비밀번호 변경 (local 계정만)
+    // SET-01 | 의도: 현재 비밀번호 확인 후 LOCAL만 해시 갱신
     @Transactional
     public void updateMyPassword(Long userId, UpdateMyPasswordRequest request) {
         Users user = usersRepository.findById(userId)

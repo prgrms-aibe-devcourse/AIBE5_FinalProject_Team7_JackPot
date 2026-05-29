@@ -29,13 +29,13 @@ public class UserMeController {
 
     private final UserMeService userMeService;
 
-    // USER-01: 내 프로필 조회
+    // USER-01 | 의도: 마이페이지·TopNav 표시용 프로필 (JWT userId 기준)
     @GetMapping("/me")
     public ApiResponse<UserMeDto> getMe(@AuthenticationPrincipal JwtUserPrincipal principal) {
         return ApiResponse.ok(userMeService.getMe(principal.userId()));
     }
 
-    // USER-02: 내 프로필 수정
+    // USER-02 | 의도: 닉네임·프로필 이미지(S3 key) 부분 수정 — null 필드는 무시
     @PatchMapping("/me")
     public ApiResponse<UserMeDto> updateMe(
             @AuthenticationPrincipal JwtUserPrincipal principal,
@@ -44,14 +44,14 @@ public class UserMeController {
         return ApiResponse.ok(userMeService.updateMe(principal.userId(), request));
     }
 
-    // USER-04: 탈퇴
+    // USER-04 | 의도: 계정 비활성화 + RefreshToken 제거로 완전 로그아웃
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteMe(@AuthenticationPrincipal JwtUserPrincipal principal) {
         userMeService.deleteMe(principal.userId());
         return ApiResponse.ok(null);
     }
 
-    // SET-01: 비밀번호 변경
+    // SET-01 | 의도: 이메일 가입(LOCAL) 사용자만 비밀번호 변경 — 소셜은 provider에서 관리
     @PatchMapping("/me/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateMyPassword(

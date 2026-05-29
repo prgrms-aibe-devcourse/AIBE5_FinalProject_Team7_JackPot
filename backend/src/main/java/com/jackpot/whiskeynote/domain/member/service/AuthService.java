@@ -37,7 +37,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenIssuer tokenIssuer;
 
-    // ── 회원가입 (AUTH-01) ──────────────────────────────
+    // AUTH-01 | 의도: 중복 검증 후 LOCAL 계정 생성, 가입=로그인으로 TokenIssuer 호출
     @Transactional
     public TokenResponse register(RegisterRequest request) {
 
@@ -66,7 +66,7 @@ public class AuthService {
         return tokenIssuer.issueTokens(savedUser);
     }
 
-    // ── 로그인 (AUTH-02) ──────────────────────────────
+    // AUTH-02 | 의도: BCrypt 검증 + lastLoginAt 갱신 후 JWT 발급
     @Transactional
     public TokenResponse login(LoginRequest request) {
 
@@ -86,14 +86,14 @@ public class AuthService {
         return tokenIssuer.issueTokens(user);
     }
 
-    // ── 로그아웃 (AUTH-05) ──────────────────────────────
+    // AUTH-05 | 의도: refresh_tokens 행 삭제로 refresh 기반 재발급 차단
     @Transactional
     public void logout(Long userId) {
         // MySQL에서 RefreshToken 삭제 → 재발급 불가
         refreshTokenRepository.deleteByUserId(userId);
     }
 
-    // ── AccessToken 재발급 (AUTH-06) ──────────────────────────────
+    // AUTH-04 | 의도: 유효한 Refresh만으로 Access 재발급 — Refresh는 교체하지 않음
     @Transactional
     public TokenResponse refresh(RefreshRequest request) {
 

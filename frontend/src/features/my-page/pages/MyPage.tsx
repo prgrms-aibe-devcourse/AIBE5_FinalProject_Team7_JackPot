@@ -29,6 +29,7 @@ export default function MyPage() {
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
 
+  // USER-01 | 의도: 진입 시 서버 프로필 로드 + TopNav용 localStorage 갱신
   useEffect(() => {
     const run = async () => {
       try {
@@ -45,6 +46,7 @@ export default function MyPage() {
     run();
   }, []);
 
+  // USER-02 | 의도: 닉네임만 저장 (프로필 이미지는 별도 핸들러)
   async function handleSave() {
     const trimmed = nickname.trim();
     if (!trimmed) return;
@@ -64,6 +66,7 @@ export default function MyPage() {
     }
   }
 
+  // USER-02 | 의도: presign 업로드 후 object key만 DB에 저장 (URL 직접 저장 X)
   async function handleProfileImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -88,6 +91,7 @@ export default function MyPage() {
     }
   }
 
+  // USER-04 | 의도: 탈퇴 API 후 세션 삭제하고 로그인 화면으로
   async function handleWithdraw() {
     const ok = window.confirm('정말로 탈퇴하시겠습니까? 탈퇴 후에는 되돌릴 수 없습니다.');
     if (!ok) return;
@@ -104,6 +108,7 @@ export default function MyPage() {
     window.location.href = PATHS.LOGIN;
   }
 
+  // SET-01 | 의도: 프론트 검증 후 LOCAL 비밀번호 변경 API 호출
   async function handleChangePassword() {
     if (savingPassword) return;
     if (!currentPassword.trim() || !newPassword.trim()) {
