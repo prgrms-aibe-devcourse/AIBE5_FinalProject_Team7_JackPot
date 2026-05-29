@@ -52,9 +52,10 @@ public class Review {
         return review;
     }
 
-    public void update(BigDecimal rating, String publicText) {
+    public void update(BigDecimal rating, String publicText, Long attachedNoteId) {
         this.rating = rating;
         this.publicText = publicText;
+        this.attachedNoteId = attachedNoteId;
     }
 
     public boolean isWrittenBy(Long userId){

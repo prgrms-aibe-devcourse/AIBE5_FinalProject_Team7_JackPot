@@ -990,6 +990,192 @@ body {
   margin: 8px 0 0;
 }
 
+.wf-note-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.wf-note-editor__scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.wf-note-editor__score {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wf-note-editor__score-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 10px;
+  align-items: center;
+}
+
+.wf-note-editor__score-row input[type='range'] {
+  width: 100%;
+  accent-color: var(--wf-accent);
+}
+
+.wf-note-editor__score-row input[type='number'] {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--wf-text);
+  font: inherit;
+}
+
+.wf-note-editor__tags {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wf-note-editor__tag-picker-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.wf-note-editor__tag-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  padding: 12px 14px;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.wf-note-editor__tag-picker span {
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wf-note-editor__tag-picker strong {
+  color: var(--wf-text);
+  font-size: 14px;
+}
+
+.wf-note-editor__selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.wf-note-editor__selected-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px dashed var(--wf-accent);
+  border-radius: 999px;
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--wf-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wf-note-editor__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wf-note-editor__tag {
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px dashed var(--wf-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wf-note-editor__tag--on {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--wf-accent);
+}
+
+.wf-note-editor__tag-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.wf-note-editor__tag-modal-panel {
+  width: min(560px, 100%);
+  max-height: 80vh;
+  overflow: hidden;
+  padding: 16px;
+  background: var(--wf-surface);
+}
+
+.wf-note-editor__tag-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wf-note-editor__tag-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 8px;
+  max-height: 58vh;
+  overflow-y: auto;
+}
+
+.wf-note-editor__tag-modal-item {
+  min-height: 42px;
+  padding: 10px 12px;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wf-note-editor__draft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wf-muted);
+  font-size: 14px;
+}
+
+.wf-note-editor__draft input {
+  accent-color: var(--wf-accent);
+}
+
+.wf-note-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .wf-detail-columns__list {
   list-style: none;
   margin: 12px 0 0;

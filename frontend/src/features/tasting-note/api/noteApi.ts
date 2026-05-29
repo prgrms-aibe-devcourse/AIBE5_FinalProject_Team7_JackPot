@@ -23,6 +23,18 @@ export interface TastingNoteTag {
   imageUrl: string | null;
 }
 
+export interface TastingNoteSaveRequest {
+  whiskeyId?: number;
+  bodyScore: number;
+  finishScore: number;
+  smokyScore: number;
+  spicyScore: number;
+  sweetScore: number;
+  memo: string;
+  isDraft: boolean;
+  tagIds: number[];
+}
+
 export async function fetchMyTastingNoteForWhiskey(
   userId: number,
   whiskeyId: string,
@@ -44,8 +56,31 @@ export async function fetchTastingNote(noteId: number): Promise<MyTastingNote> {
   return data;
 }
 
+export async function createTastingNote(
+  userId: number,
+  body: TastingNoteSaveRequest,
+): Promise<MyTastingNote> {
+  const { data } = await apiClient.post<MyTastingNote>('/tasting-notes', body, {
+    params: { userId },
+  });
+  return data;
+}
+
+export async function updateTastingNote(
+  userId: number,
+  noteId: number,
+  body: TastingNoteSaveRequest,
+): Promise<MyTastingNote> {
+  const { data } = await apiClient.patch<MyTastingNote>(`/tasting-notes/${noteId}`, body, {
+    params: { userId },
+  });
+  return data;
+}
+
 export const noteApi = {
   client: apiClient,
   fetchMyTastingNoteForWhiskey,
   fetchTastingNote,
+  createTastingNote,
+  updateTastingNote,
 };

@@ -69,31 +69,16 @@ public class ReviewService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
         Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다."));
-        Long attachedNoteId = null;
 
-        if (request.attachedNoteId() != null) {
-            TastingNote note = tastingNoteRepository.findById(request.attachedNoteId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "시음 노트를 찾을 수 없습니다."
-                    ));
-
-            if (!note.getUser().getId().equals(userId)) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "본인의 시음 노트만 첨부할 수 있습니다."
-                );
-            }
-
-            if (!note.getWhiskey().getId().equals(whiskeyId)) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "해당 위스키의 시음 노트만 첨부할 수 있습니다."
-                );
-            }
-
-            attachedNoteId = note.getId();
+        // 정책: 한 사용자는 하나의 위스키에 리뷰를 1개만 작성할 수 있다. 수정은 PATCH /api/v1/reviews/{reviewId}를 사용한다.
+        if (reviewRepository.existsByUserIdAndWhiskeyId(userId, whiskeyId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "이미 이 위스키에 작성한 리뷰가 있습니다."
+            );
         }
+
+        Long attachedNoteId = validateAttachedNote(userId, whiskeyId, request.attachedNoteId());
         Review review = Review.create(
                 user,
                 whiskey,
@@ -114,7 +99,13 @@ public class ReviewService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "리뷰를 수정할 권한이 없습니다.");
         }
 
-        review.update(request.rating(), request.publicText());
+        Long attachedNoteId = validateAttachedNote(
+                userId,
+                review.getWhiskey().getId(),
+                request.attachedNoteId()
+        );
+
+        review.update(request.rating(), request.publicText(), attachedNoteId);
         Review updatedReview = reviewRepository.save(review);
         return WhiskeyReviewResponse.from(updatedReview);
     }
@@ -124,5 +115,33 @@ public class ReviewService {
         Review review = reviewRepository.findWithUserAndWhiskeyById(reviewId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."));
         reviewRepository.delete(review);
+    }
+    // My Note 첨부 검증 로직
+    private Long validateAttachedNote(Long userId, Long whiskeyId, Long attachedNoteId) {
+        if (attachedNoteId == null) {
+            return null;
+        }
+
+        TastingNote note = tastingNoteRepository.findById(attachedNoteId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "시음 노트를 찾을 수 없습니다."
+                ));
+
+        if (!note.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "본인의 시음 노트만 첨부할 수 있습니다."
+            );
+        }
+
+        if (!note.getWhiskey().getId().equals(whiskeyId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "해당 위스키의 시음 노트만 첨부할 수 있습니다."
+            );
+        }
+
+        return note.getId();
     }
 }
