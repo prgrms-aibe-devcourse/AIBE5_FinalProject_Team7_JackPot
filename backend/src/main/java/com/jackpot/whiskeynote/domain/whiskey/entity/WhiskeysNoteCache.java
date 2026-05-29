@@ -1,7 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.entity;
 
-import com.jackpot.whiskeynote.domain.taste.entity.Tag;
-import com.jackpot.whiskeynote.domain.taste.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

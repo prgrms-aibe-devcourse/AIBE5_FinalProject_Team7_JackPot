@@ -1,4 +1,4 @@
-package com.jackpot.whiskeynote.domain.taste.entity;
+package com.jackpot.whiskeynote.domain.taste.tag.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -16,7 +16,7 @@ public record TastingNoteResponse(
         Short sweetScore,
         String memo,
         List<TastingNoteTagResponse> tags,
-        boolean draft,
+        boolean isDraft,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -36,7 +36,7 @@ public record TastingNoteResponse(
                 note.getSweetScore(),
                 note.getMemo(),
                 tags,
-                note.isDraft(),
+                note.getIsDraft(),
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );

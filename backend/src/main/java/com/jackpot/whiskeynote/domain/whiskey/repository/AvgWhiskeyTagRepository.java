@@ -1,6 +1,6 @@
 package com.jackpot.whiskeynote.domain.whiskey.repository;
 
-import com.jackpot.whiskeynote.domain.taste.entity.Tag;
+import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 import org.springframework.data.jpa.repository.JpaRepository;

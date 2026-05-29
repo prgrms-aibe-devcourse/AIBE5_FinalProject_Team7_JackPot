@@ -1,4 +1,4 @@
-package com.jackpot.whiskeynote.domain.taste.dto;
+package com.jackpot.whiskeynote.domain.taste.note.dto;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -6,11 +6,11 @@ import java.util.List;
 
 public record TastingNoteCreateRequest(
     Long whiskeyId,
-    Integer bodyScore,
-    Integer finishScore,
-    Integer smokyScore,
-    Integer spicyScore,
-    Integer sweetScore,
+    Short bodyScore,
+    Short finishScore,
+    Short smokyScore,
+    Short spicyScore,
+    Short sweetScore,
     String memo,
 
     @NotNull

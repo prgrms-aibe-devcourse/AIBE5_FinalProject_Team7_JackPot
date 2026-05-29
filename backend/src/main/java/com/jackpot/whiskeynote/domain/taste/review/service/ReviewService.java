@@ -3,7 +3,7 @@ package com.jackpot.whiskeynote.domain.taste.review.service;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
-import com.jackpot.whiskeynote.domain.taste.note.repositoryy.TastingNoteRepository;
+import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepository;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewUpdateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
