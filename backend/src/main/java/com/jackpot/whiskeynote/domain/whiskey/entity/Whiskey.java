@@ -1,13 +1,16 @@
 package com.jackpot.whiskeynote.domain.whiskey.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "whiskeys")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Whiskey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
