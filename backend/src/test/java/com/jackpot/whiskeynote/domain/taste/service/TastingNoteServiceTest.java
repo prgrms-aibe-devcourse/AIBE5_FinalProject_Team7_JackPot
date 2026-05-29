@@ -16,6 +16,7 @@ import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
 import com.jackpot.whiskeynote.global.security.SecurityConfig;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,7 @@ class TastingNoteServiceTest {
     @Autowired private WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
 
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private EntityManager entityManager;
 
     private List<Users> users;
     private Whiskey whiskey;
@@ -355,6 +357,10 @@ class TastingNoteServiceTest {
         );
         tastingNoteService.updateTastingNote(user.getId(), created.id(), updateRequest);
 
+        // 1차 캐시 초기화
+        entityManager.flush();
+        entityManager.clear();
+
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(whiskey.getId())
             .orElseThrow();
@@ -362,8 +368,8 @@ class TastingNoteServiceTest {
             .collect(Collectors.toMap(t -> t.getTag().getId(), AvgWhiskeyTag::getCount));
 
         assertThat(countByTagId.get(tags.get(0).getId())).isEqualTo(1); // 유지
-        assertThat(countByTagId.get(tags.get(1).getId())).isEqualTo(0); // 차감
-        assertThat(countByTagId.get(tags.get(2).getId())).isEqualTo(0); // 차감
+        assertThat(countByTagId.get(tags.get(1).getId())).isNull(); // 삭제됨
+        assertThat(countByTagId.get(tags.get(2).getId())).isNull(); // 삭제됨
     }
 
     @Test
