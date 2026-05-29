@@ -42,14 +42,16 @@ public class AuthController {
     private final OauthRedirectService oauthRedirectService;
     private final OauthLoginService oauthLoginService;
 
-    // AUTH-01 | 의도: 가입 직후 별도 login 없이 JWT 반환 → 온보딩/라운지로 바로 진입
+    // AUTH-01: 회원가입
+    // 의도: 가입 직후 별도 login 없이 JWT 반환 → 온보딩/라운지로 바로 진입
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ApiResponse.ok(authService.register(request));
     }
 
-    // AUTH-03 1단계 | 의도: 프론트가 provider URL·client_id를 몰라도 되게 백엔드가 302로 넘김
+    // AUTH-03: 소셜 로그인 (Authorization endpoint redirect)
+    // 의도: 프론트가 provider URL·client_id를 몰라도 되게 백엔드가 302로 넘김
     @GetMapping("/oauth/{provider}")
     public ResponseEntity<Void> oauthRedirect(@PathVariable String provider) {
         AuthProvider authProvider = parseProvider(provider);
@@ -59,7 +61,8 @@ public class AuthController {
                 .build();
     }
 
-    // AUTH-03 2단계 | 의도: code→token 교환을 서버에서 처리 (client_secret 프론트 노출 방지)
+    // 소셜 로그인 콜백: code → provider token 교환 → 우리 JWT 발급
+    // 의도: code→token 교환을 서버에서 처리 (client_secret 프론트 노출 방지)
     @PostMapping("/oauth/{provider}/callback")
     public ApiResponse<TokenResponse> oauthCallback(
             @PathVariable String provider,
@@ -69,25 +72,29 @@ public class AuthController {
         return ApiResponse.ok(oauthLoginService.login(authProvider, request.code()));
     }
 
-    // AUTH-02 | 의도: 이메일·비밀번호 검증 후 JWT 발급
+    // AUTH-02: 로그인
+    // 의도: 이메일·비밀번호 검증 후 JWT 발급
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.ok(authService.login(request));
     }
 
-    // AUTH-05 | 의도: RefreshToken 삭제 → 탈취·재사용된 refresh로 재발급 불가
+    // AUTH-05: 로그아웃
+    // 의도: RefreshToken 삭제 → 탈취·재사용된 refresh로 재발급 불가
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@AuthenticationPrincipal JwtUserPrincipal principal) {
         authService.logout(principal.userId());
     }
 
-    // AUTH-04 | 의도: Access 만료 시 재로그인 없이 갱신 (Refresh는 DB에 유지)
+    // AUTH-04: AccessToken 재발급
+    // 의도: Access 만료 시 재로그인 없이 갱신 (Refresh는 DB에 유지)
     @PostMapping("/refresh")
     public ApiResponse<TokenResponse> refresh(@Valid @RequestBody RefreshRequest request) {
         return ApiResponse.ok(authService.refresh(request));
     }
 
+    // provider path 파싱
     // 의도: URL path(kakao 등)를 enum으로 변환, LOCAL·잘못된 값 차단
     private AuthProvider parseProvider(String provider) {
         if (provider == null) {

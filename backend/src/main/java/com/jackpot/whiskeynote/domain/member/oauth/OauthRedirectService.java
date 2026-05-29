@@ -17,6 +17,7 @@ public class OauthRedirectService {
 
     private final OauthProperties oauthProperties;
 
+    // Authorization URL 생성
     // 의도: provider별 authorize URL 조립 — env의 client-id·redirect-uri 사용
     public String buildAuthorizationUrl(AuthProvider provider) {
         return switch (provider) {
@@ -67,6 +68,7 @@ public class OauthRedirectService {
                 .toUriString();
     }
 
+    // OAuth 설정 검증
     // 의도: EC2 .env 미설정 시 조기 실패 — 잘못된 redirect로 provider 오류 방지
     private static OauthProperties.Provider require(OauthProperties.Provider provider, String name) {
         if (provider == null || isBlank(provider.clientId()) || isBlank(provider.redirectUri())) {

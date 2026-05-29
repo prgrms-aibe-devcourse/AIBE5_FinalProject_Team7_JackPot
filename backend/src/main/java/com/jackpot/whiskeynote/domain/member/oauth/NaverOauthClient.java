@@ -26,6 +26,7 @@ public class NaverOauthClient implements OauthClient {
         return AuthProvider.NAVER;
     }
 
+    // fetchUserInfo
     // 의도: Naver code → token → /v1/nid/me로 providerId·이메일·닉네임 조회
     @Override
     public OauthUserInfo fetchUserInfo(String code) {
