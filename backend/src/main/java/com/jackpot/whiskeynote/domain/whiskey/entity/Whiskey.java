@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "whiskeys")
+@Builder
 public class Whiskey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

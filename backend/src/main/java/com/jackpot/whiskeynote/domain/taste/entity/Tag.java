@@ -1,11 +1,13 @@
 package com.jackpot.whiskeynote.domain.taste.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
 @Getter
 @Table(name = "tags")
+@Builder
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
