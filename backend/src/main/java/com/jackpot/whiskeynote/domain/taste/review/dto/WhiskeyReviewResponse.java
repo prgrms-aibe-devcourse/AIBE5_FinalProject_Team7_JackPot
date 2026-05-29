@@ -14,6 +14,7 @@ public record WhiskeyReviewResponse(
         String profileImageUrl,
         BigDecimal rating,
         String publicText,
+        Long attachedNoteId,
         boolean hasAttachedNote,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -28,6 +29,7 @@ public record WhiskeyReviewResponse(
                 review.getUser().getProfileImageUrl(),
                 review.getRating(),
                 review.getPublicText(),
+                review.getAttachedNoteId(),
                 review.getAttachedNoteId() != null,
                 review.getCreatedAt(),
                 review.getUpdatedAt()

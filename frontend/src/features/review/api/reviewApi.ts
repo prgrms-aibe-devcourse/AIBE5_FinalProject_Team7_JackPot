@@ -5,6 +5,7 @@ import type { WhiskeyReview } from '@/features/whiskey/types';
 export interface ReviewSaveRequest {
   rating: number;
   publicText: string;
+  attachedNoteId?: number | null;
 }
 
 export async function fetchMyReviews(

@@ -12,6 +12,8 @@ public record ReviewCreateRequest(
         @DecimalMax(value = "5.0", message = "평점은 5 이하이어야 합니다.")
         BigDecimal rating,
 
-        String publicText
+        String publicText,
+
+        Long attachedNoteId
 ) {
 }

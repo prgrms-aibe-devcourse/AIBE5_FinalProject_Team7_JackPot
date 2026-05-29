@@ -2,6 +2,8 @@ package com.jackpot.whiskeynote.domain.taste.review.service;
 
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
+import com.jackpot.whiskeynote.domain.taste.note.repositoryy.TastingNoteRepository;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewUpdateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
@@ -25,6 +27,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final WhiskeyRepository whiskeyRepository;
     private final UsersRepository usersRepository;
+    private final TastingNoteRepository tastingNoteRepository;
 
     @Transactional(readOnly = true)
     public Page<WhiskeyReviewResponse> getReviewsByWhiskey(Long whiskeyId, int page, int size) {
@@ -61,16 +64,42 @@ public class ReviewService {
     }
     // 리뷰 작성
     @Transactional
-    public WhiskeyReviewResponse createReview(Long userId, Long WhiskeyId, ReviewCreateRequest request){
+    public WhiskeyReviewResponse createReview(Long userId, Long whiskeyId, ReviewCreateRequest request){
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
-        Whiskey whiskey = whiskeyRepository.findById(WhiskeyId)
+        Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다."));
+        Long attachedNoteId = null;
+
+        if (request.attachedNoteId() != null) {
+            TastingNote note = tastingNoteRepository.findById(request.attachedNoteId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "시음 노트를 찾을 수 없습니다."
+                    ));
+
+            if (!note.getUser().getId().equals(userId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "본인의 시음 노트만 첨부할 수 있습니다."
+                );
+            }
+
+            if (!note.getWhiskey().getId().equals(whiskeyId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "해당 위스키의 시음 노트만 첨부할 수 있습니다."
+                );
+            }
+
+            attachedNoteId = note.getId();
+        }
         Review review = Review.create(
                 user,
                 whiskey,
                 request.rating(),
-                request.publicText()
+                request.publicText(),
+                attachedNoteId
         );
         Review savedReview = reviewRepository.save(review);
         return WhiskeyReviewResponse.from(savedReview);
