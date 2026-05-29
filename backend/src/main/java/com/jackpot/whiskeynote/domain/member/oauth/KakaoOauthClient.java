@@ -26,6 +26,8 @@ public class KakaoOauthClient implements OauthClient {
         return AuthProvider.KAKAO;
     }
 
+    // fetchUserInfo
+    // 의도: 카카오 code를 access_token으로 바꾼 뒤 /v2/user/me로 providerId·닉네임 조회
     @Override
     public OauthUserInfo fetchUserInfo(String code) {
         OauthProperties.Provider kakao = require(oauthProperties.kakao(), "kakao");

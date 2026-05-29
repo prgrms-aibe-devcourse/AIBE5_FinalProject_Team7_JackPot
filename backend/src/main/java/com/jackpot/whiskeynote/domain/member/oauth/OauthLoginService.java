@@ -33,6 +33,8 @@ public class OauthLoginService {
     private final TokenIssuer tokenIssuer;
     private final List<OauthClient> oauthClients;
 
+    // AUTH-03: 소셜 로그인
+    // 의도: 기존 소셜 회원이면 조회, 없으면 자동 가입 후 이메일 로그인과 동일하게 JWT 발급
     @Transactional
     public TokenResponse login(AuthProvider provider, String code) {
         OauthClient client = oauthClients.stream()
@@ -51,6 +53,8 @@ public class OauthLoginService {
         return tokenIssuer.issueTokens(user);
     }
 
+    // 소셜 최초 가입
+    // 의도: 최초 소셜 로그인 시 users 행 생성 — 로컬 비밀번호 로그인은 불가하도록 랜덤 해시
     private Users createUser(AuthProvider provider, OauthUserInfo userInfo) {
         String nickname = normalizeNickname(userInfo.nickname());
         while (usersRepository.existsByNickname(nickname)) {
@@ -69,6 +73,8 @@ public class OauthLoginService {
         return usersRepository.save(user);
     }
 
+    // 닉네임 정규화
+    // 의도: provider 닉네임 없을 때 충돌 없는 기본 닉네임 생성
     private static String normalizeNickname(String nickname) {
         if (isBlank(nickname)) {
             return "user_" + UUID.randomUUID().toString().substring(0, 8);

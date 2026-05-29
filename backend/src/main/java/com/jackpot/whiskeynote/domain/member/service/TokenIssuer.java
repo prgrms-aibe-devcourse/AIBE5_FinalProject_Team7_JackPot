@@ -24,6 +24,8 @@ public class TokenIssuer {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // JWT 발급
+    // 의도: 로컬·소셜 로그인 공통 — Access/Refresh 쌍 발급 및 refresh_tokens upsert
     @Transactional
     public TokenResponse issueTokens(Users user) {
         String accessToken = jwtProvider.createAccessToken(user.getId(), user.getRole().name());

@@ -26,6 +26,8 @@ public class GoogleOauthClient implements OauthClient {
         return AuthProvider.GOOGLE;
     }
 
+    // fetchUserInfo
+    // 의도: Google code → token → userinfo로 providerId·이메일·이름 조회
     @Override
     public OauthUserInfo fetchUserInfo(String code) {
         OauthProperties.Provider google = require(oauthProperties.google(), "google");
