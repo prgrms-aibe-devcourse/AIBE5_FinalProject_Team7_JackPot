@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
+import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
@@ -12,10 +13,18 @@ import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 
-const PICKS = [
-  { id: '1', name: '글렌피딕 12년', meta: '★ 92 · 맛있어서 추천', highlighted: true },
-  { id: '2', name: '라프로익 10년', meta: '★ 88 · 피트 입문용' },
-];
+// Pick API 응답 타입
+interface PickItem {
+  pickId: number;
+  whiskey: {
+    id: number;
+    name: string;
+    imageUrl: string | null;
+    type: string;
+    abv: number | null;
+  };
+  createdAt: string;
+}
 
 const COMMUNITY_POSTS = [
   { title: '라프로익 10 첫 피트 후기', meta: '#피트도전 · 게시글', likes: 42, ago: '2일 전' },
@@ -124,6 +133,35 @@ export default function CabinetPage() {
   const section = parseSection(params.get('section'));
   const tab = parseTab(params.get('tab'));
   const currentUserId = getCurrentUserId();
+
+  // Pick 목록 상태
+  const [picks, setPicks] = useState<PickItem[]>([]);
+  const [picksLoading, setPicksLoading] = useState(false);
+
+  // tab이 'pick'으로 바뀔 때마다 API 호출
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    // Pick 탭이 아니어도 개수 표시를 위해 항상 호출
+    setPicksLoading(true);
+    cabinetApi
+      .getPickList(currentUserId)
+      .then((res) => setPicks(res.data.data.content ?? []))
+      .catch(() => alert('픽 목록을 불러오지 못했습니다.'))
+      .finally(() => setPicksLoading(false));
+  }, [currentUserId]);
+
+  // 픽 삭제 핸들러
+  const handleDeletePick = async (whiskeyId: number) => {
+    if (!confirm('픽 목록에서 제거할까요?')) return;
+    try {
+      await cabinetApi.deletePick(whiskeyId);
+      // 삭제 후 목록에서 제거
+      setPicks((prev) => prev.filter((p) => p.whiskey.id !== whiskeyId));
+    } catch {
+      alert('픽 제거에 실패했습니다.');
+    }
+  };
   const { data: myReviews, isLoading: reviewsLoading } = useMyReviews(currentUserId, 0, 20);
   const updateReviewMutation = useUpdateReview(currentUserId);
   const deleteReviewMutation = useDeleteReview(currentUserId);
@@ -170,7 +208,7 @@ export default function CabinetPage() {
           : '선택한 메뉴: 커뮤니티 — 작성 글·리뷰·칼럼'}
       </p>
 
-      <CabinetStatsBar pick={12} wish={8} reviews={24} notes={18} />
+      <CabinetStatsBar pick={picks.length} wish={8} reviews={24} notes={18} />
 
       {section === 'bar' ? (
         <>
@@ -199,9 +237,22 @@ export default function CabinetPage() {
               )}
             </>
           ) : (
-            PICKS.map((p) => (
-              <CabinetPickItem key={p.id} {...p} />
-            ))
+            // Pick 탭 — API 데이터 렌더링
+            picksLoading ? (
+              <p className="wf-text-sm">픽 목록을 불러오는 중입니다...</p>
+            ) : picks.length === 0 ? (
+              <p className="wf-text-sm">아직 픽한 위스키가 없습니다.</p>
+            ) : (
+              picks.map((pick) => (
+                <CabinetPickItem
+                  key={pick.pickId}
+                  id={String(pick.whiskey.id)}
+                  name={pick.whiskey.name}
+                  meta={`${pick.whiskey.type} · ${pick.whiskey.abv ?? '-'}%`}
+                  onRemove={() => handleDeletePick(pick.whiskey.id)}
+                />
+              ))
+            )
           )}
         </>
       ) : (

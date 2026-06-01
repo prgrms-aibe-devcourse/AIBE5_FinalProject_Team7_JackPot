@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -71,6 +73,7 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
 
 export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
+  const navigate = useNavigate();
   const id = whiskeyId ?? '1';
   const reviewPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
   const notePath = PATHS.TASTING_NOTE.replace(':whiskeyId', id);
@@ -80,6 +83,49 @@ export default function WhiskeyDetailPage() {
   const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
 
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
+
+  // Pick 상태
+  const [isPicked, setIsPicked] = useState(false);
+  const [pickLoading, setPickLoading] = useState(false);
+
+  // 페이지 진입 시 픽 여부 확인
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;  // 미로그인이면 체크 안 함
+
+    cabinetApi
+      .getPickStatus(Number(id))
+      .then((res) => setIsPicked(res.data.data.picked))
+      .catch(() => {});  // 실패해도 버튼 동작에 영향 없게 조용히 처리
+  }, [id]);
+
+  // Pick 버튼 클릭 핸들러
+  const handlePickToggle = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      // 확인 누르면 로그인 페이지로 이동
+      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+      if (goLogin) navigate(PATHS.LOGIN);
+      return;
+    }
+
+    setPickLoading(true);
+    try {
+      if (isPicked) {
+        // 이미 픽한 상태 → 제거
+        await cabinetApi.deletePick(Number(id));
+        setIsPicked(false);
+      } else {
+        // 픽 추가
+        await cabinetApi.addPick(Number(id));
+        setIsPicked(true);
+      }
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '픽 처리에 실패했습니다.');
+    } finally {
+      setPickLoading(false);
+    }
+  };
 
   const effectiveSource = useMemo(() => {
     if (!detail) return summarySource;
@@ -154,7 +200,9 @@ export default function WhiskeyDetailPage() {
             <Button variant="ghost" style={{ width: '100%' }}>
               ♡ 위시리스트
             </Button>
-            <Button style={{ width: '100%' }}>★ My Pick</Button>
+            <Button style={{ width: '100%' }} onClick={handlePickToggle} disabled={pickLoading}>
+              {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
+            </Button>
             <Button variant="ghost" style={{ width: '100%' }} to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
               리뷰 작성
             </Button>

@@ -45,6 +45,11 @@ public class SecurityConfig {
                                 "/api/v1/auth/refresh"
                         ).permitAll()
                         .requestMatchers("/api/v1/auth/logout").authenticated()
+                        // 픽 목록 조회 — 공개 (구체적인 규칙이 /users/** 보다 위에 있어야 함)
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/users/*/picks"
+                        ).permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/uploads/**").authenticated()
                         // 커뮤니티 쓰기 (인증 필수)
@@ -64,6 +69,19 @@ public class SecurityConfig {
                                 "/api/v1/posts/*",
                                 "/api/v1/posts/*/likes",
                                 "/api/v1/comments/*"
+                        ).authenticated()
+                        // 픽 등록/삭제 — 인증 필요
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/whiskeys/*/pick"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/whiskeys/*/pick"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/whiskeys/*/pick"
                         ).authenticated()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
