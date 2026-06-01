@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.member;
 
+import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class AuthControllerTest {
     private int port;
 
     @Autowired
+    private PickRepository pickRepository;
+
+    @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
@@ -57,7 +61,8 @@ class AuthControllerTest {
                 .baseUrl("http://localhost:" + port + "/api/v1/auth")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
-        // FK 제약으로 refresh_tokens 먼저 삭제 후 users 삭제
+        // FK 제약 순서: my_picks → refresh_tokens → users 순으로 삭제
+        pickRepository.deleteAll();
         refreshTokenRepository.deleteAll();
         usersRepository.deleteAll();
     }
