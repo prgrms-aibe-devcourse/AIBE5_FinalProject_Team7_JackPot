@@ -59,6 +59,7 @@ public class AuthService {
                 .authProvider(AuthProvider.LOCAL)
                 .nickname(request.getNickname())
                 .birthday(request.getBirthday())
+                .name(request.getName())
                 .build();
 
         Users savedUser = usersRepository.save(user);
