@@ -129,6 +129,7 @@ class TastingNoteServiceTest {
 
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(1); // 추가
         assertThat(cache.getBodyScore()).isEqualTo(3L);
         assertThat(cache.getFinishScore()).isEqualTo(4L);
         assertThat(cache.getSmokyScore()).isEqualTo(5L);
@@ -185,6 +186,7 @@ class TastingNoteServiceTest {
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(2);
         assertThat(cache.getBodyScore()).isEqualTo(7L);   // 3 + 4
         assertThat(cache.getFinishScore()).isEqualTo(6L); // 4 + 2
         assertThat(cache.getAvgWhiskeyTags())
@@ -228,6 +230,7 @@ class TastingNoteServiceTest {
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(1);
         assertThat(cache.getBodyScore()).isEqualTo(3L);
         assertThat(cache.getAvgWhiskeyTags()).isEmpty();
     }
@@ -282,6 +285,7 @@ class TastingNoteServiceTest {
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(1);
         assertThat(cache.getBodyScore()).isEqualTo(3L);
         assertThat(cache.getAvgWhiskeyTags()).hasSize(3);
         assertThat(cache.getAvgWhiskeyTags())
@@ -310,6 +314,7 @@ class TastingNoteServiceTest {
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(0);
         assertThat(cache.getBodyScore()).isEqualTo(0L);
         assertThat(cache.getAvgWhiskeyTags())
             .allMatch(avgTag -> avgTag.getCount() == 0);
@@ -409,6 +414,7 @@ class TastingNoteServiceTest {
         // then
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(0);
         assertThat(cache.getBodyScore()).isEqualTo(0L);
         assertThat(cache.getFinishScore()).isEqualTo(0L);
         assertThat(cache.getAvgWhiskeyTags()).isEmpty();
@@ -442,6 +448,7 @@ class TastingNoteServiceTest {
         // then — 캐시는 공개 노트 기준 그대로
         WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
             .orElseThrow();
+        assertThat(cache.getCount()).isEqualTo(1);
         assertThat(cache.getBodyScore()).isEqualTo(3L);
         assertThat(cache.getAvgWhiskeyTags()).hasSize(3);
         assertThat(cache.getAvgWhiskeyTags())
