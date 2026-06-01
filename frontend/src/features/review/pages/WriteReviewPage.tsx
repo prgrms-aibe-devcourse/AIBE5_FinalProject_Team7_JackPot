@@ -1,11 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { StarRatingInput } from '../components/StarRatingInput';
-import { useCreateReview } from '../hooks/useReviews';
+import { useCreateReview, useMyReviews, useUpdateReview } from '../hooks/useReviews';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import { fetchMyTastingNoteForWhiskey } from '@/features/tasting-note/api/noteApi';
 
@@ -23,18 +23,31 @@ export default function WriteReviewPage() {
   const id = whiskeyId ?? '1';
   const currentUserId = getCurrentUserId();
   const { data: whiskey } = useWhiskeyDetail(id);
+  const { data: myReviews, isLoading: myReviewsLoading } = useMyReviews(currentUserId, 0, 100);
   const { data: myNote, isLoading: noteLoading } = useQuery({
     queryKey: ['tasting-note', 'my', currentUserId, id],
     queryFn: () => fetchMyTastingNoteForWhiskey(currentUserId!, id),
     enabled: currentUserId != null,
   });
   const createReviewMutation = useCreateReview(currentUserId, id);
+  const updateReviewMutation = useUpdateReview(currentUserId);
   const [rating, setRating] = useState(0);
   const [publicText, setPublicText] = useState('');
   const [attachNote, setAttachNote] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const reviewListPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
+  const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
+  const existingReview = myReviews?.content.find((review) => Number(review.whiskeyId) === Number(id));
+  const isEditMode = Boolean(existingReview);
+  const isSaving = createReviewMutation.isPending || updateReviewMutation.isPending;
+
+  useEffect(() => {
+    if (!existingReview) return;
+
+    setRating(Number(existingReview.rating ?? 0));
+    setPublicText(existingReview.publicText ?? '');
+    setAttachNote(Boolean(existingReview.attachedNoteId));
+  }, [existingReview]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -51,22 +64,37 @@ export default function WriteReviewPage() {
     }
 
     try {
-      await createReviewMutation.mutateAsync({
+      const body = {
         rating,
         publicText: publicText.trim(),
         attachedNoteId: attachNote && myNote ? myNote.id : null,
-      });
-      navigate(reviewListPath);
+      };
+
+      if (existingReview) {
+        await updateReviewMutation.mutateAsync({
+          reviewId: existingReview.id,
+          body,
+        });
+      } else {
+        await createReviewMutation.mutateAsync(body);
+      }
+
+      navigate(detailPath);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '리뷰 등록에 실패했습니다.');
+      setErrorMessage(error instanceof Error ? error.message : '리뷰 저장에 실패했습니다.');
     }
   };
 
   return (
     <WireframePage>
       <form className="wf-box wf-panel" style={{ maxWidth: 520, margin: '0 auto' }} onSubmit={handleSubmit}>
-        <h2 className="wf-title">리뷰 작성</h2>
+        <h2 className="wf-title">{myReviewsLoading ? '리뷰 확인 중' : isEditMode ? '리뷰 수정' : '리뷰 작성'}</h2>
         <p className="wf-text-sm">{whiskey?.name ?? '위스키 정보를 불러오는 중입니다.'}</p>
+        {isEditMode ? (
+          <p className="wf-text-sm" style={{ margin: '8px 0 0', color: 'var(--wf-accent)' }}>
+            이미 작성한 리뷰가 있어 수정 화면으로 열었습니다.
+          </p>
+        ) : null}
 
         <div style={{ marginTop: 16 }}>
           <p className="wf-text-label">별점</p>
@@ -132,10 +160,10 @@ export default function WriteReviewPage() {
         <Button
           block
           type="submit"
-          disabled={createReviewMutation.isPending}
+          disabled={isSaving || myReviewsLoading}
           style={{ marginTop: 16 }}
         >
-          {createReviewMutation.isPending ? '등록 중...' : '등록'}
+          {isSaving ? '저장 중...' : isEditMode ? '수정 저장' : '등록'}
         </Button>
       </form>
     </WireframePage>

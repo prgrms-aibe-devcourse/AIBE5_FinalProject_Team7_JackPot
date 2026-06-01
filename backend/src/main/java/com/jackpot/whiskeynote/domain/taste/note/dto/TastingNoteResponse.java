@@ -36,7 +36,7 @@ public record TastingNoteResponse(
                 note.getSweetScore(),
                 note.getMemo(),
                 tags,
-                note.getIsDraft(),
+                Boolean.TRUE.equals(note.getIsDraft()),
                 note.getCreatedAt(),
                 note.getUpdatedAt()
         );

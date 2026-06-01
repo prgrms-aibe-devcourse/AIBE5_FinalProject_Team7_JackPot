@@ -2,11 +2,13 @@ package com.jackpot.whiskeynote.global.exception;
 
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 전역 예외 핸들러
@@ -45,6 +47,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ApiResponse<Void> handleIllegalState(IllegalStateException ex) {
         return ApiResponse.fail("SERVICE_UNAVAILABLE", ex.getMessage());
+    }
+
+    /*
+     * ResponseStatusException을 사용하여 서비스/컨트롤러에서 HTTP 상태 코드를 직접 지정 하도록 함.
+     * 이 핸들러가 없으면 아래의 Exception 핸들러가 먼저 잡아 404/409/403 같은 의도된 오류도
+     * 500 INTERNAL_ERROR로 변환될 수 있다.
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResponseStatusException(ResponseStatusException ex) {
+        String message = ex.getReason() != null ? ex.getReason() : "요청을 처리할 수 없습니다.";
+        String code = ex.getStatusCode().toString();
+
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(ApiResponse.fail(code, message));
     }
 
     // 예상치 못한 서버 오류

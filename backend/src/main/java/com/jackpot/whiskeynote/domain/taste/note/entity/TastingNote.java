@@ -93,7 +93,7 @@ public class TastingNote {
         note.spicyScore = scoreVo.spicyScore();
         note.sweetScore = scoreVo.sweetScore();
         note.memo = memo;
-        note.isDraft = isDraft;
+        note.isDraft = Boolean.TRUE.equals(isDraft);
         note.createdAt = LocalDateTime.now();
         note.updatedAt = LocalDateTime.now();
 
@@ -114,7 +114,7 @@ public class TastingNote {
         this.spicyScore = scoreVo.spicyScore();
         this.sweetScore = scoreVo.sweetScore();
         this.memo = memo;
-        this.isDraft = isDraft;
+        this.isDraft = Boolean.TRUE.equals(isDraft);
 
         this.updatedAt = LocalDateTime.now();
     }
