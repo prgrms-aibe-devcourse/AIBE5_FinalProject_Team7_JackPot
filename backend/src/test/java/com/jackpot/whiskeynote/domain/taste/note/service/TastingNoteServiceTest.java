@@ -386,4 +386,129 @@ class TastingNoteServiceTest {
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessage("TastingNote not found");
     }
+
+    // ===== deleteTastingNote =====
+
+    @Test
+    @DisplayName("공개 노트 삭제 시 캐시에서 점수와 태그가 차감된다")
+    void deleteTastingNote_published_revertsCache() {
+        // given
+        Users user = users.get(0);
+        TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
+            tags.stream().map(Tag::getId).toList()
+        );
+        TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
+
+        // when
+        tastingNoteService.deleteTastingNote(user.getId(), created.id());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
+            .orElseThrow();
+        assertThat(cache.getBodyScore()).isEqualTo(0L);
+        assertThat(cache.getFinishScore()).isEqualTo(0L);
+        assertThat(cache.getAvgWhiskeyTags()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("임시저장 노트 삭제 시 캐시에 영향을 주지 않는다")
+    void deleteTastingNote_draft_doesNotRevertCache() {
+        // given — 공개 노트를 먼저 만들어 캐시 생성
+        Users user1 = users.get(0);
+        TastingNoteCreateRequest publishedRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "공개 메모", false,
+            tags.stream().map(Tag::getId).toList()
+        );
+        tastingNoteService.createTastingNote(user1.getId(), publishedRequest);
+
+        // 임시저장 노트 생성
+        Users user2 = users.get(1);
+        TastingNoteCreateRequest draftRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 5, (short) 5, (short) 5, (short) 5, (short) 5, "임시저장 메모", true,
+            tags.stream().map(Tag::getId).toList()
+        );
+        TastingNoteResponse draft = tastingNoteService.createTastingNote(user2.getId(), draftRequest);
+
+        // when
+        tastingNoteService.deleteTastingNote(user2.getId(), draft.id());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // then — 캐시는 공개 노트 기준 그대로
+        WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyId(whiskey.getId())
+            .orElseThrow();
+        assertThat(cache.getBodyScore()).isEqualTo(3L);
+        assertThat(cache.getAvgWhiskeyTags()).hasSize(3);
+        assertThat(cache.getAvgWhiskeyTags())
+            .allMatch(avgTag -> avgTag.getCount() == 1);
+    }
+
+    @Test
+    @DisplayName("공개 노트 삭제 시 TastingNote와 TastingNoteTag가 함께 삭제된다")
+    void deleteTastingNote_published_deletesNoteAndTags() {
+        Users user = users.get(0);
+        // given
+        TastingNoteCreateRequest createRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "메모", false,
+            tags.stream().map(Tag::getId).toList()
+        );
+        TastingNoteResponse created = tastingNoteService.createTastingNote(user.getId(), createRequest);
+
+        // when
+        tastingNoteService.deleteTastingNote(user.getId(), created.id());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        assertThat(tastingNoteRepository.findById(created.id())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노트 삭제 시 예외가 발생한다")
+    void deleteTastingNote_noteNotFound_throwsException() {
+        Users user = users.get(0);
+        assertThatThrownBy(() -> tastingNoteService.deleteTastingNote(user.getId(), 999L))
+            .isInstanceOf(EntityNotFoundException.class)
+            .hasMessage("TastingNote not found");
+    }
+
+    @Test
+    @DisplayName("공개 노트 삭제 후 count가 0인 태그는 캐시에서 제거된다")
+    void deleteTastingNote_published_removesZeroCountTags() {
+        Users user1 = users.get(0);
+        Users user2 = users.get(1);
+        // given — 노트 2개, 첫 번째 노트만 tag[0] 포함
+        TastingNoteCreateRequest firstRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "첫 번째", false,
+            List.of(tags.get(0).getId())
+        );
+        TastingNoteCreateRequest secondRequest = new TastingNoteCreateRequest(
+            whiskey.getId(), (short) 3, (short) 4, (short) 5, (short) 2, (short) 3, "두 번째", false,
+            List.of(tags.get(1).getId(), tags.get(2).getId())
+        );
+        TastingNoteResponse first = tastingNoteService.createTastingNote(user1.getId(), firstRequest);
+        tastingNoteService.createTastingNote(user2.getId(), secondRequest);
+
+        // when — 첫 번째 노트 삭제
+        tastingNoteService.deleteTastingNote(user1.getId(), first.id());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // then — tag[0]은 count 0이므로 제거, tag[1], tag[2]는 유지
+        WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(whiskey.getId())
+            .orElseThrow();
+        Map<Long, Integer> countByTagId = cache.getAvgWhiskeyTags().stream()
+            .collect(Collectors.toMap(t -> t.getTag().getId(), AvgWhiskeyTag::getCount));
+
+        assertThat(countByTagId.get(tags.get(0).getId())).isNull();  // 제거됨
+        assertThat(countByTagId.get(tags.get(1).getId())).isEqualTo(1);
+        assertThat(countByTagId.get(tags.get(2).getId())).isEqualTo(1);
+    }
 }

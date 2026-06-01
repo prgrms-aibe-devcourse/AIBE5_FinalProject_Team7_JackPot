@@ -77,10 +77,20 @@ export async function updateTastingNote(
   return data;
 }
 
+export async function deleteTastingNote(
+  userId: number,
+  noteId: number,
+): Promise<void> {
+  await apiClient.delete(`/tasting-notes/${noteId}`, {
+    params: { userId },
+  });
+}
+
 export const noteApi = {
   client: apiClient,
   fetchMyTastingNoteForWhiskey,
   fetchTastingNote,
   createTastingNote,
   updateTastingNote,
+  deleteTastingNote, // 추가
 };

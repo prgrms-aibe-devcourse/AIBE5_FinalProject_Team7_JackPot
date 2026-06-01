@@ -151,5 +151,46 @@ public class TastingNoteService {
         return TastingNoteResponse.from(note, tagResponses);
     }
 
-    // TODO: TastingNote 삭제 시 로직 구현
+    /**
+     * 테이스팅 노트를 삭제합니다.
+     *
+     * <p>처리 흐름:
+     * <ol>
+     *   <li>노트 조회 (TastingNoteTag 포함)</li>
+     *   <li>공개 노트인 경우 WhiskeysNoteCache에서 점수 및 태그 카운트 차감</li>
+     *   <li>노트 삭제 (TastingNoteTag는 cascade로 함께 삭제)</li>
+     * </ol>
+     *
+     * <p>임시저장 노트는 캐시에 반영되지 않았으므로 캐시 차감 없이 삭제됩니다.
+     *
+     * @param userId 노트를 삭제하는 유저의 ID (컨트롤러에서 인증 정보로 주입)
+     * @param noteId 삭제할 노트의 ID
+     * @throws EntityNotFoundException 노트 또는 캐시가 존재하지 않을 경우
+     */
+    public void deleteTastingNote(Long userId, Long noteId) {
+        // 1. 노트 조회
+        TastingNote note = tastingNoteRepository.findByIdWithTags(noteId)
+            .orElseThrow(() -> new EntityNotFoundException("TastingNote not found"));
+
+        // TODO: 작성자 본인 여부 검증 — 인증/인가 전략 확정 후 구현
+        // if (!note.getUser().getId().equals(userId)) {
+        //     throw new Exception("Not authorized");
+        // }
+
+        // 2. 공개 노트인 경우 캐시에서 점수 및 태그 차감
+        if (!Boolean.TRUE.equals(note.getIsDraft())) {
+            WhiskeysNoteCache cache = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(note.getWhiskey().getId())
+                .orElseThrow(() -> new EntityNotFoundException("NoteCache not found"));
+            WhiskeyScoreVo scoreVo = note.getScoreVo();
+            cache.revertScore(scoreVo);
+            cache.revertTags(note.getNoteTags().stream()
+                .map(TastingNoteTag::getTag)
+                .toList());
+            cache.removeZeroCountTags();
+            whiskeysNoteCacheRepository.save(cache);
+        }
+
+        // 3. 노트 삭제
+        tastingNoteRepository.delete(note);
+    }
 }

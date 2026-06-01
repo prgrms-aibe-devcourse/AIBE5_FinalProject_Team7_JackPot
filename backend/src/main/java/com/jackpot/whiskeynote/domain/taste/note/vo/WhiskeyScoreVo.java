@@ -2,6 +2,7 @@ package com.jackpot.whiskeynote.domain.taste.note.vo;
 
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteUpdateRequest;
+import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
 
 public record WhiskeyScoreVo(
     Short bodyScore,
