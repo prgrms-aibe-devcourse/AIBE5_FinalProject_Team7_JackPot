@@ -6,9 +6,10 @@ interface CabinetPickItemProps {
   meta: string;
   highlighted?: boolean;
   readonly?: boolean;
+  onRemove?: () => void;  // 제거 버튼 클릭 핸들러
 }
 
-export function CabinetPickItem({ id, name, meta, highlighted, readonly }: CabinetPickItemProps) {
+export function CabinetPickItem({ id, name, meta, highlighted, readonly, onRemove }: CabinetPickItemProps) {
   return (
     <article className={`wf-cabinet-pick wf-box${highlighted ? ' wf-box--accent' : ''}`}>
       <div className="wf-cabinet-pick__thumb wf-placeholder" />
@@ -20,7 +21,20 @@ export function CabinetPickItem({ id, name, meta, highlighted, readonly }: Cabin
         <p className="wf-text-xs">클릭·상세보기 → 09</p>
       </div>
       {!readonly ? (
-        <button type="button" className="wf-cabinet-pick__remove">
+        <button
+          type="button"
+          className="wf-cabinet-pick__remove"
+          onClick={onRemove}
+          style={{ transition: 'background 0.15s, color 0.15s' }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#ff4d4d';
+            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = '';
+            (e.currentTarget as HTMLButtonElement).style.color = '';
+          }}
+        >
           제거
         </button>
       ) : (

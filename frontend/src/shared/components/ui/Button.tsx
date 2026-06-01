@@ -34,7 +34,7 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
     );
   }
 
-  const { style, ...rest } = props as ButtonAsButton;
+  const { style, block: _block, variant: _variant, ...rest } = props as ButtonAsButton;
   return (
     <button type="button" className={classes} style={style} {...rest}>
       {children}
