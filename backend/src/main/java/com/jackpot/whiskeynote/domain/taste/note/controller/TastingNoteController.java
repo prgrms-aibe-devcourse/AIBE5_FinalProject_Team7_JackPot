@@ -82,4 +82,11 @@ public class TastingNoteController {
                         .toList()
         );
     }
+    // 시음 노트 삭제
+    @DeleteMapping("/api/v1/tasting-notes/{noteId}")
+    public void deleteTastingNote(
+        @PathVariable Long noteId,
+        @RequestParam Long userId) {
+        tastingNoteService.deleteTastingNote(userId, noteId);
+    }
 }

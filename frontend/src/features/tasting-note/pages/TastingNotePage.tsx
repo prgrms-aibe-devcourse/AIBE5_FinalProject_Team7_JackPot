@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import {
   createTastingNote,
+  deleteTastingNote,
   fetchMyTastingNoteForWhiskey,
   updateTastingNote,
   type TastingNoteSaveRequest,
@@ -130,6 +131,19 @@ export default function TastingNotePage() {
       }
 
       return createTastingNote(currentUserId, body);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
+      queryClient.invalidateQueries({ queryKey: ['whiskey', 'detail', id] });
+      navigate(detailPath);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => {
+      if (currentUserId == null) throw new Error('로그인 정보가 없습니다.');
+      if (!existingNote) throw new Error('삭제할 노트가 없습니다.');
+      return deleteTastingNote(currentUserId, existingNote.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
@@ -282,6 +296,20 @@ export default function TastingNotePage() {
           <Button type="submit" disabled={saveMutation.isPending}>
             {saveMutation.isPending ? '저장 중...' : isEditMode ? '수정 저장' : '새 노트 저장'}
           </Button>
+          {isEditMode && (
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={deleteMutation.isPending}
+              onClick={() => {
+                if (confirm('노트를 삭제하시겠습니까?')) {
+                  deleteMutation.mutate();
+                }
+              }}
+            >
+              {deleteMutation.isPending ? '삭제 중...' : '삭제'}
+            </Button>
+          )}
           <Button type="button" variant="ghost" onClick={() => navigate(detailPath)}>
             취소
           </Button>
