@@ -12,6 +12,7 @@ import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/revie
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import type { CabinetStatsResponse } from '@/features/cabinet/api/cabinetApi';
 
 // Pick API 응답 타입
 interface PickItem {
@@ -138,6 +139,9 @@ export default function CabinetPage() {
   const [picks, setPicks] = useState<PickItem[]>([]);
   const [picksLoading, setPicksLoading] = useState(false);
 
+  // Cabinet stats 상태 (Pick·Review 카운트)
+  const [cabinetStats, setCabinetStats] = useState<CabinetStatsResponse | null>(null);
+
   // tab이 'pick'으로 바뀔 때마다 API 호출
   useEffect(() => {
     if (!currentUserId) return;
@@ -149,6 +153,19 @@ export default function CabinetPage() {
       .then((res) => setPicks(res.data.data.content ?? []))
       .catch(() => alert('픽 목록을 불러오지 못했습니다.'))
       .finally(() => setPicksLoading(false));
+  }, [currentUserId]);
+
+  // 자신의 캐비넷 통계 조회
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    cabinetApi
+      .getCabinetStats()
+      .then((res) => setCabinetStats(res))
+      .catch(() => {
+        // stats는 UI 보조 정보이므로 실패 시에도 페이지 로딩을 막지 않는다.
+        setCabinetStats(null);
+      });
   }, [currentUserId]);
 
   // 픽 삭제 핸들러
@@ -208,7 +225,12 @@ export default function CabinetPage() {
           : '선택한 메뉴: 커뮤니티 — 작성 글·리뷰·칼럼'}
       </p>
 
-      <CabinetStatsBar pick={picks.length} wish={8} reviews={24} notes={18} />
+      <CabinetStatsBar
+        pick={cabinetStats?.pickCount ?? picks.length}
+        wish={cabinetStats?.wishCount ?? 8}
+        reviews={cabinetStats?.reviewCount ?? 24}
+        notes={cabinetStats?.noteCount ?? 18}
+      />
 
       {section === 'bar' ? (
         <>
