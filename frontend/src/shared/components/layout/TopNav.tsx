@@ -13,6 +13,7 @@ const NAV = [
   { to: PATHS.SEARCH, label: '검색' },
   { to: PATHS.COMMUNITY, label: '커뮤니티' },
   { to: PATHS.CABINET, label: '캐비넷' },
+  { to: PATHS.SURVEY, label: '설문조사' },
   { to: PATHS.MY_PAGE, label: '마이페이지' },
 ];
 
