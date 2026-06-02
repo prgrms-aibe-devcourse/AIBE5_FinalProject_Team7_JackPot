@@ -21,4 +21,7 @@ public interface ReviewRepository extends JpaRepository<Review,Long> {
 
     // 리뷰 생성 전 중복 작성 여부 확인용. user_id + whiskey_id 조합은 서비스 정책상 1건만 허용한다.
     boolean existsByUserIdAndWhiskeyId(Long userId, Long whiskeyId);
+
+    // 캐비넷 리뷰수 조회용
+    long countByUserId(Long userId);
 }
