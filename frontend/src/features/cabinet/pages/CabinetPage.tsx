@@ -228,7 +228,7 @@ export default function CabinetPage() {
       <CabinetStatsBar
         pick={cabinetStats?.pickCount ?? picks.length}
         wish={cabinetStats?.wishCount ?? 8}
-        reviews={cabinetStats?.reviewCount ?? 24}
+        reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
         notes={cabinetStats?.noteCount ?? 18}
       />
 
