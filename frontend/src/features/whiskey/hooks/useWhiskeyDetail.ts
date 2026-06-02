@@ -1,6 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchRelatedColumns, fetchWhiskeyDetail, fetchWhiskeyReviews } from '../api/whiskeyApi';
 
+function getCurrentUserId(): number | null {
+  const value = localStorage.getItem('userId');
+  if (!value) return null;
+
+  const userId = Number(value);
+  return Number.isFinite(userId) ? userId : null;
+}
+
 export function whiskeyDetailQueryKey(whiskeyId: string) {
   return ['whiskey', 'detail', whiskeyId] as const;
 }
@@ -10,7 +18,7 @@ export function relatedColumnsQueryKey(whiskeyId: string) {
 }
 
 export function whiskeyReviewsQueryKey(whiskeyId: string, page: number, size: number) {
-  return ['whiskey', 'reviews', whiskeyId, page, size] as const;
+  return ['whiskey', 'reviews', whiskeyId, page, size, getCurrentUserId()] as const;
 }
 
 export function useWhiskeyDetail(whiskeyId: string | undefined) {
@@ -30,9 +38,11 @@ export function useRelatedColumns(whiskeyId: string | undefined) {
 }
 
 export function useWhiskeyReviews(whiskeyId: string | undefined, page = 0, size = 5) {
+  const userId = getCurrentUserId();
+
   return useQuery({
     queryKey: whiskeyReviewsQueryKey(whiskeyId ?? '', page, size),
-    queryFn: () => fetchWhiskeyReviews(whiskeyId!, page, size),
+    queryFn: () => fetchWhiskeyReviews(whiskeyId!, page, size, userId),
     enabled: Boolean(whiskeyId),
   });
 }

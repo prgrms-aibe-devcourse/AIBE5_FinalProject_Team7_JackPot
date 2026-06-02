@@ -46,12 +46,13 @@ export async function fetchWhiskeyReviews(
   whiskeyId: string,
   page = 0,
   size = 5,
+  userId?: number | null,
 ): Promise<PageResponse<WhiskeyReview>> {
   return withMockFallback(
     async () => {
       const { data } = await apiClient.get<PageResponse<WhiskeyReview>>(
         `/whiskeys/${whiskeyId}/reviews`,
-        { params: { page, size } },
+        { params: { page, size, ...(userId != null ? { userId } : {}) } },
       );
       return data;
     },

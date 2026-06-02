@@ -700,6 +700,35 @@ body {
   margin: 8px 0 0;
 }
 
+.wf-review-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin-top: 10px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wf-review-like:hover,
+.wf-review-like--on {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--wf-accent);
+}
+
+.wf-review-like:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .wf-detail-reviews__note-badge {
   display: inline-flex;
   margin-top: 10px;
