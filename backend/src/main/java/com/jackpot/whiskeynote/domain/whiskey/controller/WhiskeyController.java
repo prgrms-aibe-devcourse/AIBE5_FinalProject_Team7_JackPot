@@ -6,6 +6,9 @@ import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeyType;
+import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordCorrectionResponse;
+import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordSuggestResponse;
+import com.jackpot.whiskeynote.domain.whiskey.search.service.WhiskeySearchService;
 import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,8 @@ import java.util.List;
 public class WhiskeyController {
     private final WhiskeyService whiskeyService;
     private final ReviewService reviewService;
+    private final WhiskeySearchService whiskeySearchService;
+
     // 위스키 전체 조회 (페이징)
     @GetMapping("/api/v1/whiskeys")
     public Page<WhiskeyCardResponse> getWhiskeys(
@@ -78,4 +83,17 @@ public class WhiskeyController {
     ) {
         return reviewService.getReviewsByWhiskey(id, page, size);
     }
+    // 위스키 검색 키워드 자동완성
+    @GetMapping("/api/v1/whiskeys/autocomplete")
+    public List<WhiskeyKeywordSuggestResponse> autocompleteKeyword(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        return whiskeySearchService.autocompleteKeyword(q, size);
+     }
+     // 위스키 오타 수정 검색
+    @GetMapping("/api/v1/whiskeys/search/correction")
+    public WhiskeyKeywordCorrectionResponse correctWhiskeyKeyword(@RequestParam String q) {
+         return whiskeySearchService.correctKeyword(q);
+     }
 }

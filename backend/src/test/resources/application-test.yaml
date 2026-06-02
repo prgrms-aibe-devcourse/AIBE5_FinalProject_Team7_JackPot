@@ -23,6 +23,12 @@ spring:
     init:
       mode: never   # 테스트 환경에서는 data.sql 실행 안 함
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchAutoConfiguration
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchRepositoriesAutoConfiguration
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchReactiveRepositoriesAutoConfiguration
+
   h2:
     console:
       enabled: false

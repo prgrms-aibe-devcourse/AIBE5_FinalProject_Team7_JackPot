@@ -35,6 +35,20 @@ export interface WhiskeyFilterParams extends WhiskeyListParams {
   maxAge?: number;
 }
 
+export interface WhiskeyAutocompleteItem {
+  keyword: string;
+}
+
+export interface WhiskeyAutocompleteParams {
+  q: string;
+  size?: number;
+}
+
+export interface WhiskeyKeywordCorrection {
+  originalKeyword: string;
+  correctedKeyword: string | null;
+}
+
 function toFilterSearchParams(params: WhiskeyFilterParams) {
   const searchParams = new URLSearchParams();
 
@@ -70,6 +84,26 @@ export async function searchWhiskeys(params: WhiskeySearchParams): Promise<PageR
   return data;
 }
 
+/** GET /api/v1/whiskeys/autocomplete - 검색창 자동완성 키워드 */
+export async function autocompleteWhiskeys(
+  params: WhiskeyAutocompleteParams,
+): Promise<WhiskeyAutocompleteItem[]> {
+  const { data } = await apiClient.get<WhiskeyAutocompleteItem[]>('/whiskeys/autocomplete', {
+    params,
+  });
+
+  return data;
+}
+
+/** GET /api/v1/whiskeys/search/correction - 오타 교정 검색어 추천 */
+export async function correctWhiskeyKeyword(q: string): Promise<WhiskeyKeywordCorrection> {
+  const { data } = await apiClient.get<WhiskeyKeywordCorrection>('/whiskeys/search/correction', {
+    params: { q },
+  });
+
+  return data;
+}
+
 /** GET /api/v1/whiskeys/{id} - 위스키 단건 조회 */
 export async function fetchWhiskeyById(id: number): Promise<WhiskeyCard> {
   const { data } = await apiClient.get<WhiskeyCard>(`/whiskeys/${id}`);
@@ -89,5 +123,7 @@ export const whiskeyApi = {
   client: apiClient,
   fetchWhiskeys,
   searchWhiskeys,
+  autocompleteWhiskeys,
+  correctWhiskeyKeyword,
   filterWhiskeys,
 };
