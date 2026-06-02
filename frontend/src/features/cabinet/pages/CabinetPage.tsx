@@ -258,8 +258,8 @@ export default function CabinetPage() {
                 <p className="wf-text-sm">아직 작성한 리뷰가 없습니다.</p>
               )}
             </>
-          ) : (
-            // Pick 탭 — API 데이터 렌더링
+          ) : tab === 'pick' ? (
+            // Pick 탭 — API 데이터 렌더링 (백엔드 연동)
             picksLoading ? (
               <p className="wf-text-sm">픽 목록을 불러오는 중입니다...</p>
             ) : picks.length === 0 ? (
@@ -275,6 +275,10 @@ export default function CabinetPage() {
                 />
               ))
             )
+          ) : tab === 'wish' ? (
+            <p className="wf-text-sm">위시 기능은 준비 중입니다.</p>
+          ) : (
+            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           )}
         </>
       ) : (

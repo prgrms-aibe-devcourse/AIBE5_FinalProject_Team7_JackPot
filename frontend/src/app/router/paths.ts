@@ -39,4 +39,4 @@ export const PATHS = {
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];
 
 export type CabinetSection = 'bar' | 'community';
-export type CabinetTab = 'all' | 'wish' | 'pick' | 'note' | 'reviews';
+export type CabinetTab = 'wish' | 'pick' | 'note' | 'reviews';
