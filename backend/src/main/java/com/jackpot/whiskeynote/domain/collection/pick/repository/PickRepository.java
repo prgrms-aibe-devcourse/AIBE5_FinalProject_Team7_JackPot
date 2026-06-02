@@ -32,4 +32,7 @@ public interface PickRepository extends JpaRepository<MyPick, Long> {
      * @return
      */
     boolean existsByUserIdAndWhiskeyId(Long userId, Long whiskeyId);
+
+    //캐비넷 픽 조회용
+    long countByUserId(Long userId);
 }
