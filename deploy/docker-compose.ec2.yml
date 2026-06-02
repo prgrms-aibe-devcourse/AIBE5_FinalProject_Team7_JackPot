@@ -1,12 +1,26 @@
-# EC2 배포용 (RDS + ECR). .env 는 서버에만 두고 git 에 올리지 않음.
+# EC2 배포용 (RDS + ECR + Elasticsearch). .env 는 서버에만 두고 git 에 올리지 않음.
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.8
+    container_name: whiskeynote-elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
   backend:
     image: 495264909330.dkr.ecr.ap-northeast-2.amazonaws.com/team7/whiskeynote-backend:latest
     env_file: .env
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     restart: unless-stopped
+    depends_on:
+      - elasticsearch
     expose:
       - "8080"
 
@@ -17,3 +31,6 @@ services:
       - "80:80"
     depends_on:
       - backend
+
+volumes:
+  elasticsearch_data:
