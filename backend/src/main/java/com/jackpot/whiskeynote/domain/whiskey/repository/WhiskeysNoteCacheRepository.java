@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteCache, Long> {
@@ -15,4 +16,7 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
         "LEFT JOIN FETCH nc.avgWhiskeyTags " +
         "WHERE nc.whiskey.id = :whiskeyId")
     Optional<WhiskeysNoteCache> findByWhiskeyIdWithAvgTags(@Param("whiskeyId") Long whiskeyId);
+
+    @Query("SELECT nc FROM WhiskeysNoteCache nc LEFT JOIN FETCH nc.avgWhiskeyTags awt LEFT JOIN FETCH awt.tag LEFT JOIN FETCH nc.whiskey")
+    List<WhiskeysNoteCache> findAllWithTagsAndWhiskey();
 }

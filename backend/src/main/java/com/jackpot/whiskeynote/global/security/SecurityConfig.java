@@ -45,6 +45,19 @@ public class SecurityConfig {
                                 "/api/v1/auth/refresh"
                         ).permitAll()
                         .requestMatchers("/api/v1/auth/logout").authenticated()
+                        // 취향 설문 — 결과 조회·저장은 인증 필수, 계산만은 비인증 허용
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/taste/survey/me"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/taste/survey/save"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/taste/survey"
+                        ).permitAll()
                         // 픽 목록 조회 — 공개 (구체적인 규칙이 /users/** 보다 위에 있어야 함)
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
