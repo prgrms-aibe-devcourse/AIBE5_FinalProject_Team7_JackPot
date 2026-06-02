@@ -12,3 +12,8 @@ frontend/.env.local
 
 # Local Docker Compose
 docker-compose.local.yml
+
+# Cursor / 로컬 운영 스크립트 (PR에 포함하지 않음)
+.cursor/
+deploy/rds-*.sql
+deploy/rds-reseed.sh
