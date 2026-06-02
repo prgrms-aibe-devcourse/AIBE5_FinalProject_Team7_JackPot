@@ -71,6 +71,7 @@ public class WhiskeysNoteCache {
      * @param scoreVo 반영할 점수 VO
      */
     public void applyScore(WhiskeyScoreVo scoreVo) {
+        count++;
         this.bodyScore += scoreVo.bodyScore();
         this.finishScore += scoreVo.finishScore();
         this.smokyScore += scoreVo.smokyScore();
@@ -85,6 +86,7 @@ public class WhiskeysNoteCache {
      * @param scoreVo 차감할 점수 VO
      */
     public void revertScore(WhiskeyScoreVo scoreVo) {
+        count--;
         this.bodyScore -= scoreVo.bodyScore();
         this.finishScore -= scoreVo.finishScore();
         this.smokyScore -= scoreVo.smokyScore();
