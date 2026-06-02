@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 public class WhiskeySearchService {
     private final WhiskeyRepository whiskeyRepository;

@@ -2,10 +2,12 @@ package com.jackpot.whiskeynote.domain.whiskey.search;
 
 import com.jackpot.whiskeynote.domain.whiskey.search.service.WhiskeySearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Profile("!test")
 @RequiredArgsConstructor
 public class WhiskeySearchAdminController {
 
