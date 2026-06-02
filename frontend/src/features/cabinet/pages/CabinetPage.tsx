@@ -50,6 +50,15 @@ function getCurrentUserId(): number | null {
   return Number.isFinite(userId) ? userId : null;
 }
 
+function getCurrentNickname(): string {
+  return localStorage.getItem('nickname') || '';
+}
+
+function getCurrentProfileImageUrl(): string | null {
+  const value = localStorage.getItem('profileImageUrl') || '';
+  return value.trim() ? value : null;
+}
+
 function MyReviewItem({
   review,
   onUpdate,
@@ -134,6 +143,8 @@ export default function CabinetPage() {
   const section = parseSection(params.get('section'));
   const tab = parseTab(params.get('tab'));
   const currentUserId = getCurrentUserId();
+  const currentNickname = getCurrentNickname();
+  const currentProfileImageUrl = getCurrentProfileImageUrl();
 
   // Pick 목록 상태
   const [picks, setPicks] = useState<PickItem[]>([]);
@@ -210,8 +221,9 @@ export default function CabinetPage() {
   return (
     <WireframePage scroll>
       <CabinetProfileHeader
-        name="위스키러버_kr (my)"
+        name={currentNickname ? `${currentNickname} (my)` : '내 캐비넷'}
         subtitle="애호가 · 보틀 쉐어 공개"
+        profileImageUrl={currentProfileImageUrl}
         followers={128}
         following={94}
         isOwner

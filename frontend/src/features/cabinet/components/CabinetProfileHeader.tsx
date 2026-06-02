@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { Button } from '@/shared/components/ui/Button';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 
 interface CabinetProfileHeaderProps {
   name: string;
   subtitle: string;
+  profileImageUrl?: string | null;
   followers: number;
   following: number;
   followHref?: string;
@@ -15,6 +17,7 @@ interface CabinetProfileHeaderProps {
 export function CabinetProfileHeader({
   name,
   subtitle,
+  profileImageUrl,
   followers,
   following,
   followHref,
@@ -22,10 +25,19 @@ export function CabinetProfileHeader({
   isOwner,
 }: CabinetProfileHeaderProps) {
   const followLink = followHref ?? PATHS.CABINET_FOLLOW;
+  const avatarSrc = resolveMediaUrl(profileImageUrl);
 
   return (
     <header className="wf-cabinet-profile">
-      <div className="wf-cabinet-profile__avatar wf-placeholder" aria-hidden />
+      <div className="wf-cabinet-profile__avatar wf-placeholder" aria-hidden>
+        {avatarSrc ? (
+          <img
+            src={avatarSrc}
+            alt=""
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+          />
+        ) : null}
+      </div>
       <div className="wf-cabinet-profile__info">
         <h1 className="wf-title" style={{ fontSize: 28, margin: 0 }}>
           {name}
