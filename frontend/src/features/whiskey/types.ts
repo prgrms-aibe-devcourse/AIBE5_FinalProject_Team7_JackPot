@@ -75,6 +75,8 @@ export interface WhiskeyReview {
   publicText: string | null;
   attachedNoteId: number | null;
   hasAttachedNote: boolean;
+  likeCount: number;
+  likedByMe: boolean;
   createdAt: string;
   updatedAt: string;
 }

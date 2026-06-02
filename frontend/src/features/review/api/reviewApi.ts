@@ -8,6 +8,12 @@ export interface ReviewSaveRequest {
   attachedNoteId?: number | null;
 }
 
+export interface ReviewLikeResponse {
+  reviewId: number;
+  likeCount: number;
+  likedByMe: boolean;
+}
+
 export async function fetchMyReviews(
   userId: number,
   page = 0,
@@ -51,10 +57,28 @@ export async function deleteReview(userId: number, reviewId: number): Promise<vo
   });
 }
 
+export async function likeReview(userId: number, reviewId: number): Promise<ReviewLikeResponse> {
+  const { data } = await apiClient.post<ReviewLikeResponse>(
+    `/reviews/${reviewId}/likes`,
+    null,
+    { params: { userId } },
+  );
+  return data;
+}
+
+export async function unlikeReview(userId: number, reviewId: number): Promise<ReviewLikeResponse> {
+  const { data } = await apiClient.delete<ReviewLikeResponse>(`/reviews/${reviewId}/likes`, {
+    params: { userId },
+  });
+  return data;
+}
+
 export const reviewApi = {
   client: apiClient,
   fetchMyReviews,
   createReview,
   updateReview,
   deleteReview,
+  likeReview,
+  unlikeReview,
 };
