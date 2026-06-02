@@ -8,6 +8,7 @@ import com.jackpot.whiskeynote.domain.whiskey.repository.AvgWhiskeyTagRepository
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeySpecification;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
+import com.jackpot.whiskeynote.domain.whiskey.search.service.WhiskeySearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ public class WhiskeyService {
     private final WhiskeyRepository whiskeyRepository;
     private final WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
     private final AvgWhiskeyTagRepository avgWhiskeyTagRepository;
+    private final WhiskeySearchService whiskeySearchService;
 
     // 위스키 전체 조회 (페이징)
     @Transactional(readOnly = true)
@@ -43,18 +45,7 @@ public class WhiskeyService {
     // 위스키 이름 검색 (포함검색, 대소문자 구분X)
     @Transactional(readOnly = true)
     public Page<WhiskeyCardResponse> searchWhiskeys(String q, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.ASC, "name")
-        );
-
-        if (q == null || q.isBlank()) {
-            return getWhiskeys(page, size);
-        }
-
-        return whiskeyRepository.findByNameContainingIgnoreCase(q.trim(), pageRequest)
-                .map(WhiskeyCardResponse::from);
+        return whiskeySearchService.searchByKeyword(q, page, size);
     }
 
     // 위스키 필터링 검색

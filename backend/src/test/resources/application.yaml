@@ -9,6 +9,9 @@ spring:
   application:
     name: whiskeynote-test
 
+  profiles:
+    active: test
+
   # --------------------------------------------------
   # H2 인메모리 DB 설정 (테스트 전용)
   # MySQL 없이 Spring Context 로딩 및 JPA 테스트 가능
@@ -37,6 +40,12 @@ spring:
   sql:
     init:
       mode: never   # data.sql은 MySQL 전용 문법(NOW(6)) 포함 → 테스트 시 skip
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchAutoConfiguration
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchRepositoriesAutoConfiguration
+      - org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchReactiveRepositoriesAutoConfiguration
 
   h2:
     console:

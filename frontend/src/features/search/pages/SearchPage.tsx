@@ -7,6 +7,8 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import {
+  autocompleteWhiskeys,
+  correctWhiskeyKeyword,
   fetchWhiskeys,
   filterWhiskeys,
   searchWhiskeys,
@@ -168,6 +170,8 @@ export default function SearchPage() {
   const [minAge, setMinAge] = useState(AGE_RANGE_MIN);
   const [maxAge, setMaxAge] = useState(AGE_RANGE_MAX);
   const [tagModalType, setTagModalType] = useState<TagModalType>(null);
+  const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
+  const suggestionKeyword = inputValue.trim();
 
   const isFilterActive = hasActiveFilters(
     selectedTypes,
@@ -216,12 +220,44 @@ export default function SearchPage() {
     },
   });
 
+  const { data: autocompleteItems = [] } = useQuery({
+    queryKey: ['whiskeys', 'autocomplete', suggestionKeyword],
+    queryFn: () => autocompleteWhiskeys({ q: suggestionKeyword, size: 8 }),
+    enabled: suggestionKeyword.length > 0,
+  });
+
   const results = data?.content ?? [];
   const totalCount = data?.totalElements ?? 0;
+  const suggestions = autocompleteItems.filter((item) => item.keyword !== suggestionKeyword);
+  const shouldCheckCorrection = Boolean(keyword) && !isLoading && !isError && totalCount === 0;
+
+  const { data: correction } = useQuery({
+    queryKey: ['whiskeys', 'correction', keyword],
+    queryFn: () => correctWhiskeyKeyword(keyword),
+    enabled: shouldCheckCorrection,
+  });
+
+  const correctedKeyword =
+    correction?.correctedKeyword && correction.correctedKeyword !== keyword
+      ? correction.correctedKeyword
+      : null;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSuggestionOpen(false);
     setKeyword(inputValue.trim());
+  };
+
+  const selectSuggestion = (suggestion: string) => {
+    setInputValue(suggestion);
+    setKeyword(suggestion);
+    setIsSuggestionOpen(false);
+  };
+
+  const applyCorrection = (suggestion: string) => {
+    setInputValue(suggestion);
+    setKeyword(suggestion);
+    setIsSuggestionOpen(false);
   };
 
   const resetFilters = () => {
@@ -316,13 +352,33 @@ export default function SearchPage() {
         </aside>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8 }}>
-            <div style={{ flex: 1 }}>
+            <div className="wf-search-autocomplete" style={{ flex: 1 }}>
               <Input
                 aria-label="위스키 검색어"
                 placeholder="위스키 이름을 검색해보세요"
                 value={inputValue}
-                onChange={(event) => setInputValue(event.target.value)}
+                autoComplete="off"
+                onFocus={() => setIsSuggestionOpen(true)}
+                onChange={(event) => {
+                  setInputValue(event.target.value);
+                  setIsSuggestionOpen(true);
+                }}
               />
+              {isSuggestionOpen && suggestions.length > 0 ? (
+                <div className="wf-search-autocomplete__menu">
+                  {suggestions.map((item) => (
+                    <button
+                      key={item.keyword}
+                      type="button"
+                      className="wf-search-autocomplete__item"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => selectSuggestion(item.keyword)}
+                    >
+                      {item.keyword}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <Button type="submit" style={{ width: 96 }}>
               검색
@@ -334,6 +390,7 @@ export default function SearchPage() {
               onClick={() => {
                 setInputValue('');
                 setKeyword('');
+                setIsSuggestionOpen(false);
                 resetFilters();
               }}
             >
@@ -345,6 +402,20 @@ export default function SearchPage() {
             {isLoading ? '불러오는 중' : keyword ? `"${keyword}" 검색 결과 ${totalCount}건` : `전체 결과 ${totalCount}건`}
             {isFilterActive ? ' · 필터 적용' : ''}
           </p>
+
+          {correctedKeyword ? (
+            <div className="wf-search-correction wf-box">
+              <span className="wf-text-sm">혹시 </span>
+              <button
+                type="button"
+                className="wf-search-correction__button"
+                onClick={() => applyCorrection(correctedKeyword)}
+              >
+                {correctedKeyword}
+              </button>
+              <span className="wf-text-sm"> 을 찾으셨나요?</span>
+            </div>
+          ) : null}
 
           {isError ? (
             <div className="wf-box" style={{ padding: 16 }}>
