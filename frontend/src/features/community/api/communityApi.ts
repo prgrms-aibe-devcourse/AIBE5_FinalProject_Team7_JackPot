@@ -42,6 +42,23 @@ export async function fetchNotices(page = 0, size = 10): Promise<SpringPage<Post
   return data;
 }
 
+/** 캐비넷 커뮤니티 탭 — 작성자별 글 (자유·칼럼·QnA 목록에서 필터) */
+export async function fetchAuthorPosts(
+  authorId: number,
+  page = 0,
+  size = 50,
+): Promise<PostSummaryResponse[]> {
+  const [free, columns, qna] = await Promise.all([
+    fetchFreePosts(page, size),
+    fetchColumns(page, size),
+    fetchQnaPosts(page, size),
+  ]);
+  const merged = [...free.content, ...columns.content, ...qna.content];
+  return merged
+    .filter((post) => post.authorId === authorId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
 // userId 파라미터 제거 — 인증은 Authorization 헤더로 처리
 export async function fetchPost(postId: number): Promise<PostDetailDto> {
   const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`);

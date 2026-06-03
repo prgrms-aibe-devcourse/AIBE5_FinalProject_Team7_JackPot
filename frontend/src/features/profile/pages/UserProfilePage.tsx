@@ -7,6 +7,7 @@ import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
+import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
 import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
 import { fetchMyReviews } from '@/features/review/api/reviewApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
@@ -156,12 +157,14 @@ export default function UserProfilePage() {
           : '선택한 메뉴: 커뮤니티 — 공개 글·리뷰'}
       </p>
 
-      <CabinetStatsBar
-        pick={cabinetStats?.pickCount ?? picks.length}
-        reviews={cabinetStats?.reviewCount ?? (reviews?.content.length ?? 0)}
-        notes={cabinetStats?.noteCount ?? 0}
-        hideWish
-      />
+      {section === 'bar' ? (
+        <CabinetStatsBar
+          pick={cabinetStats?.pickCount ?? picks.length}
+          reviews={cabinetStats?.reviewCount ?? (reviews?.content.length ?? 0)}
+          notes={cabinetStats?.noteCount ?? 0}
+          hideWish
+        />
+      ) : null}
 
       {section === 'bar' ? (
         <>
@@ -200,13 +203,7 @@ export default function UserProfilePage() {
           )}
         </>
       ) : (
-        <>
-          <article className="wf-cabinet-post wf-box">
-            <h3 className="wf-cabinet-post__title">스모키 위스키 입문 추천</h3>
-            <p className="wf-text-sm">#입문 · 칼럼</p>
-          </article>
-          <p className="wf-text-sm">13b-cabinet-other-community</p>
-        </>
+        <CabinetCommunitySection authorId={targetUserId} />
       )}
     </WireframePage>
   );
