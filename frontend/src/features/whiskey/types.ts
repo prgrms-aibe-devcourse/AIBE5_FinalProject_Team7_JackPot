@@ -92,3 +92,50 @@ export interface TastingAxisView {
 }
 
 export type TastingSummarySource = 'official' | 'userAvg';
+
+/**
+ * WH-03 비슷한 위스키 추천 — 백엔드 → 프론트 응답 양식
+ * 엔드포인트: GET /api/v1/whiskeys/{id}/similar
+ * 응답: SimilarWhiskey[]  (래퍼 없이 raw 배열, 최대 3개 권장 / 현재 위스키 자신은 제외)
+ *
+ * 예시 응답:
+ * [
+ *   {
+ *     "id": 2,
+ *     "name": "Balvenie DoubleWood 12",
+ *     "type": "single_malt",
+ *     "imageUrl": null,
+ *     "abv": 40,
+ *     "region": "Speyside",
+ *     "country": "Scotland",
+ *     "ageYears": 12,
+ *     "avgRating": 4.3,
+ *     "matchScore": 89,
+ *     "reason": "꿀·바닐라 계열의 단맛과 오크 피니시가 비슷해요"
+ *   }
+ * ]
+ */
+export interface SimilarWhiskey {
+  /** 위스키 ID — 상세 링크(/whiskey/{id})에 사용 */
+  id: number;
+  /** 위스키 이름 */
+  name: string;
+  /** 종류 코드: single_malt | blended | bourbon | rye … (화면에서 한글 라벨로 변환) */
+  type: string;
+  /** 대표 이미지 키/URL. 없으면 null → placeholder 표시 */
+  imageUrl: string | null;
+  /** 도수(%) */
+  abv: number;
+  /** 지역 (예: Speyside) */
+  region: string;
+  /** 국가 (예: Scotland) */
+  country: string;
+  /** 숙성 연수 (0이면 NAS) */
+  ageYears: number;
+  /** 평균 평점 (0~5 스케일) */
+  avgRating: number;
+  /** 유사도 점수 (0~100). 정렬·표시용, 선택적 의미 */
+  matchScore: number;
+  /** 추천 이유 한 줄 (없으면 빈 문자열) */
+  reason: string;
+}

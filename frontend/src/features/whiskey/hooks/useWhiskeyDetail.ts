@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchRelatedColumns, fetchWhiskeyDetail, fetchWhiskeyReviews } from '../api/whiskeyApi';
+import {
+  fetchRelatedColumns,
+  fetchSimilarWhiskeys,
+  fetchWhiskeyDetail,
+  fetchWhiskeyReviews,
+} from '../api/whiskeyApi';
 
 function getCurrentUserId(): number | null {
   const value = localStorage.getItem('userId');
@@ -33,6 +38,18 @@ export function useRelatedColumns(whiskeyId: string | undefined) {
   return useQuery({
     queryKey: relatedColumnsQueryKey(whiskeyId ?? ''),
     queryFn: () => fetchRelatedColumns(whiskeyId!),
+    enabled: Boolean(whiskeyId),
+  });
+}
+
+export function similarWhiskeysQueryKey(whiskeyId: string) {
+  return ['whiskey', 'similar', whiskeyId] as const;
+}
+
+export function useSimilarWhiskeys(whiskeyId: string | undefined) {
+  return useQuery({
+    queryKey: similarWhiskeysQueryKey(whiskeyId ?? ''),
+    queryFn: () => fetchSimilarWhiskeys(whiskeyId!),
     enabled: Boolean(whiskeyId),
   });
 }

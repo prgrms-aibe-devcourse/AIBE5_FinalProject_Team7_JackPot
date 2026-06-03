@@ -1,7 +1,12 @@
 import { apiClient } from '@/shared/api/client';
 import type { PageResponse } from '@/shared/api/types/common';
-import { getMockWhiskeyDetail, MOCK_RELATED_COLUMNS, MOCK_WHISKEY_REVIEWS } from '../mocks/whiskeyDetailMock';
-import type { RelatedColumnPost, WhiskeyDetail, WhiskeyReview } from '../types';
+import {
+  getMockSimilarWhiskeys,
+  getMockWhiskeyDetail,
+  MOCK_RELATED_COLUMNS,
+  MOCK_WHISKEY_REVIEWS,
+} from '../mocks/whiskeyDetailMock';
+import type { RelatedColumnPost, SimilarWhiskey, WhiskeyDetail, WhiskeyReview } from '../types';
 
 const USE_MOCK_ONLY = import.meta.env.VITE_API_MOCK === 'true';
 
@@ -60,8 +65,20 @@ export async function fetchWhiskeyReviews(
   );
 }
 
+/**
+ * WH-03 비슷한 위스키 추천 (raw 배열, 최대 3)
+ * - 백엔드 GET /api/v1/whiskeys/{id}/similar 준비 전: 목데이터로 표시
+ * - 실제 연결 시 아래 두 줄로 교체:
+ *     const { data } = await apiClient.get<SimilarWhiskey[]>(`/whiskeys/${whiskeyId}/similar`);
+ *     return data;
+ */
+export async function fetchSimilarWhiskeys(whiskeyId: string): Promise<SimilarWhiskey[]> {
+  return getMockSimilarWhiskeys(whiskeyId);
+}
+
 export const whiskeyApi = {
   fetchWhiskeyDetail,
   fetchRelatedColumns,
   fetchWhiskeyReviews,
+  fetchSimilarWhiskeys,
 };
