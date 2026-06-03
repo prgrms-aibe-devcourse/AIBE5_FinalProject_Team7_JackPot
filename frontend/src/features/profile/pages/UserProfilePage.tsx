@@ -17,7 +17,7 @@ function parseSection(v: string | null): CabinetSection {
 }
 
 function parseTab(v: string | null): CabinetTab {
-  if (v === 'wish' || v === 'pick' || v === 'note' || v === 'reviews') return v;
+  if (v === 'pick' || v === 'note' || v === 'reviews') return v;
   return 'pick';
 }
 
@@ -152,7 +152,7 @@ export default function UserProfilePage() {
 
       <p className="wf-text-sm wf-cabinet-hint">
         {section === 'bar'
-          ? '선택한 메뉴: Bar — 공개 Pick·노트·리뷰 (♡ 위시 비공개)'
+          ? '선택한 메뉴: Bar — 공개 Pick·노트·리뷰'
           : '선택한 메뉴: 커뮤니티 — 공개 글·리뷰'}
       </p>
 
@@ -166,7 +166,6 @@ export default function UserProfilePage() {
       {section === 'bar' ? (
         <>
           <CabinetSubTabs active={tab} basePath={`${base}?section=bar`} hideWish />
-          <p className="wf-text-sm">♡ 위시리스트는 본인만 · 장바구니 개념</p>
           {tab === 'pick' ? (
             picksLoading ? (
               <p className="wf-text-sm">픽 목록을 불러오는 중입니다...</p>
@@ -196,10 +195,8 @@ export default function UserProfilePage() {
             ) : (
               <p className="wf-text-sm">아직 작성한 리뷰가 없습니다.</p>
             )
-          ) : tab === 'note' ? (
-            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           ) : (
-            <p className="wf-text-sm">위시리스트는 타인에게 공개되지 않습니다.</p>
+            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           )}
         </>
       ) : (
