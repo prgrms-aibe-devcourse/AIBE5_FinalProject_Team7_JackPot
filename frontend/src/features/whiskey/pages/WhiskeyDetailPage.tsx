@@ -14,6 +14,7 @@ import { TastingTagsBubble } from '../components/TastingTagsBubble';
 import { useRelatedColumns, useWhiskeyDetail, useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 
 function formatType(type: string): string {
@@ -70,7 +71,9 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
     <li className="wf-detail-reviews__item wf-box">
       <div className="wf-detail-reviews__header">
         <div>
-          <strong>{review.nickname}</strong>
+          <UserProfileLink userId={review.userId}>
+            <strong>{review.nickname}</strong>
+          </UserProfileLink>
           <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
         </div>
         <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>

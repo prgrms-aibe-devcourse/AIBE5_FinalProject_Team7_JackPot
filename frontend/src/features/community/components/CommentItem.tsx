@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import type { CommentTreeResponse } from '../types';
 
 interface CommentItemProps {
@@ -43,7 +44,15 @@ export function CommentItem({
       <div className="wf-box" style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
           <span className="wf-text-xs" style={{ color: '#888' }}>
-            {comment.isDeleted ? '(삭제됨)' : (comment.nickname ?? `사용자 ${comment.userId ?? '?'}`)}
+            {comment.isDeleted ? (
+              '(삭제됨)'
+            ) : comment.userId != null ? (
+              <UserProfileLink userId={comment.userId}>
+                {comment.nickname ?? `사용자 ${comment.userId}`}
+              </UserProfileLink>
+            ) : (
+              comment.nickname ?? '사용자'
+            )}
           </span>
           <span className="wf-text-xs" style={{ color: '#aaa' }}>
             {formatDate(comment.createdAt)}
