@@ -4,6 +4,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
 import { isLoggedIn, getStoredUserId } from '@/shared/lib/authSession';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
@@ -107,7 +108,10 @@ export default function PostDetailPage() {
           </div>
           <h1 className="wf-title" style={{ marginBottom: 4 }}>{post.title}</h1>
           <p className="wf-text-xs" style={{ color: '#888', marginBottom: 8 }}>
-            작성자 {post.authorId} · {formatDate(post.createdAt)}
+            작성자{' '}
+            <UserProfileLink userId={post.authorId}>#{post.authorId}</UserProfileLink>
+            {' · '}
+            {formatDate(post.createdAt)}
           </p>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button

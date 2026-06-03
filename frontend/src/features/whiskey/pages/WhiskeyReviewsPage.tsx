@@ -6,6 +6,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import type { WhiskeyReview } from '../types';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
 
 function formatReviewDate(value: string): string {
@@ -45,7 +46,9 @@ function ReviewCard({ review }: { review: WhiskeyReview }) {
     <div className="wf-box" style={{ padding: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
         <div>
-          <strong>{review.nickname}</strong>
+          <UserProfileLink userId={review.userId}>
+            <strong>{review.nickname}</strong>
+          </UserProfileLink>
           <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
         </div>
         <span style={{ color: 'var(--wf-accent)' }}>{Number(review.rating).toFixed(1)}점</span>
