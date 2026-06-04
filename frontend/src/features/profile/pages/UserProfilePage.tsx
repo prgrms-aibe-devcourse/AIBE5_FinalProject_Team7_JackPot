@@ -181,11 +181,11 @@ export default function UserProfilePage() {
                     key={pick.pickId ?? index}
                     id={String(pick.whiskey?.id ?? '')}
                     name={pick.whiskey?.name ?? '위스키'}
+                    imageUrl={pick.whiskey?.imageUrl ?? null}
                     meta={`${pick.whiskey?.type ?? ''} · ${pick.whiskey?.abv ?? '-'}%`}
                     readonly
                   />
                 ))}
-                <p className="wf-text-xs">※ 타인 캐비넷: 제거·수정 불가 · 상세만 열람</p>
               </>
             )
           ) : tab === 'reviews' ? (
