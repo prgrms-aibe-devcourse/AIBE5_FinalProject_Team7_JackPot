@@ -3,44 +3,78 @@
 set -euo pipefail
 
 COMPOSE_DIR="${COMPOSE_DIR:-$HOME/whiskeynote}"
-WAIT_SEC="${WAIT_SEC:-25}"
-LOG_TAIL="${LOG_TAIL:-120}"
+WAIT_SEC="${WAIT_SEC:-30}"
+LOG_TAIL="${LOG_TAIL:-150}"
 
 cd "$COMPOSE_DIR"
+
+echo "==> Waiting ${WAIT_SEC}s for backend startup..."
+sleep "$WAIT_SEC"
 
 echo "==> docker compose ps"
 docker compose ps
 
 LOGS="$(docker compose logs backend --tail "$LOG_TAIL" 2>&1)"
 
+# RDS 테이블 누락 (ddl-auto=validate)
 if echo "$LOGS" | grep -q 'missing table'; then
-  echo "FAIL: RDS 스키마 불일치 (Hibernate validate — missing table)"
+  MISSING_TABLE="$(echo "$LOGS" | sed -n 's/.*missing table \[\([^]]*\)\].*/\1/p' | head -1)"
+  MISSING_TABLE="${MISSING_TABLE:-unknown}"
+
+  echo ""
+  echo "RDS_SCHEMA_OUTDATED"
+  echo "========================================"
+  echo "RDS 스키마 최신화 필요 — backend 기동 실패"
+  echo "누락 테이블: ${MISSING_TABLE}"
+  echo ""
+  echo "조치:"
+  echo "  1) deploy/schema-migrate.sql 에 CREATE TABLE IF NOT EXISTS 추가"
+  echo "  2) main merge → Deploy workflow 재실행"
+  echo "  또는 EC2: bash ~/whiskeynote/deploy/run-rds-migrate.sh"
+  echo "========================================"
   echo "$LOGS" | grep -E 'missing table|Schema validation' || true
   exit 1
 fi
 
+if echo "$LOGS" | grep -q 'Schema validation:'; then
+  echo ""
+  echo "RDS_SCHEMA_OUTDATED"
+  echo "========================================"
+  echo "RDS 스키마 검증 실패 (Hibernate validate)"
+  echo "$LOGS" | grep -E 'Schema validation|missing' | tail -5
+  echo "========================================"
+  exit 1
+fi
+
 if echo "$LOGS" | grep -q 'Application run failed'; then
-  echo "FAIL: Spring Boot 기동 실패"
-  echo "$LOGS" | tail -20
+  echo ""
+  echo "BACKEND_START_FAILED"
+  echo "FAIL: Spring Boot 기동 실패 (로그 확인)"
+  echo "$LOGS" | tail -25
   exit 1
 fi
 
 if ! echo "$LOGS" | grep -q 'Started WhiskeynoteApplication'; then
-  echo "FAIL: Started WhiskeynoteApplication 로그 없음 (아직 기동 중이면 WAIT_SEC 늘리기)"
-  echo "$LOGS" | tail -20
+  echo ""
+  echo "BACKEND_START_FAILED"
+  echo "FAIL: Started WhiskeynoteApplication 로그 없음"
+  echo "$LOGS" | tail -25
   exit 1
 fi
 
-HEALTH_CODE="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/actuator/health/readiness || echo '000')"
+HEALTH_CODE="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/actuator/health/readiness 2>/dev/null || echo '000')"
 if [[ "$HEALTH_CODE" != "200" ]]; then
-  echo "FAIL: actuator readiness HTTP $HEALTH_CODE"
+  echo "BACKEND_HEALTH_FAILED"
+  echo "FAIL: actuator readiness HTTP ${HEALTH_CODE}"
   exit 1
 fi
 
-API_CODE="$(curl -s -o /dev/null -w '%{http_code}' 'http://localhost/api/v1/community/columns?page=0&size=1' || echo '000')"
+API_CODE="$(curl -s -o /dev/null -w '%{http_code}' 'http://localhost/api/v1/community/columns?page=0&size=1' 2>/dev/null || echo '000')"
 if [[ "$API_CODE" != "200" ]]; then
-  echo "FAIL: API smoke test HTTP $API_CODE"
+  echo "BACKEND_API_FAILED"
+  echo "FAIL: API smoke test HTTP ${API_CODE}"
   exit 1
 fi
 
+echo "DEPLOY_VERIFY_OK"
 echo "OK: backend healthy, API 200"
