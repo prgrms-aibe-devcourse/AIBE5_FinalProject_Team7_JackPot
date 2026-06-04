@@ -1,6 +1,8 @@
 package com.jackpot.whiskeynote.domain.taste.note.repository;
 
 import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +22,7 @@ public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> 
             Long userId,
             Long whiskeyId
     );
+    // 내 노트 목록 조회
+    @EntityGraph(attributePaths = {"whiskey", "noteTags", "noteTags.tag"})
+    Page<TastingNote> findByUserIdOrderByUpdatedAtDesc(Long userId, Pageable pageable);
 }

@@ -10,10 +10,13 @@ import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepositor
 import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteTagRepository;
 import com.jackpot.whiskeynote.domain.taste.note.service.TastingNoteService;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
+import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,9 +33,9 @@ public class TastingNoteController {
     @GetMapping("/api/v1/whiskeys/{whiskeyId}/notes/my")
     public ResponseEntity<TastingNoteResponse> getMyNoteForReview(
             @PathVariable Long whiskeyId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        if (!usersRepository.existsById(userId)) {
+        if (!usersRepository.existsById(principal.userId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         }
 
@@ -41,37 +44,34 @@ public class TastingNoteController {
         }
 
         return tastingNoteRepository
-                .findFirstByUserIdAndWhiskeyIdAndIsDraftFalseOrderByUpdatedAtDesc(userId, whiskeyId)
+                .findFirstByUserIdAndWhiskeyIdAndIsDraftFalseOrderByUpdatedAtDesc(principal.userId(), whiskeyId)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
     // 첨부된 시음 노트 상세 조회
     @GetMapping("/api/v1/tasting-notes/{noteId}")
-    public TastingNoteResponse getTastingNote(@PathVariable Long noteId) {
-        TastingNote note = tastingNoteRepository.findById(noteId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "시음 노트를 찾을 수 없습니다."
-                ));
-
-        return toResponse(note);
+    public TastingNoteResponse getTastingNote(
+            @PathVariable Long noteId,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ) {
+        return tastingNoteService.getMyTastingNote(principal.userId(), noteId);
     }
     // 시음 노트 생성
     @PostMapping("/api/v1/tasting-notes")
     @ResponseStatus(HttpStatus.CREATED)
     public TastingNoteResponse createTastingNote(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid@RequestBody TastingNoteCreateRequest request){
-        return tastingNoteService.createTastingNote(userId,request);
+        return tastingNoteService.createTastingNote(principal.userId(),request);
     }
     // 시음 노트 수정
     @PatchMapping("/api/v1/tasting-notes/{noteId}")
     public TastingNoteResponse updateTastingNote(
             @PathVariable Long noteId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid@RequestBody TastingNoteUpdateRequest request){
-        return tastingNoteService.updateTastingNote(userId, noteId, request);
+        return tastingNoteService.updateTastingNote(principal.userId(), noteId, request);
     }
     private TastingNoteResponse toResponse(TastingNote note) {
         return TastingNoteResponse.from(
@@ -86,7 +86,16 @@ public class TastingNoteController {
     @DeleteMapping("/api/v1/tasting-notes/{noteId}")
     public void deleteTastingNote(
         @PathVariable Long noteId,
-        @RequestParam Long userId) {
-        tastingNoteService.deleteTastingNote(userId, noteId);
+        @AuthenticationPrincipal JwtUserPrincipal principal) {
+        tastingNoteService.deleteTastingNote(principal.userId(), noteId);
+    }
+    // 내 시음 노트 리스트 조회 (페이징)
+    @GetMapping("/api/v1/tasting-notes/my")
+    public Page<TastingNoteResponse> getMyTastingNotes(
+            @AuthenticationPrincipal JwtUserPrincipal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return tastingNoteService.getMyTastingNotes(principal.userId(), page, size);
     }
 }

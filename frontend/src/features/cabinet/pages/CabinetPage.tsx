@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
@@ -9,6 +10,7 @@ import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
 import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
 import { StarRatingInput } from '@/features/review/components/StarRatingInput';
 import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/review/hooks/useReviews';
+import { fetchMyTastingNotes, type MyTastingNote, type TastingNoteTag } from '@/features/tasting-note/api/noteApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -57,6 +59,189 @@ function getCurrentNickname(): string {
 function getCurrentProfileImageUrl(): string | null {
   const value = localStorage.getItem('profileImageUrl') || '';
   return value.trim() ? value : null;
+}
+
+const CHART_SIZE = 220;
+const CHART_CENTER = CHART_SIZE / 2;
+const CHART_RADIUS = 70;
+const GRID_LEVELS = [0.25, 0.5, 0.75, 1];
+const SCORE_MAX = 10;
+
+type NoteTagFilter = 'nose' | 'taste';
+
+function axisPoint(index: number, total: number, ratio: number) {
+  const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
+  return {
+    x: CHART_CENTER + Math.cos(angle) * CHART_RADIUS * ratio,
+    y: CHART_CENTER + Math.sin(angle) * CHART_RADIUS * ratio,
+  };
+}
+
+function pointsToString(points: { x: number; y: number }[]) {
+  return points.map((point) => `${point.x},${point.y}`).join(' ');
+}
+
+function normalizeScore(score: number | null) {
+  if (score == null) return 0;
+  return Math.min(Math.max(score, 0), SCORE_MAX);
+}
+
+function buildNoteAxes(note: MyTastingNote) {
+  return [
+    { key: 'body', label: '바디', score: normalizeScore(note.bodyScore) },
+    { key: 'finish', label: '피니시', score: normalizeScore(note.finishScore) },
+    { key: 'smoky', label: '스모키', score: normalizeScore(note.smokyScore) },
+    { key: 'spicy', label: '스파이시', score: normalizeScore(note.spicyScore) },
+    { key: 'sweet', label: '단맛', score: normalizeScore(note.sweetScore) },
+  ];
+}
+
+function noteTagCategoryLabel(category: NoteTagFilter) {
+  return category === 'nose' ? '향 태그' : '맛 태그';
+}
+
+function CabinetNoteRadar({ note }: { note: MyTastingNote }) {
+  const axes = buildNoteAxes(note);
+
+  return (
+    <svg className="wf-attached-note__radar" viewBox={`0 0 ${CHART_SIZE} ${CHART_SIZE}`} role="img" aria-label="시음 노트 점수 그래프">
+      {GRID_LEVELS.map((level) => (
+        <polygon
+          key={level}
+          points={pointsToString(axes.map((_, index) => axisPoint(index, axes.length, level)))}
+          className="wf-attached-note__radar-grid"
+        />
+      ))}
+      {axes.map((_, index) => {
+        const end = axisPoint(index, axes.length, 1);
+        return (
+          <line
+            key={index}
+            x1={CHART_CENTER}
+            y1={CHART_CENTER}
+            x2={end.x}
+            y2={end.y}
+            className="wf-attached-note__radar-axis"
+          />
+        );
+      })}
+      <polygon
+        points={pointsToString(axes.map((axis, index) => axisPoint(index, axes.length, axis.score / SCORE_MAX)))}
+        className="wf-attached-note__radar-fill"
+      />
+      {axes.map((axis, index) => {
+        const labelPoint = axisPoint(index, axes.length, 1.28);
+        return (
+          <g key={axis.key}>
+            <text x={labelPoint.x} y={labelPoint.y} textAnchor="middle" dominantBaseline="middle" className="wf-attached-note__radar-label">
+              {axis.label}
+            </text>
+            <text x={labelPoint.x} y={labelPoint.y + 14} textAnchor="middle" dominantBaseline="middle" className="wf-attached-note__radar-score">
+              {axis.score}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function CabinetNoteTags({ tags }: { tags: TastingNoteTag[] }) {
+  const [filter, setFilter] = useState<NoteTagFilter>('nose');
+  const filteredTags = useMemo(
+    () => tags.filter((tag) => tag.category === filter),
+    [filter, tags],
+  );
+
+  return (
+    <div className="wf-attached-note__tags">
+      <div className="wf-attached-note__tag-tabs" role="group" aria-label="시음 노트 태그 종류">
+        {(['nose', 'taste'] as const).map((category) => (
+          <button
+            key={category}
+            type="button"
+            className={`wf-attached-note__tag-tab${filter === category ? ' wf-attached-note__tag-tab--on' : ''}`}
+            onClick={() => setFilter(category)}
+          >
+            {noteTagCategoryLabel(category)}
+          </button>
+        ))}
+      </div>
+      {filteredTags.length ? (
+        <div className="wf-attached-note__tag-list">
+          {filteredTags.map((tag) => (
+            <span key={tag.id} className="wf-attached-note__tag-chip">
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="wf-text-sm wf-attached-note__empty">{noteTagCategoryLabel(filter)}가 없습니다.</p>
+      )}
+    </div>
+  );
+}
+
+function CabinetNoteDetail({ note }: { note: MyTastingNote }) {
+  return (
+    <section className="wf-attached-note wf-box" aria-label="내 시음 노트 상세">
+      <div className="wf-attached-note__body">
+        <CabinetNoteRadar note={note} />
+        <div className="wf-attached-note__content">
+          <p className="wf-text-label">작성한 한줄평</p>
+          <p className="wf-text-sm wf-attached-note__memo">
+            {note.memo || '작성된 메모가 없습니다.'}
+          </p>
+          <CabinetNoteTags tags={note.tags ?? []} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MyNoteItem({ note }: { note: MyTastingNote }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const editPath = PATHS.TASTING_NOTE.replace(':whiskeyId', String(note.whiskeyId));
+  const isDraft = Boolean(note.isDraft ?? note.draft);
+  const tagPreview = note.tags?.slice(0, 4) ?? [];
+
+  return (
+    <article className="wf-cabinet-post wf-box">
+      <div className="wf-review-card__head">
+        <div>
+          <h3 className="wf-cabinet-post__title">{note.whiskeyName}</h3>
+          <p className="wf-text-sm">
+            {isDraft ? '임시저장' : '작성 완료'} · 수정일 {note.updatedAt?.slice(0, 10) ?? '-'}
+          </p>
+        </div>
+        <Link to={editPath} className="wf-link wf-text-sm">
+          수정
+        </Link>
+      </div>
+
+      <p className="wf-text-sm">{note.memo || '작성된 메모가 없습니다.'}</p>
+
+      {tagPreview.length > 0 ? (
+        <footer className="wf-cabinet-post__foot">
+          <span className="wf-text-sm">
+            {tagPreview.map((tag) => tag.name).join(' · ')}
+            {note.tags.length > tagPreview.length ? ` 외 ${note.tags.length - tagPreview.length}개` : ''}
+          </span>
+          <button type="button" className="wf-link wf-text-sm" onClick={() => setIsOpen((prev) => !prev)}>
+            {isOpen ? '접기' : '자세히'}
+          </button>
+        </footer>
+      ) : (
+        <footer className="wf-cabinet-post__foot">
+          <span className="wf-text-sm">선택한 태그 없음</span>
+          <button type="button" className="wf-link wf-text-sm" onClick={() => setIsOpen((prev) => !prev)}>
+            {isOpen ? '접기' : '자세히'}
+          </button>
+        </footer>
+      )}
+      {isOpen ? <CabinetNoteDetail note={note} /> : null}
+    </article>
+  );
 }
 
 function MyReviewItem({
@@ -191,6 +376,11 @@ export default function CabinetPage() {
     }
   };
   const { data: myReviews, isLoading: reviewsLoading } = useMyReviews(currentUserId, 0, 20);
+  const { data: myNotes, isLoading: notesLoading } = useQuery({
+    queryKey: ['tasting-notes', 'my', 0, 20],
+    queryFn: () => fetchMyTastingNotes(0, 20),
+    enabled: currentUserId != null,
+  });
   const updateReviewMutation = useUpdateReview(currentUserId);
   const deleteReviewMutation = useDeleteReview(currentUserId);
 
@@ -241,7 +431,7 @@ export default function CabinetPage() {
         pick={cabinetStats?.pickCount ?? picks.length}
         wish={cabinetStats?.wishCount ?? 8}
         reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
-        notes={cabinetStats?.noteCount ?? 18}
+        notes={cabinetStats?.noteCount ?? (myNotes?.content.length ?? 0)}
       />
 
       {section === 'bar' ? (
@@ -289,6 +479,18 @@ export default function CabinetPage() {
             )
           ) : tab === 'wish' ? (
             <p className="wf-text-sm">위시 기능은 준비 중입니다.</p>
+          ) : tab === 'note' ? (
+            <>
+              {currentUserId == null ? (
+                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+              ) : notesLoading ? (
+                <p className="wf-text-sm">내 시음 노트를 불러오는 중입니다.</p>
+              ) : myNotes?.content.length ? (
+                myNotes.content.map((note) => <MyNoteItem key={note.id} note={note} />)
+              ) : (
+                <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다.</p>
+              )}
+            </>
           ) : (
             <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           )}
