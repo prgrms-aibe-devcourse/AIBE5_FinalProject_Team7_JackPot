@@ -631,6 +631,7 @@ export default function CabinetPage() {
                   key={pick.pickId}
                   id={String(pick.whiskey.id)}
                   name={pick.whiskey.name}
+                  imageUrl={pick.whiskey.imageUrl}
                   meta={`${pick.whiskey.type} · ${pick.whiskey.abv ?? '-'}%`}
                   onRemove={() => handleDeletePick(pick.whiskey.id)}
                 />
@@ -786,6 +787,7 @@ export default function CabinetPage() {
                       key={item.itemId}
                       id={String(item.whiskey.id)}
                       name={item.whiskey.name}
+                      imageUrl={item.whiskey.imageUrl}
                       meta={`${item.whiskey.type} · ${item.whiskey.abv ?? '-'}%`}
                       onRemove={() => handleRemoveWish(item.itemId)}
                     />
