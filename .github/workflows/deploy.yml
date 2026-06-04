@@ -68,11 +68,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: |
-            deploy/docker-compose.ec2.yml
-            deploy/schema-migrate.sql
-            deploy/run-rds-migrate.sh
-            deploy/verify-deploy.sh
+          source: "deploy/docker-compose.ec2.yml,deploy/schema-migrate.sql,deploy/run-rds-migrate.sh,deploy/verify-deploy.sh"
           target: /home/ubuntu/whiskeynote/deploy/
           strip_components: 1
 
