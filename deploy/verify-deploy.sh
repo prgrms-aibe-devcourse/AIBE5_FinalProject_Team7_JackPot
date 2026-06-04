@@ -62,10 +62,11 @@ if ! echo "$LOGS" | grep -q 'Started WhiskeynoteApplication'; then
   exit 1
 fi
 
-HEALTH_CODE="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/actuator/health/readiness 2>/dev/null || echo '000')"
-if [[ "$HEALTH_CODE" != "200" ]]; then
+# backend는 expose만 하고 호스트 8080 publish 없음 → compose healthcheck(컨테이너 내부 readiness)로 확인
+if ! docker compose ps backend 2>/dev/null | grep -q '(healthy)'; then
   echo "BACKEND_HEALTH_FAILED"
-  echo "FAIL: actuator readiness HTTP ${HEALTH_CODE}"
+  echo "FAIL: backend container not healthy (see docker compose ps / logs)"
+  docker compose logs backend --tail 30
   exit 1
 fi
 
@@ -77,4 +78,4 @@ if [[ "$API_CODE" != "200" ]]; then
 fi
 
 echo "DEPLOY_VERIFY_OK"
-echo "OK: backend healthy, API 200"
+echo "OK: backend container healthy, API smoke 200"

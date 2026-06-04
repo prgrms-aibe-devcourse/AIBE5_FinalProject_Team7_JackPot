@@ -26,7 +26,7 @@ export default function WriteReviewPage() {
   const { data: myReviews, isLoading: myReviewsLoading } = useMyReviews(currentUserId, 0, 100);
   const { data: myNote, isLoading: noteLoading } = useQuery({
     queryKey: ['tasting-note', 'my', currentUserId, id],
-    queryFn: () => fetchMyTastingNoteForWhiskey(currentUserId!, id),
+    queryFn: () => fetchMyTastingNoteForWhiskey(id),
     enabled: currentUserId != null,
   });
   const createReviewMutation = useCreateReview(currentUserId, id);

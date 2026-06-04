@@ -85,7 +85,7 @@ export default function TastingNotePage() {
   const { data: whiskey } = useWhiskeyDetail(id);
   const { data: existingNote, isLoading: noteLoading } = useQuery({
     queryKey: ['tasting-note', 'my', currentUserId, id],
-    queryFn: () => fetchMyTastingNoteForWhiskey(currentUserId!, id),
+    queryFn: () => fetchMyTastingNoteForWhiskey(id),
     enabled: currentUserId != null,
   });
 
@@ -117,7 +117,7 @@ export default function TastingNotePage() {
     });
     setMemo(existingNote.memo ?? '');
     setSelectedTagIds(existingNote.tags?.map((tag) => tag.id) ?? []);
-    setIsDraft(existingNote.draft);
+    setIsDraft(Boolean(existingNote.isDraft ?? existingNote.draft));
   }, [existingNote]);
 
   const saveMutation = useMutation({
@@ -127,10 +127,10 @@ export default function TastingNotePage() {
       }
 
       if (existingNote) {
-        return updateTastingNote(currentUserId, existingNote.id, body);
+        return updateTastingNote(existingNote.id, body);
       }
 
-      return createTastingNote(currentUserId, body);
+      return createTastingNote(body);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
@@ -143,7 +143,7 @@ export default function TastingNotePage() {
     mutationFn: () => {
       if (currentUserId == null) throw new Error('로그인 정보가 없습니다.');
       if (!existingNote) throw new Error('삭제할 노트가 없습니다.');
-      return deleteTastingNote(currentUserId, existingNote.id);
+      return deleteTastingNote(existingNote.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });

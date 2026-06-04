@@ -98,6 +98,25 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.DELETE,
                                 "/api/v1/whiskeys/*/pick"
                         ).authenticated()
+                        // 시음 노트는 개인 데이터이므로 JWT 인증 유저 기준으로만 접근
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/tasting-notes/my",
+                                "/api/v1/tasting-notes/*",
+                                "/api/v1/whiskeys/*/notes/my"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/tasting-notes"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.PATCH,
+                                "/api/v1/tasting-notes/*"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/tasting-notes/*"
+                        ).authenticated()
                         // 위시 — 전체 인증 필요 (비공개)
                         .requestMatchers(
                                 "/api/v1/users/me/wishlists",
