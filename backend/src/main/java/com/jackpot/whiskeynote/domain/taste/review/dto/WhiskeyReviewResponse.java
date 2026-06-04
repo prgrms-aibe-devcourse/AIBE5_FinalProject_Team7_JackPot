@@ -16,10 +16,16 @@ public record WhiskeyReviewResponse(
         String publicText,
         Long attachedNoteId,
         boolean hasAttachedNote,
+        long likeCount,
+        boolean likedByMe,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static WhiskeyReviewResponse from(Review review) {
+    public static WhiskeyReviewResponse from(
+            Review review,
+            long likeCount,
+            boolean likedByMe
+    ) {
         return new WhiskeyReviewResponse(
                 review.getId(),
                 review.getUser().getId(),
@@ -31,8 +37,14 @@ public record WhiskeyReviewResponse(
                 review.getPublicText(),
                 review.getAttachedNoteId(),
                 review.getAttachedNoteId() != null,
+                likeCount,
+                likedByMe,
                 review.getCreatedAt(),
                 review.getUpdatedAt()
         );
+    }
+
+    public static WhiskeyReviewResponse from(Review review) {
+        return from(review, 0, false);
     }
 }

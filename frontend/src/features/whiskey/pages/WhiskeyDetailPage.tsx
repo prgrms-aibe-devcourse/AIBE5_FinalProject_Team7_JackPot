@@ -9,12 +9,14 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
 import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
+import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import { RelatedColumns } from '../components/RelatedColumns';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
 import { useRelatedColumns, useWhiskeyDetail, useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 
 function formatType(type: string): string {
@@ -42,14 +44,38 @@ function formatReviewDate(value: string): string {
   }).format(new Date(value));
 }
 
+function getCurrentUserId(): number | null {
+  const value = localStorage.getItem('userId');
+  if (!value) return null;
+
+  const userId = Number(value);
+  return Number.isFinite(userId) ? userId : null;
+}
+
 function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
   const [showNote, setShowNote] = useState(false);
+  const currentUserId = getCurrentUserId();
+  const likeMutation = useToggleReviewLike(currentUserId);
+
+  const handleLikeClick = () => {
+    if (currentUserId == null) {
+      alert('로그인 후 리뷰에 좋아요를 누를 수 있습니다.');
+      return;
+    }
+
+    likeMutation.mutate({
+      reviewId: review.id,
+      liked: review.likedByMe,
+    });
+  };
 
   return (
     <li className="wf-detail-reviews__item wf-box">
       <div className="wf-detail-reviews__header">
         <div>
-          <strong>{review.nickname}</strong>
+          <UserProfileLink userId={review.userId}>
+            <strong>{review.nickname}</strong>
+          </UserProfileLink>
           <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
         </div>
         <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>
@@ -57,6 +83,14 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
       <p className="wf-text-sm wf-detail-reviews__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
+      <button
+        type="button"
+        className={`wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
+        onClick={handleLikeClick}
+        disabled={likeMutation.isPending}
+      >
+        {review.likedByMe ? '♥' : '♡'} {review.likeCount ?? 0}
+      </button>
       {review.hasAttachedNote && review.attachedNoteId && (
         <>
           <button

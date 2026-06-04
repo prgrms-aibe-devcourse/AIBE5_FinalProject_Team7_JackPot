@@ -6,6 +6,7 @@ import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
+import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
 import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
 import { StarRatingInput } from '@/features/review/components/StarRatingInput';
 import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/review/hooks/useReviews';
@@ -28,12 +29,6 @@ interface PickItem {
   };
   createdAt: string;
 }
-
-const COMMUNITY_POSTS = [
-  { title: '라프로익 10 첫 피트 후기', meta: '#피트도전 · 게시글', likes: 42, ago: '2일 전' },
-  { title: 'Glenfiddich 12 공개 리뷰', meta: '코 85 · 맛 88', likes: 18, ago: '1주 전' },
-  { title: '싱글몰트 입문 칼럼', meta: '5분 읽기 · 칼럼', likes: 96, ago: '2주 전' },
-];
 
 function parseSection(v: string | null): CabinetSection {
   return v === 'community' ? 'community' : 'bar';
@@ -399,12 +394,14 @@ export default function CabinetPage() {
           : '선택한 메뉴: 커뮤니티 — 작성 글·리뷰·칼럼'}
       </p>
 
-      <CabinetStatsBar
-        pick={cabinetStats?.pickCount ?? picks.length}
-        wish={cabinetStats?.wishCount ?? totalWishCount}
-        reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
-        notes={cabinetStats?.noteCount ?? 18}
-      />
+      {section === 'bar' ? (
+        <CabinetStatsBar
+          pick={cabinetStats?.pickCount ?? picks.length}
+          wish={cabinetStats?.wishCount ?? totalWishCount}
+          reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
+          notes={cabinetStats?.noteCount ?? 18}
+        />
+      ) : null}
 
       {section === 'bar' ? (
         <>
@@ -611,19 +608,7 @@ export default function CabinetPage() {
           )}
         </>
       ) : (
-        <>
-          <Button style={{ width: 192, height: 46, marginTop: 8 }}>+ 글 작성</Button>
-          {COMMUNITY_POSTS.map((post) => (
-            <article key={post.title} className="wf-cabinet-post wf-box">
-              <h3 className="wf-cabinet-post__title">{post.title}</h3>
-              <p className="wf-text-sm">{post.meta}</p>
-              <footer className="wf-cabinet-post__foot">
-                <span className="wf-text-sm">♡ {post.likes} · {post.ago}</span>
-                <span className="wf-link wf-text-sm">→ 글 상세</span>
-              </footer>
-            </article>
-          ))}
-        </>
+        <CabinetCommunitySection authorId={currentUserId} showWriteButton />
       )}
     </WireframePage>
   );

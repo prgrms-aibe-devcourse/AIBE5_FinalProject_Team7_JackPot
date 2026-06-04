@@ -3,6 +3,8 @@ import {
   createReview,
   deleteReview,
   fetchMyReviews,
+  likeReview,
+  unlikeReview,
   updateReview,
   type ReviewSaveRequest,
 } from '../api/reviewApi';
@@ -59,6 +61,26 @@ export function useDeleteReview(userId: number | null) {
         queryClient.invalidateQueries({ queryKey: ['reviews', 'me', userId] });
       }
       queryClient.invalidateQueries({ queryKey: ['whiskey', 'reviews'] });
+    },
+  });
+}
+
+export function useToggleReviewLike(userId: number | null) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ reviewId, liked }: { reviewId: number; liked: boolean }) => {
+      if (userId == null) {
+        throw new Error('로그인 정보가 없습니다. 다시 로그인해주세요.');
+      }
+
+      return liked ? unlikeReview(userId, reviewId) : likeReview(userId, reviewId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whiskey', 'reviews'] });
+      if (userId != null) {
+        queryClient.invalidateQueries({ queryKey: ['reviews', 'me', userId] });
+      }
     },
   });
 }

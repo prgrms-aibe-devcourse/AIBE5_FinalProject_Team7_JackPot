@@ -8,6 +8,7 @@ import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewUpdateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
 import com.jackpot.whiskeynote.domain.taste.review.entity.Review;
+import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewLikeRepository;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
@@ -28,9 +29,10 @@ public class ReviewService {
     private final WhiskeyRepository whiskeyRepository;
     private final UsersRepository usersRepository;
     private final TastingNoteRepository tastingNoteRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional(readOnly = true)
-    public Page<WhiskeyReviewResponse> getReviewsByWhiskey(Long whiskeyId, int page, int size) {
+    public Page<WhiskeyReviewResponse> getReviewsByWhiskey(Long whiskeyId,Long userId, int page, int size) {
         if(!whiskeyRepository.existsById(whiskeyId)){
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
@@ -44,7 +46,7 @@ public class ReviewService {
         );
 
         return reviewRepository.findByWhiskeyIdOrderByCreatedAtDesc(whiskeyId, pageRequest)
-                .map(WhiskeyReviewResponse::from);
+                .map(review -> toReviewResponse(review, userId));
     }
     // 내가 작성한 리뷰 조회
     @Transactional(readOnly = true)
@@ -60,7 +62,7 @@ public class ReviewService {
         );
 
         return reviewRepository.findByUserIdOrderByCreatedAtDesc(userId, pageRequest)
-                .map(WhiskeyReviewResponse::from);
+                .map(review -> toReviewResponse(review, userId));
     }
     // 리뷰 작성
     @Transactional
@@ -143,5 +145,11 @@ public class ReviewService {
         }
 
         return note.getId();
+    }
+    // Review -> WhiskeyReviewResponse 변환 헬퍼 메서드 (좋아요 수, 좋아요 여부 포함)
+    private WhiskeyReviewResponse toReviewResponse(Review review, Long userId) {
+        long likeCount = reviewLikeRepository.countByReviewId(review.getId());
+        boolean likedByMe = userId != null && reviewLikeRepository.existsByUserIdAndReviewId(userId, review.getId());
+        return WhiskeyReviewResponse.from(review, likeCount, likedByMe);
     }
 }

@@ -78,10 +78,11 @@ public class WhiskeyController {
     @GetMapping("/api/v1/whiskeys/{id}/reviews")
     public Page<WhiskeyReviewResponse> getWhiskeyReviews(
             @PathVariable Long id,
+            @RequestParam(required = false) Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        return reviewService.getReviewsByWhiskey(id, page, size);
+        return reviewService.getReviewsByWhiskey(id, userId, page, size);
     }
     // 위스키 검색 키워드 자동완성
     @GetMapping("/api/v1/whiskeys/autocomplete")

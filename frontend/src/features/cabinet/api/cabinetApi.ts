@@ -95,4 +95,10 @@ export const cabinetApi = {
     const res = await apiClient.get<ApiResponse<CabinetStatsResponse>>('/users/me/cabinet/stats');
     return unwrapApiData(res.data);
   },
+
+  // 타인 캐비넷 통계 조회 (로그인 필요할 수 있음 — 서버 정책에 따름)
+  getUserCabinetStats: async (userId: number): Promise<CabinetStatsResponse> => {
+    const res = await apiClient.get<ApiResponse<CabinetStatsResponse>>(`/users/${userId}/cabinet/stats`);
+    return unwrapApiData(res.data);
+  },
 };
