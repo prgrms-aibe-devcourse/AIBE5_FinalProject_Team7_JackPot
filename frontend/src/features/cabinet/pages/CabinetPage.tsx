@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
@@ -13,7 +13,9 @@ import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/revie
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
-import type { CabinetStatsResponse } from '@/features/cabinet/api/cabinetApi';
+import { toast } from '@/shared/components/ui/Toast';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
+import type { CabinetStatsResponse, WishlistFolder, WishlistItem } from '@/features/cabinet/api/cabinetApi';
 
 // Pick API 응답 타입
 interface PickItem {
@@ -157,7 +159,7 @@ export default function CabinetPage() {
     cabinetApi
       .getPickList(currentUserId)
       .then((res) => setPicks(res.data.data.content ?? []))
-      .catch(() => alert('픽 목록을 불러오지 못했습니다.'))
+      .catch(() => toast('픽 목록을 불러오지 못했습니다.', 'error'))
       .finally(() => setPicksLoading(false));
   }, [currentUserId]);
 
@@ -176,13 +178,173 @@ export default function CabinetPage() {
 
   // 픽 삭제 핸들러
   const handleDeletePick = async (whiskeyId: number) => {
-    if (!confirm('픽 목록에서 제거할까요?')) return;
+    const ok = await confirmToast({ message: '픽 목록에서 제거할까요?', confirmLabel: '제거', danger: true });
+    if (!ok) return;
     try {
       await cabinetApi.deletePick(whiskeyId);
-      // 삭제 후 목록에서 제거
       setPicks((prev) => prev.filter((p) => p.whiskey.id !== whiskeyId));
     } catch {
-      alert('픽 제거에 실패했습니다.');
+      toast('픽 제거에 실패했습니다.', 'error');
+    }
+  };
+
+  // 위시 상태
+  const [wishFolders, setWishFolders] = useState<WishlistFolder[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [wishItems, setWishItems] = useState<WishlistItem[]>([]);
+  const [wishLoading, setWishLoading] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [showFolderInput, setShowFolderInput] = useState(false);
+  const [totalWishCount, setTotalWishCount] = useState(0);
+  const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
+
+  // 위시 총 개수 갱신 함수 (공통)
+  const refreshTotalWishCount = async () => {
+    try {
+      const res = await cabinetApi.getWishFolders();
+      const folders = res.data.data ?? [];
+      let total = 0;
+      for (const folder of folders) {
+        const itemRes = await cabinetApi.getWishItems(folder.folderId);
+        total += (itemRes.data.data ?? []).length;
+      }
+      setTotalWishCount(total);
+    } catch {}
+  };
+
+  // 위시 총 개수 — 페이지 진입 시 바로 계산
+  useEffect(() => {
+    if (!currentUserId) return;
+    refreshTotalWishCount();
+  }, [currentUserId]);
+
+  // 위시 탭 진입 시 폴더 목록 조회
+  useEffect(() => {
+    if (!currentUserId || tab !== 'wish') return;
+
+    cabinetApi
+      .getWishFolders()
+      .then(async (res) => {
+        const folders: WishlistFolder[] = res.data.data ?? [];
+        setWishFolders(folders);
+        // 첫 폴더 자동 선택
+        if (folders.length > 0 && selectedFolderId === null) {
+          setSelectedFolderId(folders[0].folderId);
+        }
+        // 위시 총 개수 계산 (모든 폴더 아이템 합산)
+        let total = 0;
+        for (const folder of folders) {
+          const itemRes = await cabinetApi.getWishItems(folder.folderId);
+          total += (itemRes.data.data ?? []).length;
+        }
+        setTotalWishCount(total);
+      })
+      .catch(() => toast('위시 폴더를 불러오지 못했습니다.', 'error'));
+  }, [currentUserId, tab]);
+
+  // 선택된 폴더의 아이템 목록 조회
+  useEffect(() => {
+    if (selectedFolderId === null) return;
+
+    setWishLoading(true);
+    cabinetApi
+      .getWishItems(selectedFolderId)
+      .then((res) => setWishItems(res.data.data ?? []))
+      .catch(() => toast('위시 목록을 불러오지 못했습니다.', 'error'))
+      .finally(() => setWishLoading(false));
+  }, [selectedFolderId]);
+
+  // 폴더 드래그 순서 변경 핸들러
+  const dragFolderIdRef = useRef<number | null>(null);
+
+  const handleDragStart = (folderId: number) => {
+    dragFolderIdRef.current = folderId;
+  };
+
+  const handleDragOver = (e: React.DragEvent, folderId: number) => {
+    e.preventDefault();
+    setDragOverFolderId(folderId);
+  };
+
+  const handleDrop = async (targetFolderId: number) => {
+    setDragOverFolderId(null);
+    const dragId = dragFolderIdRef.current;
+    if (dragId === null || dragId === targetFolderId) return;
+
+    // 로컬 순서 즉시 변경 (UI 반응성)
+    const newOrder = [...wishFolders];
+    const fromIdx = newOrder.findIndex((f) => f.folderId === dragId);
+    const toIdx = newOrder.findIndex((f) => f.folderId === targetFolderId);
+    const [moved] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, moved);
+    setWishFolders(newOrder);
+
+    // 서버에 순서 저장
+    try {
+      const res = await cabinetApi.reorderWishFolders(newOrder.map((f) => f.folderId));
+      setWishFolders(res.data.data ?? newOrder);
+      toast('폴더 순서가 변경되었습니다.', 'success');
+    } catch {
+      toast('순서 변경에 실패했습니다.', 'error');
+      // 실패 시 원래 순서로 복구
+      const revert = await cabinetApi.getWishFolders();
+      setWishFolders(revert.data.data ?? wishFolders);
+    }
+  };
+
+  // 폴더 생성
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) {
+      toast('폴더 이름을 입력해주세요.', 'warning');
+      return;
+    }
+    try {
+      const res = await cabinetApi.createWishFolder(newFolderName.trim());
+      setWishFolders(res.data.data ?? []);
+      setNewFolderName('');
+      setShowFolderInput(false);
+      toast('폴더가 생성되었습니다.', 'success');
+      await refreshTotalWishCount();
+    } catch {
+      toast('폴더 생성에 실패했습니다.', 'error');
+    }
+  };
+
+  // 폴더 삭제
+  const handleDeleteFolder = async (folderId: number) => {
+    const ok = await confirmToast({
+      message: '폴더를 삭제하면 안에 있는 모든 위시가 함께 삭제됩니다.\n계속할까요?',
+      confirmLabel: '삭제',
+      danger: true,
+    });
+    if (!ok) return;
+
+    try {
+      const res = await cabinetApi.deleteWishFolder(folderId);
+      const folders: WishlistFolder[] = res.data.data ?? [];
+      setWishFolders(folders);
+      if (selectedFolderId === folderId) {
+        setSelectedFolderId(folders.length > 0 ? folders[0].folderId : null);
+        setWishItems([]);
+      }
+      await refreshTotalWishCount();
+    } catch {
+      toast('폴더 삭제에 실패했습니다.', 'error');
+    }
+  };
+
+  // 위시 아이템 삭제
+  const handleRemoveWish = async (itemId: number) => {
+    if (selectedFolderId === null) return;
+    const ok = await confirmToast({ message: '위시 목록에서 제거할까요?', confirmLabel: '제거', danger: true });
+    if (!ok) return;
+
+    try {
+      await cabinetApi.removeWish(itemId, selectedFolderId);
+      setWishItems((prev) => prev.filter((item) => item.itemId !== itemId));
+      await refreshTotalWishCount();
+    } catch {
+      toast('위시 제거에 실패했습니다.', 'error');
     }
   };
   const { data: myReviews, isLoading: reviewsLoading } = useMyReviews(currentUserId, 0, 20);
@@ -235,7 +397,7 @@ export default function CabinetPage() {
       {section === 'bar' ? (
         <CabinetStatsBar
           pick={cabinetStats?.pickCount ?? picks.length}
-          wish={cabinetStats?.wishCount ?? 8}
+          wish={cabinetStats?.wishCount ?? totalWishCount}
           reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
           notes={cabinetStats?.noteCount ?? 18}
         />
@@ -285,7 +447,162 @@ export default function CabinetPage() {
               ))
             )
           ) : tab === 'wish' ? (
-            <p className="wf-text-sm">위시 기능은 준비 중입니다.</p>
+            // 위시 탭 — 왼쪽 폴더(고정) + 오른쪽 아이템(고정)
+            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', minHeight: 400 }}>
+
+              {/* 왼쪽: 폴더 목록 — 너비 고정, 높이 독립 */}
+              <aside className="wf-box" style={{
+                width: 200,
+                minWidth: 200,
+                flexShrink: 0,
+                padding: 16,
+                alignSelf: 'flex-start',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <strong className="wf-text-sm">📁 플레이리스트</strong>
+                  <button type="button" className="wf-link wf-text-xs" onClick={() => setShowFolderInput((v) => !v)}>
+                    {showFolderInput ? '취소' : '+ 추가'}
+                  </button>
+                </div>
+
+                {/* 폴더 이름 입력 */}
+                {showFolderInput && (
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                    <input
+                      type="text"
+                      placeholder="폴더 이름"
+                      value={newFolderName}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                      autoFocus
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        background: '#16161c',
+                        border: '1px solid #2e2e38',
+                        borderRadius: 8,
+                        padding: '6px 10px',
+                        color: '#ececf0',
+                        fontSize: 13,
+                        outline: 'none',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreateFolder}
+                      style={{
+                        background: '#c9a227',
+                        border: 'none',
+                        borderRadius: 8,
+                        padding: '6px 10px',
+                        color: '#0c0c0f',
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      추가
+                    </button>
+                  </div>
+                )}
+
+                {/* 폴더 목록 */}
+                {wishFolders.length === 0 ? (
+                  <p className="wf-text-xs" style={{ margin: 0 }}>폴더가 없습니다.</p>
+                ) : (
+                  wishFolders.map((folder) => (
+                    <div
+                      key={folder.folderId}
+                      draggable
+                      onDragStart={() => handleDragStart(folder.folderId)}
+                      onDragOver={(e) => handleDragOver(e, folder.folderId)}
+                      onDrop={() => handleDrop(folder.folderId)}
+                      onDragLeave={() => setDragOverFolderId(null)}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '6px 4px',
+                        borderRadius: 6,
+                        background: dragOverFolderId === folder.folderId ? 'rgba(201,162,39,0.1)' : 'transparent',
+                        borderTop: dragOverFolderId === folder.folderId ? '2px solid #c9a227' : '2px solid transparent',
+                        cursor: 'grab',
+                        transition: 'background 0.15s',
+                      }}
+                    >
+                      {/* 드래그 핸들 */}
+                      <span style={{ color: '#8b8b96', fontSize: 12, marginRight: 4, cursor: 'grab', userSelect: 'none' }}>⠿</span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFolderId(folder.folderId)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: selectedFolderId === folder.folderId ? '#c9a227' : '#ececf0',
+                          fontWeight: selectedFolderId === folder.folderId ? 700 : 400,
+                          cursor: 'pointer',
+                          fontSize: 13,
+                          padding: 0,
+                          textAlign: 'left',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          flex: 1,
+                        }}
+                      >
+                        {folder.name}
+                      </button>
+                      <button
+                        type="button"
+                        className="wf-link wf-text-xs"
+                        onClick={() => handleDeleteFolder(folder.folderId)}
+                        style={{ flexShrink: 0, marginLeft: 4 }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))
+                )}
+              </aside>
+
+              {/* 오른쪽: 위시 아이템 — 나머지 공간 차지, 높이 독립 */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {selectedFolderId === null ? (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 200,
+                  }}>
+                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>
+                      폴더를 선택하거나 새로 만들어주세요.
+                    </p>
+                  </div>
+                ) : wishLoading ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
+                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>불러오는 중...</p>
+                  </div>
+                ) : wishItems.length === 0 ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
+                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>
+                      이 폴더에 위시한 위스키가 없습니다.
+                    </p>
+                  </div>
+                ) : (
+                  wishItems.map((item) => (
+                    <CabinetPickItem
+                      key={item.itemId}
+                      id={String(item.whiskey.id)}
+                      name={item.whiskey.name}
+                      meta={`${item.whiskey.type} · ${item.whiskey.abv ?? '-'}%`}
+                      onRemove={() => handleRemoveWish(item.itemId)}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
           ) : (
             <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           )}

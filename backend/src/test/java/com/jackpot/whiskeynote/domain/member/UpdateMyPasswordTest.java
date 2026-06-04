@@ -1,6 +1,8 @@
 package com.jackpot.whiskeynote.domain.member;
 
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
+import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
+import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,12 @@ class UpdateMyPasswordTest {
     private PickRepository pickRepository;
 
     @Autowired
+    private WishListItemRepository wishListItemRepository;
+
+    @Autowired
+    private WishListFolderRepository wishListFolderRepository;
+
+    @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
@@ -58,7 +66,9 @@ class UpdateMyPasswordTest {
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        // FK 제약 순서: my_picks → refresh_tokens → users 순으로 삭제
+        // FK 제약 순서: wishlist_items → wishlist_folders → picks → refresh_tokens → users
+        wishListItemRepository.deleteAll();
+        wishListFolderRepository.deleteAll();
         pickRepository.deleteAll();
         refreshTokenRepository.deleteAll();
         usersRepository.deleteAll();

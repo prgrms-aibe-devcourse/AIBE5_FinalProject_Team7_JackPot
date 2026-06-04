@@ -1,6 +1,8 @@
 package com.jackpot.whiskeynote.domain.collection;
 
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
+import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
+import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
@@ -50,6 +52,12 @@ class PickControllerTest {
     @Autowired
     private WhiskeyRepository whiskeyRepository;
 
+    @Autowired
+    private WishListItemRepository wishListItemRepository;
+
+    @Autowired
+    private WishListFolderRepository wishListFolderRepository;
+
     private RestClient restClient;
     private RestClient authRestClient;
 
@@ -77,6 +85,8 @@ class PickControllerTest {
                 .build();
 
         // FK 순서에 맞게 삭제
+        wishListItemRepository.deleteAll();
+        wishListFolderRepository.deleteAll();
         pickRepository.deleteAll();
         refreshTokenRepository.deleteAll();
         usersRepository.deleteAll();
