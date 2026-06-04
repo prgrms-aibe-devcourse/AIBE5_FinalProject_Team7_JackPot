@@ -35,6 +35,18 @@ spring:
 server:
   port: 8080
 
+# 헬스체크 — 배포·Docker healthcheck·RDS 스키마 오류(기동 실패) 확인용
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
 # --------------------------------------------------
 # JWT 설정 (민감 정보는 application-local.yaml에서 오버라이드)
 # --------------------------------------------------

@@ -14,7 +14,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 /**
  * JWT 기반 stateless 인증
  * - permitAll: /api/v1/auth/register, login, refresh, oauth/**
- * - authenticated: /api/v1/users/**, /uploads/**, auth/logout, 커뮤니티 쓰기
+ * - authenticated: /api/v1/users/me/** 등, /uploads/**, auth/logout, 커뮤니티 쓰기
+ * - permitAll GET: /api/v1/users/{id}/picks, /api/v1/users/{id}/cabinet/stats (타인 캐비넷)
  * - 그 외 GET: MVP permitAll 유지
  * - 새 보호 API 추가 시 requestMatchers에 등록
  */
@@ -58,10 +59,11 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.POST,
                                 "/api/v1/taste/survey"
                         ).permitAll()
-                        // 픽 목록 조회 — 공개 (구체적인 규칙이 /users/** 보다 위에 있어야 함)
+                        // 타인 캐비넷·픽 목록 조회 — 비로그인 허용 (/users/** 보다 위에 둘 것)
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
-                                "/api/v1/users/*/picks"
+                                "/api/v1/users/*/picks",
+                                "/api/v1/users/*/cabinet/stats"
                         ).permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/uploads/**").authenticated()
@@ -115,6 +117,21 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.DELETE,
                                 "/api/v1/tasting-notes/*"
                         ).authenticated()
+                        // 위시 — 전체 인증 필요 (비공개)
+                        .requestMatchers(
+                                "/api/v1/users/me/wishlists",
+                                "/api/v1/users/me/wishlists/**",
+                                "/api/v1/whiskeys/wish/**"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/whiskeys/*/wish"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/whiskeys/*/wish/folders"
+                        ).authenticated()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()

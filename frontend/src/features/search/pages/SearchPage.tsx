@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
+import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
+import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { PATHS } from '@/app/router/paths';
 import {
   autocompleteWhiskeys,
   correctWhiskeyKeyword,
@@ -160,6 +163,7 @@ function DualRangeSlider({
 }
 
 export default function SearchPage() {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
   const [keyword, setKeyword] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<WhiskeyType[]>([]);
@@ -171,8 +175,11 @@ export default function SearchPage() {
   const [maxAge, setMaxAge] = useState(AGE_RANGE_MAX);
   const [tagModalType, setTagModalType] = useState<TagModalType>(null);
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
-  const suggestionKeyword = inputValue.trim();
 
+  // 위시 상태 — { whiskeyId: itemId } 맵으로 관리
+  const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
+  const [wishTargetId, setWishTargetId] = useState<number | null>(null);
+  const suggestionKeyword = inputValue.trim();
   const isFilterActive = hasActiveFilters(
     selectedTypes,
     selectedNoseTags,
@@ -231,6 +238,30 @@ export default function SearchPage() {
   const suggestions = autocompleteItems.filter((item) => item.keyword !== suggestionKeyword);
   const shouldCheckCorrection = Boolean(keyword) && !isLoading && !isError && totalCount === 0;
 
+  // 검색 결과 바뀔 때마다 위시 등록 여부 체크
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token || results.length === 0) return;
+
+    cabinetApi.getWishFolders().then(async (res) => {
+      const folders = res.data.data ?? [];
+      if (folders.length === 0) return;
+
+      const newMap: Record<number, number> = {};
+      for (const folder of folders) {
+        const itemRes = await cabinetApi.getWishItems(folder.folderId);
+        const items = itemRes.data.data ?? [];
+        for (const item of items as { whiskey: { id: number }; itemId: number }[]) {
+          // 검색 결과에 있는 위스키만 map에 등록
+          if (results.some((r) => r.id === item.whiskey.id)) {
+            newMap[item.whiskey.id] = item.itemId;
+          }
+        }
+      }
+      setWishedMap(newMap);
+    }).catch(() => {});
+  }, [results]);
+
   const { data: correction } = useQuery({
     queryKey: ['whiskeys', 'correction', keyword],
     queryFn: () => correctWhiskeyKeyword(keyword),
@@ -241,6 +272,22 @@ export default function SearchPage() {
     correction?.correctedKeyword && correction.correctedKeyword !== keyword
       ? correction.correctedKeyword
       : null;
+
+  // 위시 버튼 클릭 — 항상 모달 열기 (B방법)
+  const handleWishClick = async (e: React.MouseEvent, whiskeyId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+      if (goLogin) navigate(PATHS.LOGIN);
+      return;
+    }
+
+    // 등록 여부 상관없이 항상 모달 열기
+    setWishTargetId(whiskeyId);
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -276,6 +323,33 @@ export default function SearchPage() {
 
   return (
     <WireframePage>
+      {wishTargetId !== null && (
+        <WishFolderModal
+          whiskeyId={wishTargetId}
+          onClose={() => setWishTargetId(null)}
+          onSuccess={() => {
+            // 모달에서 추가/제거 후 하트 상태 갱신
+            const targetId = wishTargetId;
+            if (targetId === null) return;
+            cabinetApi.getWishedFolderIds(targetId)
+              .then((res) => {
+                const folderIds: number[] = res.data.data ?? [];
+                if (folderIds.length > 0) {
+                  // 하나 이상의 폴더에 등록됨 → 채운 하트
+                  setWishedMap((prev) => ({ ...prev, [targetId]: folderIds[0] }));
+                } else {
+                  // 모든 폴더에서 제거됨 → 빈 하트
+                  setWishedMap((prev) => {
+                    const next = { ...prev };
+                    delete next[targetId];
+                    return next;
+                  });
+                }
+              })
+              .catch(() => {});
+          }}
+        />
+      )}
       <p className="wf-breadcrumb">홈 / <strong>검색</strong></p>
       <div className="wf-layout-sidebar">
         <aside className="wf-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -452,7 +526,19 @@ export default function SearchPage() {
                 <div className="wf-card__title">{whiskey.name}</div>
                 <div className="wf-card__meta">{buildMeta(whiskey)}</div>
                 <div className="wf-card__meta">{whiskey.type}</div>
-                <Button variant="ghost" style={{ height: 32, width: 100, marginTop: 8 }}>♡ 위시</Button>
+                <Button
+                    variant="ghost"
+                    style={{
+                      height: 32,
+                      width: 100,
+                      marginTop: 8,
+                      color: wishedMap[whiskey.id] !== undefined ? '#f87171' : '#8b8b96',
+                      borderColor: wishedMap[whiskey.id] !== undefined ? '#f87171' : '#2e2e38',
+                    }}
+                    onClick={(e) => handleWishClick(e, whiskey.id)}
+                  >
+                    ♥ 위시
+                  </Button>
               </div>
             </Link>
             );
