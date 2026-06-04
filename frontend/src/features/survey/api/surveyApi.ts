@@ -1,25 +1,60 @@
 import { apiClient } from '@/shared/api/client';
 
-/**
- * Survey 도메인 (SUR-02 / SUR-03)
- * - 취향 점수 5종(Sweet/Body/Smoky/Spicy/Finish) + 선호 향/맛 태그 제출
- * TODO: WhiskeyNote_API명세서_v2 확정 시 엔드포인트 검증
- */
-export interface TasteSurveyPayload {
-  sweetScore: number;
+export interface SurveyApiRequest {
+  sweetChoice: number; // 1-5
+  bodyChoice: number;
+  smokyChoice: number;
+  spicyChoice: number;
+  finishChoice: number;
+  noseTags: number[]; // tag IDs
+  tasteTags: number[];
+}
+
+export interface TagInfo {
+  id: number;
+  name: string;
+  imageUrl: string;
+}
+
+export interface FlavorProfile {
+  sweetScore: number; // 0-100
   bodyScore: number;
   smokyScore: number;
   spicyScore: number;
   finishScore: number;
-  nose_tags: string[];
-  taste_tags: string[];
+  noseTags: TagInfo[];
+  tasteTags: TagInfo[];
+}
+
+export interface WhiskeyRecommendation {
+  rank: number;
+  whiskeyId: number;
+  whiskeyName: string;
+  imageUrl: string;
+  score: number;
+  reason: string;
+}
+
+export interface SurveyResult {
+  profile: FlavorProfile;
+  userType: string;
+  userTypeDescription: string;
+  recommendations: WhiskeyRecommendation[];
 }
 
 export const surveyApi = {
-  client: apiClient,
+  submit: async (payload: SurveyApiRequest): Promise<SurveyResult> => {
+    const { data } = await apiClient.post<SurveyResult>('/taste/survey', payload);
+    return data;
+  },
 
-  // SUR-02/03: 취향 설문 제출
-  submitTasteSurvey: async (payload: TasteSurveyPayload): Promise<void> => {
-    await apiClient.post('/survey/taste', payload);
+  save: async (payload: SurveyApiRequest): Promise<SurveyResult> => {
+    const { data } = await apiClient.post<SurveyResult>('/taste/survey/save', payload);
+    return data;
+  },
+
+  getMyProfile: async (): Promise<SurveyResult> => {
+    const { data } = await apiClient.get<SurveyResult>('/taste/survey/me');
+    return data;
   },
 };

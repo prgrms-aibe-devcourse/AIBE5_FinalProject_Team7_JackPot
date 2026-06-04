@@ -1,8 +1,7 @@
-import type { RecommendedWhiskey, TasteResult, TasteScores } from '../api/recommendationApi';
+import type { SurveyResult } from '@/features/survey/api/surveyApi';
 
 /**
  * 취향 분석 결과를 PNG 이미지로 저장 (외부 라이브러리 없이 Canvas 2D 직접 렌더)
- * - DOM 스크린샷이 아니라 데이터로 그리므로 화면 스타일과 무관하게 항상 동일하게 출력
  */
 
 const W = 720;
@@ -18,13 +17,15 @@ const MUTED = '#8b8b96';
 const ACCENT = '#c9a227';
 const ACCENT_DIM = 'rgba(201, 162, 39, 0.15)';
 
-const SCORE_META: { key: keyof TasteScores; ko: string; en: string }[] = [
+const SCORE_META: { key: keyof SurveyResult['profile']; ko: string; en: string }[] = [
   { key: 'sweetScore', ko: '단맛', en: 'Sweet' },
   { key: 'bodyScore', ko: '바디', en: 'Body' },
   { key: 'smokyScore', ko: '스모키', en: 'Smoky' },
   { key: 'spicyScore', ko: '스파이시', en: 'Spicy' },
   { key: 'finishScore', ko: '피니시', en: 'Finish' },
 ];
+
+type ScoreKey = 'sweetScore' | 'bodyScore' | 'smokyScore' | 'spicyScore' | 'finishScore';
 
 type Ctx = CanvasRenderingContext2D;
 
@@ -62,7 +63,6 @@ interface PillOpts {
   text: string;
 }
 
-/** 태그 칩을 줄바꿈하며 그리고, 마지막 줄의 하단 y를 반환 */
 function drawPills(
   ctx: Ctx,
   tags: string[],
@@ -105,14 +105,13 @@ function drawPills(
   return cy + h;
 }
 
-/** 전체 레이아웃 그리기. draw=false 면 측정만 하고 최종 높이를 반환 */
 function paint(
   ctx: Ctx,
-  result: TasteResult,
-  recos: RecommendedWhiskey[],
+  result: SurveyResult,
   draw: boolean,
   totalH: number,
 ): number {
+  const { profile, userType, recommendations } = result;
   const x = PAD;
   const CW = W - PAD * 2;
 
@@ -141,6 +140,14 @@ function paint(
   }
   y += 36;
 
+  // 유저 타입
+  if (draw) {
+    ctx.fillStyle = ACCENT;
+    ctx.font = '700 15px sans-serif';
+    ctx.fillText(userType, x, y + 12);
+  }
+  y += 30;
+
   // 부제
   if (draw) {
     ctx.fillStyle = MUTED;
@@ -149,9 +156,9 @@ function paint(
   }
   y += 34;
 
-  // 점수 5종
+  // 점수 5종 (0-100 범위)
   for (const m of SCORE_META) {
-    const val = result[m.key];
+    const val = profile[m.key as ScoreKey] as number;
     if (draw) {
       ctx.fillStyle = TEXT;
       ctx.font = '600 14px sans-serif';
@@ -160,7 +167,7 @@ function paint(
       ctx.fillStyle = ACCENT;
       ctx.font = '700 13px sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText(`${val} / 9`, x + CW, y + 12);
+      ctx.fillText(`${val}%`, x + CW, y + 12);
       ctx.textAlign = 'left';
     }
     const barY = y + 22;
@@ -168,7 +175,7 @@ function paint(
       roundRect(ctx, x, barY, CW, 8, 4);
       ctx.fillStyle = SURFACE2;
       ctx.fill();
-      roundRect(ctx, x, barY, (CW * val) / 9, 8, 4);
+      roundRect(ctx, x, barY, (CW * val) / 100, 8, 4);
       ctx.fillStyle = ACCENT;
       ctx.fill();
     }
@@ -183,7 +190,8 @@ function paint(
     ctx.fillText('좋아하는 향 (nose)', x, y + 12);
   }
   y += 22;
-  y = drawPills(ctx, result.nose_tags, x, y, CW, draw, { fill: ACCENT_DIM, stroke: ACCENT, text: ACCENT });
+  const noseNames = profile.noseTags.map((t) => t.name);
+  y = drawPills(ctx, noseNames, x, y, CW, draw, { fill: ACCENT_DIM, stroke: ACCENT, text: ACCENT });
   y += 16;
 
   // 맛 태그
@@ -193,7 +201,8 @@ function paint(
     ctx.fillText('좋아하는 맛 (taste)', x, y + 12);
   }
   y += 22;
-  y = drawPills(ctx, result.taste_tags, x, y, CW, draw, { fill: ACCENT_DIM, stroke: ACCENT, text: ACCENT });
+  const tasteNames = profile.tasteTags.map((t) => t.name);
+  y = drawPills(ctx, tasteNames, x, y, CW, draw, { fill: ACCENT_DIM, stroke: ACCENT, text: ACCENT });
   y += 26;
 
   // 구분선
@@ -217,8 +226,7 @@ function paint(
 
   // 추천 카드
   const innerPad = 16;
-  for (let i = 0; i < recos.length; i++) {
-    const w = recos[i];
+  for (const w of recommendations) {
     const bodyX = x + innerPad;
     const bodyW = CW - innerPad * 2;
 
@@ -226,9 +234,8 @@ function paint(
     const lines = wrapText(ctx, w.reason, bodyW);
 
     const headerH = 28;
-    const tagsRowH = 28;
     const lineH = 19;
-    const cardH = innerPad * 2 + headerH + 8 + tagsRowH + 8 + lines.length * lineH;
+    const cardH = innerPad * 2 + headerH + 8 + lines.length * lineH;
 
     if (draw) {
       roundRect(ctx, x, y, CW, cardH, 12);
@@ -251,7 +258,7 @@ function paint(
       ctx.font = '800 13px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(String(i + 1), bodyX + 13, cy + 14);
+      ctx.fillText(String(w.rank), bodyX + 13, cy + 14);
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
     }
@@ -260,13 +267,9 @@ function paint(
     if (draw) {
       ctx.fillStyle = TEXT;
       ctx.font = '700 16px sans-serif';
-      ctx.fillText(w.name, bodyX + 38, cy + 18);
+      ctx.fillText(w.whiskeyName, bodyX + 38, cy + 18);
     }
     cy += headerH + 8;
-
-    // 태그
-    cy = drawPills(ctx, w.tags, bodyX, cy, bodyW, draw, { stroke: BORDER, text: MUTED });
-    cy += 8;
 
     // 추천 이유
     if (draw) {
@@ -297,10 +300,10 @@ function paint(
   return y;
 }
 
-function buildCanvas(result: TasteResult, recos: RecommendedWhiskey[]): HTMLCanvasElement {
+function buildCanvas(result: SurveyResult): HTMLCanvasElement {
   const measureCtx = document.createElement('canvas').getContext('2d');
   if (!measureCtx) throw new Error('canvas context를 만들 수 없습니다.');
-  const totalH = paint(measureCtx, result, recos, false, 0);
+  const totalH = paint(measureCtx, result, false, 0);
 
   const canvas = document.createElement('canvas');
   canvas.width = W * SCALE;
@@ -308,13 +311,12 @@ function buildCanvas(result: TasteResult, recos: RecommendedWhiskey[]): HTMLCanv
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('canvas context를 만들 수 없습니다.');
   ctx.scale(SCALE, SCALE);
-  paint(ctx, result, recos, true, totalH);
+  paint(ctx, result, true, totalH);
   return canvas;
 }
 
-/** 결과를 PNG 파일로 다운로드 */
-export function saveResultImage(result: TasteResult, recos: RecommendedWhiskey[]): void {
-  const canvas = buildCanvas(result, recos);
+export function saveResultImage(result: SurveyResult): void {
+  const canvas = buildCanvas(result);
   const trigger = (url: string) => {
     const a = document.createElement('a');
     a.href = url;
