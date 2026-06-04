@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 
@@ -13,6 +14,7 @@ interface CabinetPickItemProps {
 
 export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonly, onRemove }: CabinetPickItemProps) {
   const thumbSrc = resolveMediaUrl(imageUrl);
+  const [imgError, setImgError] = useState(false);
   const detailPath = `/whiskey/${id}`;
 
   return (
@@ -20,17 +22,13 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
 
       {/* 이미지 — 클릭 시 상세 이동 */}
       <Link to={detailPath} style={{ flexShrink: 0, display: 'block' }}>
-        {thumbSrc ? (
+        {thumbSrc && !imgError ? (
           <img
             src={thumbSrc}
             alt={name}
             className="wf-cabinet-pick__thumb"
-            style={{
-              width: 64, height: 64,
-              objectFit: 'cover', borderRadius: 8,
-              transition: 'opacity 0.15s',
-            }}
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+            style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, transition: 'opacity 0.15s' }}
+            onError={() => setImgError(true)}
             onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.8'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
           />

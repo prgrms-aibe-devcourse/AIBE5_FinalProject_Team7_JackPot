@@ -179,6 +179,7 @@ export default function SearchPage() {
   // 위시 상태 — { whiskeyId: itemId } 맵으로 관리
   const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
   const [wishTargetId, setWishTargetId] = useState<number | null>(null);
+  const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
   const suggestionKeyword = inputValue.trim();
   const isFilterActive = hasActiveFilters(
     selectedTypes,
@@ -512,12 +513,13 @@ export default function SearchPage() {
             const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
             return (
             <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable" style={{ padding: 16, textDecoration: 'none' }}>
-              {thumbSrc ? (
+              {thumbSrc && !imgErrors.has(whiskey.id) ? (
                 <img
                   src={thumbSrc}
                   alt={whiskey.name}
                   className="wf-card__thumb"
                   style={{ width: 72, height: 96, objectFit: 'cover' }}
+                  onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
                 />
               ) : (
                 <div className="wf-card__thumb wf-placeholder" style={{ width: 72, height: 96 }} />
