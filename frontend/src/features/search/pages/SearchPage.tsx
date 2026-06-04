@@ -8,7 +8,6 @@ import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
-import { toast } from '@/shared/components/ui/Toast';
 import { PATHS } from '@/app/router/paths';
 import {
   autocompleteWhiskeys,
