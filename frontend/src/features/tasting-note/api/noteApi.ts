@@ -11,7 +11,8 @@ export interface MyTastingNote {
   sweetScore: number | null;
   memo: string | null;
   tags: TastingNoteTag[];
-  draft: boolean;
+  draft?: boolean;
+  isDraft?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,14 +36,20 @@ export interface TastingNoteSaveRequest {
   tagIds: number[];
 }
 
+export interface TastingNotePageResponse {
+  content: MyTastingNote[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+  size: number;
+}
+
 export async function fetchMyTastingNoteForWhiskey(
-  userId: number,
   whiskeyId: string,
 ): Promise<MyTastingNote | null> {
   try {
     const { data, status } = await apiClient.get<MyTastingNote>(
       `/whiskeys/${whiskeyId}/notes/my`,
-      { params: { userId } },
     );
     if (status === 204) return null;
     return data;
@@ -51,44 +58,43 @@ export async function fetchMyTastingNoteForWhiskey(
   }
 }
 
+export async function fetchMyTastingNotes(page = 0, size = 10): Promise<TastingNotePageResponse> {
+  const { data } = await apiClient.get<TastingNotePageResponse>('/tasting-notes/my', {
+    params: { page, size },
+  });
+  return data;
+}
+
 export async function fetchTastingNote(noteId: number): Promise<MyTastingNote> {
   const { data } = await apiClient.get<MyTastingNote>(`/tasting-notes/${noteId}`);
   return data;
 }
 
 export async function createTastingNote(
-  userId: number,
   body: TastingNoteSaveRequest,
 ): Promise<MyTastingNote> {
-  const { data } = await apiClient.post<MyTastingNote>('/tasting-notes', body, {
-    params: { userId },
-  });
+  const { data } = await apiClient.post<MyTastingNote>('/tasting-notes', body);
   return data;
 }
 
 export async function updateTastingNote(
-  userId: number,
   noteId: number,
   body: TastingNoteSaveRequest,
 ): Promise<MyTastingNote> {
-  const { data } = await apiClient.patch<MyTastingNote>(`/tasting-notes/${noteId}`, body, {
-    params: { userId },
-  });
+  const { data } = await apiClient.patch<MyTastingNote>(`/tasting-notes/${noteId}`, body);
   return data;
 }
 
 export async function deleteTastingNote(
-  userId: number,
   noteId: number,
 ): Promise<void> {
-  await apiClient.delete(`/tasting-notes/${noteId}`, {
-    params: { userId },
-  });
+  await apiClient.delete(`/tasting-notes/${noteId}`);
 }
 
 export const noteApi = {
   client: apiClient,
   fetchMyTastingNoteForWhiskey,
+  fetchMyTastingNotes,
   fetchTastingNote,
   createTastingNote,
   updateTastingNote,
