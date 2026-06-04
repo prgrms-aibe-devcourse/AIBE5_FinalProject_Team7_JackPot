@@ -112,6 +112,7 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.GET,
                                 "/api/v1/whiskeys/*/wish/folders"
                         ).authenticated()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
