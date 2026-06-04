@@ -62,14 +62,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy compose file to EC2
+      - name: Copy deploy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: deploy/docker-compose.ec2.yml
-          target: /home/ubuntu/whiskeynote/
+          source: |
+            deploy/docker-compose.ec2.yml
+            deploy/schema-migrate.sql
+            deploy/run-rds-migrate.sh
+            deploy/verify-deploy.sh
+          target: /home/ubuntu/whiskeynote/deploy/
           strip_components: 1
 
       - name: Deploy on EC2
@@ -81,9 +85,9 @@ jobs:
           script: |
             set -e
             cd ~/whiskeynote
-            mv -f docker-compose.ec2.yml docker-compose.yml
+            chmod +x deploy/run-rds-migrate.sh deploy/verify-deploy.sh
+            mv -f deploy/docker-compose.ec2.yml docker-compose.yml
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 495264909330.dkr.ecr.ap-northeast-2.amazonaws.com
-            docker compose pull
-            docker compose up -d
+            bash deploy/run-rds-migrate.sh
             docker image prune -af
-            docker compose ps
+            bash deploy/verify-deploy.sh
