@@ -98,6 +98,20 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.DELETE,
                                 "/api/v1/whiskeys/*/pick"
                         ).authenticated()
+                        // 위시 — 전체 인증 필요 (비공개)
+                        .requestMatchers(
+                                "/api/v1/users/me/wishlists",
+                                "/api/v1/users/me/wishlists/**",
+                                "/api/v1/whiskeys/wish/**"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/whiskeys/*/wish"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/whiskeys/*/wish/folders"
+                        ).authenticated()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
