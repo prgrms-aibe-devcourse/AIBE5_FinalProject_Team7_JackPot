@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
@@ -637,19 +637,6 @@ export default function CabinetPage() {
               ))
             )
           ) : tab === 'wish' ? (
-            <p className="wf-text-sm">위시 기능은 준비 중입니다.</p>
-          ) : tab === 'note' ? (
-            <>
-              {currentUserId == null ? (
-                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
-              ) : notesLoading ? (
-                <p className="wf-text-sm">내 시음 노트를 불러오는 중입니다.</p>
-              ) : myNotes?.content.length ? (
-                myNotes.content.map((note) => <MyNoteItem key={note.id} note={note} />)
-              ) : (
-                <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다.</p>
-              )}
-            </>
             // 위시 탭 — 왼쪽 폴더(고정) + 오른쪽 아이템(고정)
             <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', minHeight: 400 }}>
 
@@ -806,9 +793,19 @@ export default function CabinetPage() {
                 )}
               </div>
             </div>
-          ) : (
-            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
-          )}
+          ) : tab === 'note' ? (
+            <>
+              {currentUserId == null ? (
+                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+              ) : notesLoading ? (
+                <p className="wf-text-sm">내 시음 노트를 불러오는 중입니다.</p>
+              ) : myNotes?.content.length ? (
+                myNotes.content.map((note) => <MyNoteItem key={note.id} note={note} />)
+              ) : (
+                <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다.</p>
+              )}
+            </>
+          ) : null}
         </>
       ) : (
         <CabinetCommunitySection authorId={currentUserId} showWriteButton />
