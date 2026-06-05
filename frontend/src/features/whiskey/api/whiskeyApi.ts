@@ -66,14 +66,18 @@ export async function fetchWhiskeyReviews(
 }
 
 /**
- * WH-03 비슷한 위스키 추천 (raw 배열, 최대 3)
- * - 백엔드 GET /api/v1/whiskeys/{id}/similar 준비 전: 목데이터로 표시
- * - 실제 연결 시 아래 두 줄로 교체:
- *     const { data } = await apiClient.get<SimilarWhiskey[]>(`/whiskeys/${whiskeyId}/similar`);
- *     return data;
+ * WH-03 GET /api/v1/whiskeys/{id}/similar — 비슷한 위스키 추천 (raw 배열, 최대 3)
+ * - 200 응답이 오면 실제 추천 데이터를 사용
+ * - 호출 실패 시 목데이터로 폴백 (다른 위스키 API와 동일한 패턴)
  */
 export async function fetchSimilarWhiskeys(whiskeyId: string): Promise<SimilarWhiskey[]> {
-  return getMockSimilarWhiskeys(whiskeyId);
+  return withMockFallback(
+    async () => {
+      const { data } = await apiClient.get<SimilarWhiskey[]>(`/whiskeys/${whiskeyId}/similar`);
+      return data;
+    },
+    () => getMockSimilarWhiskeys(whiskeyId),
+  );
 }
 
 export const whiskeyApi = {

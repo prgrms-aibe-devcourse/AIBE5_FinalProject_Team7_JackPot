@@ -5,10 +5,12 @@ import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeyType;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordCorrectionResponse;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordSuggestResponse;
 import com.jackpot.whiskeynote.domain.whiskey.search.service.WhiskeySearchService;
+import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyRecommendationService;
 import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ public class WhiskeyController {
     private final WhiskeyService whiskeyService;
     private final ReviewService reviewService;
     private final WhiskeySearchService whiskeySearchService;
+    private final WhiskeyRecommendationService whiskeyRecommendationService;
 
     // 위스키 전체 조회 (페이징)
     @GetMapping("/api/v1/whiskeys")
@@ -96,5 +99,11 @@ public class WhiskeyController {
     @GetMapping("/api/v1/whiskeys/search/correction")
     public WhiskeyKeywordCorrectionResponse correctWhiskeyKeyword(@RequestParam String q) {
          return whiskeySearchService.correctKeyword(q);
-     }
+    }
+
+    // 위스키 페이지에서의 추천 위스키
+    @GetMapping("/api/v1/whiskeys/{id}/similar")
+    public List<WhiskeyRecommendationResponse> similarWhiskeys(@PathVariable Long id) {
+        return whiskeyRecommendationService.recommendByWhiskey(id);
+    }
 }
