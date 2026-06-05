@@ -128,6 +128,7 @@ export default function WhiskeyDetailPage() {
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [isWished, setIsWished] = useState(false);
   const [wishedItemId, setWishedItemId] = useState<number | null>(null);
+  const [imgError, setImgError] = useState(false);
 
   // 페이지 진입 시 위시 여부 확인
   useEffect(() => {
@@ -283,12 +284,13 @@ export default function WhiskeyDetailPage() {
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
-          {imageSrc ? (
+          {imageSrc && !imgError ? (
             <img
               src={imageSrc}
               alt={detail.name}
               className="wf-detail-sidebar__image"
               style={{ width: '100%', objectFit: 'cover' }}
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
