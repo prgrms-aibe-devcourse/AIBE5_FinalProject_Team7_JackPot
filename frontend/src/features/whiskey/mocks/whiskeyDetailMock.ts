@@ -130,7 +130,7 @@ export const MOCK_SIMILAR_WHISKEYS: SimilarWhiskey[] = [
     country: 'Scotland',
     ageYears: 12,
     avgRating: 4.0,
-    matchScore: 92,
+    score: 92,
     reason: '가벼운 과일향과 부드러운 바디가 닮은 입문용 한 잔',
   },
   {
@@ -143,7 +143,7 @@ export const MOCK_SIMILAR_WHISKEYS: SimilarWhiskey[] = [
     country: 'Scotland',
     ageYears: 12,
     avgRating: 4.3,
-    matchScore: 89,
+    score: 89,
     reason: '꿀·바닐라 계열의 단맛과 오크 피니시가 비슷해요',
   },
   {
@@ -156,7 +156,7 @@ export const MOCK_SIMILAR_WHISKEYS: SimilarWhiskey[] = [
     country: 'Scotland',
     ageYears: 12,
     avgRating: 4.4,
-    matchScore: 86,
+    score: 86,
     reason: '진한 셰리 오크 단맛 라인업으로 함께 즐기기 좋아요',
   },
   {
@@ -169,7 +169,7 @@ export const MOCK_SIMILAR_WHISKEYS: SimilarWhiskey[] = [
     country: 'Scotland',
     ageYears: 12,
     avgRating: 4.0,
-    matchScore: 82,
+    score: 82,
     reason: '플로럴하고 깔끔한 스페이사이드 스타일',
   },
 ];

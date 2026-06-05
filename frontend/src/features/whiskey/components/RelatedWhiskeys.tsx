@@ -35,7 +35,12 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
                 className="wf-box wf-card--web wf-related-whiskeys__card"
               >
                 {img ? (
-                  <img src={img} alt={w.name} className="wf-card__thumb" />
+                  <img
+                    src={img}
+                    alt={w.name}
+                    className="wf-card__thumb"
+                    style={{ width: '100%', objectFit: 'cover' }}
+                  />
                 ) : (
                   <div className="wf-card__thumb wf-placeholder" aria-hidden />
                 )}
@@ -46,8 +51,8 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
                   </p>
                   <p className="wf-related-whiskeys__rating">
                     <span className="wf-stars">★</span> {w.avgRating.toFixed(1)}
-                    {w.matchScore > 0 && (
-                      <span className="wf-text-xs" style={{ marginLeft: 6 }}>· 유사도 {w.matchScore}%</span>
+                    {w.score > 0 && (
+                      <span className="wf-text-xs" style={{ marginLeft: 6 }}>· 유사도 {(w.score * 100).toFixed(2)}%</span>
                     )}
                   </p>
                   {w.reason && (

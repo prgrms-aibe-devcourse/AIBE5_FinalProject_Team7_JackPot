@@ -3,15 +3,31 @@ package com.jackpot.whiskeynote.domain.whiskey.dto;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 
 public record WhiskeyRecommendationResponse(
-    Long whiskeyId,
+    Long id,
     String name,
-    Double score
+    String type,
+    String imageUrl,
+    Double adv,
+    String region,
+    String country,
+    Integer ageYears,
+    Double avgRating,
+    Double score,
+    String reason
 ) {
     public static WhiskeyRecommendationResponse from(WhiskeysNoteCache cache, Double score) {
         return new WhiskeyRecommendationResponse(
             cache.getWhiskey().getId(),
             cache.getWhiskey().getName(),
-            score
+            cache.getWhiskey().getType().name(),
+            cache.getWhiskey().getImageUrl(),
+            cache.getWhiskey().getAbv(),
+            cache.getWhiskey().getRegion(),
+            cache.getWhiskey().getCountry(),
+            cache.getWhiskey().getAgeYears(),
+            0.0,
+            score,
+            ""
         );
     }
 }

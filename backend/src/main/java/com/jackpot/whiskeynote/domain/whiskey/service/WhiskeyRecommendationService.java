@@ -16,6 +16,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class WhiskeyRecommendationService {
     private static final double JACCARD_THRESHOLD = 0.5;
+    private static final double MAX_EUCLIDEAN_DIST = Math.sqrt(5 * 100.0 * 100.0); // ≈ 223.6
 
     private final WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
 
@@ -38,16 +39,42 @@ public class WhiskeyRecommendationService {
 
     private double calcScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
         double cosineScore = cosineSimilarityScore(a, b);
+        double euclideanScore = euclideanSimilarityScore(a, b);
         double cosineTag = cosineSimilarityTag(a, b);
         double jaccard = jaccardSimilarity(a, b);
 
-        return 0.6 * cosineScore + 0.2 * cosineTag + 0.2 * jaccard;
+        return 0.2 * cosineScore + 0.4 * euclideanScore
+            + 0.2 * cosineTag + 0.2 * jaccard;
     }
 
     private double cosineSimilarityScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
         double[] vecA = normalizeScore(a);
         double[] vecB = normalizeScore(b);
         return cosine(vecA, vecB);
+    }
+
+    private double euclideanSimilarityScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
+        double[] vecA = normalizeScore(a);
+        double[] vecB = normalizeScore(b);
+
+        double sumSq = 0;
+        for (int i = 0; i < vecA.length; i++) {
+            sumSq += Math.pow(vecA[i] - vecB[i], 2);
+        }
+        double dist = Math.sqrt(sumSq);
+        return 1.0 - (dist / MAX_EUCLIDEAN_DIST);
+    }
+
+    private double manhattanSimilarity(WhiskeysNoteCache a, WhiskeysNoteCache b) {
+        double[] vecA = normalizeScore(a);
+        double[] vecB = normalizeScore(b);
+
+        double sum = 0;
+        for (int i = 0; i < vecA.length; i++) {
+            sum += Math.abs(vecA[i] - vecB[i]);
+        }
+        // 최대 맨하탄 거리 = 5축 × 100 = 500
+        return 1.0 - (sum / 500.0);
     }
 
     private double[] normalizeScore(WhiskeysNoteCache cache) {

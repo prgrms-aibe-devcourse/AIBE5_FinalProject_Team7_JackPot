@@ -110,7 +110,7 @@ export type TastingSummarySource = 'official' | 'userAvg';
  *     "country": "Scotland",
  *     "ageYears": 12,
  *     "avgRating": 4.3,
- *     "matchScore": 89,
+ *     "score": 89,
  *     "reason": "꿀·바닐라 계열의 단맛과 오크 피니시가 비슷해요"
  *   }
  * ]
@@ -135,7 +135,7 @@ export interface SimilarWhiskey {
   /** 평균 평점 (0~5 스케일) */
   avgRating: number;
   /** 유사도 점수 (0~100). 정렬·표시용, 선택적 의미 */
-  matchScore: number;
+  score: number;
   /** 추천 이유 한 줄 (없으면 빈 문자열) */
   reason: string;
 }
