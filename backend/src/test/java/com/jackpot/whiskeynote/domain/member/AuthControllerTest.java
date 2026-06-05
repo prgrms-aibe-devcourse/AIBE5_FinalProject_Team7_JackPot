@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.member;
 
+import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
@@ -41,6 +42,9 @@ class AuthControllerTest {
     private int port;
 
     @Autowired
+    private WhiskeyRequestRepository whiskeyRequestRepository;
+
+    @Autowired
     private PickRepository pickRepository;
 
     @Autowired
@@ -69,10 +73,11 @@ class AuthControllerTest {
                 .baseUrl("http://localhost:" + port + "/api/v1/auth")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
-        // FK 제약 순서: wishlist_items → wishlist_folders → picks → refresh_tokens → users
+        // FK 제약 순서: wishlist_items → wishlist_folders → picks → whiskey_requests → refresh_tokens → users
         wishListItemRepository.deleteAll();
         wishListFolderRepository.deleteAll();
         pickRepository.deleteAll();
+        whiskeyRequestRepository.deleteAll();
         refreshTokenRepository.deleteAll();
         usersRepository.deleteAll();
     }

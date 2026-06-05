@@ -12,5 +12,6 @@ public record TokenResponse(
         Long userId,
         boolean isNewUser,
         String nickname,
-        String profileImageUrl
+        String profileImageUrl,
+        String role
 ) {}

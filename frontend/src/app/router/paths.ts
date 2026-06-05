@@ -31,6 +31,8 @@ export const PATHS = {
   TASTING_NOTE: '/whiskey/:whiskeyId/note',
   NOTE_PICK: '/note/pick',
   TASTE_MATCH: '/discover/taste-match',
+  WHISKEY_REQUEST: '/whiskey-requests',
+  WHISKEY_REQUEST_DETAIL: '/whiskey-requests/:requestId',
   ADMIN: '/admin',
   NOT_FOUND: '/error/404',
   SERVER_ERROR: '/error/500',
