@@ -52,4 +52,7 @@ public interface WishListItemRepository extends JpaRepository<WishListItem, Long
     @Modifying
     @Query("DELETE FROM WishListItem i WHERE i.folder.id = :folderId")
     void deleteAllByFolderId(@Param("folderId") Long folderId);
+
+    //캐비넷 위시 집계용
+    Long countByUserId(Long userId);
 }
