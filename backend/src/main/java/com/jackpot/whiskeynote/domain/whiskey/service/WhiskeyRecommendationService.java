@@ -1,5 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.service;
 
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.whiskey.dto.CacheVector;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
@@ -21,23 +23,40 @@ public class WhiskeyRecommendationService {
     private final WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
 
     @Transactional(readOnly = true)
-    public List<WhiskeyRecommendationResponse> recommendByWhiskey(Long targetWhiskeyId) {
+    public List<WhiskeyRecommendationResponse> recommendBySurvey(WhiskeyScoreVo scoreVo, Set<Long> allTagIdSet) {
         List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
-        WhiskeysNoteCache target = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(targetWhiskeyId)
-            .orElseThrow(() -> new EntityNotFoundException("whiskey not found"));
+        CacheVector targetVector = CacheVector.fromSurvey(scoreVo, allTagIdSet);
 
         List<WhiskeyRecommendationResponse> res = new ArrayList<>();
         for (WhiskeysNoteCache cache : caches) {
-            if (cache.getWhiskey().getId().equals(targetWhiskeyId)) continue;
-
-            double score = calcScore(target, cache);
+            CacheVector cacheVector = CacheVector.from(cache);
+            double score = calcScore(targetVector, cacheVector);
             res.add(WhiskeyRecommendationResponse.from(cache, score));
         }
         res.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
         return res.subList(0, 3);
     }
 
-    private double calcScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
+    @Transactional(readOnly = true)
+    public List<WhiskeyRecommendationResponse> recommendByWhiskey(Long targetWhiskeyId) {
+        List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
+        WhiskeysNoteCache target = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(targetWhiskeyId)
+            .orElseThrow(() -> new EntityNotFoundException("whiskey not found"));
+        CacheVector targetVector = CacheVector.from(target);
+
+        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        for (WhiskeysNoteCache cache : caches) {
+            if (cache.getWhiskey().getId().equals(targetWhiskeyId)) continue;
+
+            CacheVector cacheVector = CacheVector.from(cache);
+            double score = calcScore(targetVector, cacheVector);
+            res.add(WhiskeyRecommendationResponse.from(cache, score));
+        }
+        res.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
+        return res.subList(0, 3);
+    }
+
+    private double calcScore(CacheVector a, CacheVector b) {
         double cosineScore = cosineSimilarityScore(a, b);
         double euclideanScore = euclideanSimilarityScore(a, b);
         double cosineTag = cosineSimilarityTag(a, b);
@@ -47,15 +66,13 @@ public class WhiskeyRecommendationService {
             + 0.2 * cosineTag + 0.2 * jaccard;
     }
 
-    private double cosineSimilarityScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
-        double[] vecA = normalizeScore(a);
-        double[] vecB = normalizeScore(b);
-        return cosine(vecA, vecB);
+    private double cosineSimilarityScore(CacheVector a, CacheVector b) {
+        return cosine(a.scoreVec(), b.scoreVec());
     }
 
-    private double euclideanSimilarityScore(WhiskeysNoteCache a, WhiskeysNoteCache b) {
-        double[] vecA = normalizeScore(a);
-        double[] vecB = normalizeScore(b);
+    private double euclideanSimilarityScore(CacheVector a, CacheVector b) {
+        double[] vecA = a.scoreVec();
+        double[] vecB = b.scoreVec();
 
         double sumSq = 0;
         for (int i = 0; i < vecA.length; i++) {
@@ -65,9 +82,9 @@ public class WhiskeyRecommendationService {
         return 1.0 - (dist / MAX_EUCLIDEAN_DIST);
     }
 
-    private double manhattanSimilarity(WhiskeysNoteCache a, WhiskeysNoteCache b) {
-        double[] vecA = normalizeScore(a);
-        double[] vecB = normalizeScore(b);
+    private double manhattanSimilarity(CacheVector a, CacheVector b) {
+        double[] vecA = a.scoreVec();
+        double[] vecB = b.scoreVec();
 
         double sum = 0;
         for (int i = 0; i < vecA.length; i++) {
@@ -89,9 +106,9 @@ public class WhiskeyRecommendationService {
         return res;
     }
 
-    private double cosineSimilarityTag(WhiskeysNoteCache a, WhiskeysNoteCache b) {
-        Map<Long, Double> tagA = getTagVector(a);
-        Map<Long, Double> tagB = getTagVector(b);
+    private double cosineSimilarityTag(CacheVector a, CacheVector b) {
+        Map<Long, Double> tagA = a.tagVector();
+        Map<Long, Double> tagB = b.tagVector();
 
         // 두 tag의 합집합
         Set<Long> union = new HashSet<>();
@@ -128,9 +145,9 @@ public class WhiskeyRecommendationService {
         return dot / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
-    private double jaccardSimilarity(WhiskeysNoteCache a, WhiskeysNoteCache b) {
-        Set<Long> setA = getTagSet(getTagVector(a));
-        Set<Long> setB = getTagSet(getTagVector(b));
+    private double jaccardSimilarity(CacheVector a, CacheVector b) {
+        Set<Long> setA = getTagSet(a.tagVector());
+        Set<Long> setB = getTagSet(b.tagVector());
 
         if (setA.isEmpty() && setB.isEmpty()) return 0.0;
 

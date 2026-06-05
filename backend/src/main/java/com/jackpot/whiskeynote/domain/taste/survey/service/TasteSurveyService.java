@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.taste.survey.service;
 
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse.*;
@@ -7,8 +8,10 @@ import com.jackpot.whiskeynote.domain.taste.survey.entity.UserTasteProfile;
 import com.jackpot.whiskeynote.domain.taste.survey.repository.UserTasteProfileRepository;
 import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
 import com.jackpot.whiskeynote.domain.taste.tag.repository.TagRepository;
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
+import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyRecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ public class TasteSurveyService {
     private final WhiskeysNoteCacheRepository cacheRepository;
     private final TagRepository tagRepository;
     private final UserTasteProfileRepository profileRepository;
+    private final WhiskeyRecommendationService whiskeyRecommendationService;
 
     @Transactional(readOnly = true)
     public SurveyResultResponse calculate(SurveyRequest req) {
@@ -57,9 +61,11 @@ public class TasteSurveyService {
 
         String[] typeAndDesc = classifyUserType(sweet, body, smoky, spicy, finish);
 
-        List<WhiskeyRecommendation> recommendations = recommend(sweet, body, smoky, spicy, finish, allTagIdSet);
+        List<WhiskeyRecommendationResponse> recommendationResponses = whiskeyRecommendationService.recommendBySurvey(
+            scoreToVo(body, finish, smoky, spicy, sweet), allTagIdSet
+        );
 
-        return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recommendations);
+        return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recommendationResponses);
     }
 
     /** 설문 계산 + 저장을 한 번에 처리 (취향 반영하기 버튼) */
@@ -124,57 +130,24 @@ public class TasteSurveyService {
         String[] typeAndDesc = classifyUserType(
                 p.getSweetScore(), p.getBodyScore(), p.getSmokyScore(), p.getSpicyScore(), p.getFinishScore());
 
-        List<WhiskeyRecommendation> recs = recommend(
-                p.getSweetScore(), p.getBodyScore(), p.getSmokyScore(), p.getSpicyScore(), p.getFinishScore(),
-                allTagIds);
+        List<WhiskeyRecommendationResponse> recs = new ArrayList<>();
+        // List<WhiskeyRecommendation> recs = recommend(
+        //         p.getSweetScore(), p.getBodyScore(), p.getSmokyScore(), p.getSpicyScore(), p.getFinishScore(),
+        //         allTagIds);
 
         return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recs);
     }
 
     // ─── Private helpers ───────────────────────────────────────
 
-    private List<WhiskeyRecommendation> recommend(int sweet, int body, int smoky, int spicy, int finish,
-                                                   Set<Long> userTagIds) {
-        double[] userVec = {sweet, body, smoky, spicy, finish};
-        List<WhiskeysNoteCache> caches = cacheRepository.findAllWithTagsAndWhiskey();
-
-        record ScoredCache(WhiskeysNoteCache cache, double score) {}
-
-        List<ScoredCache> sorted = caches.stream()
-                .filter(c -> c.getCount() != null && c.getCount() > 0)
-                .map(c -> {
-                    double[] wVec = {
-                            normalize(c.getSweetScore(), c.getCount()),
-                            normalize(c.getBodyScore(),  c.getCount()),
-                            normalize(c.getSmokyScore(), c.getCount()),
-                            normalize(c.getSpicyScore(), c.getCount()),
-                            normalize(c.getFinishScore(), c.getCount())
-                    };
-                    Set<Long> whiskeyTagIds = c.getAvgWhiskeyTags().stream()
-                            .map(t -> t.getTag().getId()).collect(Collectors.toSet());
-
-                    double flavorSim = cosineSimilarity(userVec, wVec);
-                    double tagSim    = jaccardSimilarity(userTagIds, whiskeyTagIds);
-                    double score     = 0.5 * flavorSim + 0.5 * tagSim;
-                    return new ScoredCache(c, score);
-                })
-                .sorted(Comparator.comparingDouble(ScoredCache::score).reversed())
-                .limit(3)
-                .toList();
-
-        List<WhiskeyRecommendation> result = new ArrayList<>();
-        for (int i = 0; i < sorted.size(); i++) {
-            ScoredCache sc = sorted.get(i);
-            result.add(new WhiskeyRecommendation(
-                    i + 1,
-                    sc.cache().getWhiskey().getId(),
-                    sc.cache().getWhiskey().getName(),
-                    sc.cache().getWhiskey().getImageUrl(),
-                    Math.round(sc.score() * 1000.0) / 1000.0,
-                    generateReason(sc.cache(), sweet, smoky)
-            ));
-        }
-        return result;
+    private WhiskeyScoreVo scoreToVo(int body, int finish, int smoky, int spicy, int sweet) {
+        return new WhiskeyScoreVo(
+            (short) (body / 25 * 2 + 1),
+            (short) (finish / 25 * 2 + 1),
+            (short) (smoky / 25 * 2 + 1),
+            (short) (spicy / 25 * 2 + 1),
+            (short) (sweet / 25 * 2 + 1)
+        );
     }
 
     private int choiceToScore(int choice) {
@@ -185,33 +158,6 @@ public class TasteSurveyService {
             case 4 -> 75;
             default -> 100;
         };
-    }
-
-    /** 캐시 합산값을 0~100 정규화 (note score 1~9 → (avg-1)/8*100) */
-    private double normalize(Long sum, int count) {
-        if (sum == null || count <= 0) return 0;
-        double avg = (double) sum / count;
-        return Math.max(0, Math.min(100, (avg - 1) / 8.0 * 100));
-    }
-
-    private double cosineSimilarity(double[] a, double[] b) {
-        double dot = 0, normA = 0, normB = 0;
-        for (int i = 0; i < a.length; i++) {
-            dot   += a[i] * b[i];
-            normA += a[i] * a[i];
-            normB += b[i] * b[i];
-        }
-        if (normA == 0 || normB == 0) return 0;
-        return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-    }
-
-    private double jaccardSimilarity(Set<Long> userTags, Set<Long> whiskeyTags) {
-        if (userTags.isEmpty() && whiskeyTags.isEmpty()) return 0;
-        Set<Long> intersection = new HashSet<>(userTags);
-        intersection.retainAll(whiskeyTags);
-        Set<Long> union = new HashSet<>(userTags);
-        union.addAll(whiskeyTags);
-        return union.isEmpty() ? 0 : (double) intersection.size() / union.size();
     }
 
     private String[] classifyUserType(int sweet, int body, int smoky, int spicy, int finish) {
@@ -230,16 +176,4 @@ public class TasteSurveyService {
         return new String[]{"⚖️ 균형잡힌 미각파", "특정 스타일에 치우치지 않고 다양한 위스키를 고루 즐기는 올라운더형."};
     }
 
-    private String generateReason(WhiskeysNoteCache cache, int userSweet, int userSmoky) {
-        double avgSweet  = normalize(cache.getSweetScore(), cache.getCount());
-        double avgSmoky  = normalize(cache.getSmokyScore(), cache.getCount());
-        double avgFinish = normalize(cache.getFinishScore(), cache.getCount());
-
-        List<String> reasons = new ArrayList<>();
-        if (userSweet >= 50 && avgSweet >= 50) reasons.add("달콤한 풍미");
-        if (userSmoky >= 50 && avgSmoky >= 50) reasons.add("스모키함");
-        if (avgFinish >= 60) reasons.add("긴 피니시");
-        if (reasons.isEmpty()) reasons.add("균형잡힌 맛");
-        return String.join(", ", reasons) + "이 취향과 잘 맞습니다.";
-    }
 }

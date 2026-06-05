@@ -5,6 +5,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/survey/api/surveyApi';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { saveResultImage } from '../utils/exportImage';
 
 const SCORE_META: { key: keyof SurveyResult['profile']; ko: string; en: string; low: string; high: string }[] = [
@@ -143,21 +144,31 @@ export default function RecommendationPage() {
             {/* 추천 위스키 */}
             <p className="wf-section-title" style={{ marginTop: 28 }}>당신에게 어울리는 위스키 3</p>
             <div className="wf-result-recos">
-              {recommendations.map((w) => (
-                <div key={w.whiskeyId} className="wf-box wf-reco-card">
-                  <div className="wf-reco-card__thumb wf-placeholder">
-                    <span className="wf-reco-card__rank">{w.rank}</span>
+              {recommendations.map((w, i) => {
+                const img = resolveMediaUrl(w.imageUrl);
+                return (
+                  <div key={w.id} className="wf-box wf-reco-card">
+                    <div className={`wf-reco-card__thumb${img ? '' : ' wf-placeholder'}`}>
+                      {img && (
+                        <img
+                          src={img}
+                          alt={w.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }}
+                        />
+                      )}
+                      <span className="wf-reco-card__rank">{i + 1}</span>
+                    </div>
+                    <div className="wf-reco-card__body">
+                      <p className="wf-card__title">{w.name}</p>
+                      <p className="wf-text-xs" style={{ color: 'var(--wf-muted)', marginTop: 4 }}>
+                        매칭 점수 {Math.round(w.score * 100)}% · ★ {w.avgRating.toFixed(1)}
+                      </p>
+                      <p className="wf-text-sm" style={{ lineHeight: 1.6, marginTop: 8 }}>{w.reason}</p>
+                      <Button to={`/whiskey/${w.id}`} style={{ marginTop: 12, height: 38 }}>상세 보기</Button>
+                    </div>
                   </div>
-                  <div className="wf-reco-card__body">
-                    <p className="wf-card__title">{w.whiskeyName}</p>
-                    <p className="wf-text-xs" style={{ color: 'var(--wf-muted)', marginTop: 4 }}>
-                      매칭 점수 {Math.round(w.score * 100)}%
-                    </p>
-                    <p className="wf-text-sm" style={{ lineHeight: 1.6, marginTop: 8 }}>{w.reason}</p>
-                    <Button to={`/whiskey/${w.whiskeyId}`} style={{ marginTop: 12, height: 38 }}>상세 보기</Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
