@@ -1,0 +1,56 @@
+package com.jackpot.whiskeynote.domain.whiskey.dto;
+
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
+import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public record CacheVector(
+    double[] scoreVec,
+    Map<Long, Double> tagVector
+) {
+    public static CacheVector from(WhiskeysNoteCache cache) {
+        return new CacheVector(
+            normalizeScore(cache),
+            buildTagVector(cache)
+        );
+    }
+
+    public static CacheVector fromSurvey(WhiskeyScoreVo scoreVo, Set<Long> tagIdSet) {
+        double[] scoreVec = {
+            (scoreVo.bodyScore() - 1) * 8.0 / 100,
+            (scoreVo.finishScore() - 1) * 8.0 / 100,
+            (scoreVo.smokyScore() - 1) * 8.0 / 100,
+            (scoreVo.spicyScore() - 1) * 8.0 / 100,
+            (scoreVo.sweetScore() - 1) * 8.0 / 100
+        };
+        Map<Long, Double> tagVector = new HashMap<>();
+        for (Long tagId : tagIdSet) {
+            tagVector.put(tagId, 1.0);
+        }
+        return new CacheVector(scoreVec, tagVector);
+    }
+
+    private static double[] normalizeScore(WhiskeysNoteCache cache) {
+        double[] res = new double[5];
+
+        res[0] = ((double) cache.getBodyScore() / cache.getCount() - 1) / 9 * 100;
+        res[1] = ((double) cache.getFinishScore() / cache.getCount() - 1) / 9 * 100;
+        res[2] = ((double) cache.getSmokyScore() / cache.getCount() - 1) / 9 * 100;
+        res[3] = ((double) cache.getSpicyScore() / cache.getCount() - 1) / 9 * 100;
+        res[4] = ((double) cache.getSweetScore() / cache.getCount() - 1) / 9 * 100;
+
+        return res;
+    }
+
+    private static Map<Long, Double> buildTagVector(WhiskeysNoteCache cache) {
+        Map<Long, Double> res = new HashMap<>();
+        for (AvgWhiskeyTag avgTag : cache.getAvgWhiskeyTags()) {
+            res.put(avgTag.getTag().getId(), (double) avgTag.getCount() / cache.getCount());
+        }
+        return res;
+    }
+}

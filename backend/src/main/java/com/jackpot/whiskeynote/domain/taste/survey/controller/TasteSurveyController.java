@@ -32,12 +32,4 @@ public class TasteSurveyController {
     ) {
         return surveyService.calculateAndSave(request, principal.userId());
     }
-
-    /** 내 취향 프로필 조회 (로그인 필수) */
-    @GetMapping("/me")
-    public SurveyResultResponse getMyProfile(
-            @AuthenticationPrincipal JwtUserPrincipal principal
-    ) {
-        return surveyService.getMyProfile(principal.userId());
-    }
 }

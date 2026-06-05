@@ -26,11 +26,21 @@ export interface FlavorProfile {
   tasteTags: TagInfo[];
 }
 
+/**
+ * 추천 위스키 1건 — 백엔드 WhiskeyRecommendationResponse.
+ * detail 페이지 '비슷한 위스키'(SimilarWhiskey)와 동일한 DTO.
+ * rank 필드 없음 → 배열 순서가 곧 순위.
+ */
 export interface WhiskeyRecommendation {
-  rank: number;
-  whiskeyId: number;
-  whiskeyName: string;
-  imageUrl: string;
+  id: number;
+  name: string;
+  type: string;
+  imageUrl: string | null;
+  abv: number;
+  region: string;
+  country: string;
+  ageYears: number;
+  avgRating: number;
   score: number;
   reason: string;
 }

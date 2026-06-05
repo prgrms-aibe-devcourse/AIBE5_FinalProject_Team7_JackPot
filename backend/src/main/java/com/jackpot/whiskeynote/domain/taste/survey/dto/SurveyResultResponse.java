@@ -1,12 +1,14 @@
 package com.jackpot.whiskeynote.domain.taste.survey.dto;
 
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
+
 import java.util.List;
 
 public record SurveyResultResponse(
         FlavorProfile profile,
         String userType,
         String userTypeDescription,
-        List<WhiskeyRecommendation> recommendations
+        List<WhiskeyRecommendationResponse> recommendations
 ) {
     public record FlavorProfile(
             int sweetScore,
@@ -19,13 +21,4 @@ public record SurveyResultResponse(
     ) {}
 
     public record TagInfo(Long id, String name, String imageUrl) {}
-
-    public record WhiskeyRecommendation(
-            int rank,
-            Long whiskeyId,
-            String whiskeyName,
-            String imageUrl,
-            double score,
-            String reason
-    ) {}
 }

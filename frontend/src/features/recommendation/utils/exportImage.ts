@@ -226,7 +226,7 @@ function paint(
 
   // 추천 카드
   const innerPad = 16;
-  for (const w of recommendations) {
+  for (const [i, w] of recommendations.entries()) {
     const bodyX = x + innerPad;
     const bodyW = CW - innerPad * 2;
 
@@ -258,7 +258,7 @@ function paint(
       ctx.font = '800 13px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(String(w.rank), bodyX + 13, cy + 14);
+      ctx.fillText(String(i + 1), bodyX + 13, cy + 14);
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
     }
@@ -267,7 +267,7 @@ function paint(
     if (draw) {
       ctx.fillStyle = TEXT;
       ctx.font = '700 16px sans-serif';
-      ctx.fillText(w.whiskeyName, bodyX + 38, cy + 18);
+      ctx.fillText(w.name, bodyX + 38, cy + 18);
     }
     cy += headerH + 8;
 
