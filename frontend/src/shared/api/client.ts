@@ -2,6 +2,16 @@ import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
 
+/** 비로그인 조회 허용 API — 401이어도 로그인 페이지로 보내지 않음 */
+const PUBLIC_READ_PATH =
+  /^\/users\/\d+\/(picks|cabinet\/stats)(?:\?|$)|^\/reviews(?:\?|$)/;
+
+function isPublicReadRequest(url: string | undefined): boolean {
+  if (!url) return false;
+  const path = url.replace(baseURL, '').split('?')[0];
+  return PUBLIC_READ_PATH.test(path);
+}
+
 export const apiClient = axios.create({
   baseURL,
   headers: {
@@ -40,10 +50,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       const refreshToken = localStorage.getItem('refreshToken');
 
-      // RefreshToken 없으면 바로 로그아웃
+      // RefreshToken 없으면 로그인 유도 (타인 캐비넷 등 공개 조회는 제외)
       if (!refreshToken) {
-        localStorage.clear();
-        window.location.href = '/login';
+        if (!isPublicReadRequest(originalRequest?.url)) {
+          localStorage.clear();
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 

@@ -62,14 +62,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy compose file to EC2
+      - name: Copy deploy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: deploy/docker-compose.ec2.yml
-          target: /home/ubuntu/whiskeynote/
+          source: "deploy/docker-compose.ec2.yml,deploy/schema-migrate.sql,deploy/run-rds-migrate.sh,deploy/verify-deploy.sh"
+          target: /home/ubuntu/whiskeynote/deploy/
           strip_components: 1
 
       - name: Deploy on EC2
@@ -81,9 +81,33 @@ jobs:
           script: |
             set -e
             cd ~/whiskeynote
-            mv -f docker-compose.ec2.yml docker-compose.yml
+            chmod +x deploy/run-rds-migrate.sh deploy/verify-deploy.sh
+            mv -f deploy/docker-compose.ec2.yml docker-compose.yml
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 495264909330.dkr.ecr.ap-northeast-2.amazonaws.com
-            docker compose pull
-            docker compose up -d
+            bash deploy/run-rds-migrate.sh
             docker image prune -af
-            docker compose ps
+
+      - name: Verify backend & RDS schema
+        id: verify
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          set +e
+          OUT="$(ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "ubuntu@${EC2_HOST}" \
+            'bash ~/whiskeynote/deploy/verify-deploy.sh' 2>&1)"
+          CODE=$?
+          echo "$OUT"
+          if [[ "$CODE" -ne 0 ]]; then
+            if echo "$OUT" | grep -q 'RDS_SCHEMA_OUTDATED'; then
+              TABLE="$(echo "$OUT" | sed -n 's/^누락 테이블: //p' | head -1)"
+              echo "::error title=RDS 스키마 미최신화 — backend 기동 실패::RDS에 테이블 [${TABLE:-unknown}] 이(가) 없습니다. deploy/schema-migrate.sql 에 CREATE TABLE IF NOT EXISTS 를 추가하고 main merge 후 Deploy workflow 를 다시 실행하세요."
+            else
+              echo "::error title=백엔드 배포 검증 실패::backend 기동 또는 API smoke test 실패. 위 로그 및 EC2: docker compose logs backend --tail 50"
+            fi
+            exit 1
+          fi
+          echo "::notice title=배포 검증 성공::backend healthy · RDS 스키마 OK · API 200"

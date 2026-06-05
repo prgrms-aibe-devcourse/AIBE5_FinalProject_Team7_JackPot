@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
+import { toast } from '@/shared/components/ui/Toast';
 import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -20,6 +22,7 @@ import {
 } from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 
 function formatType(type: string): string {
@@ -76,7 +79,9 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
     <li className="wf-detail-reviews__item wf-box">
       <div className="wf-detail-reviews__header">
         <div>
-          <strong>{review.nickname}</strong>
+          <UserProfileLink userId={review.userId}>
+            <strong>{review.nickname}</strong>
+          </UserProfileLink>
           <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
         </div>
         <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>
@@ -126,6 +131,61 @@ export default function WhiskeyDetailPage() {
   const [isPicked, setIsPicked] = useState(false);
   const [pickLoading, setPickLoading] = useState(false);
 
+  // 위시 상태
+  const [wishModalOpen, setWishModalOpen] = useState(false);
+  const [isWished, setIsWished] = useState(false);
+  const [wishedItemId, setWishedItemId] = useState<number | null>(null);
+  const [imgError, setImgError] = useState(false);
+
+  // 페이지 진입 시 위시 여부 확인
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    // 위시 목록에서 현재 위스키 포함 여부 확인
+    cabinetApi
+      .getWishFolders()
+      .then(async (res) => {
+        const folders = res.data.data ?? [];
+        for (const folder of folders) {
+          const itemRes = await cabinetApi.getWishItems(folder.folderId);
+          const items = itemRes.data.data ?? [];
+          const found = items.find((item: { whiskey: { id: number }; itemId: number }) => item.whiskey.id === Number(id));
+          if (found) {
+            setIsWished(true);
+            setWishedItemId(found.itemId);
+            return;
+          }
+        }
+      })
+      .catch(() => {});
+  }, [id]);
+
+  // 위시 버튼 클릭 핸들러
+  const handleWishToggle = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+      if (goLogin) navigate(PATHS.LOGIN);
+      return;
+    }
+
+    if (isWished && wishedItemId !== null) {
+      // 위시 삭제
+      try {
+        await cabinetApi.removeWish(wishedItemId, 0);
+        setIsWished(false);
+        setWishedItemId(null);
+        toast('위시리스트에서 제거되었습니다.', 'info');
+      } catch {
+        toast('위시 제거에 실패했습니다.', 'error');
+      }
+    } else {
+      // 위시 추가 → 폴더 선택 모달 열기
+      setWishModalOpen(true);
+    }
+  };
+
   // 페이지 진입 시 픽 여부 확인
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -159,7 +219,7 @@ export default function WhiskeyDetailPage() {
         setIsPicked(true);
       }
     } catch (error) {
-      alert(error instanceof Error ? error.message : '픽 처리에 실패했습니다.');
+      toast(error instanceof Error ? error.message : '픽 처리에 실패했습니다.', 'error');
     } finally {
       setPickLoading(false);
     }
@@ -203,6 +263,13 @@ export default function WhiskeyDetailPage() {
 
   return (
     <WireframePage scroll>
+      {wishModalOpen && (
+        <WishFolderModal
+          whiskeyId={Number(id)}
+          onClose={() => setWishModalOpen(false)}
+          onSuccess={() => { setIsWished(true); }}
+        />
+      )}
       <header className="wf-detail-hero">
         <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
         <p className="wf-text-sm">{metaLine}</p>
@@ -224,19 +291,20 @@ export default function WhiskeyDetailPage() {
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
-          {imageSrc ? (
+          {imageSrc && !imgError ? (
             <img
               src={imageSrc}
               alt={detail.name}
               className="wf-detail-sidebar__image"
               style={{ width: '100%', objectFit: 'cover' }}
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
           )}
           <div className="wf-detail-sidebar__actions">
-            <Button variant="ghost" style={{ width: '100%' }}>
-              ♡ 위시리스트
+            <Button variant="ghost" style={{ width: '100%' }} onClick={handleWishToggle}>
+              {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
             </Button>
             <Button style={{ width: '100%' }} onClick={handlePickToggle} disabled={pickLoading}>
               {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}

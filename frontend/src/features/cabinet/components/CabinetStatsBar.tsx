@@ -14,9 +14,6 @@ export function CabinetStatsBar({ pick, wish, reviews, notes, hideWish }: Cabine
       {!hideWish && wish !== undefined ? (
         <span className="wf-cabinet-stats__wish">♡ 위시 {wish}</span>
       ) : null}
-      {hideWish ? (
-        <span className="wf-cabinet-stats__hint">♡ 위시 — 본인만 (타인 열람 불가)</span>
-      ) : null}
       <span className="wf-cabinet-stats__reviews">💬 리뷰 {reviews}</span>
       <span className="wf-cabinet-stats__notes">📝 Note {notes}</span>
     </div>

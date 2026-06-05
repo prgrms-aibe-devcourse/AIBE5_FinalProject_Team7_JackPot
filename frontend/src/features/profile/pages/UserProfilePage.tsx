@@ -7,6 +7,7 @@ import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
+import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
 import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
 import { fetchMyReviews } from '@/features/review/api/reviewApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
@@ -17,7 +18,7 @@ function parseSection(v: string | null): CabinetSection {
 }
 
 function parseTab(v: string | null): CabinetTab {
-  if (v === 'wish' || v === 'pick' || v === 'note' || v === 'reviews') return v;
+  if (v === 'pick' || v === 'note' || v === 'reviews') return v;
   return 'pick';
 }
 
@@ -152,21 +153,22 @@ export default function UserProfilePage() {
 
       <p className="wf-text-sm wf-cabinet-hint">
         {section === 'bar'
-          ? '선택한 메뉴: Bar — 공개 Pick·노트·리뷰 (♡ 위시 비공개)'
+          ? '선택한 메뉴: Bar — 공개 Pick·노트·리뷰'
           : '선택한 메뉴: 커뮤니티 — 공개 글·리뷰'}
       </p>
 
-      <CabinetStatsBar
-        pick={cabinetStats?.pickCount ?? picks.length}
-        reviews={cabinetStats?.reviewCount ?? (reviews?.content.length ?? 0)}
-        notes={cabinetStats?.noteCount ?? 0}
-        hideWish
-      />
+      {section === 'bar' ? (
+        <CabinetStatsBar
+          pick={cabinetStats?.pickCount ?? picks.length}
+          reviews={cabinetStats?.reviewCount ?? (reviews?.content.length ?? 0)}
+          notes={cabinetStats?.noteCount ?? 0}
+          hideWish
+        />
+      ) : null}
 
       {section === 'bar' ? (
         <>
           <CabinetSubTabs active={tab} basePath={`${base}?section=bar`} hideWish />
-          <p className="wf-text-sm">♡ 위시리스트는 본인만 · 장바구니 개념</p>
           {tab === 'pick' ? (
             picksLoading ? (
               <p className="wf-text-sm">픽 목록을 불러오는 중입니다...</p>
@@ -179,11 +181,11 @@ export default function UserProfilePage() {
                     key={pick.pickId ?? index}
                     id={String(pick.whiskey?.id ?? '')}
                     name={pick.whiskey?.name ?? '위스키'}
+                    imageUrl={pick.whiskey?.imageUrl ?? null}
                     meta={`${pick.whiskey?.type ?? ''} · ${pick.whiskey?.abv ?? '-'}%`}
                     readonly
                   />
                 ))}
-                <p className="wf-text-xs">※ 타인 캐비넷: 제거·수정 불가 · 상세만 열람</p>
               </>
             )
           ) : tab === 'reviews' ? (
@@ -196,20 +198,12 @@ export default function UserProfilePage() {
             ) : (
               <p className="wf-text-sm">아직 작성한 리뷰가 없습니다.</p>
             )
-          ) : tab === 'note' ? (
-            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           ) : (
-            <p className="wf-text-sm">위시리스트는 타인에게 공개되지 않습니다.</p>
+            <p className="wf-text-sm">노트 기능은 준비 중입니다.</p>
           )}
         </>
       ) : (
-        <>
-          <article className="wf-cabinet-post wf-box">
-            <h3 className="wf-cabinet-post__title">스모키 위스키 입문 추천</h3>
-            <p className="wf-text-sm">#입문 · 칼럼</p>
-          </article>
-          <p className="wf-text-sm">13b-cabinet-other-community</p>
-        </>
+        <CabinetCommunitySection authorId={targetUserId} />
       )}
     </WireframePage>
   );

@@ -18,8 +18,13 @@ import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -107,10 +112,7 @@ public class TastingNoteService {
         TastingNote note = tastingNoteRepository.findByIdWithTags(noteId)
             .orElseThrow(() -> new EntityNotFoundException("TastingNote not found"));
 
-        // TODO: 작성자 본인 여부 검증 — 인증/인가 전략 확정 후 구현
-        // if (!note.getUser().getId().equals(userId)) {
-        //     throw new Exception("Not authorized");
-        // }
+        validateOwner(note, userId, "본인의 시음 노트만 수정할 수 있습니다.");
         boolean wasPublished = !Boolean.TRUE.equals(note.getIsDraft());
         // TODO: 검증 - (wasPublished == true && request.isDraft == false) -> 작성 완료된 노트를 작성 중으로 되돌릴 수 없습니다.
         WhiskeyScoreVo oldScoreVo = note.getScoreVo();
@@ -172,10 +174,7 @@ public class TastingNoteService {
         TastingNote note = tastingNoteRepository.findByIdWithTags(noteId)
             .orElseThrow(() -> new EntityNotFoundException("TastingNote not found"));
 
-        // TODO: 작성자 본인 여부 검증 — 인증/인가 전략 확정 후 구현
-        // if (!note.getUser().getId().equals(userId)) {
-        //     throw new Exception("Not authorized");
-        // }
+        validateOwner(note, userId, "본인의 시음 노트만 삭제할 수 있습니다.");
 
         // 2. 공개 노트인 경우 캐시에서 점수 및 태그 차감
         if (!Boolean.TRUE.equals(note.getIsDraft())) {
@@ -192,5 +191,49 @@ public class TastingNoteService {
 
         // 3. 노트 삭제
         tastingNoteRepository.delete(note);
+    }
+
+    // 내 노트 목록 조회
+    @Transactional(readOnly = true)
+    public Page<TastingNoteResponse> getMyTastingNotes(Long userId, int page, int size) {
+        if (!usersRepository.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+        }
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "updatedAt")
+        );
+        return tastingNoteRepository.findByUserIdOrderByUpdatedAtDesc(userId, pageRequest)
+                .map(note -> {
+                    List<TastingNoteTagResponse> tagResponses = note.getNoteTags().stream()
+                            .map(noteTag -> TastingNoteTagResponse.from(noteTag.getTag()))
+                            .toList();
+                    return TastingNoteResponse.from(note, tagResponses);
+                });
+    }
+
+    // 내 노트 단건 조회
+    @Transactional(readOnly = true)
+    public TastingNoteResponse getMyTastingNote(Long userId, Long noteId) {
+        TastingNote note = tastingNoteRepository.findByIdWithTags(noteId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "시음 노트를 찾을 수 없습니다."
+                ));
+
+        validateOwner(note, userId, "본인의 시음 노트만 조회할 수 있습니다.");
+
+        List<TastingNoteTagResponse> tagResponses = note.getNoteTags().stream()
+                .map(noteTag -> TastingNoteTagResponse.from(noteTag.getTag()))
+                .toList();
+
+        return TastingNoteResponse.from(note, tagResponses);
+    }
+
+    private void validateOwner(TastingNote note, Long userId, String message) {
+        if (!note.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
+        }
     }
 }
