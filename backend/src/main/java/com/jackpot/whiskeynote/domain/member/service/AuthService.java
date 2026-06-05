@@ -121,11 +121,12 @@ public class AuthService {
 
         return new TokenResponse(
                 newAccessToken,
-                saved.getToken(),   // 기존 RefreshToken 그대로 반환
+                saved.getToken(),
                 user.getId(),
                 user.isNewUser(),
                 user.getNickname(),
-                user.getProfileImageUrl()
+                user.getProfileImageUrl(),
+                user.getRole().name()
         );
     }
 

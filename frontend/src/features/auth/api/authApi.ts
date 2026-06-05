@@ -18,6 +18,7 @@ export interface AuthData {
   isNewUser: boolean;
   nickname: string;
   profileImageUrl: string | null;
+  role: string;
 }
 
 export const authApi = {

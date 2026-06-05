@@ -31,6 +31,7 @@ export default function LoginPage() {
       localStorage.setItem('userId', String(data.userId));
       localStorage.setItem('nickname', data.nickname);
       localStorage.setItem('profileImageUrl', data.profileImageUrl ?? '');
+      localStorage.setItem('role', data.role ?? 'USER');
       navigate(data.isNewUser ? PATHS.ONBOARDING : PATHS.LOUNGE);
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : '로그인에 실패했습니다.');

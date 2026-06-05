@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -19,6 +20,7 @@ import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userAp
 const ACCEPT_IMAGE = 'image/jpeg,image/png,image/webp,image/gif';
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [me, setMe] = useState<UserMeDto | null>(null);
   const [nickname, setNickname] = useState('');
@@ -228,6 +230,19 @@ export default function MyPage() {
       </div>
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         취향 설문 다시하기
+      </div>
+      {/* 3번: 위스키 등록 요청 목록 버튼 */}
+      <div
+        className="wf-box"
+        style={{ padding: 14, marginTop: 8, cursor: 'pointer', transition: 'border-color 0.15s' }}
+        onClick={() => navigate('/whiskey-requests')}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#c9a227')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '')}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <p style={{ margin: 0, fontSize: 14, color: '#ececf0' }}>위스키 등록 요청</p>
+          <span style={{ color: '#8b8b96' }}>›</span>
+        </div>
       </div>
       <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
         <p className="wf-text-sm" style={{ marginBottom: 10 }}>비밀번호 변경</p>

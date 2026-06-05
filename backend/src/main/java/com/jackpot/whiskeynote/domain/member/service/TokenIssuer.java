@@ -54,7 +54,8 @@ public class TokenIssuer {
                 user.getId(),
                 user.isNewUser(),
                 user.getNickname(),
-                user.getProfileImageUrl()
+                user.getProfileImageUrl(),
+                user.getRole().name()
         );
     }
 }

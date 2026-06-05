@@ -7,7 +7,9 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
+import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { toast } from '@/shared/components/ui/Toast';
 import { PATHS } from '@/app/router/paths';
 import {
   autocompleteWhiskeys,
@@ -179,6 +181,7 @@ export default function SearchPage() {
   // 위시 상태 — { whiskeyId: itemId } 맵으로 관리
   const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
   const [wishTargetId, setWishTargetId] = useState<number | null>(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
   const suggestionKeyword = inputValue.trim();
   const isFilterActive = hasActiveFilters(
@@ -324,6 +327,12 @@ export default function SearchPage() {
 
   return (
     <WireframePage>
+      {showRequestModal && (
+        <WhiskeyRequestModal
+          onClose={() => setShowRequestModal(false)}
+          onSuccess={() => {}}
+        />
+      )}
       {wishTargetId !== null && (
         <WishFolderModal
           whiskeyId={wishTargetId}
@@ -424,6 +433,31 @@ export default function SearchPage() {
               />
             </div>
           </section>
+
+          {/* 2번: 필터 하단 등록 요청 버튼 */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!localStorage.getItem('accessToken')) {
+                const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+                if (go) navigate(PATHS.LOGIN);
+                return;
+              }
+              setShowRequestModal(true);
+            }}
+            style={{
+              background: 'none',
+              border: '1px dashed #2e2e38',
+              borderRadius: 8,
+              padding: '10px 12px',
+              color: '#8b8b96',
+              fontSize: 13,
+              cursor: 'pointer',
+              textAlign: 'left',
+            }}
+          >
+            + 원하는 위스키 등록 요청
+          </button>
         </aside>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8 }}>
@@ -503,9 +537,34 @@ export default function SearchPage() {
           ) : null}
 
           {!isLoading && !isError && results.length === 0 ? (
-            <div className="wf-box" style={{ padding: 16 }}>
+            <div className="wf-box" style={{ padding: 20 }}>
               <p className="wf-card__title">검색 결과가 없습니다.</p>
-              <p className="wf-card__meta">다른 검색어로 다시 찾아보세요.</p>
+              <p className="wf-card__meta">다른 검색어로 다시 찾아보거나 등록을 요청해보세요.</p>
+              {/* 1번: 검색 결과 없을 때 등록 요청 버튼 */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!localStorage.getItem('accessToken')) {
+                    const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+                    if (go) navigate(PATHS.LOGIN);
+                    return;
+                  }
+                  setShowRequestModal(true);
+                }}
+                style={{
+                  marginTop: 12,
+                  background: '#c9a227',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '8px 16px',
+                  color: '#0c0c0f',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                위스키 등록 요청하기
+              </button>
             </div>
           ) : null}
 

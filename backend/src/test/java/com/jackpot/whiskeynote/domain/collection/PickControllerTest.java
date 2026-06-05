@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.collection;
 
+import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
@@ -39,6 +40,9 @@ class PickControllerTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private WhiskeyRequestRepository whiskeyRequestRepository;
 
     @Autowired
     private PickRepository pickRepository;
@@ -88,6 +92,7 @@ class PickControllerTest {
         wishListItemRepository.deleteAll();
         wishListFolderRepository.deleteAll();
         pickRepository.deleteAll();
+        whiskeyRequestRepository.deleteAll();
         refreshTokenRepository.deleteAll();
         usersRepository.deleteAll();
         whiskeyRepository.deleteAll();
