@@ -1,5 +1,5 @@
 import type { PageResponse } from '@/shared/api/types/common';
-import type { RelatedColumnPost, WhiskeyDetail, WhiskeyReview } from '../types';
+import type { RelatedColumnPost, SimilarWhiskey, WhiskeyDetail, WhiskeyReview } from '../types';
 
 export const MOCK_WHISKEY_DETAIL: WhiskeyDetail = {
   id: 1,
@@ -116,4 +116,69 @@ export function getMockWhiskeyDetail(whiskeyId: string): WhiskeyDetail {
     ...MOCK_WHISKEY_DETAIL,
     id: Number.isFinite(id) ? id : MOCK_WHISKEY_DETAIL.id,
   };
+}
+
+/** WH-03 비슷한 위스키 추천 목데이터 (테스트용 id 1~4 풀) */
+export const MOCK_SIMILAR_WHISKEYS: SimilarWhiskey[] = [
+  {
+    id: 1,
+    name: 'Glenfiddich 12',
+    type: 'single_malt',
+    imageUrl: null,
+    abv: 40,
+    region: 'Speyside',
+    country: 'Scotland',
+    ageYears: 12,
+    avgRating: 4.0,
+    matchScore: 92,
+    reason: '가벼운 과일향과 부드러운 바디가 닮은 입문용 한 잔',
+  },
+  {
+    id: 2,
+    name: 'Balvenie DoubleWood 12',
+    type: 'single_malt',
+    imageUrl: null,
+    abv: 40,
+    region: 'Speyside',
+    country: 'Scotland',
+    ageYears: 12,
+    avgRating: 4.3,
+    matchScore: 89,
+    reason: '꿀·바닐라 계열의 단맛과 오크 피니시가 비슷해요',
+  },
+  {
+    id: 3,
+    name: 'Macallan 12 Sherry Oak',
+    type: 'single_malt',
+    imageUrl: null,
+    abv: 40,
+    region: 'Speyside',
+    country: 'Scotland',
+    ageYears: 12,
+    avgRating: 4.4,
+    matchScore: 86,
+    reason: '진한 셰리 오크 단맛 라인업으로 함께 즐기기 좋아요',
+  },
+  {
+    id: 4,
+    name: 'Glenlivet 12',
+    type: 'single_malt',
+    imageUrl: null,
+    abv: 40,
+    region: 'Speyside',
+    country: 'Scotland',
+    ageYears: 12,
+    avgRating: 4.0,
+    matchScore: 82,
+    reason: '플로럴하고 깔끔한 스페이사이드 스타일',
+  },
+];
+
+/**
+ * 현재 위스키 자신은 제외하고 최대 3종 반환.
+ * - /whiskey/1 → [2,3,4], /whiskey/5 → [1,2,3] 처럼 항상 3종 보장
+ */
+export function getMockSimilarWhiskeys(whiskeyId: string): SimilarWhiskey[] {
+  const current = Number(whiskeyId);
+  return MOCK_SIMILAR_WHISKEYS.filter((w) => w.id !== current).slice(0, 3);
 }

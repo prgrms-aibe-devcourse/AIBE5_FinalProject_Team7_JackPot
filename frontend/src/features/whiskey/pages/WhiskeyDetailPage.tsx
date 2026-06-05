@@ -11,9 +11,15 @@ import { Button } from '@/shared/components/ui/Button';
 import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import { RelatedColumns } from '../components/RelatedColumns';
+import { RelatedWhiskeys } from '../components/RelatedWhiskeys';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
-import { useRelatedColumns, useWhiskeyDetail, useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
+import {
+  useRelatedColumns,
+  useSimilarWhiskeys,
+  useWhiskeyDetail,
+  useWhiskeyReviews,
+} from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
@@ -116,6 +122,7 @@ export default function WhiskeyDetailPage() {
 
   const { data: detail, isLoading, isError } = useWhiskeyDetail(id);
   const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
+  const { data: similarWhiskeys = [], isLoading: similarLoading } = useSimilarWhiskeys(id);
   const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
 
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
@@ -362,6 +369,8 @@ export default function WhiskeyDetailPage() {
               <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
             )}
           </section>
+
+          <RelatedWhiskeys items={similarWhiskeys} isLoading={similarLoading} />
 
           <RelatedColumns posts={relatedPosts} isLoading={columnsLoading} />
         </main>

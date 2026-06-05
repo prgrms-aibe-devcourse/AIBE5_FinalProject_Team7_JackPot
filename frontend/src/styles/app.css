@@ -1731,3 +1731,40 @@ body {
     height: 120px;
   }
 }
+
+/* ───────── 비슷한 위스키 추천 (WhiskeyDetailPage) ───────── */
+
+.app-root .wf-related-whiskeys {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-top: 12px;
+}
+
+.app-root .wf-related-whiskeys__card {
+  min-width: 210px;
+  max-width: 210px;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+  border-style: solid;
+  transition: border-color 0.15s;
+}
+
+.app-root .wf-related-whiskeys__card:hover {
+  border-color: var(--wf-accent);
+}
+
+.app-root .wf-related-whiskeys__rating {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-text);
+  display: flex;
+  align-items: center;
+}
+
+.app-root .wf-related-whiskeys__rating .wf-stars {
+  margin-right: 4px;
+}
