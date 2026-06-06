@@ -4,6 +4,7 @@ import {
   fetchSimilarWhiskeys,
   fetchWhiskeyDetail,
   fetchWhiskeyReviews,
+  fetchWhiskeyReviewStats,
 } from '../api/whiskeyApi';
 
 function getCurrentUserId(): number | null {
@@ -50,6 +51,18 @@ export function useSimilarWhiskeys(whiskeyId: string | undefined) {
   return useQuery({
     queryKey: similarWhiskeysQueryKey(whiskeyId ?? ''),
     queryFn: () => fetchSimilarWhiskeys(whiskeyId!),
+    enabled: Boolean(whiskeyId),
+  });
+}
+
+export function whiskeyReviewStatsQueryKey(whiskeyId: string) {
+  return ['whiskey', 'review-stats', whiskeyId] as const;
+}
+
+export function useWhiskeyReviewStats(whiskeyId: string | undefined) {
+  return useQuery({
+    queryKey: whiskeyReviewStatsQueryKey(whiskeyId ?? ''),
+    queryFn: () => fetchWhiskeyReviewStats(whiskeyId!),
     enabled: Boolean(whiskeyId),
   });
 }
