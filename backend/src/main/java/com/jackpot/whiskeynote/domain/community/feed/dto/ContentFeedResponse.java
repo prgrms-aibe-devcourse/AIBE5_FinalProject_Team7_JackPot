@@ -13,6 +13,8 @@ public record ContentFeedResponse(
         String thumbnailUrl,
         String description,
         String whiskeyKeyword,
+        String author,
+        String sourceName,
         LocalDateTime publishedAt,
         LocalDateTime createdAt
 ) {
@@ -25,6 +27,8 @@ public record ContentFeedResponse(
                 feed.getThumbnailUrl(),
                 feed.getDescription(),
                 feed.getWhiskeyKeyword(),
+                feed.getAuthor(),
+                feed.getSourceName(),
                 feed.getPublishedAt(),
                 feed.getCreatedAt()
         );

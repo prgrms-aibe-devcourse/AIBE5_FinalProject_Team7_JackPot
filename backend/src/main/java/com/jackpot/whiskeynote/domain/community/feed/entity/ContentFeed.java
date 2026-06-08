@@ -36,6 +36,12 @@ public class ContentFeed {
     @Column(name = "whiskey_keyword", length = 255)
     private String whiskeyKeyword;
 
+    @Column(length = 200)
+    private String author;
+
+    @Column(name = "source_name", length = 200)
+    private String sourceName;
+
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 

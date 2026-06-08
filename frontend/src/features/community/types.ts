@@ -56,6 +56,8 @@ export interface ContentFeedResponse {
   thumbnailUrl: string | null;
   description: string | null;
   whiskeyKeyword: string | null;
+  author: string | null;
+  sourceName: string | null;
   publishedAt: string | null;
   createdAt: string;
 }
