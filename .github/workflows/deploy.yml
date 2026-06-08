@@ -39,11 +39,21 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.4.1"
 
       - name: Build backend JAR
         working-directory: backend
-        run: chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
+        run: |
+          for attempt in 1 2 3 4 5; do
+            echo "bootJar attempt ${attempt}"
+            gradle bootJar -x test --no-daemon && exit 0
+            sleep $((attempt * 20))
+          done
+          exit 1
 
       - name: Build and push backend
         uses: docker/build-push-action@v6
