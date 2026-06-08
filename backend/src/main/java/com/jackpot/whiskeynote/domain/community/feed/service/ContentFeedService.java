@@ -42,7 +42,7 @@ public class ContentFeedService {
 
     @Transactional(readOnly = true)
     public Page<ContentFeedResponse> getFeeds(int page, int size) {
-        return feedRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size))
+        return feedRepository.findAllByOrderByPublishedAtDescCreatedAtDesc(PageRequest.of(page, size))
                 .map(ContentFeedResponse::from);
     }
 

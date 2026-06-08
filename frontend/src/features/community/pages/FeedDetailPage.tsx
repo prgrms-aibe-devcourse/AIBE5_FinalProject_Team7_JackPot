@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { useFeed } from '../hooks/useCommunity';
@@ -48,9 +49,30 @@ export default function FeedDetailPage() {
         )}
 
         {feed.description && (
-          <p style={{ fontSize: 15, lineHeight: 1.8, color: '#333', whiteSpace: 'pre-wrap' }}>
-            {feed.description}
-          </p>
+          <div style={{ fontSize: 15, lineHeight: 1.9, color: '#333' }}>
+            <ReactMarkdown
+              components={{
+                h1: ({ children }) => <h2 style={{ fontSize: 18, fontWeight: 700, margin: '20px 0 8px' }}>{children}</h2>,
+                h2: ({ children }) => <h3 style={{ fontSize: 16, fontWeight: 700, margin: '18px 0 8px' }}>{children}</h3>,
+                h3: ({ children }) => <h4 style={{ fontSize: 15, fontWeight: 600, margin: '14px 0 6px' }}>{children}</h4>,
+                p: ({ children }) => <p style={{ margin: '0 0 12px' }}>{children}</p>,
+                strong: ({ children }) => <strong style={{ fontWeight: 700 }}>{children}</strong>,
+                a: ({ href, children }) => (
+                  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#666', textDecoration: 'underline' }}>
+                    {children}
+                  </a>
+                ),
+                hr: () => <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '16px 0' }} />,
+                blockquote: ({ children }) => (
+                  <blockquote style={{ borderLeft: '3px solid #ddd', paddingLeft: 12, color: '#666', margin: '12px 0' }}>
+                    {children}
+                  </blockquote>
+                ),
+              }}
+            >
+              {feed.description}
+            </ReactMarkdown>
+          </div>
         )}
 
         <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid #eee' }}>

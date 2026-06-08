@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ContentFeedRepository extends JpaRepository<ContentFeed, Long> {
 
-    Page<ContentFeed> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<ContentFeed> findAllByOrderByPublishedAtDescCreatedAtDesc(Pageable pageable);
 
     List<ContentFeed> findTop5ByWhiskeyKeywordContainingIgnoreCaseOrderByCreatedAtDesc(String keyword);
 }
