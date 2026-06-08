@@ -28,9 +28,8 @@ if echo "$LOGS" | grep -q 'missing table'; then
   echo "누락 테이블: ${MISSING_TABLE}"
   echo ""
   echo "조치:"
-  echo "  1) deploy/schema-migrate.sql 에 CREATE TABLE IF NOT EXISTS 추가"
+  echo "  1) backend/src/main/resources/db/migration/V*__*.sql Flyway migration 추가"
   echo "  2) main merge → Deploy workflow 재실행"
-  echo "  또는 EC2: bash ~/whiskeynote/deploy/run-rds-migrate.sh"
   echo "========================================"
   echo "$LOGS" | grep -E 'missing table|Schema validation' || true
   exit 1
