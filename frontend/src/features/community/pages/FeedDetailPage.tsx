@@ -50,11 +50,11 @@ function SourceCard({ url, sourceName, author }: { url: string; sourceName: stri
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '14px 16px', borderRadius: 10,
-        border: '1px solid #e0e0e0', background: '#fafafa',
-        transition: 'box-shadow 0.15s',
+        border: '1px solid var(--wf-border)', background: 'var(--wf-surface-2)',
+        transition: 'border-color 0.15s',
       }}
-        onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)')}
-        onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--wf-accent)')}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--wf-border)')}
       >
         <img
           src={favicon}
@@ -65,14 +65,14 @@ function SourceCard({ url, sourceName, author }: { url: string; sourceName: stri
           onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#333' }}>
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--wf-text)' }}>
             {sourceName || domain}
           </p>
           {author && (
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#888' }}>by {author}</p>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--wf-muted)' }}>by {author}</p>
           )}
         </div>
-        <span style={{ fontSize: 12, color: '#aaa', flexShrink: 0 }}>원문 읽기 →</span>
+        <span style={{ fontSize: 12, color: 'var(--wf-accent)', flexShrink: 0 }}>원문 읽기 →</span>
       </div>
     </a>
   );
@@ -108,51 +108,51 @@ export default function FeedDetailPage() {
         </div>
 
         {/* 제목 */}
-        <h1 style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.4, margin: '0 0 10px', color: '#111' }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.4, margin: '0 0 10px', color: 'var(--wf-text)' }}>
           {feed.title}
         </h1>
 
         {/* 날짜 */}
-        <p style={{ margin: '0 0 24px', fontSize: 13, color: '#999' }}>
+        <p style={{ margin: '0 0 24px', fontSize: 13, color: 'var(--wf-muted)' }}>
           {formatDate(feed.publishedAt || feed.createdAt)}
         </p>
 
         {/* 본문 마크다운 (이미지 중간 삽입 포함) */}
         {bodyMarkdown && (
-          <div style={{ fontSize: 15, lineHeight: 1.9, color: '#333' }}>
+          <div style={{ fontSize: 15, lineHeight: 1.9, color: 'var(--wf-text)' }}>
             <ReactMarkdown
               components={{
-                h1: ({ children }) => <h2 style={{ fontSize: 20, fontWeight: 700, margin: '28px 0 10px', borderBottom: '1px solid #eee', paddingBottom: 6 }}>{children}</h2>,
-                h2: ({ children }) => <h3 style={{ fontSize: 17, fontWeight: 700, margin: '22px 0 8px' }}>{children}</h3>,
-                h3: ({ children }) => <h4 style={{ fontSize: 15, fontWeight: 600, margin: '16px 0 6px', color: '#444' }}>{children}</h4>,
-                p: ({ children }) => <p style={{ margin: '0 0 14px' }}>{children}</p>,
-                strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#111' }}>{children}</strong>,
-                em: ({ children }) => <em style={{ color: '#666' }}>{children}</em>,
+                h1: ({ children }) => <h2 style={{ fontSize: 20, fontWeight: 700, margin: '28px 0 10px', borderBottom: '1px solid var(--wf-border)', paddingBottom: 6, color: 'var(--wf-text)' }}>{children}</h2>,
+                h2: ({ children }) => <h3 style={{ fontSize: 17, fontWeight: 700, margin: '22px 0 8px', color: 'var(--wf-text)' }}>{children}</h3>,
+                h3: ({ children }) => <h4 style={{ fontSize: 15, fontWeight: 600, margin: '16px 0 6px', color: 'var(--wf-accent)' }}>{children}</h4>,
+                p: ({ children }) => <p style={{ margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</p>,
+                strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#fff' }}>{children}</strong>,
+                em: ({ children }) => <em style={{ color: 'var(--wf-muted)' }}>{children}</em>,
                 img: ({ src, alt }) => (
                   <span style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
                     <img
                       src={src}
                       alt={alt}
-                      style={{ width: '40%', minWidth: 160, borderRadius: 10, objectFit: 'cover', boxShadow: '0 2px 12px rgba(0,0,0,0.10)' }}
+                      style={{ width: '40%', minWidth: 160, borderRadius: 10, objectFit: 'cover', boxShadow: '0 2px 12px rgba(0,0,0,0.40)' }}
                       onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
                     />
                   </span>
                 ),
                 a: ({ href, children }) => (
-                  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#555', textDecoration: 'underline' }}>
+                  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--wf-accent)', textDecoration: 'underline' }}>
                     {children}
                   </a>
                 ),
-                hr: () => <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />,
+                hr: () => <hr style={{ border: 'none', borderTop: '1px solid var(--wf-border)', margin: '20px 0' }} />,
                 blockquote: ({ children }) => (
-                  <blockquote style={{ borderLeft: '3px solid #ccc', paddingLeft: 14, color: '#666', margin: '16px 0', fontStyle: 'italic' }}>
+                  <blockquote style={{ borderLeft: '3px solid var(--wf-accent)', paddingLeft: 14, color: 'var(--wf-muted)', margin: '16px 0', fontStyle: 'italic' }}>
                     {children}
                   </blockquote>
                 ),
-                ul: ({ children }) => <ul style={{ paddingLeft: 20, margin: '0 0 14px' }}>{children}</ul>,
-                ol: ({ children }) => <ol style={{ paddingLeft: 20, margin: '0 0 14px' }}>{children}</ol>,
+                ul: ({ children }) => <ul style={{ paddingLeft: 20, margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</ul>,
+                ol: ({ children }) => <ol style={{ paddingLeft: 20, margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</ol>,
                 li: ({ children }) => <li style={{ marginBottom: 4 }}>{children}</li>,
-                code: ({ children }) => <code style={{ background: '#f5f5f5', padding: '2px 6px', borderRadius: 4, fontSize: 13 }}>{children}</code>,
+                code: ({ children }) => <code style={{ background: 'var(--wf-surface-2)', color: 'var(--wf-accent)', padding: '2px 6px', borderRadius: 4, fontSize: 13 }}>{children}</code>,
               }}
             >
               {bodyMarkdown}
@@ -161,8 +161,8 @@ export default function FeedDetailPage() {
         )}
 
         {/* 출처 임베드 카드 */}
-        <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #eee' }}>
-          <p style={{ margin: '0 0 10px', fontSize: 12, color: '#aaa', fontWeight: 500, letterSpacing: '0.05em' }}>출처</p>
+        <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid var(--wf-border)' }}>
+          <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--wf-muted)', fontWeight: 500, letterSpacing: '0.05em' }}>출처</p>
           <SourceCard url={feed.url} sourceName={feed.sourceName} author={feed.author} />
         </div>
       </div>
