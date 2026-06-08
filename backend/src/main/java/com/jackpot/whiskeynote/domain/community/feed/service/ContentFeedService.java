@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,13 @@ public class ContentFeedService {
                 req.publishedAt()
         );
         return ContentFeedResponse.from(feedRepository.save(feed));
+    }
+
+    @Transactional(readOnly = true)
+    public ContentFeedResponse getFeed(Long id) {
+        return feedRepository.findById(id)
+                .map(ContentFeedResponse::from)
+                .orElseThrow(() -> new NoSuchElementException("Feed not found: " + id));
     }
 
     @Transactional(readOnly = true)

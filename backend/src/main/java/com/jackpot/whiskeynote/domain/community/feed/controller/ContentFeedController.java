@@ -32,6 +32,12 @@ public class ContentFeedController {
         return feedService.getFeeds(page, size);
     }
 
+    /** 피드 단건 조회 */
+    @GetMapping("/api/v1/feeds/{id}")
+    public ContentFeedResponse getFeed(@PathVariable Long id) {
+        return feedService.getFeed(id);
+    }
+
     /** 위스키 이름 기반 관련 칼럼 피드 조회 */
     @GetMapping("/api/v1/feeds/related")
     public List<ContentFeedResponse> getRelatedFeeds(@RequestParam String keyword) {

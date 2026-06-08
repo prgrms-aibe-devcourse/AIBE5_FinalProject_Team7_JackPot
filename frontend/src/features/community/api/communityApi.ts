@@ -25,6 +25,11 @@ export async function fetchFeeds(page = 0, size = 20): Promise<SpringPage<Conten
   return data;
 }
 
+export async function fetchFeed(feedId: number): Promise<ContentFeedResponse> {
+  const { data } = await apiClient.get<ContentFeedResponse>(`/feeds/${feedId}`);
+  return data;
+}
+
 export async function fetchFreePosts(
   page = 0,
   size = 10,
