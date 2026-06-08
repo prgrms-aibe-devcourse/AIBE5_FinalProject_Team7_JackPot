@@ -10,6 +10,22 @@ function formatDate(iso: string | null): string {
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
 }
 
+function injectImageIntoMarkdown(markdown: string, imageUrl: string): string {
+  // 첫 번째 ### 섹션 직전에 이미지 삽입 (도입부 다음)
+  const h3Match = markdown.search(/\n###\s/);
+  if (h3Match !== -1) {
+    return markdown.slice(0, h3Match) + `\n\n![](${imageUrl})\n` + markdown.slice(h3Match);
+  }
+  // fallback: 두 번째 빈 줄 뒤
+  let pos = 0;
+  for (let i = 0; i < 2; i++) {
+    const next = markdown.indexOf('\n\n', pos + 1);
+    if (next === -1) break;
+    pos = next;
+  }
+  return markdown.slice(0, pos) + `\n\n![](${imageUrl})\n` + markdown.slice(pos);
+}
+
 function getDomain(url: string): string {
   try { return new URL(url).hostname.replace('www.', ''); } catch { return url; }
 }
@@ -69,24 +85,16 @@ export default function FeedDetailPage() {
   if (isLoading) return <WireframePage><p className="wf-text-sm">불러오는 중…</p></WireframePage>;
   if (!feed) return <WireframePage><p className="wf-text-sm">피드를 찾을 수 없습니다.</p></WireframePage>;
 
+  const bodyMarkdown = feed.description && feed.thumbnailUrl
+    ? injectImageIntoMarkdown(feed.description, feed.thumbnailUrl)
+    : feed.description ?? '';
+
   return (
     <WireframePage scroll>
       <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
       </nav>
-
-      {/* 히어로 이미지 */}
-      {feed.thumbnailUrl && (
-        <div style={{ marginBottom: 24, borderRadius: 12, overflow: 'hidden', maxHeight: 320 }}>
-          <img
-            src={feed.thumbnailUrl}
-            alt={feed.title}
-            style={{ width: '100%', height: 320, objectFit: 'cover', display: 'block' }}
-            onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
-          />
-        </div>
-      )}
 
       <div className="wf-box" style={{ padding: '24px' }}>
         {/* 배지 */}
@@ -109,8 +117,8 @@ export default function FeedDetailPage() {
           {formatDate(feed.publishedAt || feed.createdAt)}
         </p>
 
-        {/* 본문 마크다운 */}
-        {feed.description && (
+        {/* 본문 마크다운 (이미지 중간 삽입 포함) */}
+        {bodyMarkdown && (
           <div style={{ fontSize: 15, lineHeight: 1.9, color: '#333' }}>
             <ReactMarkdown
               components={{
@@ -142,7 +150,7 @@ export default function FeedDetailPage() {
                 code: ({ children }) => <code style={{ background: '#f5f5f5', padding: '2px 6px', borderRadius: 4, fontSize: 13 }}>{children}</code>,
               }}
             >
-              {feed.description}
+              {bodyMarkdown}
             </ReactMarkdown>
           </div>
         )}
