@@ -129,8 +129,13 @@ export default function FeedDetailPage() {
                 strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#111' }}>{children}</strong>,
                 em: ({ children }) => <em style={{ color: '#666' }}>{children}</em>,
                 img: ({ src, alt }) => (
-                  <span style={{ display: 'block', margin: '16px 0', borderRadius: 8, overflow: 'hidden' }}>
-                    <img src={src} alt={alt} style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
+                  <span style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                    <img
+                      src={src}
+                      alt={alt}
+                      style={{ width: '40%', minWidth: 160, borderRadius: 10, objectFit: 'cover', boxShadow: '0 2px 12px rgba(0,0,0,0.10)' }}
+                      onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                    />
                   </span>
                 ),
                 a: ({ href, children }) => (
