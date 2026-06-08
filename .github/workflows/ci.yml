@@ -17,10 +17,11 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+          cache: gradle
 
       - name: Run backend tests
         working-directory: backend
-        run: ./gradlew test
+        run: chmod +x gradlew && ./gradlew test --no-daemon
 
   frontend-build:
     runs-on: ubuntu-latest
