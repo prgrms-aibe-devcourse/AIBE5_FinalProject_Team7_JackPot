@@ -10,9 +10,14 @@ spring:
     baseline-version: 1
     validate-on-migrate: true
   jpa:
+    # Flyway 사용 시 true면 entityManagerFactory ↔ flyway 순환 의존 발생 (Spring Boot 4)
+    defer-datasource-initialization: false
     hibernate:
       ddl-auto: validate
     show-sql: false
+  sql:
+    init:
+      mode: never
 
 aws:
   s3:
