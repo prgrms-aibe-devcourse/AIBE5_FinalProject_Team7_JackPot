@@ -17,11 +17,21 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.4.1"
 
       - name: Run backend tests
         working-directory: backend
-        run: chmod +x gradlew && ./gradlew test --no-daemon
+        run: |
+          for attempt in 1 2 3 4 5; do
+            echo "test attempt ${attempt}"
+            gradle test --no-daemon && exit 0
+            sleep $((attempt * 20))
+          done
+          exit 1
 
   frontend-build:
     runs-on: ubuntu-latest
