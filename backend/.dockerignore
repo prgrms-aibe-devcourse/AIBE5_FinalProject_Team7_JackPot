@@ -1,5 +1,7 @@
 .gradle
-build
+build/**
+!build/libs/
+!build/libs/*.jar
 bin
 out
 application-local.yaml
