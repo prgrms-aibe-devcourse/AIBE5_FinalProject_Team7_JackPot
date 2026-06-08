@@ -5,6 +5,7 @@ import {
   updateComment,
   fetchColumns,
   fetchComments,
+  fetchFeeds,
   fetchFreePosts,
   fetchNotices,
   fetchPost,
@@ -15,6 +16,7 @@ import {
 import type { CommentCreateRequest, PostCategory } from '../types';
 
 export const communityKeys = {
+  feeds: (page: number) => ['community', 'feeds', page] as const,
   columns: (page: number) => ['community', 'columns', page] as const,
   free: (page: number, category?: PostCategory) => ['community', 'free', page, category] as const,
   qna: (page: number) => ['community', 'qna', page] as const,
@@ -22,6 +24,10 @@ export const communityKeys = {
   post: (postId: number) => ['community', 'post', postId] as const,
   comments: (postId: number) => ['community', 'comments', postId] as const,
 };
+
+export function useFeeds(page = 0) {
+  return useQuery({ queryKey: communityKeys.feeds(page), queryFn: () => fetchFeeds(page) });
+}
 
 export function useColumns(page = 0) {
   return useQuery({ queryKey: communityKeys.columns(page), queryFn: () => fetchColumns(page) });

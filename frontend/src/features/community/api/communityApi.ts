@@ -2,6 +2,7 @@ import { apiClient } from '@/shared/api/client';
 import type {
   CommentCreateRequest,
   CommentTreeResponse,
+  ContentFeedResponse,
   PostCategory,
   PostCreateRequest,
   PostDetailDto,
@@ -12,6 +13,13 @@ import type {
 
 export async function fetchColumns(page = 0, size = 10): Promise<SpringPage<PostSummaryResponse>> {
   const { data } = await apiClient.get<SpringPage<PostSummaryResponse>>('/community/columns', {
+    params: { page, size },
+  });
+  return data;
+}
+
+export async function fetchFeeds(page = 0, size = 20): Promise<SpringPage<ContentFeedResponse>> {
+  const { data } = await apiClient.get<SpringPage<ContentFeedResponse>>('/feeds', {
     params: { page, size },
   });
   return data;
