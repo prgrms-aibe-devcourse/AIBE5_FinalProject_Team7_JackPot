@@ -1,9 +1,9 @@
-package com.jackpot.whiskeynote.domain.whiskey.service;
+package com.jackpot.whiskeynote.domain.recommendation.service;
 
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
-import com.jackpot.whiskeynote.domain.whiskey.dto.CacheVector;
-import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
+import com.jackpot.whiskeynote.domain.recommendation.dto.CacheVector;
+import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
