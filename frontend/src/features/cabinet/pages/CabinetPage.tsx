@@ -607,10 +607,17 @@ export default function CabinetPage() {
 
       {section === 'bar' ? (
         <>
-          <CabinetSubTabs active={tab} basePath={`${PATHS.CABINET}?section=bar`} />
-          <label className="wf-cabinet-share">
-            <input type="checkbox" defaultChecked /> 보틀 쉐어 공개
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <CabinetSubTabs active={tab} basePath={`${PATHS.CABINET}?section=bar`} />
+            {tab === 'note' && (
+              <Button to={PATHS.SEARCH} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ Note 작성</Button>
+            )}
+          </div>
+          {tab === 'pick' && (
+            <label className="wf-cabinet-share">
+              <input type="checkbox" defaultChecked /> 보틀 쉐어 공개
+            </label>
+          )}
           {tab === 'reviews' ? (
             <>
               {currentUserId == null ? (
@@ -809,9 +816,6 @@ export default function CabinetPage() {
             </div>
           ) : tab === 'note' ? (
             <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-                <Button to={PATHS.SEARCH} style={{ fontSize: 13, padding: '6px 14px' }}>+ Note 작성</Button>
-              </div>
               {currentUserId == null ? (
                 <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
               ) : notesLoading ? (
