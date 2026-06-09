@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AppShell } from '@/shared/components/layout/AppShell';
 import { GuestLayout } from '@/shared/components/layout/GuestLayout';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
+import { ChunkErrorBoundary } from '@/shared/components/error/ChunkErrorBoundary';
 import { collectFeatureRoutes } from './collectFeatureRoutes';
 import { PATHS } from './paths';
 
@@ -36,10 +37,12 @@ const appChildren = featureRoutes
 const router = createBrowserRouter([
   {
     element: <GuestLayout />,
+    errorElement: <ChunkErrorBoundary />,
     children: guestChildren,
   },
   {
     element: <AppShell />,
+    errorElement: <ChunkErrorBoundary />,
     children: appChildren,
   },
   // 에러 페이지 (레이아웃 없이 단독 렌더링)
