@@ -10,6 +10,7 @@ import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { PATHS } from '@/app/router/paths';
+import { SearchPagination } from '../components/SearchPagination';
 import {
   autocompleteWhiskeys,
   correctWhiskeyKeyword,
@@ -20,7 +21,7 @@ import {
   type WhiskeyType,
 } from '../api/whiskeyApi';
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
 const ABV_RANGE_MIN = 1;
 const ABV_RANGE_MAX = 100;
 const AGE_RANGE_MIN = 0;
@@ -182,6 +183,8 @@ export default function SearchPage() {
   const [wishTargetId, setWishTargetId] = useState<number | null>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const suggestionKeyword = inputValue.trim();
   const isFilterActive = hasActiveFilters(
     selectedTypes,
@@ -192,6 +195,10 @@ export default function SearchPage() {
     minAge,
     maxAge,
   );
+
+  useEffect(() => {
+    setPage(0);
+  }, [keyword, selectedTypes, selectedNoseTags, selectedTasteTags, minAbv, maxAbv, minAge, maxAge]);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [
@@ -205,6 +212,8 @@ export default function SearchPage() {
       maxAbv,
       minAge,
       maxAge,
+      page,
+      pageSize,
     ],
     queryFn: () => {
       if (isFilterActive) {
@@ -217,16 +226,16 @@ export default function SearchPage() {
           maxAbv: Math.max(minAbv, maxAbv),
           minAge: Math.min(minAge, maxAge),
           maxAge: Math.max(minAge, maxAge),
-          page: 0,
-          size: PAGE_SIZE,
+          page,
+          size: pageSize,
         });
       }
 
       if (keyword) {
-        return searchWhiskeys({ q: keyword, page: 0, size: PAGE_SIZE });
+        return searchWhiskeys({ q: keyword, page, size: pageSize });
       }
 
-      return fetchWhiskeys({ page: 0, size: PAGE_SIZE });
+      return fetchWhiskeys({ page, size: pageSize });
     },
   });
 
@@ -238,6 +247,7 @@ export default function SearchPage() {
 
   const results = data?.content ?? [];
   const totalCount = data?.totalElements ?? 0;
+  const totalPages = data?.totalPages ?? 0;
   const suggestions = autocompleteItems.filter((item) => item.keyword !== suggestionKeyword);
   const shouldCheckCorrection = Boolean(keyword) && !isLoading && !isError && totalCount === 0;
 
@@ -295,7 +305,18 @@ export default function SearchPage() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSuggestionOpen(false);
+    setPage(0);
     setKeyword(inputValue.trim());
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePageSizeChange = (nextSize: number) => {
+    setPageSize(nextSize);
+    setPage(0);
   };
 
   const selectSuggestion = (suggestion: string) => {
@@ -498,6 +519,7 @@ export default function SearchPage() {
               onClick={() => {
                 setInputValue('');
                 setKeyword('');
+                setPage(0);
                 setIsSuggestionOpen(false);
                 resetFilters();
               }}
@@ -603,6 +625,17 @@ export default function SearchPage() {
             </Link>
             );
           })}
+
+          {!isLoading && !isError && totalCount > 0 ? (
+            <SearchPagination
+              page={page}
+              pageSize={pageSize}
+              totalPages={totalPages}
+              totalElements={totalCount}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          ) : null}
         </div>
       </div>
 
