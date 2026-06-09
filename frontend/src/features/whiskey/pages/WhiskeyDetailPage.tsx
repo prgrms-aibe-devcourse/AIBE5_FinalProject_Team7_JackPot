@@ -19,6 +19,7 @@ import {
   useSimilarWhiskeys,
   useWhiskeyDetail,
   useWhiskeyReviews,
+  useWhiskeyReviewStats,
 } from '../hooks/useWhiskeyDetail';
 import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
@@ -124,6 +125,7 @@ export default function WhiskeyDetailPage() {
   const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
   const { data: similarWhiskeys = [], isLoading: similarLoading } = useSimilarWhiskeys(id);
   const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
+  const { data: reviewStats } = useWhiskeyReviewStats(id);
 
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
 
@@ -351,7 +353,16 @@ export default function WhiskeyDetailPage() {
 
           <section className="wf-detail-reviews" aria-label="리뷰">
             <div className="wf-detail-reviews__title-row">
-              <h2 className="wf-section-title">리뷰</h2>
+              <h2 className="wf-section-title">
+                리뷰
+                {reviewStats && reviewStats.reviewCount > 0 && (
+                  <span className="wf-text-sm" style={{ fontWeight: 400, marginLeft: 8 }}>
+                    <span className="wf-stars">★</span>{' '}
+                    {reviewStats.avgRating != null ? reviewStats.avgRating.toFixed(1) : '—'}
+                    {' · '}{reviewStats.reviewCount}개
+                  </span>
+                )}
+              </h2>
               <Link to={reviewPath} className="wf-detail-reviews__more">
                 전체 보기 →
               </Link>

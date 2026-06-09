@@ -30,4 +30,12 @@ public record WhiskeyRecommendationResponse(
             ""
         );
     }
+
+    public WhiskeyRecommendationResponse withAvgRating(Double avgRating) {
+        return new WhiskeyRecommendationResponse(
+            id, name, type, imageUrl, adv, region, country, ageYears,
+            avgRating, score, reason
+        );
+    }
+
 }

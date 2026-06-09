@@ -1,11 +1,14 @@
 package com.jackpot.whiskeynote.domain.taste.review.repository;
 
+import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewStats;
 import com.jackpot.whiskeynote.domain.taste.review.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review,Long> {
@@ -24,4 +27,9 @@ public interface ReviewRepository extends JpaRepository<Review,Long> {
 
     // 캐비넷 리뷰수 조회용
     long countByUserId(Long userId);
+
+    @Query("SELECT count(r) as reviewCount, avg(r.rating) as avgRating " +
+        "FROM Review r " +
+        "WHERE r.whiskey.id = :whiskeyId")
+    WhiskeyReviewStats calculateAvgScoreByWhiskeyId(Long whiskeyId);
 }
