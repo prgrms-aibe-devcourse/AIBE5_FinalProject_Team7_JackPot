@@ -48,6 +48,20 @@ export interface CommentTreeResponse {
   replies: CommentTreeResponse[];
 }
 
+export interface WhiskeyColumnResponse {
+  id: number;
+  sourceType: 'BLOG' | 'YOUTUBE';
+  title: string;
+  url: string;
+  thumbnailUrl: string | null;
+  description: string | null;
+  whiskeyKeyword: string | null;
+  author: string | null;
+  sourceName: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
 export interface SpringPage<T> {
   content: T[];
   totalElements: number;

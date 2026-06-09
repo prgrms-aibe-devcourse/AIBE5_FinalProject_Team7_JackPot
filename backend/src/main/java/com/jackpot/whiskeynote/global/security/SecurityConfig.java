@@ -146,8 +146,8 @@ public class SecurityConfig {
                         ).authenticated()
                         // 위스키 등록 요청 — 로그인 필요
                         .requestMatchers("/api/v1/whiskey-requests/**").authenticated()
-                        // 관리자 위스키 요청 — ADMIN 권한만
-                        .requestMatchers("/api/v1/admin/whiskey-requests/**").hasRole("ADMIN")
+                        // 관리자 전용 API — ADMIN 권한만
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()

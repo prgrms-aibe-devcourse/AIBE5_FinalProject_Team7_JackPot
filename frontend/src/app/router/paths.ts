@@ -25,6 +25,7 @@ export const PATHS = {
   COMMUNITY_FREE: '/community/free',
   COMMUNITY_QNA: '/community/qna',
   COMMUNITY_NOTICES: '/community/notices',
+  COMMUNITY_COLUMN: '/community/columns/:columnId',
   COMMUNITY_POST: '/community/posts/:postId',
   COMMUNITY_POST_NEW: '/community/posts/new',
   COMMUNITY_POST_EDIT: '/community/posts/:postId/edit',

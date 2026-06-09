@@ -34,6 +34,12 @@ export const routes: FeatureRoute[] = [
     meta: { screenId: '14-community-post-new', title: '글쓰기', phase: 'P2', apiIds: ['POST-CREATE-01'] },
   },
   {
+    path: PATHS.COMMUNITY_COLUMN,
+    Component: lazy(() => import('./pages/ColumnDetailPage')),
+    layout: 'app',
+    meta: { screenId: '14-community-column-detail', title: '칼럼 상세', phase: 'P2', apiIds: [] },
+  },
+  {
     path: PATHS.COMMUNITY_POST,
     Component: lazy(() => import('./pages/PostDetailPage')),
     layout: 'app',

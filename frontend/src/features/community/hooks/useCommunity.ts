@@ -5,6 +5,8 @@ import {
   updateComment,
   fetchColumns,
   fetchComments,
+  fetchWhiskeyColumn,
+  fetchWhiskeyColumns,
   fetchFreePosts,
   fetchNotices,
   fetchPost,
@@ -16,12 +18,25 @@ import type { CommentCreateRequest, PostCategory } from '../types';
 
 export const communityKeys = {
   columns: (page: number) => ['community', 'columns', page] as const,
+  column: (columnId: number) => ['community', 'column', columnId] as const,
   free: (page: number, category?: PostCategory) => ['community', 'free', page, category] as const,
   qna: (page: number) => ['community', 'qna', page] as const,
   notices: (page: number) => ['community', 'notices', page] as const,
   post: (postId: number) => ['community', 'post', postId] as const,
   comments: (postId: number) => ['community', 'comments', postId] as const,
 };
+
+export function useWhiskeyColumns(page = 0) {
+  return useQuery({ queryKey: communityKeys.columns(page), queryFn: () => fetchWhiskeyColumns(page) });
+}
+
+export function useWhiskeyColumn(columnId: number | undefined) {
+  return useQuery({
+    queryKey: communityKeys.column(columnId!),
+    queryFn: () => fetchWhiskeyColumn(columnId!),
+    enabled: columnId != null,
+  });
+}
 
 export function useColumns(page = 0) {
   return useQuery({ queryKey: communityKeys.columns(page), queryFn: () => fetchColumns(page) });
