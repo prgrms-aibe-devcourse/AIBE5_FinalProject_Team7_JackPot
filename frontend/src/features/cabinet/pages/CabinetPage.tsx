@@ -538,6 +538,18 @@ export default function CabinetPage() {
     queryFn: () => fetchMyTastingNotes(0, 20),
     enabled: currentUserId != null,
   });
+  const { data: followerCount } = useQuery({
+    queryKey: ['follows', 'followers', currentUserId],
+    queryFn: () => cabinetApi.getFollowerCount(),
+    enabled: currentUserId != null,
+    staleTime: 30_000,
+  });
+  const { data: followingCount } = useQuery({
+    queryKey: ['follows', 'followings', currentUserId],
+    queryFn: () => cabinetApi.getFollowingCount(),
+    enabled: currentUserId != null,
+    staleTime: 30_000,
+  });
   const updateReviewMutation = useUpdateReview(currentUserId);
   const deleteReviewMutation = useDeleteReview(currentUserId);
 
@@ -571,8 +583,8 @@ export default function CabinetPage() {
         name={currentNickname ? `${currentNickname} (my)` : '내 캐비넷'}
         subtitle="애호가 · 보틀 쉐어 공개"
         profileImageUrl={currentProfileImageUrl}
-        followers={128}
-        following={94}
+        followers={followerCount?.count ?? 0}
+        following={followingCount?.count ?? 0}
         isOwner
       />
 

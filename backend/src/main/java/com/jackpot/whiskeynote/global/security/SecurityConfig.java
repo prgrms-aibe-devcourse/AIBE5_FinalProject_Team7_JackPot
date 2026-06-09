@@ -45,6 +45,23 @@ public class SecurityConfig {
                                 "/api/v1/auth/oauth/**",
                                 "/api/v1/auth/refresh"
                         ).permitAll()
+                        // 팔로우 API — JWT 인증 유저 기준으로 팔로우/언팔로우와 카운트 조회
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/followers",
+                                "/api/v1/followings",
+                                "/api/v1/follows/status",
+                                "/api/v1/followers/list",
+                                "/api/v1/followings/list"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/follows"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/follows"
+                        ).authenticated()
                         .requestMatchers("/api/v1/auth/logout").authenticated()
                         // 취향 설문 — 결과 조회·저장은 인증 필수, 계산만은 비인증 허용
                         .requestMatchers(

@@ -9,6 +9,20 @@ export interface CabinetStatsResponse {
   noteCount?: number;
 }
 
+export interface FollowCountResponse {
+  count: number;
+}
+
+export interface FollowStatusResponse {
+  following: boolean;
+}
+
+export interface FollowUser {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+}
+
 // 위시 폴더 응답 타입
 export interface WishlistFolder {
   folderId: number;
@@ -29,6 +43,19 @@ export interface WishlistItem {
     abv: number | null;
   };
   createdAt: string;
+}
+
+function unwrapMaybeApiData<T>(payload: ApiResponse<T> | T): T {
+  if (
+    typeof payload === 'object' &&
+    payload !== null &&
+    'success' in payload &&
+    'data' in payload
+  ) {
+    return unwrapApiData(payload as ApiResponse<T>);
+  }
+
+  return payload as T;
 }
 
 export const cabinetApi = {
@@ -100,5 +127,48 @@ export const cabinetApi = {
   getUserCabinetStats: async (userId: number): Promise<CabinetStatsResponse> => {
     const res = await apiClient.get<ApiResponse<CabinetStatsResponse>>(`/users/${userId}/cabinet/stats`);
     return unwrapApiData(res.data);
+  },
+
+  // 나를 팔로우하는 사람 수 조회 (로그인 필요)
+  getFollowerCount: async (userId?: number): Promise<FollowCountResponse> => {
+    const res = await apiClient.get<ApiResponse<FollowCountResponse> | FollowCountResponse>('/followers', {
+      params: userId != null ? { userId } : undefined,
+    });
+    return unwrapMaybeApiData(res.data);
+  },
+
+  // 내가 팔로우하는 사람 수 조회 (로그인 필요)
+  getFollowingCount: async (userId?: number): Promise<FollowCountResponse> => {
+    const res = await apiClient.get<ApiResponse<FollowCountResponse> | FollowCountResponse>('/followings', {
+      params: userId != null ? { userId } : undefined,
+    });
+    return unwrapMaybeApiData(res.data);
+  },
+
+  getFollowStatus: async (targetUserId: number): Promise<FollowStatusResponse> => {
+    const res = await apiClient.get<ApiResponse<FollowStatusResponse> | FollowStatusResponse>('/follows/status', {
+      params: { targetUserId },
+    });
+    return unwrapMaybeApiData(res.data);
+  },
+
+  followUser: (targetUserId: number) =>
+    apiClient.post('/follows', { targetUserId }),
+
+  unfollowUser: (targetUserId: number) =>
+    apiClient.delete('/follows', { data: { targetUserId } }),
+
+  getFollowers: async (userId?: number): Promise<FollowUser[]> => {
+    const res = await apiClient.get<ApiResponse<FollowUser[]> | FollowUser[]>('/followers/list', {
+      params: userId != null ? { userId } : undefined,
+    });
+    return unwrapMaybeApiData(res.data);
+  },
+
+  getFollowings: async (userId?: number): Promise<FollowUser[]> => {
+    const res = await apiClient.get<ApiResponse<FollowUser[]> | FollowUser[]>('/followings/list', {
+      params: userId != null ? { userId } : undefined,
+    });
+    return unwrapMaybeApiData(res.data);
   },
 };
