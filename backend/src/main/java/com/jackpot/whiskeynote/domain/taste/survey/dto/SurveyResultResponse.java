@@ -1,6 +1,6 @@
 package com.jackpot.whiskeynote.domain.taste.survey.dto;
 
-import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
+import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
 
 import java.util.List;
 
