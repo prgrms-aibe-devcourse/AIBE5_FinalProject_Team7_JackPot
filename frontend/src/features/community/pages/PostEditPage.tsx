@@ -1,3 +1,4 @@
+// 게시글 수정 페이지 — 기존 게시글 데이터를 불러와 폼에 초기화한 뒤 PATCH 요청으로 저장
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -30,7 +31,7 @@ export default function PostEditPage() {
   const [category, setCategory] = useState<PostCategory>('F');
   const [submitting, setSubmitting] = useState(false);
 
-  // 위스키 검색 (칼럼 전용)
+  // 위스키 검색은 칼럼 유형에서만 활성화
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
   const [whiskeyDropdownOpen, setWhiskeyDropdownOpen] = useState(false);
@@ -38,6 +39,7 @@ export default function PostEditPage() {
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // post 데이터가 로드된 후 폼 필드를 기존 값으로 초기화 — useEffect 의존성에 post 전체 대신 필요한 필드만 참조해도 됨
   useEffect(() => {
     if (post) {
       setTitle(post.title);
@@ -46,7 +48,8 @@ export default function PostEditPage() {
     }
   }, [post]);
 
-  // Pre-populate selected whiskeys from existing whiskeyIds
+  // 기존에 연결된 whiskeyIds를 상세 정보로 변환해 selectedWhiskeys에 채움
+  // whiskeyIds 배열 레퍼런스가 바뀔 때만 재실행되도록 post?.whiskeyIds를 의존성에 사용
   useEffect(() => {
     if (!post?.whiskeyIds?.length) return;
     Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
@@ -54,7 +57,8 @@ export default function PostEditPage() {
       .catch(() => {});
   }, [post?.whiskeyIds]);
 
-  // Whiskey search effect (column only)
+  // 위스키 검색 debounce — PostFormPage와 동일한 패턴
+  // post?.postType이 확정된 이후에만 실행되도록 조건 처리
   useEffect(() => {
     if (post?.postType !== 'COLUMN') return;
     if (searchTimer.current) clearTimeout(searchTimer.current);
@@ -94,8 +98,10 @@ export default function PostEditPage() {
     setSelectedWhiskeys((prev) => prev.filter((w) => w.id !== id));
   }
 
+  // 로딩/에러/권한 상태를 조기 반환으로 처리해 이후 로직의 null 가능성을 제거
   if (isLoading) return <WireframePage scroll><PageLoader label="불러오는 중…" /></WireframePage>;
   if (isError || !post) return <WireframePage scroll><p className="wf-text-sm">게시글을 불러오지 못했습니다.</p></WireframePage>;
+  // isOwner 검사는 서버 응답 기준 — URL 직접 접근으로 타인의 게시글 수정 시도를 차단
   if (!post.isOwner) return <WireframePage scroll><p className="wf-text-sm">수정 권한이 없습니다.</p></WireframePage>;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -115,6 +121,7 @@ export default function PostEditPage() {
     }
   }
 
+  // postType은 서버에서 고정된 값이므로 수정 화면에서 변경 불가 — UI 분기만 사용
   const isColumn = post.postType === 'COLUMN';
 
   return (
@@ -129,6 +136,7 @@ export default function PostEditPage() {
       <h1 className="wf-title" style={{ marginBottom: 16 }}>게시글 수정</h1>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {/* 칼럼 유형은 카테고리 개념이 없으므로 자유게시판일 때만 표시 */}
         {!isColumn && (
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {CATEGORY_OPTIONS.map((opt) => (
@@ -142,7 +150,8 @@ export default function PostEditPage() {
           </div>
         )}
 
-        {/* 칼럼: 위스키 검색 */}
+        {/* 칼럼: 위스키 검색
+            onBlur + setTimeout(150ms)는 dropdown 항목 클릭 시 blur가 먼저 발생하는 문제를 방지 */}
         {isColumn && (
           <div>
             <p className="wf-text-sm" style={{ marginBottom: 6, color: '#555' }}>관련 위스키 검색 (선택)</p>
@@ -164,6 +173,7 @@ export default function PostEditPage() {
                     <li style={{ padding: '10px 12px', color: '#999', fontSize: 13 }}>검색 결과가 없습니다.</li>
                   )}
                   {!searching && whiskeyResults.map((w) => (
+                    // onMouseDown: blur보다 먼저 실행되어 선택이 정상 동작
                     <li key={w.id}
                       onMouseDown={() => selectWhiskey(w)}
                       style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -198,6 +208,7 @@ export default function PostEditPage() {
           style={{ padding: 10, fontSize: 15, borderRadius: 4, border: '1px solid #ccc' }}
         />
 
+        {/* 수정 시에도 postType에 따라 에디터 종류를 구분 — 칼럼을 textarea로 수정하면 HTML 태그가 그대로 노출됨 */}
         {isColumn ? (
           <RichEditor value={content} onChange={setContent} />
         ) : (

@@ -1,3 +1,4 @@
+// 게시글 작성 페이지 — URL 파라미터 ?type=으로 칼럼/자유게시판을 구분해 UI를 분기
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -10,6 +11,7 @@ import { RichEditor } from '../components/RichEditor';
 import type { PostType, PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
+// 글쓰기 버튼 레이블을 postType별로 매핑 — COLUMN/FREE 외 타입은 타입 코드 그대로 표시됨
 const TYPE_LABEL: Partial<Record<PostType, string>> = {
   COLUMN: '칼럼',
   FREE: '자유게시판',
@@ -27,9 +29,10 @@ const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
 export default function PostFormPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  // 쿼리 파라미터로 게시판 유형을 받아 처리 — URL 직접 접근 시 기본값은 FREE
   const postType = (searchParams.get('type') as PostType) ?? 'FREE';
 
-  // 비로그인 시 로그인 페이지로
+  // 렌더링 전에 로그인 여부 확인 — 비로그인 접근을 빠르게 차단하기 위해 최상단에 배치
   if (!isLoggedIn()) {
     navigate(PATHS.LOGIN, { replace: true });
     return null;
@@ -40,15 +43,16 @@ export default function PostFormPage() {
   const [category, setCategory] = useState<PostCategory>('F');
   const [submitting, setSubmitting] = useState(false);
 
-  // 위스키 검색 (칼럼 전용)
+  // 위스키 검색은 칼럼 유형에서만 사용 — 자유게시판에서는 불필요한 상태
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
   const [whiskeyDropdownOpen, setWhiskeyDropdownOpen] = useState(false);
   const [selectedWhiskeys, setSelectedWhiskeys] = useState<WhiskeyCard[]>([]);
   const [searching, setSearching] = useState(false);
+  // 검색어 변경마다 API를 즉시 호출하면 요청이 폭증하므로 debounce 타이머로 제어
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 이미지 첨부 (자유게시판 전용)
+  // 이미지 첨부는 자유게시판 전용 — 칼럼은 RichEditor 내부에서 이미지 삽입 처리
   const [attachedImages, setAttachedImages] = useState<Array<{ name: string; url: string }>>([]);
   const [uploading, setUploading] = useState(false);
   const freeImageRef = useRef<HTMLInputElement>(null);
@@ -58,7 +62,7 @@ export default function PostFormPage() {
     if (searchTimer.current) clearTimeout(searchTimer.current);
 
     if (!whiskeyQuery.trim()) {
-      // 검색어 없으면 전체 목록 표시
+      // 검색어가 없을 때는 전체 목록을 빠르게(100ms) 보여줘 UX 개선
       searchTimer.current = setTimeout(async () => {
         setSearching(true);
         try {
@@ -71,6 +75,7 @@ export default function PostFormPage() {
       return;
     }
 
+    // 검색어 입력 300ms 후에 API 호출 — 타이핑 중 불필요한 요청 억제
     searchTimer.current = setTimeout(async () => {
       setSearching(true);
       try {
@@ -83,6 +88,7 @@ export default function PostFormPage() {
   }, [whiskeyQuery, postType]);
 
   function selectWhiskey(whiskey: WhiskeyCard) {
+    // 동일 위스키를 중복 추가하지 않도록 ID 기준으로 중복 확인
     if (selectedWhiskeys.some((w) => w.id === whiskey.id)) return;
     setSelectedWhiskeys((prev) => [...prev, whiskey]);
     setWhiskeyQuery('');
@@ -96,6 +102,7 @@ export default function PostFormPage() {
   async function handleFreeImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    // 5MB 초과 시 서버에 부담을 주기 전에 클라이언트에서 먼저 차단
     if (file.size > 5 * 1024 * 1024) { alert('이미지는 5MB 이하만 업로드 가능합니다.'); return; }
     setUploading(true);
     try {
@@ -105,6 +112,7 @@ export default function PostFormPage() {
       alert('이미지 업로드에 실패했습니다.');
     } finally {
       setUploading(false);
+      // 같은 파일을 다시 선택할 수 있도록 value 초기화
       e.target.value = '';
     }
   }
@@ -117,7 +125,8 @@ export default function PostFormPage() {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
-    // 자유게시판: 첨부 이미지를 본문 끝에 HTML로 삽입
+    // 자유게시판 첨부 이미지를 별도 필드 대신 본문 HTML에 인라인으로 삽입
+    // 칼럼은 RichEditor가 이미 HTML을 생성하므로 이 처리가 필요 없음
     const finalContent = postType === 'FREE' && attachedImages.length > 0
       ? content + attachedImages.map((img) => `<img src="${img.url}" alt="${img.name}" style="max-width:100%;margin:8px 0;">`).join('')
       : content;
@@ -166,7 +175,9 @@ export default function PostFormPage() {
           </div>
         )}
 
-        {/* 칼럼: 위스키 검색 */}
+        {/* 칼럼: 위스키 검색 드롭다운
+            onBlur에서 setTimeout을 쓰는 이유: onBlur가 onMouseDown보다 먼저 발생해
+            클릭 전 드롭다운이 닫히는 문제를 150ms 지연으로 방지 */}
         {postType === 'COLUMN' && (
           <div>
             <p className="wf-text-sm" style={{ marginBottom: 6, color: '#555' }}>관련 위스키 검색 (선택)</p>
@@ -188,6 +199,7 @@ export default function PostFormPage() {
                     <li style={{ padding: '10px 12px', color: '#999', fontSize: 13 }}>검색 결과가 없습니다.</li>
                   )}
                   {!searching && whiskeyResults.map((w) => (
+                    // onMouseDown을 사용하는 이유: onClick은 onBlur 이후 실행되어 드롭다운이 먼저 닫힘
                     <li key={w.id}
                       onMouseDown={() => selectWhiskey(w)}
                       style={{ padding: '10px 12px', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid #f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -219,7 +231,7 @@ export default function PostFormPage() {
           placeholder="제목을 입력하세요" maxLength={200}
           style={{ padding: 10, fontSize: 15, borderRadius: 4, border: '1px solid #ccc' }} />
 
-        {/* 본문: 칼럼 → RichEditor / 자유게시판 → textarea */}
+        {/* 본문: 칼럼은 RichEditor(WYSIWYG), 자유게시판은 단순 textarea + 이미지 첨부 */}
         {postType === 'COLUMN' ? (
           <RichEditor value={content} onChange={setContent} placeholder="칼럼 내용을 자유롭게 작성하세요. 이미지도 삽입할 수 있어요." />
         ) : (
@@ -228,7 +240,7 @@ export default function PostFormPage() {
               placeholder="내용을 입력하세요" rows={10}
               style={{ padding: 10, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical' }} />
 
-            {/* 이미지 첨부 */}
+            {/* 이미지 첨부 — input[file]을 숨기고 버튼 클릭으로 트리거 */}
             <div>
               <button type="button" className="wf-chip"
                 style={{ cursor: 'pointer', border: '1px solid #ccc', background: 'none' }}
