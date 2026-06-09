@@ -81,6 +81,13 @@ export interface WhiskeyReview {
   updatedAt: string;
 }
 
+/** GET /api/v1/whiskeys/{id}/reviewstats — 리뷰 개수·평균 점수 */
+export interface WhiskeyReviewStats {
+  reviewCount: number;
+  /** 리뷰 0건이면 null */
+  avgRating: number | null;
+}
+
 /** 화면용 시음 요약 */
 export type TastingAxisKey = TasteItem['key'];
 

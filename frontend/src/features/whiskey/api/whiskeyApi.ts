@@ -6,7 +6,13 @@ import {
   MOCK_RELATED_COLUMNS,
   MOCK_WHISKEY_REVIEWS,
 } from '../mocks/whiskeyDetailMock';
-import type { RelatedColumnPost, SimilarWhiskey, WhiskeyDetail, WhiskeyReview } from '../types';
+import type {
+  RelatedColumnPost,
+  SimilarWhiskey,
+  WhiskeyDetail,
+  WhiskeyReview,
+  WhiskeyReviewStats,
+} from '../types';
 
 const USE_MOCK_ONLY = import.meta.env.VITE_API_MOCK === 'true';
 
@@ -65,6 +71,19 @@ export async function fetchWhiskeyReviews(
   );
 }
 
+/** GET /api/v1/whiskeys/{id}/reviewstats — 리뷰 개수·평균 점수 */
+export async function fetchWhiskeyReviewStats(whiskeyId: string): Promise<WhiskeyReviewStats> {
+  return withMockFallback(
+    async () => {
+      const { data } = await apiClient.get<WhiskeyReviewStats>(
+        `/whiskeys/${whiskeyId}/reviewstats`,
+      );
+      return data;
+    },
+    () => ({ reviewCount: 0, avgRating: null }),
+  );
+}
+
 /**
  * WH-03 GET /api/v1/whiskeys/{id}/similar — 비슷한 위스키 추천 (raw 배열, 최대 3)
  * - 200 응답이 오면 실제 추천 데이터를 사용
@@ -84,5 +103,6 @@ export const whiskeyApi = {
   fetchWhiskeyDetail,
   fetchRelatedColumns,
   fetchWhiskeyReviews,
+  fetchWhiskeyReviewStats,
   fetchSimilarWhiskeys,
 };

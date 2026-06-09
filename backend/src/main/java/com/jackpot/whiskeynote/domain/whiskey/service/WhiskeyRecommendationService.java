@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.service;
 
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.whiskey.dto.CacheVector;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -21,20 +23,30 @@ public class WhiskeyRecommendationService {
     private static final double MAX_EUCLIDEAN_DIST = Math.sqrt(5 * 100.0 * 100.0); // ≈ 223.6
 
     private final WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
+    private final ReviewService reviewService;
 
     @Transactional(readOnly = true)
     public List<WhiskeyRecommendationResponse> recommendBySurvey(WhiskeyScoreVo scoreVo, Set<Long> allTagIdSet) {
         List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
         CacheVector targetVector = CacheVector.fromSurvey(scoreVo, allTagIdSet);
 
-        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        // 계산
+        List<WhiskeyRecommendationResponse> responses = new ArrayList<>();
         for (WhiskeysNoteCache cache : caches) {
             CacheVector cacheVector = CacheVector.from(cache);
             double score = calcScore(targetVector, cacheVector);
-            res.add(WhiskeyRecommendationResponse.from(cache, score));
+            responses.add(WhiskeyRecommendationResponse.from(cache, score));
         }
-        res.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
-        return res.subList(0, 3);
+        responses.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
+
+        // 변환
+        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        for (WhiskeyRecommendationResponse response : responses.subList(0, 3)) {
+            Double avgScore = reviewService.getAverageRating(response.id()).getAvgRating();
+            res.add(response.withAvgRating(avgScore));
+        }
+
+        return res;
     }
 
     @Transactional(readOnly = true)
@@ -44,16 +56,24 @@ public class WhiskeyRecommendationService {
             .orElseThrow(() -> new EntityNotFoundException("whiskey not found"));
         CacheVector targetVector = CacheVector.from(target);
 
-        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        // 계산
+        List<WhiskeyRecommendationResponse> responses = new ArrayList<>();
         for (WhiskeysNoteCache cache : caches) {
             if (cache.getWhiskey().getId().equals(targetWhiskeyId)) continue;
 
             CacheVector cacheVector = CacheVector.from(cache);
             double score = calcScore(targetVector, cacheVector);
-            res.add(WhiskeyRecommendationResponse.from(cache, score));
+            responses.add(WhiskeyRecommendationResponse.from(cache, score));
         }
-        res.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
-        return res.subList(0, 3);
+        responses.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
+
+        // 변환
+        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        for (WhiskeyRecommendationResponse response : responses.subList(0, 3)) {
+            Double avgScore = reviewService.getAverageRating(response.id()).getAvgRating();
+            res.add(response.withAvgRating(avgScore));
+        }
+        return res;
     }
 
     private double calcScore(CacheVector a, CacheVector b) {

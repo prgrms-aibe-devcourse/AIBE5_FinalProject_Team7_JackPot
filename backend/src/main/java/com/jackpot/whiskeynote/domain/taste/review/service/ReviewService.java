@@ -7,11 +7,13 @@ import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepositor
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.ReviewUpdateRequest;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
+import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewStats;
 import com.jackpot.whiskeynote.domain.taste.review.entity.Review;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewLikeRepository;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -118,6 +123,16 @@ public class ReviewService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."));
         reviewRepository.delete(review);
     }
+
+    // 리뷰 평균 score 반환
+    @Transactional(readOnly = true)
+    public WhiskeyReviewStats getAverageRating(Long whiskeyId) {
+        Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
+            .orElseThrow(() -> new EntityNotFoundException("Not found Whiskey"));
+        WhiskeyReviewStats reviewStats = reviewRepository.calculateAvgScoreByWhiskeyId(whiskeyId);
+        return reviewStats;
+    }
+
     // My Note 첨부 검증 로직
     private Long validateAttachedNote(Long userId, Long whiskeyId, Long attachedNoteId) {
         if (attachedNoteId == null) {

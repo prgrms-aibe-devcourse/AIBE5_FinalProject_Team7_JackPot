@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.whiskey.controller;
 
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
+import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewStats;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
@@ -87,6 +88,12 @@ public class WhiskeyController {
     ) {
         return reviewService.getReviewsByWhiskey(id, userId, page, size);
     }
+    // 위스키 리뷰 스탯 조회
+    @GetMapping("/api/v1/whiskeys/{id}/reviewstats")
+    public WhiskeyReviewStats getWhiskeyReviewStats(@PathVariable Long id) {
+        return reviewService.getAverageRating(id);
+    }
+
     // 위스키 검색 키워드 자동완성
     @GetMapping("/api/v1/whiskeys/autocomplete")
     public List<WhiskeyKeywordSuggestResponse> autocompleteKeyword(
