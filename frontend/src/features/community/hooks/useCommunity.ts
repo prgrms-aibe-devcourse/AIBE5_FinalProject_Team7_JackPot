@@ -19,7 +19,6 @@ import type { CommentCreateRequest, PostCategory } from '../types';
 export const communityKeys = {
   columns: (page: number) => ['community', 'columns', page] as const,
   column: (columnId: number) => ['community', 'column', columnId] as const,
-  columns: (page: number) => ['community', 'columns', page] as const,
   free: (page: number, category?: PostCategory) => ['community', 'free', page, category] as const,
   qna: (page: number) => ['community', 'qna', page] as const,
   notices: (page: number) => ['community', 'notices', page] as const,
