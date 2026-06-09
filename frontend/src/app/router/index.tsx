@@ -7,8 +7,10 @@ import { ChunkErrorBoundary } from '@/shared/components/error/ChunkErrorBoundary
 import { collectFeatureRoutes } from './collectFeatureRoutes';
 import { PATHS } from './paths';
 
-const NotFoundPage    = lazy(() => import('@/shared/components/error/NotFoundPage'));
-const ServerErrorPage = lazy(() => import('@/shared/components/error/ServerErrorPage'));
+const NotFoundPage      = lazy(() => import('@/shared/components/error/NotFoundPage'));
+const ServerErrorPage   = lazy(() => import('@/shared/components/error/ServerErrorPage'));
+const UnauthorizedPage  = lazy(() => import('@/shared/components/error/UnauthorizedPage'));
+const ForbiddenPage     = lazy(() => import('@/shared/components/error/ForbiddenPage'));
 
 const featureRoutes = collectFeatureRoutes();
 
@@ -59,6 +61,22 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader label="오류 페이지" />}>
         <ServerErrorPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: PATHS.UNAUTHORIZED,
+    element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <UnauthorizedPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: PATHS.FORBIDDEN,
+    element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <ForbiddenPage />
       </Suspense>
     ),
   },

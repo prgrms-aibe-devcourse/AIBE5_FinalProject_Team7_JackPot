@@ -37,6 +37,8 @@ export const PATHS = {
   ADMIN: '/admin',
   NOT_FOUND: '/error/404',
   SERVER_ERROR: '/error/500',
+  UNAUTHORIZED: '/error/401',
+  FORBIDDEN: '/error/403',
 } as const;
 
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];

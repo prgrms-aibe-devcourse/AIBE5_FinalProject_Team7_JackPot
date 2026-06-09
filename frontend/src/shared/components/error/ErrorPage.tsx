@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/Button';
 import { PATHS } from '@/app/router/paths';
@@ -5,7 +6,7 @@ import { PATHS } from '@/app/router/paths';
 interface ErrorPageProps {
   code: number;
   title: string;
-  message: string;
+  message: React.ReactNode;
   showHomeButton?: boolean;
 }
 
