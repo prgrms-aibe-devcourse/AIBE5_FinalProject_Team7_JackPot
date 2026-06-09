@@ -25,6 +25,8 @@ export function ErrorPage({ code, title, message, showHomeButton = true }: Error
         width: '100%',
         maxWidth: 480,
       }}>
+        {/* 위스키 아이콘 */}
+        <div style={{ fontSize: 64, marginBottom: 8, lineHeight: 1 }}>🥃</div>
         {/* 에러 코드 */}
         <p style={{ fontSize: 80, fontWeight: 700, margin: '0 0 8px', opacity: 0.15, lineHeight: 1 }}>
           {code}
