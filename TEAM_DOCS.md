@@ -346,54 +346,66 @@ PENDING → APPROVED
 
 ---
 
-### 9. 크롤러 콘텐츠 피드 (담당: GyuSikYoon)
+### 9. 위스키 칼럼 (담당: GyuSikYoon)
 
-**기능:** 외부 크롤러(블로그/YouTube)가 수집한 콘텐츠를 DB에 저장, 위스키별 관련 피드 조회
+**기능:** AI가 작성한 한국어 위스키 칼럼을 커뮤니티 칼럼 게시판에 노출. 외부 URL 이동 없이 내부 마크다운 렌더링 상세 페이지 제공.
+
+> **주의:** `feed`라는 명칭은 라운지 기능 전용으로 예약. 이 도메인은 `column`을 사용.
 
 **핵심 API**
 ```
-POST /api/v1/admin/feeds                     # 크롤러 → 백엔드 데이터 전송
-GET  /api/v1/feeds                           # 전체 피드 목록 (페이징)
-GET  /api/v1/feeds/related?keyword=위스키명   # 위스키 이름으로 관련 피드 검색 (최대 5개)
+POST /api/v1/admin/columns                          # 관리자 칼럼 등록
+GET  /api/v1/columns                                # 칼럼 목록 (페이징, publishedAt DESC)
+GET  /api/v1/columns/{id}                           # 칼럼 단건 조회
+GET  /api/v1/columns/related?keyword=위스키명        # 위스키명 기반 관련 칼럼 (최대 5개)
 ```
 
 **핵심 구조**
 ```java
-// ContentFeed 엔티티
-@Entity @Table(name = "content_feeds")
-class ContentFeed {
-    FeedSourceType sourceType; // BLOG | YOUTUBE
+// WhiskeyColumn 엔티티
+@Entity @Table(name = "whiskey_columns")
+class WhiskeyColumn {
+    ColumnSourceType sourceType; // BLOG | YOUTUBE
     String title;
-    String url;
-    String thumbnailUrl;
-    String description;
-    String whiskeyKeyword; // 위스키 이름으로 관련 피드 필터링
+    String url;            // 원문 출처 URL (화면에 "원문 읽기" 카드로 표시)
+    String thumbnailUrl;   // Unsplash 이미지 (본문 중간 삽입)
+    String description;    // 마크다운 본문
+    String whiskeyKeyword; // 관련 위스키명 (related 검색용)
+    String author;
+    String sourceName;
     LocalDateTime publishedAt;
     LocalDateTime createdAt;
-}
-
-// 크롤러 요청 형식
-record ContentFeedRequest {
-    FeedSourceType sourceType;
-    String title, url, thumbnailUrl, description;
-    String whiskeyKeyword;
-    LocalDateTime publishedAt;
 }
 ```
 
 **DB 구조**
 ```sql
-content_feeds (
+whiskey_columns (
   id              BIGINT PK AUTO_INCREMENT,
   source_type     ENUM('BLOG','YOUTUBE') NOT NULL,
   title           VARCHAR(512) NOT NULL,
   url             VARCHAR(1024) NOT NULL,
   thumbnail_url   VARCHAR(1024),
-  description     TEXT,
+  description     TEXT,                 -- 마크다운 본문
   whiskey_keyword VARCHAR(255),
+  author          VARCHAR(255),
+  source_name     VARCHAR(255),
   published_at    DATETIME,
   created_at      DATETIME NOT NULL
 )
+```
+
+**프론트 렌더링 구조**
+```tsx
+// 본문 이미지 삽입 위치: 첫 번째 ### 섹션 직전
+function injectImageIntoMarkdown(markdown, imageUrl) {
+  const h3Match = markdown.search(/\n###\s/);
+  if (h3Match !== -1)
+    return markdown.slice(0, h3Match) + `\n\n![](${imageUrl})\n` + markdown.slice(h3Match);
+}
+
+// 출처 카드: 파비콘 + sourceName + "원문 읽기 →" 링크
+<SourceCard url={column.url} sourceName={column.sourceName} author={column.author} />
 ```
 
 ---
@@ -478,6 +490,7 @@ src/
 /community/columns               # 칼럼 목록
 /community/free                  # 자유게시판
 /community/notices               # 공지사항
+/community/columns/:columnId     # 칼럼 상세
 /community/posts/:postId         # 게시글 상세
 /community/posts/new             # 게시글 작성
 /community/posts/:id/edit        # 게시글 수정
@@ -675,4 +688,4 @@ export function getUserCabinetPath(userId: number): string
 | `wish_list_items` | 위시리스트 아이템 |
 | `user_taste_profiles` | 취향 설문 저장 (점수 5개 + 태그 IDs 콤마 구분 문자열) |
 | `whiskey_requests` | 위스키 등록 요청 (PENDING/APPROVED/REJECTED) |
-| `content_feeds` | 크롤러 수집 블로그/YouTube 콘텐츠 |
+| `whiskey_columns` | AI 작성 한국어 위스키 칼럼 (마크다운 본문, Unsplash 썸네일) |
