@@ -809,6 +809,9 @@ export default function CabinetPage() {
             </div>
           ) : tab === 'note' ? (
             <>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+                <Button to={PATHS.SEARCH} style={{ fontSize: 13, padding: '6px 14px' }}>+ Note 작성</Button>
+              </div>
               {currentUserId == null ? (
                 <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
               ) : notesLoading ? (
