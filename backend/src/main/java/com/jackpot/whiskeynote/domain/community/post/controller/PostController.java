@@ -1,3 +1,4 @@
+// 게시글 REST API 컨트롤러 - 게시글 CRUD, 좋아요/취소, 위스키 관련 게시글 엔드포인트 제공
 package com.jackpot.whiskeynote.domain.community.post.controller;
 
 import com.jackpot.whiskeynote.domain.community.post.dto.PostCreateRequest;
@@ -20,7 +21,11 @@ public class PostController {
 
     private final PostService postService;
 
-    // POST-01: 글 상세 (비로그인 시 isLiked=false, isOwner=false)
+    /**
+     * POST-01: 게시글 단건 상세 조회.
+     * @AuthenticationPrincipal은 JWT 미인증 요청에서도 null을 반환하도록 Security 설정 필요.
+     * principal이 null이면 서비스에서 isLiked=false, isOwner=false 로 처리.
+     */
     @GetMapping("/api/v1/posts/{postId}")
     public PostDetailDto getPost(
             @PathVariable Long postId,
@@ -30,7 +35,7 @@ public class PostController {
         return postService.getPost(postId, userId);
     }
 
-    // POST-02: 글 작성
+    // POST-02: 게시글 작성 (인증 필수) - 생성된 게시글 ID 반환, 201 Created
     @PostMapping("/api/v1/posts")
     @ResponseStatus(HttpStatus.CREATED)
     public Long createPost(
@@ -40,7 +45,7 @@ public class PostController {
         return postService.createPost(principal.userId(), request);
     }
 
-    // POST-03: 글 수정
+    // POST-03: 게시글 부분 수정 (PATCH) - 변경된 필드만 전송 가능, 수정 후 상세 정보 반환
     @PatchMapping("/api/v1/posts/{postId}")
     public PostDetailDto updatePost(
             @PathVariable Long postId,
@@ -50,7 +55,7 @@ public class PostController {
         return postService.updatePost(principal.userId(), postId, request);
     }
 
-    // POST-04: 글 삭제 (soft)
+    // POST-04: 게시글 논리 삭제 - 실제 DB 레코드는 유지하며 isDeleted=true 처리
     @DeleteMapping("/api/v1/posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(
@@ -60,7 +65,7 @@ public class PostController {
         postService.deletePost(principal.userId(), postId);
     }
 
-    // POST-05: 글 좋아요
+    // POST-05: 게시글 좋아요 추가 - 이미 좋아요 상태면 409 Conflict 반환
     @PostMapping("/api/v1/posts/{postId}/likes")
     @ResponseStatus(HttpStatus.CREATED)
     public void likePost(
@@ -70,7 +75,7 @@ public class PostController {
         postService.likePost(principal.userId(), postId);
     }
 
-    // POST-06: 글 좋아요 취소
+    // POST-06: 게시글 좋아요 취소 - 좋아요 기록이 없으면 404 반환
     @DeleteMapping("/api/v1/posts/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unlikePost(
@@ -80,7 +85,10 @@ public class PostController {
         postService.unlikePost(principal.userId(), postId);
     }
 
-    // WH-02-1: 위스키 관련 게시글 (좋아요 순 최대 3개)
+    /**
+     * WH-02-1: 특정 위스키에 태그된 게시글 중 좋아요 순 상위 3개 반환.
+     * 위스키 상세 페이지의 "관련 게시글" 섹션에서 호출하며, 인증 불필요.
+     */
     @GetMapping("/api/v1/whiskeys/{whiskeyId}/related-posts")
     public List<PostSummaryResponse> getRelatedPosts(@PathVariable Long whiskeyId) {
         return postService.getRelatedPosts(whiskeyId);

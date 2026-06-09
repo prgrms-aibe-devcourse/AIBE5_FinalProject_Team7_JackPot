@@ -1,3 +1,4 @@
+// 게시글 상세 페이지 — 본문·좋아요·댓글 스레드·관련 위스키 링크를 통합 표시
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -18,27 +19,33 @@ import {
 } from '../hooks/useCommunity';
 import { POST_CATEGORY_LABEL } from '../types';
 
+// ISO 8601 문자열에서 분 단위까지만 잘라 'YYYY-MM-DD HH:mm' 형태로 표시
 function formatDate(iso: string): string {
   return iso.slice(0, 16).replace('T', ' ');
 }
 
 export default function PostDetailPage() {
   const { postId } = useParams();
+  // URL 파라미터는 string이므로 API 호출 전에 숫자로 변환
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
   const { data: post, isLoading, isError } = usePost(numericId);
   const { data: comments = [], isLoading: commentsLoading } = useComments(numericId);
 
+  // mutate 함수들을 미리 생성해두면 조건부 훅 호출 문제를 피할 수 있음
   const likeMutation = useLikePost(numericId!);
   const createCommentMutation = useCreateComment(numericId!);
   const deleteCommentMutation = useDeleteComment(numericId!);
   const updateCommentMutation = useUpdateComment(numericId!);
 
   const [commentText, setCommentText] = useState('');
+  // null이면 최상위 댓글, 숫자면 해당 댓글에 대한 대댓글 작성 중
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
 
+  // 게시글에 연결된 위스키 ID 배열을 상세 정보로 병렬 변환
+  // 빈 배열이거나 undefined이면 API 호출을 아예 건너뜀
   useEffect(() => {
     if (!post?.whiskeyIds?.length) return;
     Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
@@ -68,6 +75,7 @@ export default function PostDetailPage() {
     navigate(PATHS.COMMUNITY);
   }
 
+  // 로그인 여부를 확인한 뒤에만 실제 동작을 실행 — 모든 인증 필요 액션에 공통 적용
   function requireLogin(action: () => void) {
     if (!isLoggedIn()) {
       navigate(PATHS.LOGIN);
@@ -82,6 +90,7 @@ export default function PostDetailPage() {
     if (!commentText.trim()) return;
     await createCommentMutation.mutateAsync({
       content: commentText.trim(),
+      // parentCommentId가 null이면 최상위 댓글로 서버에 전달됨
       parentCommentId: replyToId,
     });
     setCommentText('');
@@ -114,6 +123,7 @@ export default function PostDetailPage() {
             {formatDate(post.createdAt)}
           </p>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {/* isLiked 상태를 toggling API에 인자로 넘겨 현재 상태 기반으로 요청 방향을 결정 */}
             <button
               className="wf-chip"
               style={{ cursor: 'pointer', border: 'none', background: 'none' }}
@@ -123,6 +133,7 @@ export default function PostDetailPage() {
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
             </button>
             <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
+            {/* isOwner는 서버가 현재 사용자 기준으로 반환하므로 프론트에서 별도 ID 비교 불필요 */}
             {post.isOwner && (
               <>
                 <button
@@ -144,6 +155,8 @@ export default function PostDetailPage() {
           </div>
         </header>
 
+        {/* HTML 본문(RichEditor 작성분)과 일반 텍스트를 구분해 렌더링
+            '<'로 시작하면 HTML로 간주 — XSS 위험이 있으므로 서버 측 sanitize가 반드시 선행되어야 함 */}
         {post.context.startsWith('<') ? (
           <div
             className="wf-box"
@@ -188,11 +201,13 @@ export default function PostDetailPage() {
             onReply={(parentId) => requireLogin(() => setReplyToId(parentId))}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
             onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
+            // getStoredUserId()가 null이면 undefined로 변환해 CommentItem 내부 isOwner 판단에 영향 없음
             currentUserId={getStoredUserId() ?? undefined}
           />
         )}
 
         <form onSubmit={handleSubmitComment} style={{ marginTop: 16 }}>
+          {/* 대댓글 모드 진입 시 어떤 댓글에 답글 중인지 안내 배너 표시 */}
           {replyToId != null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <span className="wf-text-xs" style={{ color: '#888' }}>

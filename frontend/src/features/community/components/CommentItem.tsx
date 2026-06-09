@@ -1,3 +1,4 @@
+// 댓글 단일 항목 및 재귀 트리 렌더러 — 중첩 답글을 depth 인덴트로 시각화
 import { useState } from 'react';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import type { CommentTreeResponse } from '../types';
@@ -7,6 +8,7 @@ interface CommentItemProps {
   depth?: number;
   onReply?: (parentId: number) => void;
   onDelete?: (commentId: number) => void;
+  // 수정 완료 후 캐시 갱신이 필요하므로 Promise 반환 타입을 요구
   onEdit?: (commentId: number, content: string) => Promise<void>;
   currentUserId?: number;
 }
@@ -23,6 +25,7 @@ export function CommentItem({
   onEdit,
   currentUserId,
 }: CommentItemProps) {
+  // userId 비교로 소유 여부를 판단 — null/undefined면 항상 false
   const isOwner = currentUserId != null && comment.userId === currentUserId;
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
@@ -40,11 +43,13 @@ export function CommentItem({
   }
 
   return (
+    // depth * 20px 인덴트로 대댓글 계층을 시각적으로 구분
     <div style={{ marginLeft: depth * 20, marginBottom: 8 }}>
       <div className="wf-box" style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
           <span className="wf-text-xs" style={{ color: '#888' }}>
             {comment.isDeleted ? (
+              // 삭제된 댓글은 내용 대신 안내 문구를 표시하고 작성자 링크를 숨김
               '(삭제됨)'
             ) : comment.userId != null ? (
               <UserProfileLink userId={comment.userId}>
@@ -76,6 +81,7 @@ export function CommentItem({
               >
                 {saving ? '저장 중…' : '저장'}
               </button>
+              {/* 취소 시 editText를 원래 comment.content로 복원해 다음 수정 시도에 잔류 텍스트가 남지 않도록 함 */}
               <button
                 className="wf-text-xs"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#666' }}
@@ -91,8 +97,10 @@ export function CommentItem({
           </p>
         )}
 
+        {/* 수정 중에는 액션 버튼을 숨겨 혼동을 방지 */}
         {!editing && (
           <div style={{ display: 'flex', gap: 8 }}>
+            {/* 삭제된 댓글에는 답글 버튼을 표시하지 않음 */}
             {!comment.isDeleted && onReply && (
               <button
                 className="wf-text-xs"
@@ -123,6 +131,7 @@ export function CommentItem({
           </div>
         )}
       </div>
+      {/* 재귀 렌더링: replies 배열을 순회해 자식 댓글을 depth+1로 렌더링 */}
       {comment.replies.map((reply) => (
         <CommentItem
           key={reply.id}
@@ -146,6 +155,8 @@ interface CommentThreadProps {
   currentUserId?: number;
 }
 
+// 최상위 댓글 목록을 받아 CommentItem을 나열하는 컨테이너
+// 로직 없이 위임만 하므로 별도 메모이제이션 불필요
 export function CommentThread({ comments, onReply, onDelete, onEdit, currentUserId }: CommentThreadProps) {
   return (
     <div>
