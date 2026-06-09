@@ -12,6 +12,9 @@ spring:
   profiles:
     active: test
 
+  flyway:
+    enabled: false
+
   # --------------------------------------------------
   # H2 인메모리 DB 설정 (테스트 전용)
   # MySQL 없이 Spring Context 로딩 및 JPA 테스트 가능
