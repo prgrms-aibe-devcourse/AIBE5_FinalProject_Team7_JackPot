@@ -69,7 +69,7 @@ if ! docker compose ps backend 2>/dev/null | grep -q '(healthy)'; then
   exit 1
 fi
 
-API_CODE="$(curl -s -o /dev/null -w '%{http_code}' 'http://localhost/api/v1/community/columns?page=0&size=1' 2>/dev/null || echo '000')"
+API_CODE="$(curl -s -o /dev/null -w '%{http_code}' -L 'http://localhost/api/v1/community/columns?page=0&size=1' 2>/dev/null || echo '000')"
 if [[ "$API_CODE" != "200" ]]; then
   echo "BACKEND_API_FAILED"
   echo "FAIL: API smoke test HTTP ${API_CODE}"
