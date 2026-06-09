@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
-import { useFeed } from '../hooks/useCommunity';
+import { useWhiskeyColumn } from '../hooks/useCommunity';
 
 function formatDate(iso: string | null): string {
   if (!iso) return '';
@@ -11,12 +11,10 @@ function formatDate(iso: string | null): string {
 }
 
 function injectImageIntoMarkdown(markdown: string, imageUrl: string): string {
-  // 첫 번째 ### 섹션 직전에 이미지 삽입 (도입부 다음)
   const h3Match = markdown.search(/\n###\s/);
   if (h3Match !== -1) {
     return markdown.slice(0, h3Match) + `\n\n![](${imageUrl})\n` + markdown.slice(h3Match);
   }
-  // fallback: 두 번째 빈 줄 뒤
   let pos = 0;
   for (let i = 0; i < 2; i++) {
     const next = markdown.indexOf('\n\n', pos + 1);
@@ -78,16 +76,16 @@ function SourceCard({ url, sourceName, author }: { url: string; sourceName: stri
   );
 }
 
-export default function FeedDetailPage() {
-  const { feedId } = useParams<{ feedId: string }>();
-  const { data: feed, isLoading } = useFeed(feedId ? Number(feedId) : undefined);
+export default function ColumnDetailPage() {
+  const { columnId } = useParams<{ columnId: string }>();
+  const { data: column, isLoading } = useWhiskeyColumn(columnId ? Number(columnId) : undefined);
 
   if (isLoading) return <WireframePage><p className="wf-text-sm">불러오는 중…</p></WireframePage>;
-  if (!feed) return <WireframePage><p className="wf-text-sm">피드를 찾을 수 없습니다.</p></WireframePage>;
+  if (!column) return <WireframePage><p className="wf-text-sm">칼럼을 찾을 수 없습니다.</p></WireframePage>;
 
-  const bodyMarkdown = feed.description && feed.thumbnailUrl
-    ? injectImageIntoMarkdown(feed.description, feed.thumbnailUrl)
-    : feed.description ?? '';
+  const bodyMarkdown = column.description && column.thumbnailUrl
+    ? injectImageIntoMarkdown(column.description, column.thumbnailUrl)
+    : column.description ?? '';
 
   return (
     <WireframePage scroll>
@@ -100,24 +98,24 @@ export default function FeedDetailPage() {
         {/* 배지 */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
           <span className="wf-chip" style={{ fontSize: 11 }}>
-            {feed.sourceType === 'YOUTUBE' ? '유튜브' : '블로그'}
+            {column.sourceType === 'YOUTUBE' ? '유튜브' : '블로그'}
           </span>
-          {feed.whiskeyKeyword && (
-            <span className="wf-chip" style={{ fontSize: 11 }}>{feed.whiskeyKeyword}</span>
+          {column.whiskeyKeyword && (
+            <span className="wf-chip" style={{ fontSize: 11 }}>{column.whiskeyKeyword}</span>
           )}
         </div>
 
         {/* 제목 */}
         <h1 style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.4, margin: '0 0 10px', color: 'var(--wf-text)' }}>
-          {feed.title}
+          {column.title}
         </h1>
 
         {/* 날짜 */}
         <p style={{ margin: '0 0 24px', fontSize: 13, color: 'var(--wf-muted)' }}>
-          {formatDate(feed.publishedAt || feed.createdAt)}
+          {formatDate(column.publishedAt || column.createdAt)}
         </p>
 
-        {/* 본문 마크다운 (이미지 중간 삽입 포함) */}
+        {/* 본문 마크다운 */}
         {bodyMarkdown && (
           <div style={{ fontSize: 15, lineHeight: 1.9, color: 'var(--wf-text)' }}>
             <ReactMarkdown
@@ -163,7 +161,7 @@ export default function FeedDetailPage() {
         {/* 출처 임베드 카드 */}
         <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid var(--wf-border)' }}>
           <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--wf-muted)', fontWeight: 500, letterSpacing: '0.05em' }}>출처</p>
-          <SourceCard url={feed.url} sourceName={feed.sourceName} author={feed.author} />
+          <SourceCard url={column.url} sourceName={column.sourceName} author={column.author} />
         </div>
       </div>
     </WireframePage>

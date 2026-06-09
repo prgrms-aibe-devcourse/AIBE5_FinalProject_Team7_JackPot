@@ -48,7 +48,7 @@ export interface CommentTreeResponse {
   replies: CommentTreeResponse[];
 }
 
-export interface ContentFeedResponse {
+export interface WhiskeyColumnResponse {
   id: number;
   sourceType: 'BLOG' | 'YOUTUBE';
   title: string;

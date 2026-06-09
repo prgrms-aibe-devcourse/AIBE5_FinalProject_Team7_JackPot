@@ -2,7 +2,7 @@ import { apiClient } from '@/shared/api/client';
 import type {
   CommentCreateRequest,
   CommentTreeResponse,
-  ContentFeedResponse,
+  WhiskeyColumnResponse,
   PostCategory,
   PostCreateRequest,
   PostDetailDto,
@@ -18,15 +18,15 @@ export async function fetchColumns(page = 0, size = 10): Promise<SpringPage<Post
   return data;
 }
 
-export async function fetchFeeds(page = 0, size = 20): Promise<SpringPage<ContentFeedResponse>> {
-  const { data } = await apiClient.get<SpringPage<ContentFeedResponse>>('/feeds', {
+export async function fetchWhiskeyColumns(page = 0, size = 20): Promise<SpringPage<WhiskeyColumnResponse>> {
+  const { data } = await apiClient.get<SpringPage<WhiskeyColumnResponse>>('/columns', {
     params: { page, size },
   });
   return data;
 }
 
-export async function fetchFeed(feedId: number): Promise<ContentFeedResponse> {
-  const { data } = await apiClient.get<ContentFeedResponse>(`/feeds/${feedId}`);
+export async function fetchWhiskeyColumn(columnId: number): Promise<WhiskeyColumnResponse> {
+  const { data } = await apiClient.get<WhiskeyColumnResponse>(`/columns/${columnId}`);
   return data;
 }
 

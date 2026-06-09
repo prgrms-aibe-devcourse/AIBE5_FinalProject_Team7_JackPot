@@ -1,4 +1,4 @@
-package com.jackpot.whiskeynote.domain.community.feed.entity;
+package com.jackpot.whiskeynote.domain.community.column.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "content_feeds")
+@Table(name = "whiskey_columns")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentFeed {
+public class WhiskeyColumn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class ContentFeed {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "source_type", nullable = false, length = 20)
-    private FeedSourceType sourceType;
+    private ColumnSourceType sourceType;
 
     @Column(nullable = false, length = 512)
     private String title;
@@ -48,18 +48,18 @@ public class ContentFeed {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public static ContentFeed create(FeedSourceType sourceType, String title, String url,
-                                     String thumbnailUrl, String description,
-                                     String whiskeyKeyword, LocalDateTime publishedAt) {
-        ContentFeed feed = new ContentFeed();
-        feed.sourceType = sourceType;
-        feed.title = title;
-        feed.url = url;
-        feed.thumbnailUrl = thumbnailUrl;
-        feed.description = description;
-        feed.whiskeyKeyword = whiskeyKeyword;
-        feed.publishedAt = publishedAt;
-        feed.createdAt = LocalDateTime.now();
-        return feed;
+    public static WhiskeyColumn create(ColumnSourceType sourceType, String title, String url,
+                                       String thumbnailUrl, String description,
+                                       String whiskeyKeyword, LocalDateTime publishedAt) {
+        WhiskeyColumn col = new WhiskeyColumn();
+        col.sourceType = sourceType;
+        col.title = title;
+        col.url = url;
+        col.thumbnailUrl = thumbnailUrl;
+        col.description = description;
+        col.whiskeyKeyword = whiskeyKeyword;
+        col.publishedAt = publishedAt;
+        col.createdAt = LocalDateTime.now();
+        return col;
     }
 }
