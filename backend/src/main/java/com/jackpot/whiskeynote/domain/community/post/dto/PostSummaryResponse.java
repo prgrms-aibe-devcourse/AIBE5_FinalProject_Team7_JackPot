@@ -6,13 +6,14 @@ import com.jackpot.whiskeynote.domain.community.post.entity.PostCategory;
 import com.jackpot.whiskeynote.domain.community.post.entity.PostType;
 
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 게시글 목록 응답 레코드.
  *
- * PostDetailDto와 달리 context(본문)와 isLiked/isOwner를 포함하지 않음.
- * - 목록 화면에서 본문까지 내려주면 네트워크 비용이 크고 클라이언트 렌더링 부담이 증가하기 때문
- * - 좋아요 상태/소유권 판단은 상세 조회 시에만 필요하므로 목록에서는 의도적으로 제외
+ * PostDetailDto와 달리 isLiked/isOwner를 포함하지 않음.
+ * thumbnailUrl은 context 첫 이미지 URL을 추출해 칼럼 목록 카드에 표시하기 위해 추가.
  */
 public record PostSummaryResponse(
         Long id,
@@ -21,10 +22,24 @@ public record PostSummaryResponse(
         PostCategory category,
         String title,
         int likeCount,
+        int viewCount,
         int commentCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String thumbnailUrl
 ) {
-    /** Post 엔티티와 댓글 수를 받아 목록용 요약 응답 생성 */
+    private static final Pattern MD_IMG = Pattern.compile("!\\[.*?]\\((.+?)\\)");
+    private static final Pattern HTML_IMG = Pattern.compile("<img[^>]+src=[\"']([^\"']+)[\"']");
+
+    /** context에서 첫 번째 이미지 URL 추출 — 마크다운 우선, 없으면 HTML img 탐색 */
+    private static String extractThumbnail(String context) {
+        if (context == null || context.isBlank()) return null;
+        Matcher md = MD_IMG.matcher(context);
+        if (md.find()) return md.group(1);
+        Matcher html = HTML_IMG.matcher(context);
+        if (html.find()) return html.group(1);
+        return null;
+    }
+
     public static PostSummaryResponse from(Post post, int commentCount) {
         return new PostSummaryResponse(
                 post.getId(),
@@ -33,8 +48,10 @@ public record PostSummaryResponse(
                 post.getCategory(),
                 post.getTitle(),
                 post.getLikeCount(),
+                post.getViewCount(),
                 commentCount,
-                post.getCreatedAt()
+                post.getCreatedAt(),
+                extractThumbnail(post.getContext())
         );
     }
 }

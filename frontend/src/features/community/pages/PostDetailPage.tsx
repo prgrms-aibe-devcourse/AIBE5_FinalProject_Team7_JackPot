@@ -1,6 +1,8 @@
 // 게시글 상세 페이지 — 본문·좋아요·댓글 스레드·관련 위스키 링크를 통합 표시
+// COLUMN 타입은 ReactMarkdown으로 렌더링해 칼럼 고유 디자인 유지
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
@@ -118,12 +120,15 @@ export default function PostDetailPage() {
 
       <article>
         <header style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-            <span className="wf-chip" style={{ fontSize: 11 }}>
-              {POST_CATEGORY_LABEL[post.category] ?? post.category}
-            </span>
-            <span className="wf-chip" style={{ fontSize: 11 }}>{post.postType}</span>
-          </div>
+          {/* COLUMN 타입은 카테고리·postType 태그가 무의미하므로 표시 생략 */}
+          {post.postType !== 'COLUMN' && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+              <span className="wf-chip" style={{ fontSize: 11 }}>
+                {POST_CATEGORY_LABEL[post.category] ?? post.category}
+              </span>
+              <span className="wf-chip" style={{ fontSize: 11 }}>{post.postType}</span>
+            </div>
+          )}
           <h1 className="wf-title" style={{ marginBottom: 4 }}>{post.title}</h1>
           <p className="wf-text-xs" style={{ color: '#888', marginBottom: 8 }}>
             작성자{' '}
@@ -142,6 +147,7 @@ export default function PostDetailPage() {
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
             </button>
             <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
+            <span className="wf-text-xs" style={{ color: '#888' }}>조회 {post.viewCount}</span>
             {/* isOwner는 서버가 현재 사용자 기준으로 반환하므로 프론트에서 별도 ID 비교 불필요 */}
             {post.isOwner && (
               <>
@@ -174,9 +180,69 @@ export default function PostDetailPage() {
           </div>
         </header>
 
-        {/* HTML 본문(RichEditor 작성분)과 일반 텍스트를 구분해 렌더링
-            '<'로 시작하면 HTML로 간주 — XSS 위험이 있으므로 서버 측 sanitize가 반드시 선행되어야 함 */}
-        {post.context.startsWith('<') ? (
+        {/* 본문 렌더링:
+            - COLUMN + HTML(RichEditor 작성): dangerouslySetInnerHTML — 서버 sanitize 필수
+            - COLUMN + 마크다운(마이그레이션 데이터): ReactMarkdown으로 칼럼 고유 디자인 적용
+            - 그 외 HTML('<' 시작): dangerouslySetInnerHTML
+            - 그 외: pre-wrap 일반 텍스트 */}
+        {post.postType === 'COLUMN' ? (
+          <div className="wf-box" style={{ padding: '24px', marginBottom: 24, fontSize: 15, lineHeight: 1.9, color: 'var(--wf-text)' }}>
+            {post.context.startsWith('<') ? (
+              <>
+                {/* RichEditor 작성 HTML 내부 img 스타일 — dangerouslySetInnerHTML은 인라인 CSS로 자식 요소를 제어할 수 없어 scoped style 사용 */}
+                <style>{`
+                  .column-html-body img {
+                    max-width: 100%;
+                    border-radius: 8px;
+                    margin: 16px 0;
+                    display: block;
+                  }
+                  .column-html-body p { margin: 0 0 14px; }
+                  .column-html-body h2 { font-size: 20px; font-weight: 700; margin: 28px 0 10px; border-bottom: 1px solid var(--wf-border); padding-bottom: 6px; }
+                  .column-html-body h3 { font-size: 17px; font-weight: 700; margin: 22px 0 8px; }
+                  .column-html-body ul, .column-html-body ol { padding-left: 20px; margin: 0 0 14px; }
+                  .column-html-body li { margin-bottom: 4px; }
+                  .column-html-body blockquote { border-left: 3px solid var(--wf-accent); padding-left: 14px; color: var(--wf-muted); margin: 16px 0; font-style: italic; }
+                `}</style>
+                <div className="column-html-body" dangerouslySetInnerHTML={{ __html: post.context }} />
+              </>
+            ) : (
+              <ReactMarkdown
+                components={{
+                  h1: ({ children }) => <h2 style={{ fontSize: 20, fontWeight: 700, margin: '28px 0 10px', borderBottom: '1px solid var(--wf-border)', paddingBottom: 6, color: 'var(--wf-text)' }}>{children}</h2>,
+                  h2: ({ children }) => <h3 style={{ fontSize: 17, fontWeight: 700, margin: '22px 0 8px', color: 'var(--wf-text)' }}>{children}</h3>,
+                  h3: ({ children }) => <h4 style={{ fontSize: 15, fontWeight: 600, margin: '16px 0 6px', color: 'var(--wf-accent)' }}>{children}</h4>,
+                  p: ({ children }) => <p style={{ margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</p>,
+                  strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#fff' }}>{children}</strong>,
+                  em: ({ children }) => <em style={{ color: 'var(--wf-muted)' }}>{children}</em>,
+                  img: ({ src, alt }) => (
+                    <span style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                      <img
+                        src={src}
+                        alt={alt}
+                        style={{ width: '40%', minWidth: 160, borderRadius: 10, objectFit: 'cover', boxShadow: '0 2px 12px rgba(0,0,0,0.40)' }}
+                        onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                      />
+                    </span>
+                  ),
+                  a: ({ href, children }) => (
+                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--wf-accent)', textDecoration: 'underline' }}>{children}</a>
+                  ),
+                  hr: () => <hr style={{ border: 'none', borderTop: '1px solid var(--wf-border)', margin: '20px 0' }} />,
+                  blockquote: ({ children }) => (
+                    <blockquote style={{ borderLeft: '3px solid var(--wf-accent)', paddingLeft: 14, color: 'var(--wf-muted)', margin: '16px 0', fontStyle: 'italic' }}>{children}</blockquote>
+                  ),
+                  ul: ({ children }) => <ul style={{ paddingLeft: 20, margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</ul>,
+                  ol: ({ children }) => <ol style={{ paddingLeft: 20, margin: '0 0 14px', color: 'var(--wf-text)' }}>{children}</ol>,
+                  li: ({ children }) => <li style={{ marginBottom: 4 }}>{children}</li>,
+                  code: ({ children }) => <code style={{ background: 'var(--wf-surface-2)', color: 'var(--wf-accent)', padding: '2px 6px', borderRadius: 4, fontSize: 13 }}>{children}</code>,
+                }}
+              >
+                {post.context}
+              </ReactMarkdown>
+            )}
+          </div>
+        ) : post.context.startsWith('<') ? (
           <div
             className="wf-box"
             style={{ padding: 16, marginBottom: 24, lineHeight: 1.8 }}

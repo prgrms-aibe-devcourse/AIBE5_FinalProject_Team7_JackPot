@@ -29,4 +29,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 작성자 ID 목록으로 게시글 조회 (라운지 팔로잉 계정 게시물 조회용)
     List<Post> findByAuthorIdInAndIsDeletedFalse(List<Long> authorIds, Pageable pageable);
+
+    /** 삭제되지 않은 게시글 중 조회수 상위 N개 조회 (커뮤니티 홈 인기 게시글 표시용) */
+    List<Post> findByIsDeletedFalseOrderByViewCountDesc(Pageable pageable);
 }

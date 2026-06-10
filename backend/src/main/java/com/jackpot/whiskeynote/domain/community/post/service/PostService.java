@@ -32,13 +32,14 @@ public class PostService {
 
     // POST-01: 글 상세
     /**
-     * 게시글 단건 상세 조회.
-     * userId가 null(비로그인)이면 isLiked/isOwner를 false로 처리해
-     * 로그인 없이도 게시글을 열람할 수 있도록 허용.
+     * 게시글 단건 상세 조회 — 매 요청마다 viewCount를 1 증가.
+     * 현재는 중복 제거 없이 단순 증가 (TODO: Redis + 세션/쿠키 기반 중복 차단으로 확장 예정).
+     * readOnly = false 로 변경한 이유: viewCount 쓰기가 필요하기 때문.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailDto getPost(Long postId, Long userId) {
         Post post = findActivePostOrThrow(postId);
+        post.incrementViewCount();
 
         boolean isLiked = userId != null && postLikeRepository.existsByUserIdAndPostId(userId, postId);
         boolean isOwner = userId != null && post.getAuthorId().equals(userId);
@@ -49,6 +50,16 @@ public class PostService {
         int commentCount = postCommentRepository.countByPostIdAndIsDeletedFalse(postId);
 
         return PostDetailDto.from(post, isLiked, isOwner, whiskeyIds, commentCount);
+    }
+
+    /** 조회수 상위 N개 게시글 반환 (커뮤니티 홈 인기 게시글용) */
+    @Transactional(readOnly = true)
+    public List<PostSummaryResponse> getTopPosts(int limit) {
+        return postRepository.findByIsDeletedFalseOrderByViewCountDesc(PageRequest.of(0, limit))
+                .stream()
+                .map(p -> PostSummaryResponse.from(p,
+                        postCommentRepository.countByPostIdAndIsDeletedFalse(p.getId())))
+                .toList();
     }
 
     // POST-02: 글 작성

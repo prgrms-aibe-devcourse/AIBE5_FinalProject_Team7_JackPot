@@ -22,8 +22,10 @@ export interface PostSummaryResponse {
   category: PostCategory;
   title: string;
   likeCount: number;
+  viewCount: number;
   commentCount: number;
   createdAt: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface PostDetailDto {
@@ -34,6 +36,7 @@ export interface PostDetailDto {
   title: string;
   context: string;
   likeCount: number;
+  viewCount: number;
   isLiked: boolean;
   isOwner: boolean;
   whiskeyIds: number[];

@@ -2,21 +2,24 @@
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
+import { useTopPosts } from '../hooks/useCommunity';
+import { POST_CATEGORY_LABEL } from '../types';
 
-// 게시판 목록을 데이터로 분리해 두면 나중에 항목 추가/제거 시 JSX를 건드리지 않아도 됨
 const BOARDS = [
-  { path: PATHS.COMMUNITY_COLUMNS, label: '칼럼', desc: '전문가·운영자 콘텐츠' },
+  { path: PATHS.COMMUNITY_COLUMNS, label: '칼럼', desc: '위스키 칼럼 콘텐츠' },
   { path: PATHS.COMMUNITY_FREE, label: '자유게시판', desc: '잡담·리뷰·추천·나눔' },
   { path: PATHS.COMMUNITY_NOTICES, label: '공지·FAQ', desc: '운영 공지 및 자주 묻는 질문' },
 ];
 
 export default function CommunityPage() {
+  const { data: topPosts = [] } = useTopPosts(5);
+
   return (
     <WireframePage scroll>
       <h1 className="wf-title">커뮤니티</h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16, marginBottom: 28 }}>
         {BOARDS.map((b) => (
-          // Link 전체를 클릭 영역으로 쓰기 위해 textDecoration/color를 초기화
           <Link key={b.path} to={b.path} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="wf-box wf-box--solid" style={{ padding: '16px 20px' }}>
               <strong style={{ fontSize: 16 }}>{b.label}</strong>
@@ -25,6 +28,36 @@ export default function CommunityPage() {
           </Link>
         ))}
       </div>
+
+      {topPosts.length > 0 && (
+        <section>
+          <h2 className="wf-section-title" style={{ marginBottom: 10 }}>🔥 인기 게시글</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {topPosts.map((post, i) => (
+              <Link
+                key={post.id}
+                to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div className="wf-box" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: i < 3 ? 'var(--wf-accent)' : '#888', minWidth: 24, textAlign: 'center' }}>
+                    {i + 1}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {post.postType !== 'COLUMN' && (
+                      <span className="wf-chip" style={{ fontSize: 10, marginRight: 6 }}>
+                        {POST_CATEGORY_LABEL[post.category] ?? post.category}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>{post.title}</span>
+                  </div>
+                  <span className="wf-text-xs" style={{ color: '#888', flexShrink: 0 }}>조회 {post.viewCount ?? 0}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </WireframePage>
   );
 }

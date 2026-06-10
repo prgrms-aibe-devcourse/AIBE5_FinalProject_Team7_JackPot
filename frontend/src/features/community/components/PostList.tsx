@@ -40,7 +40,7 @@ export function PostList({ posts, isLoading, showCategory = true }: PostListProp
                 <strong style={{ fontSize: 14 }}>{post.title}</strong>
               </div>
               <p className="wf-text-xs" style={{ margin: 0, color: '#888' }}>
-                ♥ {post.likeCount} · 댓글 {post.commentCount} · {formatDate(post.createdAt)}
+                ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
               </p>
             </div>
           </Link>
