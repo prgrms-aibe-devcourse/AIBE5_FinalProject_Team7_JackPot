@@ -10,6 +10,8 @@ import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
 import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
+import { whiskeyApi } from '../api/whiskeyApi';
+import { isLoggedIn } from '@/shared/lib/authSession';
 import { RelatedColumns } from '../components/RelatedColumns';
 import { RelatedWhiskeys } from '../components/RelatedWhiskeys';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
@@ -138,6 +140,48 @@ export default function WhiskeyDetailPage() {
   const [isWished, setIsWished] = useState(false);
   const [wishedItemId, setWishedItemId] = useState<number | null>(null);
   const [imgError, setImgError] = useState(false);
+
+  // 로그인 유저가 10초 이상 머물면 조회 로그 1회 전송
+  // (탭이 백그라운드면 타이머를 멈춰 실제 체류만 인정, 위스키가 바뀌면 리셋)
+  useEffect(() => {
+    if (!isLoggedIn()) return;
+
+    let sent = false;
+    let elapsedMs = 0;
+    let startedAt: number | null = document.visibilityState === 'visible' ? Date.now() : null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const fire = () => {
+      if (sent) return;
+      sent = true;
+      void whiskeyApi.recordWhiskeyView(id);
+    };
+
+    const schedule = (remainingMs: number) => {
+      timer = setTimeout(fire, Math.max(0, remainingMs));
+    };
+
+    const handleVisibility = () => {
+      if (sent) return;
+      if (document.visibilityState === 'visible') {
+        startedAt = Date.now();
+        schedule(10_000 - elapsedMs);
+      } else {
+        if (timer) clearTimeout(timer);
+        timer = null;
+        if (startedAt != null) elapsedMs += Date.now() - startedAt;
+        startedAt = null;
+      }
+    };
+
+    if (startedAt != null) schedule(10_000);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [id]);
 
   // 페이지 진입 시 위시 여부 확인
   useEffect(() => {

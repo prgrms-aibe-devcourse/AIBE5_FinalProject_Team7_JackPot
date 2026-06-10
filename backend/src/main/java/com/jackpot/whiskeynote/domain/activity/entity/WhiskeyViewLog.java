@@ -28,15 +28,12 @@ public class WhiskeyViewLog {
     @JoinColumn(name = "whiskey_id")
     private Whiskey whiskey;
 
-    private Integer viewDuration;
-
     private LocalDateTime createdAt;
 
     @Builder
-    private WhiskeyViewLog(Users user, Whiskey whiskey, Integer viewDuration) {
+    private WhiskeyViewLog(Users user, Whiskey whiskey) {
         this.user = user;
         this.whiskey = whiskey;
-        this.viewDuration = viewDuration;
         createdAt = LocalDateTime.now();
     }
 }
