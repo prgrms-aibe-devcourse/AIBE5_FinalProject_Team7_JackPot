@@ -14,4 +14,15 @@ export const routes: FeatureRoute[] = [
       apiIds: ['REV-02'],
     },
   },
+  {
+    path: PATHS.REVIEW_PICK,
+    Component: lazy(() => import('./pages/ReviewPickPage')),
+    layout: 'app',
+    meta: {
+      screenId: '11-review-pick',
+      title: 'Review Pick',
+      phase: 'MVP',
+      apiIds: [],
+    },
+  },
 ];
