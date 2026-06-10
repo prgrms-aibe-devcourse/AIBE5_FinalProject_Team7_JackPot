@@ -95,10 +95,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--wf-border);
+  border-top: 1px solid var(--wf-border-subtle);
+  background: var(--wf-surface);
   font-size: 12px;
   color: var(--wf-muted);
   flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
 
 /* layouts */
