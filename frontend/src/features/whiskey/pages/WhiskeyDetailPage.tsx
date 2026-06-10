@@ -318,19 +318,19 @@ export default function WhiskeyDetailPage() {
       )}
       <header className="wf-detail-hero">
         <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
-        <p className="wf-text-sm">{metaLine}</p>
+        <p className="wf-detail-hero__meta">{metaLine}</p>
         <p className="wf-detail-hero__rating">
           종합 {formatTenPointScore(detail.noteSummary?.bodyScore)} / 10
-          <span className="wf-text-sm"> · {detail.noteSummary?.noteCount ?? 0} 노트</span>
+          <span className="wf-text-xs"> · {detail.noteSummary?.noteCount ?? 0} 노트</span>
         </p>
       </header>
 
       <div className="wf-tabs">
         <span className="wf-tab-item wf-tab-item--on">정보</span>
-        <Link to={reviewPath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={reviewPath} className="wf-tab-item">
           리뷰
         </Link>
-        <Link to={notePath} className="wf-tab-item" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={notePath} className="wf-tab-item">
           개인 노트
         </Link>
       </div>
@@ -342,27 +342,26 @@ export default function WhiskeyDetailPage() {
               src={imageSrc}
               alt={detail.name}
               className="wf-detail-sidebar__image"
-              style={{ width: '100%', objectFit: 'cover' }}
               onError={() => setImgError(true)}
             />
           ) : (
             <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
           )}
           <div className="wf-detail-sidebar__actions">
-            <Button variant="ghost" style={{ width: '100%' }} onClick={handleWishToggle}>
+            <Button variant="ghost" onClick={handleWishToggle}>
               {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
             </Button>
-            <Button style={{ width: '100%' }} onClick={handlePickToggle} disabled={pickLoading}>
+            <Button onClick={handlePickToggle} disabled={pickLoading}>
               {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
             </Button>
-            <Button variant="ghost" style={{ width: '100%' }} to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
+            <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
               리뷰 작성
             </Button>
-            <Button variant="ghost" style={{ width: '100%' }} to={notePath}>
+            <Button variant="ghost" to={notePath}>
               📝 My Note 작성
             </Button>
           </div>
-          <p className="wf-text-xs">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
+          <p className="wf-detail-sidebar__hint">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
           <div className="wf-grid2">
             {[
               ['숙성', ageLabel],
@@ -400,7 +399,7 @@ export default function WhiskeyDetailPage() {
               <h2 className="wf-section-title">
                 리뷰
                 {reviewStats && reviewStats.reviewCount > 0 && (
-                  <span className="wf-text-sm" style={{ fontWeight: 400, marginLeft: 8 }}>
+                  <span className="wf-detail-reviews__stats">
                     <span className="wf-stars">★</span>{' '}
                     {reviewStats.avgRating != null ? reviewStats.avgRating.toFixed(1) : '—'}
                     {' · '}{reviewStats.reviewCount}개

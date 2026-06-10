@@ -507,6 +507,7 @@ body {
   font-size: 13px;
   color: var(--wf-muted);
   border-bottom: 2px solid transparent;
+  text-decoration: none;
 }
 
 .wf-tab-item--on {
