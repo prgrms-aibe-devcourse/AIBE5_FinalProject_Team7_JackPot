@@ -139,7 +139,7 @@ function DualRangeSlider({
 
   return (
     <div className="wf-dual-range">
-      <p className="wf-text-sm" style={{ margin: '0 0 10px' }}>{low}{unit} - {high}{unit}</p>
+      <p className="wf-dual-range__label">{low}{unit} - {high}{unit}</p>
       <div className="wf-dual-range__track-wrap">
         <div className="wf-dual-range__track" />
         <div className="wf-dual-range__active" style={{ left: `${left}%`, right: `${right}%` }} />
@@ -382,18 +382,18 @@ export default function SearchPage() {
       )}
       <p className="wf-breadcrumb">홈 / <strong>검색</strong></p>
       <div className="wf-layout-sidebar">
-        <aside className="wf-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <p className="wf-text-label" style={{ margin: 0 }}>필터</p>
+        <aside className="wf-sidebar wf-search-sidebar">
+          <div className="wf-search-filter-header">
+            <p className="wf-text-label">필터</p>
             <button type="button" className="wf-link" onClick={resetFilters}>
               초기화
             </button>
           </div>
 
-          <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p className="wf-text-label" style={{ margin: 0 }}>위스키 종류</p>
+          <section className="wf-search-filter-section">
+            <p className="wf-text-label">위스키 종류</p>
             {WHISKEY_TYPE_OPTIONS.map((option) => (
-              <label key={option.value} className={`wf-box${selectedTypes.includes(option.value) ? ' wf-box--accent' : ''}`} style={{ padding: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <label key={option.value} className={`wf-box wf-search-filter-checkbox${selectedTypes.includes(option.value) ? ' wf-box--accent' : ''}`}>
                 <input
                   type="checkbox"
                   checked={selectedTypes.includes(option.value)}
@@ -404,29 +404,27 @@ export default function SearchPage() {
             ))}
           </section>
 
-          <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p className="wf-text-label" style={{ margin: 0 }}>노트</p>
+          <section className="wf-search-filter-section">
+            <p className="wf-text-label">노트</p>
             <button
               type="button"
-              className={`wf-box${selectedNoseTags.length > 0 ? ' wf-box--accent' : ''}`}
-              style={{ padding: 12, color: 'inherit', textAlign: 'left', cursor: 'pointer' }}
+              className={`wf-box wf-search-filter-tag-btn${selectedNoseTags.length > 0 ? ' wf-box--accent' : ''}`}
               onClick={() => setTagModalType('nose')}
             >
               향 {selectedNoseTags.length > 0 ? `선택됨 ${selectedNoseTags.length}개` : '선택'}
             </button>
             <button
               type="button"
-              className={`wf-box${selectedTasteTags.length > 0 ? ' wf-box--accent' : ''}`}
-              style={{ padding: 12, color: 'inherit', textAlign: 'left', cursor: 'pointer' }}
+              className={`wf-box wf-search-filter-tag-btn${selectedTasteTags.length > 0 ? ' wf-box--accent' : ''}`}
               onClick={() => setTagModalType('taste')}
             >
               맛 {selectedTasteTags.length > 0 ? `선택됨 ${selectedTasteTags.length}개` : '선택'}
             </button>
           </section>
 
-          <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p className="wf-text-label" style={{ margin: 0 }}>도수</p>
-            <div className={`wf-box${minAbv !== ABV_RANGE_MIN || maxAbv !== ABV_RANGE_MAX ? ' wf-box--accent' : ''}`} style={{ padding: 12 }}>
+          <section className="wf-search-filter-section">
+            <p className="wf-text-label">도수</p>
+            <div className={`wf-box wf-search-filter-range-box${minAbv !== ABV_RANGE_MIN || maxAbv !== ABV_RANGE_MAX ? ' wf-box--accent' : ''}`}>
               <DualRangeSlider
                 minLimit={ABV_RANGE_MIN}
                 maxLimit={ABV_RANGE_MAX}
@@ -439,9 +437,9 @@ export default function SearchPage() {
             </div>
           </section>
 
-          <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p className="wf-text-label" style={{ margin: 0 }}>숙성연수</p>
-            <div className={`wf-box${minAge !== AGE_RANGE_MIN || maxAge !== AGE_RANGE_MAX ? ' wf-box--accent' : ''}`} style={{ padding: 12 }}>
+          <section className="wf-search-filter-section">
+            <p className="wf-text-label">숙성연수</p>
+            <div className={`wf-box wf-search-filter-range-box${minAge !== AGE_RANGE_MIN || maxAge !== AGE_RANGE_MAX ? ' wf-box--accent' : ''}`}>
               <DualRangeSlider
                 minLimit={AGE_RANGE_MIN}
                 maxLimit={AGE_RANGE_MAX}
@@ -457,6 +455,7 @@ export default function SearchPage() {
           {/* 2번: 필터 하단 등록 요청 버튼 */}
           <button
             type="button"
+            className="wf-search-register-link"
             onClick={() => {
               if (!localStorage.getItem('accessToken')) {
                 const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
@@ -465,23 +464,13 @@ export default function SearchPage() {
               }
               setShowRequestModal(true);
             }}
-            style={{
-              background: 'none',
-              border: '1px dashed #2e2e38',
-              borderRadius: 8,
-              padding: '10px 12px',
-              color: '#8b8b96',
-              fontSize: 13,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
           >
             + 원하는 위스키 등록 요청
           </button>
         </aside>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8 }}>
-            <div className="wf-search-autocomplete" style={{ flex: 1 }}>
+        <div className="wf-search-main">
+          <form onSubmit={handleSubmit} className="wf-search-form">
+            <div className="wf-search-autocomplete">
               <Input
                 aria-label="위스키 검색어"
                 placeholder="위스키 이름을 검색해보세요"
@@ -509,13 +498,13 @@ export default function SearchPage() {
                 </div>
               ) : null}
             </div>
-            <Button type="submit" style={{ width: 96 }}>
+            <Button type="submit" className="wf-search-form__btn">
               검색
             </Button>
             <Button
               type="button"
               variant="ghost"
-              style={{ width: 112 }}
+              className="wf-search-form__reset"
               onClick={() => {
                 setInputValue('');
                 setKeyword('');
@@ -548,22 +537,23 @@ export default function SearchPage() {
           ) : null}
 
           {isError ? (
-            <div className="wf-box" style={{ padding: 16 }}>
+            <div className="wf-box wf-search-error-box">
               <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
               <p className="wf-card__meta">백엔드 서버와 검색 API가 실행 중인지 확인해주세요.</p>
-              <Button variant="ghost" style={{ height: 32, width: 120, marginTop: 8 }} onClick={() => refetch()}>
+              <Button variant="ghost" size="sm" onClick={() => refetch()}>
                 다시 시도
               </Button>
             </div>
           ) : null}
 
           {!isLoading && !isError && results.length === 0 ? (
-            <div className="wf-box" style={{ padding: 20 }}>
+            <div className="wf-box wf-search-empty-box">
               <p className="wf-card__title">검색 결과가 없습니다.</p>
               <p className="wf-card__meta">다른 검색어로 다시 찾아보거나 등록을 요청해보세요.</p>
               {/* 1번: 검색 결과 없을 때 등록 요청 버튼 */}
               <button
                 type="button"
+                className="wf-search-register-btn"
                 onClick={() => {
                   if (!localStorage.getItem('accessToken')) {
                     const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
@@ -571,17 +561,6 @@ export default function SearchPage() {
                     return;
                   }
                   setShowRequestModal(true);
-                }}
-                style={{
-                  marginTop: 12,
-                  background: '#c9a227',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '8px 16px',
-                  color: '#0c0c0f',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
                 }}
               >
                 위스키 등록 요청하기
@@ -591,18 +570,18 @@ export default function SearchPage() {
 
           {results.map((whiskey) => {
             const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
+            const isWished = wishedMap[whiskey.id] !== undefined;
             return (
-            <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable" style={{ padding: 16, textDecoration: 'none' }}>
+            <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable wf-search-card">
               {thumbSrc && !imgErrors.has(whiskey.id) ? (
                 <img
                   src={thumbSrc}
                   alt={whiskey.name}
-                  className="wf-card__thumb"
-                  style={{ width: 72, height: 96, objectFit: 'cover' }}
+                  className="wf-card__thumb wf-search-card__thumb"
                   onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
                 />
               ) : (
-                <div className="wf-card__thumb wf-placeholder" style={{ width: 72, height: 96 }} />
+                <div className="wf-card__thumb wf-placeholder wf-search-card__thumb" />
               )}
               <div className="wf-card__body">
                 <div className="wf-card__title">{whiskey.name}</div>
@@ -610,13 +589,7 @@ export default function SearchPage() {
                 <div className="wf-card__meta">{whiskey.type}</div>
                 <Button
                     variant="ghost"
-                    style={{
-                      height: 32,
-                      width: 100,
-                      marginTop: 8,
-                      color: wishedMap[whiskey.id] !== undefined ? '#f87171' : '#8b8b96',
-                      borderColor: wishedMap[whiskey.id] !== undefined ? '#f87171' : '#2e2e38',
-                    }}
+                    className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
                     onClick={(e) => handleWishClick(e, whiskey.id)}
                   >
                     ♥ 위시
@@ -644,47 +617,30 @@ export default function SearchPage() {
           role="dialog"
           aria-modal="true"
           aria-label={tagModalTitle}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 30,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 16,
-            background: 'rgba(0, 0, 0, 0.62)',
-          }}
+          className="wf-search-tag-modal"
           onClick={() => setTagModalType(null)}
         >
           <div
-            className="wf-box wf-box--solid"
-            style={{
-              width: 'min(560px, 100%)',
-              maxHeight: '80vh',
-              overflow: 'hidden',
-              padding: 16,
-              background: 'var(--wf-surface)',
-            }}
+            className="wf-box wf-box--solid wf-search-tag-modal__inner"
             onClick={(event) => event.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <div className="wf-search-tag-modal__header">
               <div>
-                <p className="wf-text-label" style={{ margin: 0 }}>{tagModalTitle}</p>
-                <p className="wf-text-sm" style={{ margin: '4px 0 0' }}>선택 {currentSelectedTags.length}개</p>
+                <p className="wf-text-label">{tagModalTitle}</p>
+                <p className="wf-text-sm">선택 {currentSelectedTags.length}개</p>
               </div>
-              <Button variant="ghost" style={{ width: 84, height: 36 }} onClick={() => setTagModalType(null)}>
+              <Button variant="ghost" size="sm" className="wf-search-tag-modal__close" onClick={() => setTagModalType(null)}>
                 닫기
               </Button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(132px, 1fr))', gap: 8, maxHeight: '58vh', overflowY: 'auto' }}>
+            <div className="wf-search-tag-modal__grid">
               {currentTagOptions.map((tag) => {
                 const selected = currentSelectedTags.includes(tag);
                 return (
                   <button
                     key={tag}
                     type="button"
-                    className={`wf-box${selected ? ' wf-box--accent' : ''}`}
-                    style={{ padding: '10px 12px', color: 'inherit', textAlign: 'left', cursor: 'pointer' }}
+                    className={`wf-box wf-search-tag-option${selected ? ' wf-box--accent' : ''}`}
                     onClick={() => {
                       if (tagModalType === 'nose') {
                         setSelectedNoseTags((tags) => toggleItem(tags, tag));

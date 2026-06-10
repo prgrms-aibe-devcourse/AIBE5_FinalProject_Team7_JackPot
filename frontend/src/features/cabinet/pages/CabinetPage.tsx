@@ -289,7 +289,7 @@ function MyReviewItem({
           <div>
             <p className="wf-text-label">별점</p>
             <StarRatingInput value={rating} onChange={setRating} />
-            <p className="wf-text-sm" style={{ margin: '8px 0 0' }}>{rating}점</p>
+            <p className="wf-review-card__rating-display">{rating}점</p>
           </div>
           <textarea
             className="wf-review-textarea"
@@ -607,13 +607,13 @@ export default function CabinetPage() {
 
       {section === 'bar' ? (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="wf-cabinet-subtabs-row">
             <CabinetSubTabs active={tab} basePath={`${PATHS.CABINET}?section=bar`} />
             {tab === 'note' && (
-              <Button to={PATHS.NOTE_PICK} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ Note 작성</Button>
+              <Button to={PATHS.NOTE_PICK} size="sm">+ Note 작성</Button>
             )}
             {tab === 'reviews' && (
-              <Button to={PATHS.REVIEW_PICK} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ 리뷰 작성</Button>
+              <Button to={PATHS.REVIEW_PICK} size="sm">+ 리뷰 작성</Button>
             )}
           </div>
           {tab === 'pick' && (
@@ -661,17 +661,11 @@ export default function CabinetPage() {
             )
           ) : tab === 'wish' ? (
             // 위시 탭 — 왼쪽 폴더(고정) + 오른쪽 아이템(고정)
-            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', minHeight: 400 }}>
+            <div className="wf-cabinet-wish-layout">
 
               {/* 왼쪽: 폴더 목록 — 너비 고정, 높이 독립 */}
-              <aside className="wf-box" style={{
-                width: 200,
-                minWidth: 200,
-                flexShrink: 0,
-                padding: 16,
-                alignSelf: 'flex-start',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <aside className="wf-box wf-cabinet-wish-folders">
+                <div className="wf-cabinet-wish-folders__header">
                   <strong className="wf-text-sm">📁 플레이리스트</strong>
                   <button type="button" className="wf-link wf-text-xs" onClick={() => setShowFolderInput((v) => !v)}>
                     {showFolderInput ? '취소' : '+ 추가'}
@@ -680,7 +674,7 @@ export default function CabinetPage() {
 
                 {/* 폴더 이름 입력 */}
                 {showFolderInput && (
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                  <div className="wf-cabinet-wish-folders__input-row">
                     <input
                       type="text"
                       placeholder="폴더 이름"
@@ -688,33 +682,12 @@ export default function CabinetPage() {
                       onChange={(e) => setNewFolderName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                       autoFocus
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        background: '#16161c',
-                        border: '1px solid #2e2e38',
-                        borderRadius: 8,
-                        padding: '6px 10px',
-                        color: '#ececf0',
-                        fontSize: 13,
-                        outline: 'none',
-                      }}
+                      className="wf-cabinet-wish-folder-input"
                     />
                     <button
                       type="button"
                       onClick={handleCreateFolder}
-                      style={{
-                        background: '#c9a227',
-                        border: 'none',
-                        borderRadius: 8,
-                        padding: '6px 10px',
-                        color: '#0c0c0f',
-                        fontWeight: 600,
-                        fontSize: 13,
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                        whiteSpace: 'nowrap',
-                      }}
+                      className="wf-cabinet-wish-folder-add-btn"
                     >
                       추가
                     </button>
@@ -723,85 +696,58 @@ export default function CabinetPage() {
 
                 {/* 폴더 목록 */}
                 {wishFolders.length === 0 ? (
-                  <p className="wf-text-xs" style={{ margin: 0 }}>폴더가 없습니다.</p>
+                  <p className="wf-text-xs">폴더가 없습니다.</p>
                 ) : (
-                  wishFolders.map((folder) => (
-                    <div
-                      key={folder.folderId}
-                      draggable
-                      onDragStart={() => handleDragStart(folder.folderId)}
-                      onDragOver={(e) => handleDragOver(e, folder.folderId)}
-                      onDrop={() => handleDrop(folder.folderId)}
-                      onDragLeave={() => setDragOverFolderId(null)}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '6px 4px',
-                        borderRadius: 6,
-                        background: dragOverFolderId === folder.folderId ? 'rgba(201,162,39,0.1)' : 'transparent',
-                        borderTop: dragOverFolderId === folder.folderId ? '2px solid #c9a227' : '2px solid transparent',
-                        cursor: 'grab',
-                        transition: 'background 0.15s',
-                      }}
-                    >
-                      {/* 드래그 핸들 */}
-                      <span style={{ color: '#8b8b96', fontSize: 12, marginRight: 4, cursor: 'grab', userSelect: 'none' }}>⠿</span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFolderId(folder.folderId)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: selectedFolderId === folder.folderId ? '#c9a227' : '#ececf0',
-                          fontWeight: selectedFolderId === folder.folderId ? 700 : 400,
-                          cursor: 'pointer',
-                          fontSize: 13,
-                          padding: 0,
-                          textAlign: 'left',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          flex: 1,
-                        }}
+                  wishFolders.map((folder) => {
+                    const isActive = selectedFolderId === folder.folderId;
+                    const isDragOver = dragOverFolderId === folder.folderId;
+                    return (
+                      <div
+                        key={folder.folderId}
+                        draggable
+                        onDragStart={() => handleDragStart(folder.folderId)}
+                        onDragOver={(e) => handleDragOver(e, folder.folderId)}
+                        onDrop={() => handleDrop(folder.folderId)}
+                        onDragLeave={() => setDragOverFolderId(null)}
+                        className={`wf-cabinet-wish-folder-item${isDragOver ? ' wf-cabinet-wish-folder-item--drag-over' : ''}`}
                       >
-                        {folder.name}
-                      </button>
-                      <button
-                        type="button"
-                        className="wf-link wf-text-xs"
-                        onClick={() => handleDeleteFolder(folder.folderId)}
-                        style={{ flexShrink: 0, marginLeft: 4 }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))
+                        <span className="wf-cabinet-wish-folder-handle">⠿</span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedFolderId(folder.folderId)}
+                          className="wf-cabinet-wish-folder-btn"
+                          style={{
+                            color: isActive ? 'var(--wf-accent)' : 'var(--wf-text)',
+                            fontWeight: isActive ? 700 : 400,
+                          }}
+                        >
+                          {folder.name}
+                        </button>
+                        <button
+                          type="button"
+                          className="wf-link wf-text-xs"
+                          onClick={() => handleDeleteFolder(folder.folderId)}
+                          style={{ flexShrink: 0, marginLeft: 4 }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })
                 )}
               </aside>
 
               {/* 오른쪽: 위시 아이템 — 나머지 공간 차지, 높이 독립 */}
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="wf-cabinet-wish-content">
                 {selectedFolderId === null ? (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 200,
-                  }}>
-                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>
-                      폴더를 선택하거나 새로 만들어주세요.
-                    </p>
+                  <div className="wf-cabinet-wish-empty">
+                    폴더를 선택하거나 새로 만들어주세요.
                   </div>
                 ) : wishLoading ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>불러오는 중...</p>
-                  </div>
+                  <div className="wf-cabinet-wish-empty">불러오는 중...</div>
                 ) : wishItems.length === 0 ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-                    <p style={{ color: '#8b8b96', fontSize: 15, margin: 0 }}>
-                      이 폴더에 위시한 위스키가 없습니다.
-                    </p>
+                  <div className="wf-cabinet-wish-empty">
+                    이 폴더에 위시한 위스키가 없습니다.
                   </div>
                 ) : (
                   wishItems.map((item) => (
