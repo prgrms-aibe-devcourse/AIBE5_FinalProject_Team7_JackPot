@@ -24,7 +24,6 @@ function FeedCard({ post }: { post: LoungePost }) {
             src={resolveMediaUrl(post.authorProfileImageUrl)!}
             alt={authorName}
             className="wf-feed-card__avatar"
-            style={{ objectFit: 'cover', borderRadius: '50%' }}
           />
         ) : (
           <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
@@ -53,9 +52,7 @@ function PromoToday() {
     <section className="wf-feed-promo wf-box wf-box--accent">
       <div>
         <p className="wf-text-label">추천</p>
-        <h2 className="wf-hero__title" style={{ fontSize: 19 }}>
-          오늘의 추천
-        </h2>
+        <h2 className="wf-hero__title wf-feed-promo__title">오늘의 추천</h2>
         <p className="wf-text-sm">글렌피딕 12 · 가벼운 과일향</p>
       </div>
       <Button to="/whiskey/1" variant="ghost">
@@ -70,9 +67,7 @@ function PromoTasteMatch() {
     <section className="wf-feed-promo wf-box wf-feed-promo--match">
       <div>
         <p className="wf-text-label">추천</p>
-        <h2 className="wf-hero__title" style={{ fontSize: 19 }}>
-          취향 비슷한 유저
-        </h2>
+        <h2 className="wf-hero__title wf-feed-promo__title">취향 비슷한 유저</h2>
         <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
       </div>
       <Button to={PATHS.TASTE_MATCH} variant="ghost">
@@ -106,7 +101,7 @@ export default function HomePage() {
       ) : feed.length ? (
         feed.map((post) => <FeedCard key={post.postId} post={post} />)
       ) : (
-        <section className="wf-box wf-box--solid" style={{ padding: 20 }}>
+        <section className="wf-box wf-box--solid wf-lounge-empty">
           <h2 className="wf-section-title">팔로잉 글이 없습니다</h2>
           <p className="wf-text-sm">유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.</p>
         </section>
