@@ -1,6 +1,20 @@
 import { apiClient } from '@/shared/api/client';
 
-/** TODO: WhiskeyNote_API명세서_v2 — home 도메인 연동 */
+export interface LoungePost {
+  postId: number;
+  authorId: number;
+  authorNickname: string;
+  authorProfileImageUrl: string | null;
+  title: string;
+  context: string;
+  createdAt: string;
+}
+
 export const homeApi = {
-  client: apiClient,
+  getLoungeFeed: async (page = 0, size = 20): Promise<LoungePost[]> => {
+    const res = await apiClient.get<LoungePost[]>('/lounge/feed', {
+      params: { page, size },
+    });
+    return res.data;
+  },
 };

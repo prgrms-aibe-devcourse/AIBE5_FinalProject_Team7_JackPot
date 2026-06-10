@@ -12,6 +12,7 @@ import { CabinetSubTabs } from '@/features/cabinet/components/CabinetSubTabs';
 import { fetchMyReviews } from '@/features/review/api/reviewApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { toast } from '@/shared/components/ui/Toast';
 
 function parseSection(v: string | null): CabinetSection {
   return v === 'community' ? 'community' : 'bar';
@@ -26,6 +27,14 @@ function toUserId(value: string | undefined): number | null {
   if (!value) return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
+}
+
+function getCurrentUserId(): number | null {
+  const value = localStorage.getItem('userId');
+  if (!value) return null;
+
+  const userId = Number(value);
+  return Number.isFinite(userId) ? userId : null;
 }
 
 function OtherReviewItem({ review }: { review: WhiskeyReview }) {
@@ -59,12 +68,18 @@ export default function UserProfilePage() {
   const section = parseSection(params.get('section'));
   const tab = parseTab(params.get('tab'));
   const targetUserId = toUserId(userId);
+  const currentUserId = getCurrentUserId();
+  const isSelf = currentUserId != null && targetUserId != null && currentUserId === targetUserId;
 
   const [picks, setPicks] = useState<any[]>([]);
   const [picksLoading, setPicksLoading] = useState(false);
   const [cabinetStats, setCabinetStats] = useState<CabinetStatsResponse | null>(null);
   const [reviews, setReviews] = useState<{ content: WhiskeyReview[] } | null>(null);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followBusy, setFollowBusy] = useState(false);
 
   const displayName = useMemo(() => {
     if (reviews?.content?.length) return reviews.content[0].nickname;
@@ -97,6 +112,55 @@ export default function UserProfilePage() {
   useEffect(() => {
     if (targetUserId == null) return;
 
+    cabinetApi
+      .getFollowerCount(targetUserId)
+      .then((res) => setFollowerCount(res.count))
+      .catch(() => setFollowerCount(0));
+
+    cabinetApi
+      .getFollowingCount(targetUserId)
+      .then((res) => setFollowingCount(res.count))
+      .catch(() => setFollowingCount(0));
+  }, [targetUserId]);
+
+  useEffect(() => {
+    if (targetUserId == null || isSelf) {
+      setIsFollowing(false);
+      return;
+    }
+
+    cabinetApi
+      .getFollowStatus(targetUserId)
+      .then((res) => setIsFollowing(res.following))
+      .catch(() => setIsFollowing(false));
+  }, [targetUserId, isSelf]);
+
+  const handleFollowClick = async () => {
+    if (targetUserId == null || isSelf || followBusy) return;
+
+    setFollowBusy(true);
+    try {
+      if (isFollowing) {
+        await cabinetApi.unfollowUser(targetUserId);
+        setIsFollowing(false);
+        setFollowerCount((count) => Math.max(0, count - 1));
+        toast('팔로우를 취소했습니다.', 'info');
+      } else {
+        await cabinetApi.followUser(targetUserId);
+        setIsFollowing(true);
+        setFollowerCount((count) => count + 1);
+        toast('팔로우했습니다.', 'success');
+      }
+    } catch (error) {
+      toast(error instanceof Error ? error.message : '팔로우 처리에 실패했습니다.', 'error');
+    } finally {
+      setFollowBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (targetUserId == null) return;
+
     // 서버 정책에 따라 401이 날 수 있으므로 실패해도 화면을 막지 않는다.
     cabinetApi
       .getUserCabinetStats(targetUserId)
@@ -121,10 +185,13 @@ export default function UserProfilePage() {
           name={displayName}
           subtitle="애호가 · 보틀 쉐어 공개"
           profileImageUrl={profileImageUrl}
-          followers={128}
-          following={94}
+          followers={followerCount}
+          following={followingCount}
           followHref={followHref}
-          showFollowButton
+          showFollowButton={!isSelf}
+          isFollowing={isFollowing}
+          followBusy={followBusy}
+          onFollowClick={handleFollowClick}
         />
         <h2 className="wf-section-title">팔로잉 · 팔로워</h2>
         <p className="wf-text-sm">13b-cabinet-other-follow</p>
@@ -138,10 +205,13 @@ export default function UserProfilePage() {
         name={displayName}
         subtitle="애호가 · 보틀 쉐어 공개"
         profileImageUrl={profileImageUrl}
-        followers={128}
-        following={94}
+        followers={followerCount}
+        following={followingCount}
         followHref={followHref}
-        showFollowButton
+        showFollowButton={!isSelf}
+        isFollowing={isFollowing}
+        followBusy={followBusy}
+        onFollowClick={handleFollowClick}
       />
 
       <CabinetPrimaryTabs

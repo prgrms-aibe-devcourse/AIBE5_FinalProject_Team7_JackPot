@@ -56,7 +56,8 @@ public class WhiskeySearchService {
         if(keyword == null || keyword.isBlank()){
             return whiskeyRepository.findAll(pageRequest).map(WhiskeyCardResponse::from);
         }
-        return whiskeySearchRepository.findByNameContaining(keyword,pageRequest)
+        String normalizedKeyword = normalizeSearchKeyword(keyword);
+        return whiskeySearchRepository.findByNameContaining(normalizedKeyword,pageRequest)
                 .map(WhiskeySearchMapper::toCardResponse);
     }
     @Transactional(readOnly = true)
@@ -165,5 +166,9 @@ public class WhiskeySearchService {
             }
         }
         return normalizedName.split("\\s+")[0];
+    }
+
+    private String normalizeSearchKeyword(String keyword) {
+        return keyword.trim().replaceAll("\\s+", "");
     }
 }

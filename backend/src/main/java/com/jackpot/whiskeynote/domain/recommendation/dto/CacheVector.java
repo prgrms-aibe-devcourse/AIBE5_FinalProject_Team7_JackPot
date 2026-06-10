@@ -1,4 +1,4 @@
-package com.jackpot.whiskeynote.domain.whiskey.dto;
+package com.jackpot.whiskeynote.domain.recommendation.dto;
 
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.whiskey.entity.AvgWhiskeyTag;
@@ -12,7 +12,11 @@ public record CacheVector(
     double[] scoreVec,
     Map<Long, Double> tagVector
 ) {
-    public static CacheVector from(WhiskeysNoteCache cache) {
+    public static CacheVector from(double[] scoreVec, Map<Long, Double> tagVector) {
+        return new CacheVector(scoreVec, tagVector);
+    }
+
+    public static CacheVector fromCache(WhiskeysNoteCache cache) {
         return new CacheVector(
             normalizeScore(cache),
             buildTagVector(cache)

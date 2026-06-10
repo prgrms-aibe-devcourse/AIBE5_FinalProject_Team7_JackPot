@@ -15,7 +15,9 @@ public class WebCorsConfig {
             "http://localhost:5174",
             "http://127.0.0.1:5173",
             "http://127.0.0.1:5174",
-            "http://3.34.23.43"
+            "http://3.34.23.43",
+            "https://whiskey-note.site",
+            "https://www.whiskey-note.site"
     );
 
     @Bean

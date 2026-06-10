@@ -1,20 +1,23 @@
 package com.jackpot.whiskeynote.domain.whiskey.controller;
 
+import com.jackpot.whiskeynote.domain.activity.service.WhiskeyViewLogService;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewResponse;
 import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewStats;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDetailResponse;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyFilterRequest;
-import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyRecommendationResponse;
+import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeyType;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordCorrectionResponse;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordSuggestResponse;
 import com.jackpot.whiskeynote.domain.whiskey.search.service.WhiskeySearchService;
-import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyRecommendationService;
+import com.jackpot.whiskeynote.domain.recommendation.service.WhiskeyRecommendationService;
 import com.jackpot.whiskeynote.domain.whiskey.service.WhiskeyService;
+import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +29,7 @@ public class WhiskeyController {
     private final ReviewService reviewService;
     private final WhiskeySearchService whiskeySearchService;
     private final WhiskeyRecommendationService whiskeyRecommendationService;
+    private final WhiskeyViewLogService whiskeyViewLogService;
 
     // 위스키 전체 조회 (페이징)
     @GetMapping("/api/v1/whiskeys")
@@ -113,4 +117,14 @@ public class WhiskeyController {
     public List<WhiskeyRecommendationResponse> similarWhiskeys(@PathVariable Long id) {
         return whiskeyRecommendationService.recommendByWhiskey(id);
     }
+
+    // 로그인 한 유저는, 해당 페이지에서 일정 시간 이상 머물면, 그 사실을 서버에 전달
+    @PostMapping("/api/v1/whiskeys/{id}/view-logs")
+    public void recordWhiskeyViewLog(
+        @PathVariable Long id,
+        @AuthenticationPrincipal JwtUserPrincipal principal) {
+        Long userId = principal != null ? principal.userId() : null;
+        whiskeyViewLogService.createWhiskeyViewLog(userId, id);
+    }
+
 }

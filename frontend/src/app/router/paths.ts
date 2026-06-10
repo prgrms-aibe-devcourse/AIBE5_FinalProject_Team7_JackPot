@@ -25,6 +25,7 @@ export const PATHS = {
   COMMUNITY_FREE: '/community/free',
   COMMUNITY_QNA: '/community/qna',
   COMMUNITY_NOTICES: '/community/notices',
+  COMMUNITY_COLUMN: '/community/columns/:columnId',
   COMMUNITY_POST: '/community/posts/:postId',
   COMMUNITY_POST_NEW: '/community/posts/new',
   COMMUNITY_POST_EDIT: '/community/posts/:postId/edit',
@@ -36,6 +37,8 @@ export const PATHS = {
   ADMIN: '/admin',
   NOT_FOUND: '/error/404',
   SERVER_ERROR: '/error/500',
+  UNAUTHORIZED: '/error/401',
+  FORBIDDEN: '/error/403',
 } as const;
 
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];

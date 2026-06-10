@@ -1,62 +1,46 @@
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
+import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 
-type FeedKind = 'following' | 'popular' | 'activity';
-
-interface FeedItem {
-  id: string;
-  user: string;
-  badge: string;
-  badgeKind: FeedKind;
-  body: string;
-  likes: number;
+function stripHtml(html: string) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 }
 
-const FEED: FeedItem[] = [
-  {
-    id: '1',
-    user: '피트러버_서울',
-    badge: '팔로잉',
-    badgeKind: 'following',
-    body: '라프로익 10 첫 피트 후기 — 캠프파이어 향이 인상적이에요',
-    likes: 42,
-  },
-  {
-    id: '2',
-    user: '입문왕',
-    badge: '인기',
-    badgeKind: 'popular',
-    body: '싱글몰트 vs 블렌디드 정리했습니다. 입문자분들 참고해 주세요',
-    likes: 128,
-  },
-  {
-    id: '3',
-    user: 'whisky_fan',
-    badge: '♡ 팔로잉 활동',
-    badgeKind: 'activity',
-    body: '피트러버_서울님이 이 글에 좋아요를 눌렀습니다',
-    likes: 24,
-  },
-];
+function FeedCard({ post }: { post: LoungePost }) {
+  const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
+  const contentPreview = stripHtml(post.context);
+  const authorName = post.authorNickname || `사용자 #${post.authorId}`;
 
-function FeedCard({ item }: { item: FeedItem }) {
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
-        <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
+        {resolveMediaUrl(post.authorProfileImageUrl) ? (
+          <img
+            src={resolveMediaUrl(post.authorProfileImageUrl)!}
+            alt={authorName}
+            className="wf-feed-card__avatar"
+            style={{ objectFit: 'cover', borderRadius: '50%' }}
+          />
+        ) : (
+          <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
+        )}
         <div>
-          <strong>{item.user}</strong>
-          <span className={`wf-feed-card__badge wf-feed-card__badge--${item.badgeKind}`}>{item.badge}</span>
-          <p className="wf-text-sm">{item.body}</p>
+          <strong>{authorName}</strong>
+          <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
+          <p className="wf-text-sm">{post.title}</p>
+          <p className="wf-text-xs">{contentPreview}</p>
         </div>
       </div>
       <div className="wf-feed-card__preview wf-placeholder" aria-hidden />
       <footer className="wf-feed-card__foot">
-        <span className="wf-feed-card__likes">♡ {item.likes}</span>
+        <span className="wf-text-xs">{post.createdAt.slice(0, 10)}</span>
         <span className="wf-text-xs">(댓글은 글 페이지에서)</span>
-        <Link to={PATHS.COMMUNITY} className="wf-link wf-text-sm">
+        <Link to={detailPath} className="wf-link wf-text-sm">
           → 글 상세
         </Link>
       </footer>
@@ -100,16 +84,34 @@ function PromoTasteMatch() {
 
 /** svg/pages/06-home.svg — 라운지 타임라인 */
 export default function HomePage() {
+  const {
+    data: feed = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['lounge', 'feed', 0, 20],
+    queryFn: () => homeApi.getLoungeFeed(0, 20),
+  });
+
   return (
     <WireframePage scroll>
       <header className="wf-lounge-header">
         <h1 className="wf-title">라운지</h1>
-        <p className="wf-text-sm">팔로잉 · 인기 · 추천이 섞인 타임라인</p>
+        <p className="wf-text-sm">팔로우한 유저의 커뮤니티 글을 모아 보는 타임라인</p>
       </header>
-      <FeedCard item={FEED[0]} />
+      {isLoading ? (
+        <p className="wf-text-sm">팔로잉 피드를 불러오는 중입니다.</p>
+      ) : isError ? (
+        <p className="wf-text-sm">팔로잉 피드를 불러오지 못했습니다.</p>
+      ) : feed.length ? (
+        feed.map((post) => <FeedCard key={post.postId} post={post} />)
+      ) : (
+        <section className="wf-box wf-box--solid" style={{ padding: 20 }}>
+          <h2 className="wf-section-title">팔로잉 글이 없습니다</h2>
+          <p className="wf-text-sm">유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.</p>
+        </section>
+      )}
       <PromoToday />
-      <FeedCard item={FEED[1]} />
-      <FeedCard item={FEED[2]} />
       <PromoTasteMatch />
     </WireframePage>
   );

@@ -1,3 +1,4 @@
+// 자유게시판 페이지 — 카테고리 필터 + 페이지네이션을 갖춘 자유 게시글 목록
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -8,6 +9,7 @@ import { useFreePosts } from '../hooks/useCommunity';
 import type { PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
+// value: undefined → "전체" 조회 (카테고리 파라미터 미전달)
 const CATEGORIES: Array<{ value: PostCategory | undefined; label: string }> = [
   { value: undefined, label: '전체' },
   { value: 'F', label: POST_CATEGORY_LABEL.F },
@@ -23,6 +25,7 @@ export default function FreeBoardPage() {
   const [category, setCategory] = useState<PostCategory | undefined>(undefined);
   const { data, isLoading } = useFreePosts(page, category);
 
+  // 카테고리를 변경하면 페이지를 0으로 초기화해야 이전 카테고리의 끝 페이지가 남지 않음
   function handleCategory(val: PostCategory | undefined) {
     setCategory(val);
     setPage(0);
@@ -38,6 +41,7 @@ export default function FreeBoardPage() {
       </nav>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <h1 className="wf-title" style={{ margin: 0 }}>자유게시판</h1>
+        {/* 글쓰기 URL에 ?type=FREE를 붙여 PostFormPage가 postType을 구분하도록 함 */}
         <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`} className="wf-chip wf-chip--on">글쓰기</Link>
       </div>
       <div className="wf-chips" style={{ marginBottom: 12 }}>

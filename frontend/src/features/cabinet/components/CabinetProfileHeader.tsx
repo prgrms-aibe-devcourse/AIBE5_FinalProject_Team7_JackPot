@@ -11,6 +11,9 @@ interface CabinetProfileHeaderProps {
   following: number;
   followHref?: string;
   showFollowButton?: boolean;
+  isFollowing?: boolean;
+  followBusy?: boolean;
+  onFollowClick?: () => void;
   isOwner?: boolean;
 }
 
@@ -22,6 +25,9 @@ export function CabinetProfileHeader({
   following,
   followHref,
   showFollowButton,
+  isFollowing,
+  followBusy,
+  onFollowClick,
   isOwner,
 }: CabinetProfileHeaderProps) {
   const followLink = followHref ?? PATHS.CABINET_FOLLOW;
@@ -58,7 +64,14 @@ export function CabinetProfileHeader({
           </>
         )}
         {showFollowButton ? (
-          <Button style={{ marginTop: 8, height: 40, width: 96 }}>팔로우</Button>
+          <Button
+            variant={isFollowing ? 'ghost' : 'primary'}
+            style={{ marginTop: 8, height: 40, width: 96 }}
+            onClick={onFollowClick}
+            disabled={followBusy}
+          >
+            {isFollowing ? '팔로잉' : '팔로우'}
+          </Button>
         ) : null}
       </div>
     </header>

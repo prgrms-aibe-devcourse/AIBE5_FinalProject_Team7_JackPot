@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   // AUTH-03: 소셜 로그인 redirect
   // 의도: SPA 라우터 대신 전체 페이지 이동으로 백엔드 redirect 체인 시작
-  function handleOauth(provider: 'kakao' | 'google' | 'naver') {
+  function handleOauth(provider: 'kakao' | 'google') {
     window.location.href = `/api/v1/auth/oauth/${provider}`;
   }
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
           </Button>
           <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('kakao')}>카카오</Button>
           <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('google')}>Google</Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('naver')}>네이버</Button>
+
           <p className="wf-text-xs" style={{ textAlign: 'center', marginTop: 16 }}>
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>
           </p>

@@ -1,3 +1,4 @@
+// 공지·FAQ 페이지 — 운영 공지와 자주 묻는 질문을 하나의 목록으로 표시
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -12,6 +13,7 @@ export default function NoticePage() {
 
   return (
     <WireframePage scroll>
+      {/* 공지·FAQ는 글쓰기 버튼을 노출하지 않음 — 관리자만 작성 가능하기 때문 */}
       <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>

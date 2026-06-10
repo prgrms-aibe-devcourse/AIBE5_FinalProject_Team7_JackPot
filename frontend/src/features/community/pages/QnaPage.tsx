@@ -1,3 +1,4 @@
+// Q&A 게시판 페이지 — 질문/답변 유형의 게시글을 페이지네이션과 함께 표시
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -12,6 +13,7 @@ export default function QnaPage() {
 
   return (
     <WireframePage scroll>
+      {/* QnaPage는 현재 라우트에 등록되어 있지 않으므로 nav 구조는 유지하되 향후 PATHS에 추가 필요 */}
       <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>

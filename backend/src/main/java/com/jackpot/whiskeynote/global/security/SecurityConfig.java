@@ -45,6 +45,24 @@ public class SecurityConfig {
                                 "/api/v1/auth/oauth/**",
                                 "/api/v1/auth/refresh"
                         ).permitAll()
+                        // 팔로우 API — JWT 인증 유저 기준으로 팔로우/언팔로우와 카운트 조회
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/followers",
+                                "/api/v1/followings",
+                                "/api/v1/follows/status",
+                                "/api/v1/followers/list",
+                                "/api/v1/followings/list",
+                                "/api/v1/lounge/feed"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/follows"
+                        ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.DELETE,
+                                "/api/v1/follows"
+                        ).authenticated()
                         .requestMatchers("/api/v1/auth/logout").authenticated()
                         // 취향 설문 — 결과 조회·저장은 인증 필수, 계산만은 비인증 허용
                         .requestMatchers(
@@ -129,12 +147,10 @@ public class SecurityConfig {
                         ).authenticated()
                         // 위스키 등록 요청 — 로그인 필요
                         .requestMatchers("/api/v1/whiskey-requests/**").authenticated()
-                        // 관리자 위스키 요청 — ADMIN 권한만
-                        .requestMatchers("/api/v1/admin/whiskey-requests/**").hasRole("ADMIN")
                         // 신고 — 로그인 필요
                         .requestMatchers("/api/v1/reports/**").authenticated()
-                        // 관리자 신고 — ADMIN 권한만
-                        .requestMatchers("/api/v1/admin/reports/**").hasRole("ADMIN")
+                        // 관리자 전용 API — ADMIN 권한만
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
