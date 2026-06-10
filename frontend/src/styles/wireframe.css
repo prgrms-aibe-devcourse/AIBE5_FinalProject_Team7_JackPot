@@ -322,6 +322,19 @@ body {
   border-color: var(--wf-muted);
 }
 
+.wf-btn--danger {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: var(--wf-danger);
+}
+
+.wf-btn--sm {
+  height: 34px;
+  font-size: 13px;
+  padding: 0 14px;
+  border-radius: 8px;
+}
+
 .wf-btn--block {
   width: 100%;
 }

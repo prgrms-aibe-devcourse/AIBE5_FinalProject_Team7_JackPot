@@ -1,11 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
-type Variant = 'primary' | 'ghost';
+type Variant = 'primary' | 'ghost' | 'danger';
+type Size = 'md' | 'sm';
 
 interface ButtonAsButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   to?: undefined;
   variant?: Variant;
+  size?: Size;
   block?: boolean;
   children: ReactNode;
 }
@@ -13,6 +15,7 @@ interface ButtonAsButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 interface ButtonAsLink {
   to: string;
   variant?: Variant;
+  size?: Size;
   block?: boolean;
   children: ReactNode;
   className?: string;
@@ -20,8 +23,21 @@ interface ButtonAsLink {
 }
 
 export function Button(props: ButtonAsButton | ButtonAsLink) {
-  const { variant = 'primary', block, children, className = '' } = props;
-  const classes = ['wf-btn', variant === 'primary' ? 'wf-btn--primary' : 'wf-btn--ghost', block ? 'wf-btn--block' : '', className]
+  const { variant = 'primary', size = 'md', block, children, className = '' } = props;
+
+  const variantClass = {
+    primary: 'wf-btn--primary',
+    ghost: 'wf-btn--ghost',
+    danger: 'wf-btn--danger',
+  }[variant];
+
+  const classes = [
+    'wf-btn',
+    variantClass,
+    size === 'sm' ? 'wf-btn--sm' : '',
+    block ? 'wf-btn--block' : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -34,7 +50,7 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
     );
   }
 
-  const { style, block: _block, variant: _variant, ...rest } = props as ButtonAsButton;
+  const { style, block: _b, variant: _v, size: _s, ...rest } = props as ButtonAsButton;
   return (
     <button type="button" className={classes} style={style} {...rest}>
       {children}

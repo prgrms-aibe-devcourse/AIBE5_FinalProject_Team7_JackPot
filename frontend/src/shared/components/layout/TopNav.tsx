@@ -54,9 +54,11 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
       <Link to={PATHS.LOUNGE} className="wf-topnav__logo-link">
         <div className="wf-topnav__logo">Whiskey Note</div>
       </Link>
+
       <Link to={PATHS.SEARCH} className="wf-input wf-topnav__search">
         {searchPlaceholder}
       </Link>
+
       <div className="wf-topnav__links">
         {NAV.map(({ to, label }) => (
           <NavLink key={to} to={to} className={({ isActive }) => (isActive ? 'active' : undefined)}>
@@ -65,83 +67,25 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
         ))}
       </div>
 
-      {/* 로그인 상태 영역 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+      <div className="wf-topnav__user">
         {isLoggedIn ? (
           <>
-            {/* 프로필 아바타 */}
-            <Link to={PATHS.MY_PAGE} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 34,
-                height: 34,
-                borderRadius: '50%',
-                border: '2px solid var(--wf-accent)',
-                overflow: 'hidden',
-                background: 'var(--wf-surface-2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}>
+            <Link to={PATHS.MY_PAGE} className="wf-topnav__profile">
+              <div className="wf-topnav__avatar">
                 {avatarSrc ? (
-                  <img src={avatarSrc} alt={nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={avatarSrc} alt={nickname} />
                 ) : (
-                  <span style={{ fontSize: 16 }}>🥃</span>
+                  <span>🥃</span>
                 )}
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--wf-text)', whiteSpace: 'nowrap' }}>
-                {nickname}
-              </span>
+              <span className="wf-topnav__nickname">{nickname}</span>
             </Link>
-
-            {/* 로그아웃 버튼 */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              style={{
-                height: 32,
-                padding: '0 14px',
-                borderRadius: 8,
-                border: '1px solid var(--wf-border)',
-                background: 'transparent',
-                color: 'var(--wf-muted)',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                whiteSpace: 'nowrap',
-                transition: 'border-color 0.15s, color 0.15s',
-              }}
-              onMouseEnter={e => {
-                (e.target as HTMLButtonElement).style.borderColor = 'var(--wf-danger)';
-                (e.target as HTMLButtonElement).style.color = 'var(--wf-danger)';
-              }}
-              onMouseLeave={e => {
-                (e.target as HTMLButtonElement).style.borderColor = 'var(--wf-border)';
-                (e.target as HTMLButtonElement).style.color = 'var(--wf-muted)';
-              }}
-            >
+            <button type="button" className="wf-topnav__logout" onClick={handleLogout}>
               로그아웃
             </button>
           </>
         ) : (
-          <Link
-            to={PATHS.LOGIN}
-            style={{
-              height: 32,
-              padding: '0 16px',
-              borderRadius: 8,
-              border: '1px solid var(--wf-accent)',
-              background: 'var(--wf-accent-dim)',
-              color: 'var(--wf-accent)',
-              fontSize: 13,
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <Link to={PATHS.LOGIN} className="wf-topnav__login">
             로그인
           </Link>
         )}
