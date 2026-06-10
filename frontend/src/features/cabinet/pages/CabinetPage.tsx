@@ -610,7 +610,7 @@ export default function CabinetPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <CabinetSubTabs active={tab} basePath={`${PATHS.CABINET}?section=bar`} />
             {tab === 'note' && (
-              <Button to={PATHS.SEARCH} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ Note 작성</Button>
+              <Button to={PATHS.NOTE_PICK} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ Note 작성</Button>
             )}
           </div>
           {tab === 'pick' && (
