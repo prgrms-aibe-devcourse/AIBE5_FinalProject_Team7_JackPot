@@ -4,6 +4,7 @@ export interface LoungePost {
   postId: number;
   authorId: number;
   authorNickname: string;
+  authorProfileImageUrl: string | null;
   title: string;
   context: string;
   createdAt: string;

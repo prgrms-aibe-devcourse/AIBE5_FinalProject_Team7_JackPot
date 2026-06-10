@@ -36,15 +36,18 @@ public class LoungeService {
         // 팔로우한 사용자들의 게시글 조회 (페이징)
         List<Post> posts = postRepository.findByAuthorIdInAndIsDeletedFalse(followingIds, pageRequest);
 
-        // 게시글 작성자 ID -> 닉네임 매핑 조회
-        Map<Long,String> nicknameMap = usersRepository.findAllById(followingIds)
+        // 게시글 작성자 ID -> 사용자 정보 매핑 조회
+        Map<Long, Users> userMap = usersRepository.findAllById(followingIds)
                 .stream()
-                .collect(Collectors.toMap(Users::getId, Users::getNickname));
+                .collect(Collectors.toMap(Users::getId, u -> u));
 
         return posts.stream()
-                .map(post -> LoungePostResponse.from(
-                        post,nicknameMap.getOrDefault(post.getAuthorId(),"알 수 없는 사용자")
-                ))
+                .map(post -> {
+                    Users author = userMap.get(post.getAuthorId());
+                    String nickname = author != null ? author.getNickname() : "알 수 없는 사용자";
+                    String profileImageUrl = author != null ? author.getProfileImageUrl() : null;
+                    return LoungePostResponse.from(post, nickname, profileImageUrl);
+                })
                 .toList();
     }
 }
