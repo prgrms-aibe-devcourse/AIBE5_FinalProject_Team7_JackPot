@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,10 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
 
     @Query("SELECT nc FROM WhiskeysNoteCache nc LEFT JOIN FETCH nc.avgWhiskeyTags awt LEFT JOIN FETCH awt.tag LEFT JOIN FETCH nc.whiskey")
     List<WhiskeysNoteCache> findAllWithTagsAndWhiskey();
+
+    @Query("SELECT nc " +
+        "FROM WhiskeysNoteCache nc " +
+        "LEFT JOIN FETCH nc.avgWhiskeyTags " +
+        "WHERE nc.whiskey.id IN :whiskeyIds")
+    List<WhiskeysNoteCache> findAllByWhiskeyIdWithTags(@Param("whiskeyIds") Collection<Long> whiskeyId);
 }

@@ -12,7 +12,11 @@ public record CacheVector(
     double[] scoreVec,
     Map<Long, Double> tagVector
 ) {
-    public static CacheVector from(WhiskeysNoteCache cache) {
+    public static CacheVector from(double[] scoreVec, Map<Long, Double> tagVector) {
+        return new CacheVector(scoreVec, tagVector);
+    }
+
+    public static CacheVector fromCache(WhiskeysNoteCache cache) {
         return new CacheVector(
             normalizeScore(cache),
             buildTagVector(cache)
