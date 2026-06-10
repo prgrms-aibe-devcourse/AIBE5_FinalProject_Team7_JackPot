@@ -153,43 +153,22 @@ export default function MyPage() {
   return (
     <WireframePage scroll>
       <p className="wf-breadcrumb">홈 / <strong>마이페이지</strong></p>
-      <div className="wf-box wf-panel" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+      <div className="wf-box wf-panel wf-mypage-profile-panel">
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadingImage}
-          style={{
-            padding: 0,
-            border: 'none',
-            background: 'none',
-            cursor: uploadingImage ? 'wait' : 'pointer',
-            position: 'relative',
-          }}
+          className="wf-mypage-avatar-btn"
           aria-label="프로필 사진 변경"
         >
-          <div
-            className="wf-topnav__avatar wf-placeholder"
-            style={{ width: 64, height: 64, overflow: 'hidden', borderRadius: '50%', border: '1px solid var(--wf-border)' }}
-          >
+          <div className="wf-mypage-avatar">
             {avatarSrc ? (
-              <img src={avatarSrc} alt={me?.nickname ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={avatarSrc} alt={me?.nickname ?? ''} />
             ) : (
-              <span style={{ fontSize: 28 }}>🥃</span>
+              <span className="wf-mypage-avatar__emoji">🥃</span>
             )}
           </div>
-          <span
-            className="wf-text-xs"
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background: 'rgba(0,0,0,0.55)',
-              color: '#fff',
-              padding: '2px 0',
-              textAlign: 'center',
-            }}
-          >
+          <span className="wf-mypage-avatar__overlay">
             {uploadingImage ? '업로드…' : '변경'}
           </span>
         </button>
@@ -201,61 +180,52 @@ export default function MyPage() {
           onChange={handleProfileImageChange}
         />
         <div>
-          <h1 className="wf-title" style={{ fontSize: 20 }}>
-            {me?.nickname ?? '—'}
-          </h1>
+          <h1 className="wf-title wf-mypage-name">{me?.nickname ?? '—'}</h1>
           <p className="wf-text-sm">{me?.email ?? '로그인 후 프로필을 불러옵니다.'}</p>
         </div>
       </div>
       <p className="wf-section-title">설정</p>
-      <div className="wf-box" style={{ padding: 14 }}>
-        <p className="wf-text-sm" style={{ marginBottom: 10 }}>프로필 수정</p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="wf-box wf-mypage-settings-box">
+        <p className="wf-text-sm wf-mypage-settings-box__label">프로필 수정</p>
+        <div className="wf-mypage-form">
           <Input
             label="닉네임"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임을 입력하세요"
           />
-          <Button
-            variant="primary"
-            block
-            disabled={saving}
-            onClick={handleSave}
-          >
+          <Button variant="primary" block disabled={saving} onClick={handleSave}>
             {saving ? '저장 중...' : '닉네임 저장'}
           </Button>
         </div>
       </div>
       <div
-        className="wf-box"
-        style={{ padding: 14, marginTop: 8, cursor: 'pointer', transition: 'border-color 0.15s' }}
+        className="wf-box wf-mypage-nav-item"
         onClick={() => navigate(PATHS.SURVEY)}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#c9a227')}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '')}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(PATHS.SURVEY)}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ margin: 0, fontSize: 14, color: '#ececf0' }}>취향 설문 다시하기</p>
-          <span style={{ color: '#8b8b96' }}>›</span>
+        <div className="wf-mypage-nav-item__row">
+          <p className="wf-mypage-nav-item__label">취향 설문 다시하기</p>
+          <span className="wf-mypage-nav-item__arrow">›</span>
         </div>
       </div>
-      {/* 3번: 위스키 등록 요청 목록 버튼 */}
       <div
-        className="wf-box"
-        style={{ padding: 14, marginTop: 8, cursor: 'pointer', transition: 'border-color 0.15s' }}
+        className="wf-box wf-mypage-nav-item"
         onClick={() => navigate('/whiskey-requests')}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#c9a227')}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '')}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && navigate('/whiskey-requests')}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ margin: 0, fontSize: 14, color: '#ececf0' }}>위스키 등록 요청</p>
-          <span style={{ color: '#8b8b96' }}>›</span>
+        <div className="wf-mypage-nav-item__row">
+          <p className="wf-mypage-nav-item__label">위스키 등록 요청</p>
+          <span className="wf-mypage-nav-item__arrow">›</span>
         </div>
       </div>
-      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
-        <p className="wf-text-sm" style={{ marginBottom: 10 }}>비밀번호 변경</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="wf-box wf-mypage-settings-box">
+        <p className="wf-text-sm wf-mypage-settings-box__label">비밀번호 변경</p>
+        <div className="wf-mypage-form">
           <Input
             label="현재 비밀번호"
             type="password"
@@ -282,13 +252,13 @@ export default function MyPage() {
           </Button>
         </div>
       </div>
-      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
-        <p className="wf-text-sm" style={{ marginBottom: 10 }}>회원</p>
-        <Button variant="ghost" block onClick={handleWithdraw} style={{ border: '1px solid #ff4d4f', color: '#ff4d4f' }}>
+      <div className="wf-box wf-mypage-settings-box">
+        <p className="wf-text-sm wf-mypage-settings-box__label">회원</p>
+        <Button variant="danger" block onClick={handleWithdraw}>
           회원 탈퇴
         </Button>
       </div>
-      <Button variant="ghost" to={PATHS.CABINET} style={{ marginTop: 16 }}>
+      <Button variant="ghost" to={PATHS.CABINET} className="wf-mypage-cabinet-link">
         캐비넷으로 이동
       </Button>
     </WireframePage>

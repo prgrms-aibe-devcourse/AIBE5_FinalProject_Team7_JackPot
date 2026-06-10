@@ -18,12 +18,12 @@ export default function CommunityPage() {
     <WireframePage scroll>
       <h1 className="wf-title">커뮤니티</h1>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16, marginBottom: 28 }}>
+      <div className="wf-community-boards">
         {BOARDS.map((b) => (
-          <Link key={b.path} to={b.path} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="wf-box wf-box--solid" style={{ padding: '16px 20px' }}>
-              <strong style={{ fontSize: 16 }}>{b.label}</strong>
-              <p className="wf-text-sm" style={{ margin: '4px 0 0', color: '#888' }}>{b.desc}</p>
+          <Link key={b.path} to={b.path} className="wf-community-board-link">
+            <div className="wf-box wf-box--solid wf-community-board-item">
+              <strong className="wf-community-board-label">{b.label}</strong>
+              <p className="wf-community-board-desc">{b.desc}</p>
             </div>
           </Link>
         ))}
@@ -31,27 +31,27 @@ export default function CommunityPage() {
 
       {topPosts.length > 0 && (
         <section>
-          <h2 className="wf-section-title" style={{ marginBottom: 10 }}>🔥 인기 게시글</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <h2 className="wf-section-title">🔥 인기 게시글</h2>
+          <div className="wf-community-top-list">
             {topPosts.map((post, i) => (
               <Link
                 key={post.id}
                 to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
-                style={{ textDecoration: 'none', color: 'inherit' }}
+                className="wf-community-top-link"
               >
-                <div className="wf-box" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: i < 3 ? 'var(--wf-accent)' : '#888', minWidth: 24, textAlign: 'center' }}>
+                <div className="wf-box wf-community-top-item">
+                  <span className={`wf-community-top-rank${i < 3 ? ' wf-community-top-rank--hi' : ''}`}>
                     {i + 1}
                   </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="wf-community-top-body">
                     {post.postType !== 'COLUMN' && (
-                      <span className="wf-chip" style={{ fontSize: 10, marginRight: 6 }}>
+                      <span className="wf-chip wf-community-top-category">
                         {POST_CATEGORY_LABEL[post.category] ?? post.category}
                       </span>
                     )}
-                    <span style={{ fontSize: 14, fontWeight: 500 }}>{post.title}</span>
+                    <span className="wf-community-top-title">{post.title}</span>
                   </div>
-                  <span className="wf-text-xs" style={{ color: '#888', flexShrink: 0 }}>조회 {post.viewCount ?? 0}</span>
+                  <span className="wf-community-top-views">조회 {post.viewCount ?? 0}</span>
                 </div>
               </Link>
             ))}
