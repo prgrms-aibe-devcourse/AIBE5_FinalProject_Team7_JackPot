@@ -127,8 +127,10 @@ export default function PostFormPage() {
 
     // 자유게시판 첨부 이미지를 별도 필드 대신 본문 HTML에 인라인으로 삽입
     // 칼럼은 RichEditor가 이미 HTML을 생성하므로 이 처리가 필요 없음
+    // 자유게시판에 이미지가 첨부된 경우 텍스트를 <p> 태그로 감싸 HTML로 저장
+    // 텍스트만 있으면 항상 <로 시작하지 않아 PostDetailPage에서 plain text로 처리되어 img 태그가 그대로 노출되는 문제 방지
     const finalContent = postType === 'FREE' && attachedImages.length > 0
-      ? content + attachedImages.map((img) => `<img src="${img.url}" alt="${img.name}" style="max-width:100%;margin:8px 0;">`).join('')
+      ? `<p style="white-space:pre-wrap">${content}</p>` + attachedImages.map((img) => `<img src="${img.url}" alt="${img.name}" style="max-width:100%;margin:8px 0;">`).join('')
       : content;
 
     setSubmitting(true);
