@@ -5,18 +5,25 @@ import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 
+function stripHtml(html: string) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+}
+
 function FeedCard({ post }: { post: LoungePost }) {
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
+  const contentPreview = stripHtml(post.context);
+  const authorName = post.authorNickname || `사용자 #${post.authorId}`;
 
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
         <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
         <div>
-          <strong>사용자 #{post.authorId}</strong>
+          <strong>{authorName}</strong>
           <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
           <p className="wf-text-sm">{post.title}</p>
-          <p className="wf-text-xs">{post.context}</p>
+          <p className="wf-text-xs">{contentPreview}</p>
         </div>
       </div>
       <div className="wf-feed-card__preview wf-placeholder" aria-hidden />

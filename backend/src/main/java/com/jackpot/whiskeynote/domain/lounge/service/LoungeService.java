@@ -3,7 +3,9 @@ package com.jackpot.whiskeynote.domain.lounge.service;
 import com.jackpot.whiskeynote.domain.community.post.entity.Post;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
+import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.follow.repository.FollowsRepository;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class LoungeService {
 
     private final FollowsRepository followsRepository;
     private final PostRepository postRepository;
+    private final UsersRepository usersRepository;
 
     @Transactional(readOnly = true)
     public List<LoungePostResponse> getLoungeFeed(Long userId, int page, int size) {
@@ -31,11 +36,15 @@ public class LoungeService {
         // 팔로우한 사용자들의 게시글 조회 (페이징)
         List<Post> posts = postRepository.findByAuthorIdInAndIsDeletedFalse(followingIds, pageRequest);
 
-        // 게시글을 LoungePostResponse로 변환
-        List<LoungePostResponse> postInfos = posts.stream()
-                .map(LoungePostResponse::from)
-                .toList();
+        // 게시글 작성자 ID -> 닉네임 매핑 조회
+        Map<Long,String> nicknameMap = usersRepository.findAllById(followingIds)
+                .stream()
+                .collect(Collectors.toMap(Users::getId, Users::getNickname));
 
-        return postInfos;
+        return posts.stream()
+                .map(post -> LoungePostResponse.from(
+                        post,nicknameMap.getOrDefault(post.getAuthorId(),"알 수 없는 사용자")
+                ))
+                .toList();
     }
 }

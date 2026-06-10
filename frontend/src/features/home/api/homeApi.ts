@@ -3,6 +3,7 @@ import { apiClient } from '@/shared/api/client';
 export interface LoungePost {
   postId: number;
   authorId: number;
+  authorNickname: string;
   title: string;
   context: string;
   createdAt: string;
