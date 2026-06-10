@@ -3,7 +3,7 @@
 -- 이미 '!['로 시작하는 행은 재적용 방지를 위해 제외.
 
 UPDATE posts p
-INNER JOIN whiskey_columns wc ON p.title = wc.title
+INNER JOIN whiskey_columns wc ON p.title COLLATE utf8mb4_unicode_ci = wc.title COLLATE utf8mb4_unicode_ci
 SET p.context = CONCAT('![](', wc.thumbnail_url, ')\n\n', p.context)
 WHERE p.post_type = 'COLUMN'
   AND wc.thumbnail_url IS NOT NULL
