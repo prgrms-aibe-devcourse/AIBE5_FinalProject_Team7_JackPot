@@ -228,8 +228,17 @@ export default function MyPage() {
           </Button>
         </div>
       </div>
-      <div className="wf-box" style={{ padding: 14, marginTop: 8 }}>
-        취향 설문 다시하기
+      <div
+        className="wf-box"
+        style={{ padding: 14, marginTop: 8, cursor: 'pointer', transition: 'border-color 0.15s' }}
+        onClick={() => navigate(PATHS.SURVEY)}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#c9a227')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '')}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <p style={{ margin: 0, fontSize: 14, color: '#ececf0' }}>취향 설문 다시하기</p>
+          <span style={{ color: '#8b8b96' }}>›</span>
+        </div>
       </div>
       {/* 3번: 위스키 등록 요청 목록 버튼 */}
       <div
