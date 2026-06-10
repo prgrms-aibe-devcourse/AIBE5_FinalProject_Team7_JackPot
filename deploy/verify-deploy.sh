@@ -3,13 +3,27 @@
 set -euo pipefail
 
 COMPOSE_DIR="${COMPOSE_DIR:-$HOME/whiskeynote}"
-WAIT_SEC="${WAIT_SEC:-30}"
+MAX_WAIT="${MAX_WAIT:-120}"
 LOG_TAIL="${LOG_TAIL:-150}"
 
 cd "$COMPOSE_DIR"
 
-echo "==> Waiting ${WAIT_SEC}s for backend startup..."
-sleep "$WAIT_SEC"
+echo "==> Polling for backend startup (max ${MAX_WAIT}s)..."
+ELAPSED=0
+INTERVAL=10
+while [[ $ELAPSED -lt $MAX_WAIT ]]; do
+  POLL_LOGS="$(docker compose logs backend --tail 50 2>&1)"
+  if echo "$POLL_LOGS" | grep -q 'Started WhiskeynoteApplication'; then
+    echo "==> Backend started after ${ELAPSED}s"
+    break
+  fi
+  if echo "$POLL_LOGS" | grep -qE 'Application run failed|missing table|Schema validation:'; then
+    echo "==> Backend startup failure detected after ${ELAPSED}s"
+    break
+  fi
+  sleep $INTERVAL
+  ELAPSED=$((ELAPSED + INTERVAL))
+done
 
 echo "==> docker compose ps"
 docker compose ps
