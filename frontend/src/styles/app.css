@@ -339,10 +339,12 @@ body {
 .wf-cabinet-primary__tab {
   padding: 12px 24px;
   border-radius: 12px;
-  border: 1px dashed var(--wf-border);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
   font-size: 15px;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-primary__tab--on {
@@ -389,10 +391,12 @@ body {
 .wf-cabinet-sub__tab {
   padding: 10px 16px;
   border-radius: 10px;
-  border: 1px dashed var(--wf-border);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
   font-size: 15px;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-sub__tab--on {
@@ -642,10 +646,17 @@ body {
   display: inline-flex;
   margin-top: 16px;
   padding: 10px 16px;
-  border: 1px dashed var(--wf-border);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface-2);
   border-radius: 10px;
   text-decoration: none;
   color: var(--wf-muted);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.wf-detail-tasting__reviews-link:hover {
+  border-color: var(--wf-muted);
+  color: var(--wf-text);
 }
 
 .wf-detail-reviews {
@@ -860,10 +871,10 @@ body {
   justify-content: center;
   min-height: 38px;
   padding: 0 20px;
-  border: 1px dashed var(--wf-accent);
+  border: 1px solid rgba(201, 162, 39, 0.4);
   border-radius: 999px;
   color: var(--wf-accent);
-  background: rgba(201, 162, 39, 0.08);
+  background: var(--wf-accent-dim);
   font-size: 15px;
   font-weight: 700;
 }
@@ -1235,9 +1246,9 @@ body {
   align-items: center;
   min-height: 30px;
   padding: 0 12px;
-  border: 1px dashed var(--wf-accent);
+  border: 1px solid rgba(201, 162, 39, 0.4);
   border-radius: 999px;
-  background: rgba(201, 162, 39, 0.1);
+  background: var(--wf-accent-dim);
   color: var(--wf-accent);
   font-size: 13px;
   font-weight: 700;
@@ -1252,9 +1263,9 @@ body {
 .wf-note-editor__tag {
   min-height: 38px;
   padding: 0 16px;
-  border: 1px dashed var(--wf-border);
+  border: 1px solid var(--wf-border);
   border-radius: 999px;
-  background: transparent;
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font: inherit;
   font-size: 14px;

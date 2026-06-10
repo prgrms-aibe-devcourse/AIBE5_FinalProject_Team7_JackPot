@@ -19,9 +19,15 @@
   display: flex;
   align-items: center;
   gap: 32px;
-  border-bottom: 1px solid var(--wf-border);
-  background: var(--wf-surface);
+  border-bottom: 1px solid var(--wf-border-subtle);
+  background: rgba(22, 22, 28, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 var(--wf-border-subtle);
 }
 
 .wf-topnav__logo {
