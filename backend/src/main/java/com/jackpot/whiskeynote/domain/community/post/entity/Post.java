@@ -76,6 +76,14 @@ public class Post {
         this.deletedAt = LocalDateTime.now();
     }
 
+    /**
+     * 복구 메소드
+     */
+    public void restore() {
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
+
     public void incrementLikeCount() {
         this.likeCount++;
     }

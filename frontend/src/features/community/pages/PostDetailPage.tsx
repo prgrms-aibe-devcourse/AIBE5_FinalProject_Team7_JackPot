@@ -8,6 +8,7 @@ import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
 import { CommentThread } from '../components/CommentItem';
+import { ReportModal } from '../components/ReportModal';
 import {
   useComments,
   useCreateComment,
@@ -38,6 +39,7 @@ export default function PostDetailPage() {
   const [commentText, setCommentText] = useState('');
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     if (!post?.whiskeyIds?.length) return;
@@ -90,6 +92,13 @@ export default function PostDetailPage() {
 
   return (
     <WireframePage scroll>
+      {showReportModal && (
+        <ReportModal
+          targetId={post.id}
+          targetType="POST"
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
       <button
         className="wf-chip"
         style={{ marginBottom: 16, cursor: 'pointer', border: 'none', background: 'none' }}
@@ -140,6 +149,16 @@ export default function PostDetailPage() {
                   삭제
                 </button>
               </>
+            )}
+            {/* 본인 게시글이 아닐 때만 신고 버튼 표시 */}
+            {!post.isOwner && isLoggedIn() && (
+              <button
+                className="wf-chip"
+                style={{ cursor: 'pointer', border: 'none', background: 'none', color: '#8b8b96' }}
+                onClick={() => setShowReportModal(true)}
+              >
+                🚨 신고
+              </button>
             )}
           </div>
         </header>

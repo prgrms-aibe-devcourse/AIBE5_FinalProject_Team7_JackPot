@@ -2,6 +2,7 @@ package com.jackpot.whiskeynote.domain.admin;
 
 import com.jackpot.whiskeynote.domain.admin.entity.WhiskeyRequestStatus;
 import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
@@ -9,6 +10,7 @@ import com.jackpot.whiskeynote.domain.member.entity.Role;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +41,8 @@ class WhiskeyRequestControllerTest {
     @LocalServerPort
     private int port;
 
+    @Autowired private TestDataCleaner cleaner;
     @Autowired private WhiskeyRequestRepository whiskeyRequestRepository;
-    @Autowired private WishListItemRepository wishListItemRepository;
-    @Autowired private WishListFolderRepository wishListFolderRepository;
-    @Autowired private PickRepository pickRepository;
-    @Autowired private RefreshTokenRepository refreshTokenRepository;
     @Autowired private UsersRepository usersRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
@@ -78,12 +77,7 @@ class WhiskeyRequestControllerTest {
                 .build();
 
         // FK 순서에 맞게 삭제
-        wishListItemRepository.deleteAll();
-        wishListFolderRepository.deleteAll();
-        pickRepository.deleteAll();
-        whiskeyRequestRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
-        usersRepository.deleteAll();
+        cleaner.cleanAll();
 
         // 일반 사용자 회원가입 → 토큰 발급
         ResponseEntity<Map> userRes = authRestClient.post()

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
+import { ReportModal } from './ReportModal';
 import type { CommentTreeResponse } from '../types';
 
 interface CommentItemProps {
@@ -27,6 +28,7 @@ export function CommentItem({
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
   const [saving, setSaving] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   async function handleEditSave() {
     if (!editText.trim() || !onEdit) return;
@@ -41,6 +43,13 @@ export function CommentItem({
 
   return (
     <div style={{ marginLeft: depth * 20, marginBottom: 8 }}>
+      {showReport && (
+        <ReportModal
+          targetId={comment.id}
+          targetType="COMMENT"
+          onClose={() => setShowReport(false)}
+        />
+      )}
       <div className="wf-box" style={{ padding: '10px 14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
           <span className="wf-text-xs" style={{ color: '#888' }}>
@@ -118,6 +127,16 @@ export function CommentItem({
                 onClick={() => onDelete(comment.id)}
               >
                 삭제
+              </button>
+            )}
+            {/* 본인 댓글이 아닐 때만 신고 버튼 표시 */}
+            {!isOwner && currentUserId != null && !comment.isDeleted && (
+              <button
+                className="wf-text-xs"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#8b8b96' }}
+                onClick={() => setShowReport(true)}
+              >
+                🚨 신고
               </button>
             )}
           </div>

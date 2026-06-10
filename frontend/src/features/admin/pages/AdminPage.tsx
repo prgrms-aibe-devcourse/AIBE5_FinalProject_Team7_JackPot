@@ -55,17 +55,6 @@ const btnStyle = (variant: 'primary' | 'danger' | 'ghost') => ({
   whiteSpace: 'nowrap',
 } as const);
 
-const rowStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 12,
-  padding: '14px 16px',
-  background: '#16161c',
-  border: '1px solid #2e2e38',
-  borderRadius: 10,
-  marginBottom: 8,
-} as const;
-
 const filterBtnStyle = (active: boolean) => ({
   padding: '4px 12px',
   borderRadius: 6,
@@ -84,16 +73,16 @@ const REQUEST_STATUS_LABEL: Record<WhiskeyRequestStatus, string> = {
   pending: '대기중', approved: '승인됨', rejected: '반려됨',
 };
 const REPORT_STATUS_COLOR: Record<ReportStatus, string> = {
-  PENDING: '#c9a227', HIDDEN: '#f87171', DISMISSED: '#8b8b96', BANNED: '#ff4d4d',
+  PENDING: '#c9a227', HIDDEN: '#f87171', DISMISSED: '#8b8b96', BANNED: '#ff4d4d', RESTORED: '#4ade80',
 };
 const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
-  PENDING: '검토 대기', HIDDEN: '숨김', DISMISSED: '기각', BANNED: '제재 완료',
-};
-const REASON_LABEL: Record<string, string> = {
-  SPAM: '스팸', OBSCENE: '음란', ILLEGAL: '불법', ABUSE: '욕설', OTHER: '기타',
+  PENDING: '검토 대기', HIDDEN: '숨김', DISMISSED: '기각', BANNED: '제재 완료', RESTORED: '복구됨',
 };
 const ACTION_LABEL: Record<ReportAction, string> = {
-  HIDE: '숨김', RESTORE: '복구', DISMISS: '기각', BAN_USER: '유저 제재', DELETE_CONTENT: '콘텐츠 삭제',
+  HIDE: '숨김', RESTORE: '복구', DISMISS: '기각', DELETE_CONTENT: '콘텐츠 삭제',
+};
+const REASON_LABEL_KO: Record<string, string> = {
+  SPAM: '스팸', OBSCENE: '음란물', ILLEGAL: '불법 정보', ABUSE: '욕설/혐오', OTHER: '기타',
 };
 
 // ── 위스키 등록 요청 탭 ──────────────────────────
@@ -120,15 +109,8 @@ function WhiskeyRequestsTab() {
     }
   };
 
-  useEffect(() => {
-    setPage(0);
-    setExpanded(null);
-    load(filter, 0);
-  }, [filter]);
-
-  useEffect(() => {
-    load(filter, page);
-  }, [page]);
+  useEffect(() => { setPage(0); setExpanded(null); load(filter, 0); }, [filter]);
+  useEffect(() => { load(filter, page); }, [page]);
 
   const handleReview = async (id: number, action: 'approved' | 'rejected') => {
     const label = action === 'approved' ? '승인' : '반려';
@@ -158,7 +140,7 @@ function WhiskeyRequestsTab() {
         <p style={{ color: '#8b8b96' }}>요청이 없습니다.</p>
       ) : requests.map((req) => (
         <div key={req.requestId}>
-          <div style={rowStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 10, marginBottom: 8 }}>
             <span style={badgeStyle(REQUEST_STATUS_COLOR[req.status])}>{REQUEST_STATUS_LABEL[req.status]}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ color: '#ececf0', fontSize: 14, margin: 0, fontWeight: 600 }}>
@@ -197,15 +179,22 @@ function ReportsTab() {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | 'all'>('PENDING');
   const [loading, setLoading] = useState(true);
-  const [detail, setDetail] = useState<ReportDetail | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ReportDetail | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [actionNote, setActionNote] = useState('');
   const [detailLoading, setDetailLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const PAGE_SIZE = 10;
 
-  const load = async (status: ReportStatus | 'all') => {
+  const load = async (status: ReportStatus | 'all', p: number) => {
     setLoading(true);
     try {
-      const res = await adminApi.getReports(status === 'all' ? undefined : status);
-      setReports(res.data.data?.content ?? res.data.data ?? []);
+      const res = await adminApi.getReports(status === 'all' ? undefined : status, p, PAGE_SIZE);
+      const data = res.data.data;
+      setReports(data?.content ?? data ?? []);
+      setTotalPages(data?.totalPages ?? 1);
     } catch {
       toast('신고 목록을 불러오지 못했습니다.', 'error');
     } finally {
@@ -213,14 +202,22 @@ function ReportsTab() {
     }
   };
 
-  useEffect(() => { load(filter); }, [filter]);
+  useEffect(() => { setPage(0); setSelectedReport(null); setSelectedId(null); load(filter, 0); }, [filter]);
+  useEffect(() => { load(filter, page); }, [page]);
 
-  const handleDetail = async (id: number) => {
-    if (detail?.reportId === id) { setDetail(null); return; }
+  const handleSelectReport = async (report: Report) => {
+    if (selectedId === report.reportId) {
+      setSelectedId(null);
+      setSelectedReport(null);
+      return;
+    }
+    setSelectedId(report.reportId);
+    setSelectedReport(null);
+    setActionNote('');
     setDetailLoading(true);
     try {
-      const res = await adminApi.getReportDetail(id);
-      setDetail(res.data.data);
+      const res = await adminApi.getReportDetail(report.reportId);
+      setSelectedReport(res.data.data);
     } catch {
       toast('신고 상세를 불러오지 못했습니다.', 'error');
     } finally {
@@ -228,99 +225,232 @@ function ReportsTab() {
     }
   };
 
-  const handleAction = async (id: number, action: ReportAction) => {
-    const ok = await confirmToast({ message: `'${ACTION_LABEL[action]}' 처리를 진행할까요?`, confirmLabel: ACTION_LABEL[action], danger: action === 'BAN_USER' || action === 'DELETE_CONTENT' });
+  const handleAction = async (action: ReportAction) => {
+    if (!selectedReport) return;
+    const ok = await confirmToast({
+      message: `'${ACTION_LABEL[action]}' 처리를 진행할까요?`,
+      confirmLabel: ACTION_LABEL[action],
+      danger: action === 'DELETE_CONTENT',
+    });
     if (!ok) return;
+    setProcessing(true);
     try {
-      await adminApi.createReportAction(id, action, actionNote || undefined);
+      await adminApi.createReportAction(selectedReport.reportId, action, actionNote || undefined);
       toast(`${ACTION_LABEL[action]} 처리되었습니다.`, 'success');
-      setDetail(null);
+      setSelectedReport(null);
+      setSelectedId(null);
       setActionNote('');
-      load(filter);
+      load(filter, page);
     } catch {
       toast('처리에 실패했습니다.', 'error');
+    } finally {
+      setProcessing(false);
     }
+  };
+
+  // 신고 대상 링크 — POST는 게시글, COMMENT는 해당 게시글
+  const getTargetLink = (report: Report | ReportDetail) => {
+    if (report.targetType === 'POST') {
+      return `/community/posts/${report.targetId}`;
+    }
+    // 댓글은 댓글 ID가 아닌 게시글로 이동 (상세 패널에서 postId 제공 시 사용)
+    return null;
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {(['all', 'PENDING', 'HIDDEN', 'DISMISSED', 'BANNED'] as const).map((s) => (
-          <button key={s} type="button" style={filterBtnStyle(filter === s)} onClick={() => setFilter(s)}>
+      {/* 필터 */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        {(['all', 'PENDING', 'HIDDEN', 'DISMISSED', 'RESTORED'] as const).map((s) => (
+          <button key={s} type="button" style={filterBtnStyle(filter === s)} onClick={() => setFilter(s as ReportStatus | 'all')}>
             {s === 'all' ? '전체' : REPORT_STATUS_LABEL[s as ReportStatus]}
           </button>
         ))}
       </div>
+
       {loading ? (
         <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
       ) : reports.length === 0 ? (
         <p style={{ color: '#8b8b96' }}>신고가 없습니다.</p>
-      ) : reports.map((report) => (
-        <div key={report.reportId}>
-          <div style={rowStyle}>
-            <span style={badgeStyle(REPORT_STATUS_COLOR[report.status])}>{REPORT_STATUS_LABEL[report.status]}</span>
-            <span style={badgeStyle('#8b8b96')}>{report.targetType}</span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0, fontWeight: 600 }}>
-                {REASON_LABEL[report.reason]} 신고
-                {report.detail && <span style={{ color: '#8b8b96', fontWeight: 400 }}> — {report.detail}</span>}
-              </p>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '2px 0 0' }}>
-                신고자: {report.reporterNickname} · {new Date(report.createdAt).toLocaleDateString()}
-              </p>
+      ) : reports.map((report) => {
+        const isOpen = selectedId === report.reportId;
+        const targetLink = getTargetLink(report);
+        return (
+          <div key={report.reportId} style={{ marginBottom: 8 }}>
+            {/* 신고 목록 행 */}
+            <div
+              onClick={() => handleSelectReport(report)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+                background: isOpen ? 'rgba(201,162,39,0.06)' : '#16161c',
+                border: `1px solid ${isOpen ? '#c9a227' : '#2e2e38'}`,
+                borderRadius: isOpen ? '10px 10px 0 0' : 10,
+                cursor: 'pointer', transition: 'border-color 0.15s',
+              }}
+            >
+              <span style={badgeStyle(REPORT_STATUS_COLOR[report.status])}>
+                {REPORT_STATUS_LABEL[report.status]}
+              </span>
+              <span style={badgeStyle('#8b8b96')}>{report.targetType}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ color: '#ececf0', fontSize: 13, fontWeight: 600, margin: 0 }}>
+                  {REASON_LABEL_KO[report.reason] ?? report.reason} 신고
+                </p>
+                {report.detail && (
+                  <p style={{ color: '#8b8b96', fontSize: 12, margin: '3px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {report.detail}
+                  </p>
+                )}
+                <p style={{ margin: '4px 0 0', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ color: '#c9a227', fontWeight: 600 }}>{report.reporterNickname}</span>
+                  <span style={{ color: '#3e3e4a' }}>·</span>
+                  <span style={{ color: '#8b8b96' }}>{new Date(report.createdAt).toLocaleDateString()}</span>
+                </p>
+              </div>
+              {/* 1번: 원본 게시글 바로가기 버튼 */}
+              {targetLink && (
+                <a
+                  href={targetLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 6,
+                    border: '1px solid #2e2e38',
+                    color: '#8b8b96',
+                    fontSize: 11,
+                    textDecoration: 'none',
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  원문 보기 ↗
+                </a>
+              )}
+              <span style={{ color: isOpen ? '#c9a227' : '#8b8b96', fontSize: 12, flexShrink: 0 }}>
+                {isOpen ? '▲ 접기' : '▼ 상세'}
+              </span>
             </div>
-            <button type="button" style={btnStyle('ghost')} onClick={() => handleDetail(report.reportId)}>
-              {detail?.reportId === report.reportId ? '접기' : '상세'}
-            </button>
-          </div>
-          {detail?.reportId === report.reportId && (
-            <div style={{ background: '#1e1e26', border: '1px solid #2e2e38', borderRadius: '0 0 10px 10px', padding: 16, marginTop: -8, marginBottom: 8 }}>
-              {detailLoading ? (
-                <p style={{ color: '#8b8b96', fontSize: 13 }}>불러오는 중...</p>
-              ) : (
-                <>
-                  {detail.targetContent && (
-                    <div style={{ marginBottom: 12, padding: 12, background: '#0c0c0f', borderRadius: 8 }}>
-                      <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 4px' }}>신고 대상 내용</p>
-                      <p style={{ color: '#ececf0', fontSize: 13, margin: 0 }}>{detail.targetContent}</p>
-                    </div>
-                  )}
-                  {detail.actions?.length > 0 && (
-                    <div style={{ marginBottom: 12 }}>
-                      <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px' }}>처리 이력</p>
-                      {detail.actions.map((a) => (
-                        <div key={a.actionId} style={{ padding: '6px 0', borderBottom: '1px solid #2e2e38', fontSize: 12, color: '#ececf0' }}>
-                          <span style={{ color: '#c9a227' }}>{a.action}</span>
-                          {a.note && <span style={{ color: '#8b8b96' }}> — {a.note}</span>}
-                          <span style={{ color: '#8b8b96', marginLeft: 8 }}>{new Date(a.createdAt).toLocaleString()}</span>
+
+            {/* 상세 패널 */}
+            {isOpen && (
+              <div style={{ background: '#1a1a22', border: '1px solid #c9a227', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: 16 }}>
+                {detailLoading ? (
+                  <p style={{ color: '#8b8b96', fontSize: 13 }}>불러오는 중...</p>
+                ) : selectedReport ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {/* 신고 상세 정보 — 3열 그리드 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, padding: '14px 16px', background: '#16161c', borderRadius: 10, border: '1px solid #2e2e38' }}>
+                      <div>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고 사유</p>
+                        <p style={{ color: '#ececf0', fontSize: 14, margin: 0, fontWeight: 700 }}>
+                          {REASON_LABEL_KO[selectedReport.reason]}
+                        </p>
+                        {selectedReport.detail && (
+                          <p style={{ color: '#8b8b96', fontSize: 12, margin: '6px 0 0', lineHeight: 1.6 }}>
+                            {selectedReport.detail}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고자</p>
+                        <p style={{ color: '#c9a227', fontSize: 14, margin: 0, fontWeight: 700 }}>
+                          {selectedReport.reporterNickname}
+                        </p>
+                      </div>
+                      <div>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고 일시</p>
+                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0 }}>
+                          {new Date(selectedReport.createdAt).toLocaleString()}
+                        </p>
+                        <div style={{ marginTop: 8 }}>
+                          {selectedReport.targetType === 'COMMENT' && (
+                            <>
+                              <span style={{ color: '#8b8b96', fontSize: 11 }}>댓글 ID #{selectedReport.targetId}</span>
+                              {selectedReport.postId ? (
+                                <a href={`/community/posts/${selectedReport.postId}`} target="_blank" rel="noreferrer"
+                                  style={{ display: 'block', marginTop: 4, color: '#c9a227', fontSize: 12 }}>
+                                  원본 게시글 보기 ↗
+                                </a>
+                              ) : (
+                                <span style={{ display: 'block', marginTop: 4, color: '#666', fontSize: 11 }}>(게시글 삭제됨)</span>
+                              )}
+                            </>
+                          )}
+                          {selectedReport.targetType === 'POST' && (
+                            <a href={`/community/posts/${selectedReport.targetId}`} target="_blank" rel="noreferrer"
+                              style={{ color: '#c9a227', fontSize: 12 }}>
+                              게시글 보기 ↗
+                            </a>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  {report.status === 'PENDING' && (
-                    <div>
-                      <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
-                      <textarea
-                        placeholder="처리 메모 (선택)"
-                        value={actionNote}
-                        onChange={(e) => setActionNote(e.target.value)}
-                        rows={2}
-                        style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
-                      />
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <button type="button" style={btnStyle('ghost')} onClick={() => handleAction(report.reportId, 'HIDE')}>숨김</button>
-                        <button type="button" style={btnStyle('ghost')} onClick={() => handleAction(report.reportId, 'DISMISS')}>기각</button>
-                        <button type="button" style={btnStyle('danger')} onClick={() => handleAction(report.reportId, 'DELETE_CONTENT')}>콘텐츠 삭제</button>
-                        <button type="button" style={{ ...btnStyle('danger'), background: '#7f1d1d' }} onClick={() => handleAction(report.reportId, 'BAN_USER')}>유저 제재</button>
                       </div>
                     </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
+
+                    {/* 처리 이력 */}
+                    {selectedReport.actions?.length > 0 && (
+                      <div>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리 이력</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {selectedReport.actions.map((a) => (
+                            <div key={a.actionId} style={{ padding: '8px 12px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                              <div>
+                                <span style={{ color: '#c9a227', fontWeight: 600 }}>
+                                  {ACTION_LABEL[a.action as ReportAction] ?? a.action}
+                                </span>
+                                {a.note && <span style={{ color: '#8b8b96', marginLeft: 8 }}>{a.note}</span>}
+                              </div>
+                              <span style={{ color: '#666', flexShrink: 0 }}>
+                                {new Date(a.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 처리하기 — PENDING */}
+                    {selectedReport.status === 'PENDING' && (
+                      <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
+                        <textarea
+                          placeholder="처리 메모 (선택)"
+                          value={actionNote}
+                          onChange={(e) => setActionNote(e.target.value)}
+                          rows={2}
+                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
+                        />
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button type="button" disabled={processing} style={btnStyle('ghost')} onClick={() => handleAction('DISMISS')}>✓ 기각</button>
+                          <button type="button" disabled={processing} style={{ ...btnStyle('ghost'), borderColor: '#f87171', color: '#f87171' }} onClick={() => handleAction('HIDE')}>🙈 숨김</button>
+                          <button type="button" disabled={processing} style={btnStyle('danger')} onClick={() => handleAction('DELETE_CONTENT')}>🗑 삭제</button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 처리하기 — HIDDEN */}
+                    {selectedReport.status === 'HIDDEN' && (
+                      <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
+                        <textarea
+                          placeholder="처리 메모 (선택)"
+                          value={actionNote}
+                          onChange={(e) => setActionNote(e.target.value)}
+                          rows={2}
+                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
+                        />
+                        <button type="button" disabled={processing} style={btnStyle('primary')} onClick={() => handleAction('RESTORE')}>↩ 복구</button>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <Pagination page={page} totalPages={totalPages} onPage={setPage} />
     </div>
   );
 }
@@ -372,9 +502,8 @@ export default function AdminPage() {
   const checked = useRef(false);
 
   useEffect(() => {
-    if (checked.current) return; // 이미 체크했으면 스킵 (StrictMode 2번 실행 방지)
+    if (checked.current) return;
     checked.current = true;
-
     if (!isLoggedIn()) {
       toast('로그인이 필요합니다.', 'warning');
       navigate(PATHS.LOGIN, { replace: true });
