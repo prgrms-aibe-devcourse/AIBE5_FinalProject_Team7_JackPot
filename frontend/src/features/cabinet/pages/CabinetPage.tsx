@@ -612,6 +612,9 @@ export default function CabinetPage() {
             {tab === 'note' && (
               <Button to={PATHS.NOTE_PICK} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ Note 작성</Button>
             )}
+            {tab === 'reviews' && (
+              <Button to={PATHS.REVIEW_PICK} style={{ fontSize: 13, padding: '6px 14px', flexShrink: 0 }}>+ 리뷰 작성</Button>
+            )}
           </div>
           {tab === 'pick' && (
             <label className="wf-cabinet-share">
