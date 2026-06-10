@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     /**
@@ -24,4 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     /** 게시판 구분 없이 삭제되지 않은 전체 게시글 최신순 조회 (관리자/피드 등 통합 뷰에서 활용) */
     Page<Post> findByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
+
+    // 작성자 ID 목록으로 게시글 조회 (라운지 팔로잉 계정 게시물 조회용)
+    List<Post> findByAuthorIdInAndIsDeletedFalse(List<Long> authorIds, Pageable pageable);
 }
