@@ -22,5 +22,5 @@ SELECT
 FROM whiskey_columns wc
 WHERE NOT EXISTS (
     SELECT 1 FROM posts p
-    WHERE p.title = wc.title AND p.post_type = 'COLUMN'
+    WHERE p.title COLLATE utf8mb4_unicode_ci = wc.title COLLATE utf8mb4_unicode_ci AND p.post_type = 'COLUMN'
 );
