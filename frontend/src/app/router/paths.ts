@@ -31,6 +31,7 @@ export const PATHS = {
   COMMUNITY_POST_EDIT: '/community/posts/:postId/edit',
   TASTING_NOTE: '/whiskey/:whiskeyId/note',
   NOTE_PICK: '/note/pick',
+  REVIEW_PICK: '/review/pick',
   TASTE_MATCH: '/discover/taste-match',
   WHISKEY_REQUEST: '/whiskey-requests',
   WHISKEY_REQUEST_DETAIL: '/whiskey-requests/:requestId',
