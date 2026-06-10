@@ -14,10 +14,10 @@ public class Follows {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    // 팔로우 하는 사람의 ID
     @Column(name = "follower_id", nullable = false)
     private Long followerId;
-
+    // 팔로우 받는 사람의 ID
     @Column(name = "following_id", nullable = false)
     private Long followingId;
 
