@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -28,12 +29,13 @@ public class WhiskeyViewLog {
     @JoinColumn(name = "whiskey_id")
     private Whiskey whiskey;
 
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
     private WhiskeyViewLog(Users user, Whiskey whiskey) {
         this.user = user;
         this.whiskey = whiskey;
-        createdAt = LocalDateTime.now();
     }
 }
