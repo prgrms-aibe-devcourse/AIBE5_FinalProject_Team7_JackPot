@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 
@@ -18,7 +19,16 @@ function FeedCard({ post }: { post: LoungePost }) {
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
-        <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
+        {resolveMediaUrl(post.authorProfileImageUrl) ? (
+          <img
+            src={resolveMediaUrl(post.authorProfileImageUrl)!}
+            alt={authorName}
+            className="wf-feed-card__avatar"
+            style={{ objectFit: 'cover', borderRadius: '50%' }}
+          />
+        ) : (
+          <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
+        )}
         <div>
           <strong>{authorName}</strong>
           <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
