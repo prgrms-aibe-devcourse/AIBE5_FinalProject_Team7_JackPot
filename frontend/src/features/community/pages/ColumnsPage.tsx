@@ -6,9 +6,54 @@ import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
-import { PostList } from '../components/PostList';
 import { useColumns } from '../hooks/useCommunity';
 import { isLoggedIn } from '@/shared/lib/authSession';
+import type { PostSummaryResponse } from '../types';
+
+function formatDate(iso: string) {
+  return iso.slice(0, 10);
+}
+
+function ColumnCard({ post }: { post: PostSummaryResponse }) {
+  return (
+    <Link
+      to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+    >
+      <div className="wf-box" style={{
+        display: 'flex', gap: 16, padding: '16px',
+        marginBottom: 12, alignItems: 'center',
+      }}>
+        {/* 썸네일 — 없으면 회색 placeholder */}
+        <div style={{
+          width: 90, height: 68, flexShrink: 0,
+          borderRadius: 8, overflow: 'hidden',
+          background: 'var(--wf-surface-2)',
+        }}>
+          {post.thumbnailUrl ? (
+            <img
+              src={post.thumbnailUrl}
+              alt={post.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={e => { (e.target as HTMLImageElement).parentElement!.style.background = 'var(--wf-surface-2)'; (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📄</div>
+          )}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <strong style={{ fontSize: 15, display: 'block', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {post.title}
+          </strong>
+          <p className="wf-text-xs" style={{ margin: 0, color: '#888' }}>
+            ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function ColumnsPage() {
   // 서버 페이지는 0-based index — Pagination 컴포넌트에도 동일 규칙 적용
@@ -24,9 +69,8 @@ export default function ColumnsPage() {
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <h1 className="wf-title" style={{ margin: 0 }}>칼럼</h1>
-        {/* 로그인 유저만 글쓰기 버튼 노출 */}
         {isLoggedIn() && (
           <Link
             to={`${PATHS.COMMUNITY_POST_NEW}?type=COLUMN`}
@@ -38,8 +82,14 @@ export default function ColumnsPage() {
         )}
       </div>
 
-      {/* data가 undefined인 로딩 구간에는 빈 배열 fallback으로 깜빡임 방지 */}
-      <PostList posts={data?.content ?? []} isLoading={isLoading} showCategory={false} />
+      {isLoading ? (
+        <p className="wf-text-sm">불러오는 중…</p>
+      ) : (data?.content ?? []).length === 0 ? (
+        <p className="wf-text-sm">칼럼이 없습니다.</p>
+      ) : (
+        (data?.content ?? []).map(post => <ColumnCard key={post.id} post={post} />)
+      )}
+
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>
   );

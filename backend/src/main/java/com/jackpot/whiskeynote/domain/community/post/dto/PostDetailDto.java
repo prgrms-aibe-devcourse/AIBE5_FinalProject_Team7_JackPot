@@ -26,14 +26,14 @@ public record PostDetailDto(
         String title,
         String context,
         int likeCount,
-        boolean isLiked,   // 현재 요청 사용자의 좋아요 여부 (비로그인 시 false)
-        boolean isOwner,   // 현재 요청 사용자가 작성자인지 여부 (수정/삭제 버튼 노출 판단)
+        int viewCount,
+        boolean isLiked,
+        boolean isOwner,
         List<Long> whiskeyIds,
         int commentCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    /** Post 엔티티와 부가 정보를 조합해 응답 객체를 생성하는 팩토리 메서드 */
     public static PostDetailDto from(Post post, boolean isLiked, boolean isOwner,
                                      List<Long> whiskeyIds, int commentCount) {
         return new PostDetailDto(
@@ -44,6 +44,7 @@ public record PostDetailDto(
                 post.getTitle(),
                 post.getContext(),
                 post.getLikeCount(),
+                post.getViewCount(),
                 isLiked,
                 isOwner,
                 whiskeyIds,

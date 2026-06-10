@@ -93,4 +93,11 @@ public class PostController {
     public List<PostSummaryResponse> getRelatedPosts(@PathVariable Long whiskeyId) {
         return postService.getRelatedPosts(whiskeyId);
     }
+
+    /** 조회수 기준 인기 게시글 상위 N개 (기본 5개, 커뮤니티 홈 표시용) */
+    @GetMapping("/api/v1/posts/top")
+    public List<PostSummaryResponse> getTopPosts(
+            @RequestParam(defaultValue = "5") int limit) {
+        return postService.getTopPosts(limit);
+    }
 }

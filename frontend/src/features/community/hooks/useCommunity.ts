@@ -12,6 +12,7 @@ import {
   fetchNotices,
   fetchPost,
   fetchQnaPosts,
+  fetchTopPosts,
   likePost,
   unlikePost,
 } from '../api/communityApi';
@@ -50,6 +51,10 @@ export function useWhiskeyColumn(columnId: number | undefined) {
 
 export function useColumns(page = 0) {
   return useQuery({ queryKey: communityKeys.columns(page), queryFn: () => fetchColumns(page) });
+}
+
+export function useTopPosts(limit = 5) {
+  return useQuery({ queryKey: ['posts', 'top', limit], queryFn: () => fetchTopPosts(limit) });
 }
 
 export function useFreePosts(page = 0, category?: PostCategory) {

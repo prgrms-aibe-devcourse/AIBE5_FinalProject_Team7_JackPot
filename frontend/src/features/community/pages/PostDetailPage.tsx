@@ -147,6 +147,7 @@ export default function PostDetailPage() {
               {post.isLiked ? '♥' : '♡'} {post.likeCount}
             </button>
             <span className="wf-text-xs" style={{ color: '#888' }}>댓글 {post.commentCount}</span>
+            <span className="wf-text-xs" style={{ color: '#888' }}>조회 {post.viewCount}</span>
             {/* isOwner는 서버가 현재 사용자 기준으로 반환하므로 프론트에서 별도 ID 비교 불필요 */}
             {post.isOwner && (
               <>

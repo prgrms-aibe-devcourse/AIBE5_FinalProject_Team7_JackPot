@@ -46,6 +46,11 @@ public class Post {
     @Column(name = "like_count", nullable = false)
     private int likeCount;
 
+    // 단순 조회수 카운터 — 요청마다 1씩 증가 (중복 제거 없음)
+    // TODO: 추후 Redis + 세션/쿠키 기반 중복 차단으로 확장 예정
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
+
     // 물리 삭제 대신 논리 삭제를 사용하는 이유:
     // - 댓글 트리 등 연관 데이터의 무결성 유지
     // - 관리자 복구 및 감사 로그 목적
@@ -75,6 +80,7 @@ public class Post {
         post.title = title;
         post.context = context;
         post.likeCount = 0;
+        post.viewCount = 0;
         post.isDeleted = false;
         post.createdAt = LocalDateTime.now();
         post.updatedAt = LocalDateTime.now();
@@ -104,6 +110,10 @@ public class Post {
     public void restore() {
         this.isDeleted = false;
         this.deletedAt = null;
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 
     public void incrementLikeCount() {

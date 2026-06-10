@@ -81,6 +81,11 @@ export async function fetchAuthorPosts(
 }
 
 // userId 파라미터 제거 — 인증은 Authorization 헤더로 처리
+export async function fetchTopPosts(limit = 5): Promise<PostSummaryResponse[]> {
+  const { data } = await apiClient.get<PostSummaryResponse[]>('/posts/top', { params: { limit } });
+  return data;
+}
+
 export async function fetchPost(postId: number): Promise<PostDetailDto> {
   const { data } = await apiClient.get<PostDetailDto>(`/posts/${postId}`);
   return data;
