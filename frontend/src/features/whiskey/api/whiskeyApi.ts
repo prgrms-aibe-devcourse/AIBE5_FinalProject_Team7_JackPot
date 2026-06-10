@@ -99,8 +99,23 @@ export async function fetchSimilarWhiskeys(whiskeyId: string): Promise<SimilarWh
   );
 }
 
+/**
+ * POST /api/v1/whiskeys/{id}/view-logs — 조회 로그 적재
+ * - 로그인 유저가 상세 페이지에 일정 시간 이상 머물면 호출
+ * - userId는 서버가 인증 토큰에서 채움 (body 없음)
+ * - 분석용 fire-and-forget: 실패해도 화면 동작을 막지 않음
+ */
+export async function recordWhiskeyView(whiskeyId: string): Promise<void> {
+  try {
+    await apiClient.post(`/whiskeys/${whiskeyId}/view-logs`);
+  } catch {
+    // 로그 적재 실패는 무시
+  }
+}
+
 export const whiskeyApi = {
   fetchWhiskeyDetail,
+  recordWhiskeyView,
   fetchRelatedColumns,
   fetchWhiskeyReviews,
   fetchWhiskeyReviewStats,
