@@ -1,11 +1,7 @@
 package com.jackpot.whiskeynote.domain.member;
 
-import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
-import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
-import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
-import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,22 +29,7 @@ class UpdateMyPasswordTest {
     private int port;
 
     @Autowired
-    private WhiskeyRequestRepository whiskeyRequestRepository;
-
-    @Autowired
-    private PickRepository pickRepository;
-
-    @Autowired
-    private WishListItemRepository wishListItemRepository;
-
-    @Autowired
-    private WishListFolderRepository wishListFolderRepository;
-
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private UsersRepository usersRepository;
+    private TestDataCleaner cleaner;
 
     private RestClient authClient;
     private RestClient userClient;
@@ -70,13 +51,7 @@ class UpdateMyPasswordTest {
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        // FK 제약 순서: wishlist_items → wishlist_folders → picks → whiskey_requests → refresh_tokens → users
-        wishListItemRepository.deleteAll();
-        wishListFolderRepository.deleteAll();
-        pickRepository.deleteAll();
-        whiskeyRequestRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
-        usersRepository.deleteAll();
+        cleaner.cleanAll();
     }
 
     @Test

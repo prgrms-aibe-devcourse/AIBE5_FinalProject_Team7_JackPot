@@ -65,4 +65,9 @@ public class PostComment {
         this.content = content;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void restore() {
+        this.isDeleted = false;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

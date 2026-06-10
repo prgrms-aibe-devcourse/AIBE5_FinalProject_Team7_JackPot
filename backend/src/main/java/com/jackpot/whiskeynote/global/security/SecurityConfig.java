@@ -147,6 +147,8 @@ public class SecurityConfig {
                         ).authenticated()
                         // 위스키 등록 요청 — 로그인 필요
                         .requestMatchers("/api/v1/whiskey-requests/**").authenticated()
+                        // 신고 — 로그인 필요
+                        .requestMatchers("/api/v1/reports/**").authenticated()
                         // 관리자 전용 API — ADMIN 권한만
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()

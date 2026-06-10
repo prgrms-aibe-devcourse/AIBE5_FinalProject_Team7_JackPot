@@ -1,10 +1,7 @@
 package com.jackpot.whiskeynote.domain.collection;
 
-import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
-import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeyStatus;
@@ -41,26 +38,10 @@ class PickControllerTest {
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private WhiskeyRequestRepository whiskeyRequestRepository;
-
-    @Autowired
-    private PickRepository pickRepository;
-
-    @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private WhiskeyRepository whiskeyRepository;
-
-    @Autowired
-    private WishListItemRepository wishListItemRepository;
-
-    @Autowired
-    private WishListFolderRepository wishListFolderRepository;
+    @Autowired private TestDataCleaner cleaner;
+    @Autowired private PickRepository pickRepository;
+    @Autowired private UsersRepository usersRepository;
+    @Autowired private WhiskeyRepository whiskeyRepository;
 
     private RestClient restClient;
     private RestClient authRestClient;
@@ -88,14 +69,7 @@ class PickControllerTest {
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        // FK 순서에 맞게 삭제
-        wishListItemRepository.deleteAll();
-        wishListFolderRepository.deleteAll();
-        pickRepository.deleteAll();
-        whiskeyRequestRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
-        usersRepository.deleteAll();
-        whiskeyRepository.deleteAll();
+        cleaner.cleanAllWithWhiskey();
 
         // 테스트용 위스키 DB에 저장
         Whiskey whiskey = Whiskey.builder()

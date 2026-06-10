@@ -1,9 +1,6 @@
 package com.jackpot.whiskeynote.domain.member;
 
-import com.jackpot.whiskeynote.domain.admin.repository.WhiskeyRequestRepository;
-import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListFolderRepository;
-import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
+import com.jackpot.whiskeynote.support.TestDataCleaner;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,20 +29,9 @@ class UserMeControllerTest {
     private int port;
 
     @Autowired
-    private WhiskeyRequestRepository whiskeyRequestRepository;
-
-    @Autowired
-    private PickRepository pickRepository;
-
-    @Autowired
-    private WishListItemRepository wishListItemRepository;
-
-    @Autowired
-    private WishListFolderRepository wishListFolderRepository;
-
+    private TestDataCleaner cleaner;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
-
     @Autowired
     private UsersRepository usersRepository;
 
@@ -68,13 +54,7 @@ class UserMeControllerTest {
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        // FK 제약 순서: wishlist_items → wishlist_folders → picks → whiskey_requests → refresh_tokens → users
-        wishListItemRepository.deleteAll();
-        wishListFolderRepository.deleteAll();
-        pickRepository.deleteAll();
-        whiskeyRequestRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
-        usersRepository.deleteAll();
+        cleaner.cleanAll();
     }
 
     private String registerAndLoginAccessToken() {

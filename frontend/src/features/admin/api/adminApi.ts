@@ -3,8 +3,8 @@ import { apiClient } from '@/shared/api/client';
 // ── 타입 정의 ──────────────────────────────────────
 
 export type WhiskeyRequestStatus = 'pending' | 'approved' | 'rejected';
-export type ReportStatus = 'PENDING' | 'HIDDEN' | 'DISMISSED' | 'BANNED';
-export type ReportAction = 'HIDE' | 'RESTORE' | 'DISMISS' | 'BAN_USER' | 'DELETE_CONTENT';
+export type ReportStatus = 'PENDING' | 'HIDDEN' | 'DISMISSED' | 'BANNED' | 'RESTORED';
+export type ReportAction = 'HIDE' | 'RESTORE' | 'DISMISS' | 'DELETE_CONTENT';
 
 export interface WhiskeyRequest {
   requestId: number;
@@ -17,7 +17,7 @@ export interface WhiskeyRequest {
 
 export interface Report {
   reportId: number;
-  reporterId: number;
+  reporterId: number | null;
   reporterNickname: string;
   targetId: number;
   targetType: 'POST' | 'COMMENT';
@@ -29,6 +29,7 @@ export interface Report {
 }
 
 export interface ReportDetail extends Report {
+  postId: number | null;    // 댓글 신고 시 원본 게시글 ID
   targetContent: string;
   actions: Array<{
     actionId: number;
@@ -60,8 +61,8 @@ export const adminApi = {
   reviewWhiskeyRequest: (id: number, status: 'approved' | 'rejected') =>
     apiClient.patch(`/admin/whiskey-requests/${id}`, { status }),
 
-  // ADM-03: 신고 목록
-  getReports: (status?: ReportStatus, page = 0, size = 20) =>
+  // ADM-03: 신고 목록 조회 (status 필터링)
+  getReports: (status?: ReportStatus, page = 0, size = 10) =>
     apiClient.get('/admin/reports', { params: { status, page, size } }),
 
   // ADM-03-1: 신고 상세
@@ -75,6 +76,15 @@ export const adminApi = {
   // ADM-05: 회원 목록
   getUsers: (page = 0, size = 20) =>
     apiClient.get('/admin/users', { params: { page, size } }),
+
+  // RPT-01: 신고 생성 (사용자용)
+  createReport: (body: {
+    targetId: number;
+    targetType: 'POST' | 'COMMENT';
+    reason: string;
+    detail: string | null;
+  }) =>
+    apiClient.post('/reports', body),
 
   // WH-05: 위스키 등록 요청 생성 (사용자용)
   createWhiskeyRequest: (description: Record<string, unknown>) =>
