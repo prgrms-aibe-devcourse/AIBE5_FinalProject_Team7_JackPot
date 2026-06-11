@@ -46,7 +46,7 @@ export function CommentItem({
 
   return (
     // depth * 20px 인덴트로 대댓글 계층을 시각적으로 구분
-    <div style={{ marginLeft: depth * 20, marginBottom: 8 }}>
+    <div className="wf-comment-item" style={{ marginLeft: depth * 20 }}>
       {showReport && (
         <ReportModal
           targetId={comment.id}
@@ -54,9 +54,9 @@ export function CommentItem({
           onClose={() => setShowReport(false)}
         />
       )}
-      <div className="wf-box" style={{ padding: '10px 14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span className="wf-text-xs" style={{ color: '#888' }}>
+      <div className="wf-box wf-comment-box">
+        <div className="wf-comment-box__head">
+          <span className="wf-text-xs wf-comment-author">
             {comment.isDeleted ? (
               // 삭제된 댓글은 내용 대신 안내 문구를 표시하고 작성자 링크를 숨김
               '(삭제됨)'
@@ -68,23 +68,22 @@ export function CommentItem({
               comment.nickname ?? '사용자'
             )}
           </span>
-          <span className="wf-text-xs" style={{ color: '#aaa' }}>
+          <span className="wf-text-xs wf-comment-date">
             {formatDate(comment.createdAt)}
           </span>
         </div>
 
         {editing ? (
-          <div style={{ marginBottom: 6 }}>
+          <div className="wf-comment-edit-wrap">
             <textarea
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               rows={3}
-              style={{ width: '100%', padding: 6, fontSize: 14, borderRadius: 4, border: '1px solid #ccc', resize: 'vertical', boxSizing: 'border-box' }}
+              className="wf-comment-edit-textarea"
             />
-            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <div className="wf-comment-edit-actions">
               <button
-                className="wf-chip wf-chip--on"
-                style={{ cursor: 'pointer', border: 'none', fontSize: 12 }}
+                className="wf-chip wf-chip--on wf-comment-edit-save"
                 onClick={handleEditSave}
                 disabled={saving || !editText.trim()}
               >
@@ -92,8 +91,7 @@ export function CommentItem({
               </button>
               {/* 취소 시 editText를 원래 comment.content로 복원해 다음 수정 시도에 잔류 텍스트가 남지 않도록 함 */}
               <button
-                className="wf-text-xs"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#666' }}
+                className="wf-text-xs wf-comment-edit-cancel"
                 onClick={() => { setEditing(false); setEditText(comment.content); }}
               >
                 취소
@@ -101,19 +99,18 @@ export function CommentItem({
             </div>
           </div>
         ) : (
-          <p style={{ margin: '0 0 6px', fontSize: 14, color: comment.isDeleted ? '#aaa' : undefined }}>
+          <p className={`wf-comment-text${comment.isDeleted ? ' wf-comment-text--deleted' : ''}`}>
             {comment.content}
           </p>
         )}
 
         {/* 수정 중에는 액션 버튼을 숨겨 혼동을 방지 */}
         {!editing && (
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="wf-comment-actions">
             {/* 삭제된 댓글에는 답글 버튼을 표시하지 않음 */}
             {!comment.isDeleted && onReply && (
               <button
-                className="wf-text-xs"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#666' }}
+                className="wf-text-xs wf-comment-action-btn"
                 onClick={() => onReply(comment.id)}
               >
                 답글
@@ -121,8 +118,7 @@ export function CommentItem({
             )}
             {isOwner && !comment.isDeleted && onEdit && (
               <button
-                className="wf-text-xs"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#555' }}
+                className="wf-text-xs wf-comment-action-btn"
                 onClick={() => { setEditText(comment.content); setEditing(true); }}
               >
                 수정
@@ -130,8 +126,7 @@ export function CommentItem({
             )}
             {isOwner && onDelete && !comment.isDeleted && (
               <button
-                className="wf-text-xs"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#c00' }}
+                className="wf-text-xs wf-comment-action-btn wf-comment-action-btn--danger"
                 onClick={() => onDelete(comment.id)}
               >
                 삭제
@@ -140,8 +135,7 @@ export function CommentItem({
             {/* 본인 댓글이 아닐 때만 신고 버튼 표시 */}
             {!isOwner && currentUserId != null && !comment.isDeleted && (
               <button
-                className="wf-text-xs"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#8b8b96' }}
+                className="wf-text-xs wf-comment-action-btn"
                 onClick={() => setShowReport(true)}
               >
                 🚨 신고

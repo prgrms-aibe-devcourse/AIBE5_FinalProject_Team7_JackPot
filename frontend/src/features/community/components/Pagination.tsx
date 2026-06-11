@@ -9,28 +9,22 @@ export function Pagination({ page, totalPages, onPage }: PaginationProps) {
   // 페이지가 1개뿐이면 컴포넌트 자체를 렌더링하지 않아 불필요한 UI 제거
   if (totalPages <= 1) return null;
   return (
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16 }}>
+    <div className="wf-pagination">
       <button
-        className="wf-chip"
+        className="wf-chip wf-pagination__btn"
         onClick={() => onPage(page - 1)}
         disabled={page === 0}
-        // opacity와 cursor로 비활성 상태를 시각적으로 표현 — disabled 속성만으로는 스타일 변경이 안 됨
-        style={{ cursor: page === 0 ? 'default' : 'pointer', opacity: page === 0 ? 0.4 : 1 }}
       >
         이전
       </button>
       {/* 사용자에게는 1-based로 표시 */}
-      <span className="wf-text-sm" style={{ lineHeight: '28px' }}>
+      <span className="wf-text-sm wf-pagination__page">
         {page + 1} / {totalPages}
       </span>
       <button
-        className="wf-chip"
+        className="wf-chip wf-pagination__btn"
         onClick={() => onPage(page + 1)}
         disabled={page >= totalPages - 1}
-        style={{
-          cursor: page >= totalPages - 1 ? 'default' : 'pointer',
-          opacity: page >= totalPages - 1 ? 0.4 : 1,
-        }}
       >
         다음
       </button>

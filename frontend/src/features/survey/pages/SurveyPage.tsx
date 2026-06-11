@@ -235,8 +235,8 @@ export default function SurveyPage() {
           <main className="wf-survey-main">
             <header className="wf-survey-intro">
               <p className="wf-text-label">설문조사</p>
-              <h1 className="wf-title" style={{ marginTop: 4 }}>나의 위스키 취향 알아보기</h1>
-              <p className="wf-subtitle" style={{ marginTop: 6 }}>
+              <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
+              <p className="wf-subtitle wf-survey-intro__subtitle">
                 7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.
               </p>
             </header>
@@ -282,10 +282,10 @@ export default function SurveyPage() {
                 className="wf-box wf-survey-q"
               >
                 <p className="wf-text-label">nose_tags · 복수 선택</p>
-                <h2 className="wf-title" style={{ marginTop: 4 }}>Q6. 좋아하는 향을 골라주세요</h2>
+                <h2 className="wf-title wf-survey-q__h2">Q6. 좋아하는 향을 골라주세요</h2>
                 {NOSE_GROUPS.map((g) => (
-                  <div key={g.group} style={{ marginTop: 16 }}>
-                    <p className="wf-text-sm" style={{ marginBottom: 8 }}>{g.group}</p>
+                  <div key={g.group} className="wf-survey-tag-group">
+                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
                     <div className="wf-chips">
                       {g.tags.map((tag) => (
                         <button
@@ -311,10 +311,10 @@ export default function SurveyPage() {
                 className="wf-box wf-survey-q"
               >
                 <p className="wf-text-label">taste_tags · 복수 선택</p>
-                <h2 className="wf-title" style={{ marginTop: 4 }}>Q7. 좋아하는 맛을 골라주세요</h2>
+                <h2 className="wf-title wf-survey-q__h2">Q7. 좋아하는 맛을 골라주세요</h2>
                 {TASTE_GROUPS.map((g) => (
-                  <div key={g.group} style={{ marginTop: 16 }}>
-                    <p className="wf-text-sm" style={{ marginBottom: 8 }}>{g.group}</p>
+                  <div key={g.group} className="wf-survey-tag-group">
+                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
                     <div className="wf-chips">
                       {g.tags.map((tag) => (
                         <button
@@ -333,7 +333,7 @@ export default function SurveyPage() {
             )}
 
             {canSubmit && (
-              <Button block style={{ marginTop: 24 }} onClick={handleSubmit} disabled={submitting}>
+              <Button block className="wf-survey-submit" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? '분석 중...' : '저장'}
               </Button>
             )}
