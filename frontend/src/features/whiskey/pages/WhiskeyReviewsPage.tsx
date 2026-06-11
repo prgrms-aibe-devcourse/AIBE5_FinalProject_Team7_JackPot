@@ -8,6 +8,7 @@ import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import type { WhiskeyReview } from '../types';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { useWhiskeyReviews } from '../hooks/useWhiskeyDetail';
+import '../whiskey.css';
 
 function formatReviewDate(value: string): string {
   return new Intl.DateTimeFormat('ko-KR', {

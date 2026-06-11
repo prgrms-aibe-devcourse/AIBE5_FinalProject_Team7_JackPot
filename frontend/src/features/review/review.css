@@ -1,0 +1,18 @@
+/* ─── WriteReviewPage ─── */
+.wf-write-review-form { max-width: 520px; margin: 0 auto; }
+.wf-write-review-edit-hint { margin: 8px 0 0; color: var(--wf-accent); }
+.wf-write-review-rating { margin-top: 16px; }
+.wf-write-review-rating-val { margin: 8px 0 0; }
+.wf-write-review-label { display: block; margin-top: 16px; }
+.wf-write-review-note-hint { margin: 4px 0 0; }
+.wf-write-review-error { color: #ff8a8a; margin-top: 12px; }
+.wf-write-review-submit { margin-top: 16px; }
+
+/* ─── PickPages (ReviewPickPage / NotePickPage) ─── */
+.wf-pick-subtitle { margin-bottom: 16px; }
+.wf-pick-form { display: flex; gap: 8px; margin-bottom: 16px; }
+.wf-pick-input-wrap { flex: 1; }
+.wf-pick-search-btn { width: 80px; }
+.wf-pick-msg-box { padding: 16px; }
+.wf-pick-card { padding: 16px; margin-top: 12px; cursor: pointer; }
+.wf-pick-card-thumb { width: 56px; height: 76px; object-fit: cover; }

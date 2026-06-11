@@ -1,0 +1,19 @@
+/* ───────── LandingPage ───────── */
+.wf-landing-layout {
+  padding: 0 40px;
+  flex: 1;
+}
+
+.wf-landing-cta {
+  width: 200px;
+  margin-top: 24px;
+}
+
+.wf-landing-placeholder {
+  height: 360px;
+  border-radius: var(--wf-radius);
+}
+
+.wf-landing-stats {
+  padding: 0 40px 32px;
+}

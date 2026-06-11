@@ -1,6 +1,7 @@
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
+import '../onboarding.css';
 
 export default function OnboardingPage() {
   return (
