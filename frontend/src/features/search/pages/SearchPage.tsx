@@ -201,7 +201,7 @@ export default function SearchPage() {
     setPage(0);
   }, [keyword, selectedTypes, selectedNoseTags, selectedTasteTags, minAbv, maxAbv, minAge, maxAge]);
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, error, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
       'whiskeys',
       'search',
@@ -238,17 +238,24 @@ export default function SearchPage() {
 
       return fetchWhiskeys({ page, size: pageSize });
     },
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: autocompleteItems = [] } = useQuery({
     queryKey: ['whiskeys', 'autocomplete', suggestionKeyword],
     queryFn: () => autocompleteWhiskeys({ q: suggestionKeyword, size: 8 }),
     enabled: suggestionKeyword.length > 0,
+    retry: false,
   });
 
   const results = data?.content ?? [];
   const totalCount = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 0;
+  const isInitialLoading = isLoading && results.length === 0;
+  const searchErrorMessage =
+    error instanceof Error && error.message !== '요청에 실패했습니다.'
+      ? error.message
+      : '검색 서버 응답이 지연되고 있습니다. 잠시 후 다시 시도해주세요.';
   const suggestions = autocompleteItems.filter((item) => item.keyword !== suggestionKeyword);
   const shouldCheckCorrection = Boolean(keyword) && !isLoading && !isError && totalCount === 0;
 
@@ -280,6 +287,7 @@ export default function SearchPage() {
     queryKey: ['whiskeys', 'correction', keyword],
     queryFn: () => correctWhiskeyKeyword(keyword),
     enabled: shouldCheckCorrection,
+    retry: false,
   });
 
   const correctedKeyword =
@@ -519,8 +527,9 @@ export default function SearchPage() {
           </form>
 
           <p className="wf-text-sm">
-            {isLoading ? '불러오는 중' : keyword ? `"${keyword}" 검색 결과 ${totalCount}건` : `전체 결과 ${totalCount}건`}
+            {isInitialLoading ? '불러오는 중' : keyword ? `"${keyword}" 검색 결과 ${totalCount}건` : `전체 결과 ${totalCount}건`}
             {isFilterActive ? ' · 필터 적용' : ''}
+            {isFetching && !isInitialLoading ? ' · 새로고침 중' : ''}
           </p>
 
           {correctedKeyword ? (
@@ -540,14 +549,43 @@ export default function SearchPage() {
           {isError ? (
             <div className="wf-box wf-search-error-box">
               <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
-              <p className="wf-card__meta">백엔드 서버와 검색 API가 실행 중인지 확인해주세요.</p>
-              <Button variant="ghost" size="sm" onClick={() => refetch()}>
-                다시 시도
-              </Button>
+              <p className="wf-card__meta">{searchErrorMessage}</p>
+              <div className="wf-search-state-actions">
+                <Button variant="ghost" size="sm" onClick={() => refetch()}>
+                  다시 시도
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setInputValue('');
+                    setKeyword('');
+                    setPage(0);
+                    resetFilters();
+                  }}
+                >
+                  검색 초기화
+                </Button>
+              </div>
             </div>
           ) : null}
 
-          {!isLoading && !isError && results.length === 0 ? (
+          {isInitialLoading ? (
+            <div className="wf-search-skeleton-list" aria-label="검색 결과를 불러오는 중">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="wf-box wf-search-skeleton-card">
+                  <div className="wf-search-skeleton-card__thumb" />
+                  <div className="wf-search-skeleton-card__body">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {!isInitialLoading && !isError && results.length === 0 ? (
             <div className="wf-box wf-search-empty-box">
               <p className="wf-card__title">검색 결과가 없습니다.</p>
               <p className="wf-card__meta">다른 검색어로 다시 찾아보거나 등록을 요청해보세요.</p>

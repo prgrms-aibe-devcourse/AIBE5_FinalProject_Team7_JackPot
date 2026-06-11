@@ -2,6 +2,14 @@ import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    _retry?: boolean;
+    skipAuthRedirect?: boolean;
+    skipGlobalErrorRedirect?: boolean;
+  }
+}
+
 /** 비로그인 조회 허용 API — 401이어도 로그인 페이지로 보내지 않음 */
 const PUBLIC_READ_PATH =
   /^\/users\/\d+\/(picks|cabinet\/stats)(?:\?|$)|^\/reviews(?:\?|$)/;
@@ -52,7 +60,7 @@ apiClient.interceptors.response.use(
 
       // RefreshToken 없으면 로그인 유도 (타인 캐비넷 등 공개 조회는 제외)
       if (!refreshToken) {
-        if (!isPublicReadRequest(originalRequest?.url)) {
+        if (!originalRequest?.skipAuthRedirect && !isPublicReadRequest(originalRequest?.url)) {
           localStorage.clear();
           window.location.href = '/login';
         }
@@ -100,12 +108,16 @@ apiClient.interceptors.response.use(
     const message = error.response?.data?.error?.message ?? '요청에 실패했습니다.';
 
     if (error.response?.status === 403) {
-      window.location.href = '/error/403';
+      if (!originalRequest?.skipGlobalErrorRedirect) {
+        window.location.href = '/error/403';
+      }
     }
 
     // 500번대 서버 오류 → 에러 페이지로 이동
     if (error.response?.status >= 500) {
-      window.location.href = '/error/500';
+      if (!originalRequest?.skipGlobalErrorRedirect) {
+        window.location.href = '/error/500';
+      }
     }
 
     return Promise.reject(new Error(message));
