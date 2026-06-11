@@ -14,34 +14,18 @@ export function ErrorPage({ code, title, message, showHomeButton = true }: Error
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '24px',
-    }}>
-      <div className="wf-box wf-auth-box" style={{
-        textAlign: 'center',
-        width: '100%',
-        maxWidth: 480,
-      }}>
+    <div className="wf-error-page">
+      <div className="wf-box wf-auth-box wf-error-box">
         {/* 위스키 아이콘 */}
-        <div style={{ fontSize: 64, marginBottom: 8, lineHeight: 1 }}>🥃</div>
+        <div className="wf-error-icon">🥃</div>
         {/* 에러 코드 */}
-        <p style={{ fontSize: 80, fontWeight: 700, margin: '0 0 8px', opacity: 0.15, lineHeight: 1 }}>
-          {code}
-        </p>
+        <p className="wf-error-code">{code}</p>
         {/* 제목 */}
-        <h2 className="wf-title" style={{ fontSize: 22, marginBottom: 10 }}>
-          {title}
-        </h2>
+        <h2 className="wf-title wf-error-title">{title}</h2>
         {/* 안내 메시지 */}
-        <p className="wf-subtitle" style={{ marginBottom: 32 }}>
-          {message}
-        </p>
+        <p className="wf-subtitle wf-error-subtitle">{message}</p>
         {/* 버튼 영역 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="wf-error-actions">
           {showHomeButton && (
             <Button block to={PATHS.LANDING}>
               홈으로 돌아가기

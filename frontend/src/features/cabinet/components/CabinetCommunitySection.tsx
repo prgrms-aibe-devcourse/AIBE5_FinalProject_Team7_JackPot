@@ -41,8 +41,8 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
   return (
     <>
       {showWriteButton ? (
-        <Link to={PATHS.COMMUNITY_POST_NEW} style={{ textDecoration: 'none' }}>
-          <Button style={{ width: 192, height: 46, marginTop: 8 }}>+ 글 작성</Button>
+        <Link to={PATHS.COMMUNITY_POST_NEW} className="wf-community-write-link">
+          <Button className="wf-community-write-btn">+ 글 작성</Button>
         </Link>
       ) : null}
       {loading ? (

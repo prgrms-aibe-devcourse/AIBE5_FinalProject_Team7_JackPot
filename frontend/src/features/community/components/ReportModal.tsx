@@ -57,79 +57,42 @@ export function ReportModal({ targetId, targetType, onClose }: ReportModalProps)
     }
   };
 
-  const inputStyle = {
-    width: '100%',
-    background: '#16161c',
-    border: '1px solid #2e2e38',
-    borderRadius: 8,
-    padding: '10px 14px',
-    color: '#ececf0',
-    fontSize: 14,
-    outline: 'none',
-    boxSizing: 'border-box' as const,
-  };
-
   return (
     <div
       role="dialog"
       aria-modal="true"
-      style={{
-        position: 'fixed', inset: 0, zIndex: 50,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 16, background: 'rgba(0,0,0,0.65)',
-      }}
+      className="wf-modal-overlay"
       onClick={onClose}
     >
       <div
-        style={{
-          width: 'min(420px, 100%)',
-          background: '#1e1e26',
-          border: '1px solid #2e2e38',
-          borderRadius: 12,
-          padding: 20,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 14,
-        }}
+        className="wf-modal-panel wf-modal-panel--report"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="wf-modal-header">
           <div>
-            <p style={{ color: '#ececf0', fontWeight: 600, fontSize: 15, margin: 0 }}>
+            <p className="wf-modal-title">
               {targetType === 'POST' ? '게시글' : '댓글'} 신고
             </p>
-            <p style={{ color: '#8b8b96', fontSize: 12, margin: '4px 0 0' }}>
-              신고 사유를 선택해주세요.
-            </p>
+            <p className="wf-modal-subtitle">신고 사유를 선택해주세요.</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#8b8b96', fontSize: 18, cursor: 'pointer' }}
+            className="wf-modal-close-btn"
           >
             ✕
           </button>
         </div>
 
         {/* 신고 사유 선택 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="wf-modal-options">
           {REASON_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => { setReason(opt.value); setDetail(''); }}
-              style={{
-                padding: '10px 14px',
-                borderRadius: 8,
-                border: `1px solid ${reason === opt.value ? '#c9a227' : '#2e2e38'}`,
-                background: reason === opt.value ? 'rgba(201,162,39,0.1)' : '#16161c',
-                color: reason === opt.value ? '#c9a227' : '#ececf0',
-                fontSize: 14,
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'border-color 0.15s, background 0.15s',
-              }}
+              className={`wf-modal-option${reason === opt.value ? ' wf-modal-option--on' : ''}`}
             >
               {opt.label}
             </button>
@@ -148,52 +111,29 @@ export function ReportModal({ targetId, targetType, onClose }: ReportModalProps)
                 }
               }}
               rows={3}
-              style={{ ...inputStyle, resize: 'none' }}
+              className="wf-modal-input"
               autoFocus
             />
-            <p style={{
-              textAlign: 'right',
-              fontSize: 12,
-              margin: '4px 0 0',
-              color: detail.length >= DETAIL_MAX_LENGTH ? '#f87171' : '#8b8b96',
-            }}>
+            <p className={`wf-modal-char-count${detail.length >= DETAIL_MAX_LENGTH ? ' wf-modal-char-count--limit' : ''}`}>
               {detail.length} / {DETAIL_MAX_LENGTH}
             </p>
           </div>
         )}
 
         {/* 버튼 */}
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="wf-modal-footer">
           <button
             type="button"
             disabled={submitting}
             onClick={handleSubmit}
-            style={{
-              flex: 1,
-              background: '#c9a227',
-              border: 'none',
-              borderRadius: 10,
-              padding: '11px',
-              color: '#0c0c0f',
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: submitting ? 'not-allowed' : 'pointer',
-            }}
+            className="wf-modal-submit-btn"
           >
             {submitting ? '접수 중...' : '신고하기'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: '1px solid #2e2e38',
-              borderRadius: 10,
-              padding: '11px 16px',
-              color: '#8b8b96',
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
+            className="wf-modal-cancel-btn"
           >
             취소
           </button>

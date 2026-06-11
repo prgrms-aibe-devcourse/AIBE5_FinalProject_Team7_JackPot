@@ -6,9 +6,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export function Input({ label, className = '', ...rest }: InputProps) {
   return (
-    <label className={className} style={{ display: 'block' }}>
+    <label className={`wf-input-label${className ? ` ${className}` : ''}`}>
       {label ? <span className="wf-text-label">{label}</span> : null}
-      <div className="wf-input" style={{ marginTop: label ? 6 : 0 }}>
+      <div className={`wf-input${label ? ' wf-input--labeled' : ''}`}>
         <input className="wf-input--field" {...rest} />
       </div>
     </label>
