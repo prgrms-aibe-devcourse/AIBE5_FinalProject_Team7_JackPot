@@ -1,32 +1,108 @@
 /* ───────── Auth — LoginPage ───────── */
-.wf-auth-title { font-size: 22px; }
+.wf-auth-title { font-size: 22px; letter-spacing: 0; }
 .wf-register-title { margin-bottom: 6px; }
 .wf-post-title { margin-bottom: 4px; }
 .wf-auth-field-first { margin-top: 20px; }
 .wf-auth-field { margin-top: 10px; }
-.wf-auth-submit { margin-top: 16px; }
-.wf-auth-oauth-btn { margin-top: 8px; }
 
+.wf-auth-submit {
+  margin-top: 20px;
+  border-radius: 14px;
+  letter-spacing: 0;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.15s ease;
+}
+.wf-auth-submit:hover:not(:disabled) {
+  box-shadow: 0 6px 24px rgba(201, 162, 39, 0.42) !important;
+}
+
+/* 이메일 ↔ 소셜 구분선 */
+.wf-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wf-muted);
+  letter-spacing: 0;
+  text-transform: uppercase;
+  user-select: none;
+}
+.wf-auth-divider::before,
+.wf-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--wf-border);
+}
+
+/* OAuth 버튼 공통 */
+.wf-auth-oauth-btn {
+  margin-top: 10px;
+  border-radius: 14px !important;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  gap: 9px;
+  transition: transform 0.12s ease, box-shadow 0.18s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+/* 카카오 */
 .wf-auth-oauth-btn--kakao {
   background: #FEE500 !important;
   border-color: #FEE500 !important;
-  color: #000000 !important;
+  color: #191919 !important;
+}
+.wf-auth-oauth-btn--kakao::before {
+  content: 'K';
+  display: block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  letter-spacing: 0;
 }
 .wf-auth-oauth-btn--kakao:hover {
-  background: #e6cf00 !important;
-  border-color: #e6cf00 !important;
+  background: #f0d800 !important;
+  border-color: #f0d800 !important;
+  box-shadow: 0 4px 18px rgba(254, 229, 0, 0.32) !important;
 }
 
+/* Google */
 .wf-auth-oauth-btn--google {
   background: #ffffff !important;
-  border: 1px solid #dadce0 !important;
+  border: 1px solid #e0e0e0 !important;
   color: #3c4043 !important;
 }
-.wf-auth-oauth-btn--google:hover {
-  background: #f8f9fa !important;
-  border-color: #c6cacf !important;
+.wf-auth-oauth-btn--google::before {
+  content: 'G';
+  display: block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 50%;
+  background: #4285f4;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0;
 }
-.wf-auth-footer-text { text-align: center; margin-top: 16px; }
+.wf-auth-oauth-btn--google:hover {
+  background: #f5f5f5 !important;
+  border-color: #c8c8c8 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
+}
+
+.wf-auth-footer-text { text-align: center; margin-top: 20px; }
 
 /* ───────── Auth — RegisterPage ───────── */
 .wf-register-box { max-width: 440px; }
