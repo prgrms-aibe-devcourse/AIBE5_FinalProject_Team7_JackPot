@@ -1,43 +1,43 @@
 /* ───────── LandingPage ───────── */
-.wf-landing-layout {
-  padding: 18px 40px 0;
+
+/* 이미지 전체 배경 영역 */
+.wf-landing-bg {
   flex: 1;
-}
-
-.wf-landing-hero {
   position: relative;
-  overflow: hidden;
-  min-height: 360px;
   background-image: url('/images/landing-hero-whiskey.png');
-  background-size: auto 110%;
-  background-position: right center;
-  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 56px 52px;
 }
 
-/* 좌→우 그라디언트 오버레이: 텍스트 가독성 확보 */
-.wf-landing-hero::before {
+/* 전체 배경 살짝 어둡게 */
+.wf-landing-bg::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(11, 10, 13, 0.94) 0%,
-    rgba(11, 10, 13, 0.80) 38%,
-    rgba(11, 10, 13, 0.40) 62%,
-    rgba(11, 10, 13, 0.08) 100%
-  );
+  background: rgba(8, 7, 10, 0.28);
   pointer-events: none;
-  z-index: 0;
 }
 
-.wf-landing-hero > * {
+/* 히어로 글래스 카드 — 이미지 하단 좌측 배치 */
+.wf-landing-hero {
   position: relative;
   z-index: 1;
+  width: 340px;
+  padding: 28px 32px;
+  border-radius: 14px;
+  background: rgba(11, 10, 13, 0.68);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(213, 173, 69, 0.22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 .wf-landing-cta {
-  width: 200px;
-  margin-top: 24px;
+  width: 100%;
+  margin-top: 20px;
 }
 
 .wf-landing-stats {
@@ -50,16 +50,17 @@
 }
 
 @media (max-width: 960px) {
-  .wf-landing-layout {
-    padding: 18px 16px 0;
-  }
-
-  .wf-landing-hero {
-    min-height: 280px;
-    background-size: auto 120%;
+  .wf-landing-bg {
+    padding: 0 24px 40px;
   }
 
   .wf-landing-stats {
     padding: 0 16px 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wf-landing-hero {
+    width: 100%;
   }
 }

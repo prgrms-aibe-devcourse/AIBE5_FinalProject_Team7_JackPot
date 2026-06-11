@@ -5,8 +5,8 @@ import '../landing.css';
 export default function LandingPage() {
   return (
     <div className="wf-page wf-page--guest-landing">
-      <div className="wf-landing-layout">
-        <div className="wf-landing-hero wf-box wf-box--accent">
+      <div className="wf-landing-bg">
+        <div className="wf-landing-hero">
           <h1 className="wf-hero__title">당신의 취향에 맞는<br />위스키를 찾아보세요</h1>
           <p className="wf-subtitle">AI 큐레이션 · 시음 기록 · 커뮤니티 리뷰</p>
           <Button to={PATHS.LOGIN} block className="wf-landing-cta">무료로 시작하기</Button>
