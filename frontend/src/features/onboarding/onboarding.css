@@ -1,7 +1,7 @@
 /* ───────── OnboardingPage ───────── */
 .wf-onboarding-root {
   overflow: hidden;
-  background: #070609;
+  background: #010101;
 }
 
 .wf-onboarding-page {
@@ -11,7 +11,7 @@
   align-items: stretch;
   overflow: hidden;
   padding: 48px 24px 82px;
-  background: #070609;
+  background: #010101;
 }
 
 .wf-onboarding-page::before {
@@ -33,6 +33,7 @@
   position: absolute;
   inset: 0;
   background:
+    linear-gradient(90deg, transparent 72%, rgba(1, 1, 1, 0.18) 86%, #010101 100%),
     linear-gradient(90deg, rgba(7, 6, 9, 0.98) 0%, rgba(7, 6, 9, 0.94) 44%, rgba(7, 6, 9, 0.38) 55%, transparent 68%),
     radial-gradient(ellipse at 49% 49%, rgba(7, 6, 9, 0.88) 0%, rgba(7, 6, 9, 0.74) 18%, rgba(7, 6, 9, 0.2) 33%, transparent 48%),
     radial-gradient(ellipse at 31% 50%, rgba(7, 6, 9, 0.95) 0%, rgba(7, 6, 9, 0.84) 32%, rgba(7, 6, 9, 0.38) 52%, transparent 70%),
