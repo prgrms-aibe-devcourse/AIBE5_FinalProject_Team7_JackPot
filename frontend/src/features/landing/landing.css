@@ -1,6 +1,6 @@
 /* ───────── LandingPage ───────── */
 .wf-landing-layout {
-  padding: 0 40px;
+  padding: 18px 40px 0;
   flex: 1;
 }
 
@@ -9,11 +9,50 @@
   margin-top: 24px;
 }
 
-.wf-landing-placeholder {
+.wf-landing-visual {
   height: 360px;
-  border-radius: var(--wf-radius);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(213, 173, 69, 0.18);
+  box-shadow: var(--wf-shadow-lg);
+  position: relative;
+  background: var(--wf-surface);
+}
+
+.wf-landing-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(11, 10, 13, 0.34));
+  pointer-events: none;
+}
+
+.wf-landing-visual img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .wf-landing-stats {
-  padding: 0 40px 32px;
+  padding: 0 40px 34px;
+  flex-wrap: wrap;
+}
+
+.wf-landing-stats .wf-stat {
+  border-color: rgba(255, 255, 255, 0.075);
+}
+
+@media (max-width: 960px) {
+  .wf-landing-layout {
+    padding: 18px 16px 0;
+  }
+
+  .wf-landing-visual {
+    height: 280px;
+  }
+
+  .wf-landing-stats {
+    padding: 0 16px 28px;
+  }
 }
