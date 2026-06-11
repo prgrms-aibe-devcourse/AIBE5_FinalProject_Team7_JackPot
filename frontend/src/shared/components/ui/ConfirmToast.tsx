@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import './ConfirmToast.css';
 
 interface ConfirmOptions {
   message: string;

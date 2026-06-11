@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import './TopNav.css';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
 import { clearAuthSession } from '@/shared/lib/authSession';

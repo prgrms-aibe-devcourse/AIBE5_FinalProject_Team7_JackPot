@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import './Toast.css';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 

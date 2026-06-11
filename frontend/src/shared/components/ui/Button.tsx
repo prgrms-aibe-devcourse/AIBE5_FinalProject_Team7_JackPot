@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import './Button.css';
 
 type Variant = 'primary' | 'ghost' | 'danger';
 type Size = 'md' | 'sm';

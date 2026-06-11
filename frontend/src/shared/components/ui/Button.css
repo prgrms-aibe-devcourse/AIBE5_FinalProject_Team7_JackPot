@@ -1,0 +1,32 @@
+.app-root .wf-btn {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.app-root .wf-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.app-root .wf-btn--danger {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: var(--wf-danger);
+}
+
+.app-root .wf-btn--danger:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: var(--wf-danger);
+}
+
+.app-root .wf-btn--sm {
+  height: 34px;
+  font-size: 13px;
+  padding: 0 14px;
+  border-radius: 8px;
+}
+
+.app-root a.wf-btn {
+  text-decoration: none;
+}
