@@ -393,7 +393,7 @@
 }
 .wf-modal-option--on {
   border-color: var(--wf-accent);
-  background: rgba(201, 162, 39, 0.1);
+  background: rgba(213, 173, 69, 0.1);
   color: var(--wf-accent);
 }
 .wf-modal-input {
