@@ -87,22 +87,22 @@ export default function WriteReviewPage() {
 
   return (
     <WireframePage>
-      <form className="wf-box wf-panel" style={{ maxWidth: 520, margin: '0 auto' }} onSubmit={handleSubmit}>
+      <form className="wf-box wf-panel wf-write-review-form" onSubmit={handleSubmit}>
         <h2 className="wf-title">{myReviewsLoading ? '리뷰 확인 중' : isEditMode ? '리뷰 수정' : '리뷰 작성'}</h2>
         <p className="wf-text-sm">{whiskey?.name ?? '위스키 정보를 불러오는 중입니다.'}</p>
         {isEditMode ? (
-          <p className="wf-text-sm" style={{ margin: '8px 0 0', color: 'var(--wf-accent)' }}>
+          <p className="wf-text-sm wf-write-review-edit-hint">
             이미 작성한 리뷰가 있어 수정 화면으로 열었습니다.
           </p>
         ) : null}
 
-        <div style={{ marginTop: 16 }}>
+        <div className="wf-write-review-rating">
           <p className="wf-text-label">별점</p>
           <StarRatingInput value={rating} onChange={setRating} />
-          <p className="wf-text-sm" style={{ margin: '8px 0 0' }}>{rating}점</p>
+          <p className="wf-text-sm wf-write-review-rating-val">{rating}점</p>
         </div>
 
-        <label style={{ display: 'block', marginTop: 16 }}>
+        <label className="wf-write-review-label">
           <span className="wf-text-label">공개 한줄평</span>
           <textarea
             className="wf-review-textarea"
@@ -117,7 +117,7 @@ export default function WriteReviewPage() {
           <div className="wf-review-note-attach__head">
             <div>
               <p className="wf-text-label">My Note 첨부</p>
-              <p className="wf-text-sm" style={{ margin: '4px 0 0' }}>
+              <p className="wf-text-sm wf-write-review-note-hint">
                 이 위스키에 작성한 시음 노트를 리뷰에 함께 표시할 수 있습니다.
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function WriteReviewPage() {
         </section>
 
         {errorMessage && (
-          <p className="wf-text-sm" style={{ color: '#ff8a8a', marginTop: 12 }}>
+          <p className="wf-text-sm wf-write-review-error">
             {errorMessage}
           </p>
         )}
@@ -161,7 +161,7 @@ export default function WriteReviewPage() {
           block
           type="submit"
           disabled={isSaving || myReviewsLoading}
-          style={{ marginTop: 16 }}
+          className="wf-write-review-submit"
         >
           {isSaving ? '저장 중...' : isEditMode ? '수정 저장' : '등록'}
         </Button>

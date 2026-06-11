@@ -21,24 +21,21 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
     <article className={`wf-cabinet-pick wf-box${highlighted ? ' wf-box--accent' : ''}`}>
 
       {/* 이미지 — 클릭 시 상세 이동 */}
-      <Link to={detailPath} style={{ flexShrink: 0, display: 'block' }}>
+      <Link to={detailPath} className="wf-cabinet-pick__thumb-link">
         {thumbSrc && !imgError ? (
           <img
             src={thumbSrc}
             alt={name}
             className="wf-cabinet-pick__thumb"
-            style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, transition: 'opacity 0.15s' }}
             onError={() => setImgError(true)}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.8'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
           />
         ) : (
-          <div className="wf-cabinet-pick__thumb wf-placeholder" style={{ width: 64, height: 64, borderRadius: 8 }} />
+          <div className="wf-cabinet-pick__thumb wf-placeholder" />
         )}
       </Link>
 
       {/* 텍스트 영역 */}
-      <div className="wf-cabinet-pick__body" style={{ flex: 1, minWidth: 0 }}>
+      <div className="wf-cabinet-pick__body">
         <Link to={detailPath} className="wf-cabinet-pick__title">
           {name}
         </Link>
@@ -46,29 +43,9 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
       </div>
 
       {/* 우측 액션 영역 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div className="wf-cabinet-pick__actions">
         {/* 상세보기 버튼 */}
-        <Link
-          to={detailPath}
-          style={{
-            padding: '6px 12px',
-            border: '1px solid #2e2e38',
-            borderRadius: 8,
-            color: '#8b8b96',
-            fontSize: 13,
-            textDecoration: 'none',
-            transition: 'border-color 0.15s, color 0.15s',
-            whiteSpace: 'nowrap',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#c9a227';
-            e.currentTarget.style.color = '#c9a227';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#2e2e38';
-            e.currentTarget.style.color = '#8b8b96';
-          }}
-        >
+        <Link to={detailPath} className="wf-cabinet-pick__detail-btn">
           상세보기
         </Link>
 
@@ -76,26 +53,8 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
         {!readonly && onRemove && (
           <button
             type="button"
+            className="wf-cabinet-pick__remove-btn"
             onClick={onRemove}
-            style={{
-              padding: '6px 12px',
-              border: '1px solid #2e2e38',
-              borderRadius: 8,
-              background: 'none',
-              color: '#8b8b96',
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'border-color 0.15s, color 0.15s, background 0.15s',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#f87171';
-              e.currentTarget.style.color = '#f87171';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#2e2e38';
-              e.currentTarget.style.color = '#8b8b96';
-            }}
           >
             제거
           </button>

@@ -65,9 +65,9 @@ export default function RecommendationPage() {
       <>
         <TopNav searchPlaceholder="Whiskey Note" />
         <div className="wf-page">
-          <div className="wf-page__inner" style={{ textAlign: 'center', paddingTop: 80 }}>
+          <div className="wf-page__inner wf-reco-empty">
             <p className="wf-subtitle">설문 결과가 없어요.</p>
-            <Button to={PATHS.SURVEY} style={{ marginTop: 20 }}>설문 시작하기</Button>
+            <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">설문 시작하기</Button>
           </div>
         </div>
       </>
@@ -81,19 +81,19 @@ export default function RecommendationPage() {
       <TopNav searchPlaceholder="Whiskey Note" />
       <div className="wf-page">
         <div className="wf-page__inner wf-page__inner--scroll">
-          <div style={{ maxWidth: 720, margin: '0 auto', width: '100%' }}>
+          <div className="wf-reco-wrap">
             {/* 취향 분석 노트 */}
             <div className="wf-box wf-panel wf-result-note">
               <p className="wf-text-label">Taste Profile</p>
-              <h1 className="wf-title" style={{ marginTop: 4 }}>당신의 취향 분석 결과입니다</h1>
-              <p className="wf-subtitle" style={{ marginTop: 6 }}>
+              <h1 className="wf-title wf-reco-main-title">당신의 취향 분석 결과입니다</h1>
+              <p className="wf-subtitle wf-reco-main-subtitle">
                 설문 응답을 바탕으로 5가지 풍미 축과 선호 노트를 정리했어요.
               </p>
 
               {/* 유저 타입 */}
-              <div style={{ marginTop: 16, padding: '12px 16px', background: 'var(--wf-surface2)', borderRadius: 8, borderLeft: '3px solid var(--wf-accent)' }}>
-                <p style={{ fontWeight: 700, fontSize: 16, color: 'var(--wf-accent)' }}>{userType}</p>
-                <p className="wf-text-sm" style={{ marginTop: 4, lineHeight: 1.6 }}>{userTypeDescription}</p>
+              <div className="wf-reco-type-card">
+                <p className="wf-reco-type-name">{userType}</p>
+                <p className="wf-text-sm wf-reco-type-desc">{userTypeDescription}</p>
               </div>
 
               <div className="wf-result-scores">
@@ -120,8 +120,8 @@ export default function RecommendationPage() {
               </div>
 
               {profile.noseTags.length > 0 && (
-                <div style={{ marginTop: 18 }}>
-                  <p className="wf-text-sm" style={{ marginBottom: 8 }}>좋아하는 향 (nose)</p>
+                <div className="wf-reco-tags-section">
+                  <p className="wf-text-sm wf-reco-tags-label">좋아하는 향 (nose)</p>
                   <div className="wf-chips">
                     {profile.noseTags.map((t) => (
                       <span key={t.id} className="wf-chip wf-chip--on">{t.name}</span>
@@ -130,8 +130,8 @@ export default function RecommendationPage() {
                 </div>
               )}
               {profile.tasteTags.length > 0 && (
-                <div style={{ marginTop: 14 }}>
-                  <p className="wf-text-sm" style={{ marginBottom: 8 }}>좋아하는 맛 (taste)</p>
+                <div className="wf-reco-tags-section wf-reco-tags-section--taste">
+                  <p className="wf-text-sm wf-reco-tags-label">좋아하는 맛 (taste)</p>
                   <div className="wf-chips">
                     {profile.tasteTags.map((t) => (
                       <span key={t.id} className="wf-chip wf-chip--on">{t.name}</span>
@@ -142,7 +142,7 @@ export default function RecommendationPage() {
             </div>
 
             {/* 추천 위스키 */}
-            <p className="wf-section-title" style={{ marginTop: 28 }}>당신에게 어울리는 위스키 3</p>
+            <p className="wf-section-title wf-reco-section-title">당신에게 어울리는 위스키 3</p>
             <div className="wf-result-recos">
               {recommendations.map((w, i) => {
                 const img = resolveMediaUrl(w.imageUrl);
@@ -153,32 +153,31 @@ export default function RecommendationPage() {
                         <img
                           src={img}
                           alt={w.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }}
                         />
                       )}
                       <span className="wf-reco-card__rank">{i + 1}</span>
                     </div>
                     <div className="wf-reco-card__body">
                       <p className="wf-card__title">{w.name}</p>
-                      <p className="wf-text-xs" style={{ color: 'var(--wf-muted)', marginTop: 4 }}>
+                      <p className="wf-text-xs wf-reco-card-meta">
                         매칭 점수 {Math.round(w.score * 100)}% · ★ {w.avgRating.toFixed(1)}
                       </p>
-                      <p className="wf-text-sm" style={{ lineHeight: 1.6, marginTop: 8 }}>{w.reason}</p>
-                      <Button to={`/whiskey/${w.id}`} style={{ marginTop: 12, height: 38 }}>상세 보기</Button>
+                      <p className="wf-text-sm wf-reco-card-reason">{w.reason}</p>
+                      <Button to={`/whiskey/${w.id}`} className="wf-reco-card-btn">상세 보기</Button>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="wf-reco-actions">
               <Button block onClick={handleApply} disabled={applied || applying}>
                 {applied ? '✓ 내 추천에 반영됨' : applying ? '저장 중...' : '내 추천 알고리즘에 반영하기'}
               </Button>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Button variant="ghost" style={{ flex: 1 }} onClick={handleSaveImage}>이미지로 저장</Button>
-                <Button variant="ghost" style={{ flex: 1 }} to={PATHS.SURVEY}>다시 검사하기</Button>
-                <Button style={{ flex: 1 }} to={PATHS.LOUNGE}>홈으로</Button>
+              <div className="wf-reco-actions-row">
+                <Button variant="ghost" className="wf-reco-action-btn" onClick={handleSaveImage}>이미지로 저장</Button>
+                <Button variant="ghost" className="wf-reco-action-btn" to={PATHS.SURVEY}>다시 검사하기</Button>
+                <Button className="wf-reco-action-btn" to={PATHS.LOUNGE}>홈으로</Button>
               </div>
             </div>
           </div>

@@ -18,14 +18,12 @@ function FollowUserRow({ user, label }: { user: FollowUser; label: string }) {
     <Link
       to={PATHS.USER_PROFILE.replace(':userId', String(user.userId))}
       className="wf-box wf-cabinet-follow"
-      style={{ padding: 16, marginTop: 12, textDecoration: 'none' }}
     >
-      <div className="wf-topnav__avatar wf-placeholder" style={{ width: 48, height: 48, overflow: 'hidden' }}>
+      <div className="wf-cabinet-follow__avatar wf-placeholder">
         {avatarSrc ? (
           <img
             src={avatarSrc}
             alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
           />
         ) : null}
       </div>
