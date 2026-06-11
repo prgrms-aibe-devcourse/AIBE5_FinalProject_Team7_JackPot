@@ -1,15 +1,16 @@
 .app-root .wf-survey-scroll {
   overflow: visible;
   flex: 1 0 auto;
-  padding: 24px 24px 120px;
+  padding: 34px 24px 120px;
   align-items: stretch;
 }
 
 .app-root .wf-survey-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 760px) 132px;
   align-items: flex-start;
-  gap: 32px;
-  max-width: 840px;
+  gap: 28px;
+  max-width: 1040px;
   margin: 0 auto;
   width: 100%;
 }
@@ -20,15 +21,94 @@
 }
 
 .app-root .wf-survey-intro {
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 22px;
 }
 
 .app-root .wf-survey-q {
   border-style: solid;
-  padding: 24px;
+  padding: 28px;
   margin-top: 20px;
+  border-color: rgba(255, 255, 255, 0.085);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
   animation: wf-survey-in 0.28s ease;
-  scroll-margin-top: 16px;
+  scroll-margin-top: 24px;
+}
+
+.app-root .wf-survey-q__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.app-root .wf-survey-q__head .wf-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.app-root .wf-survey-q__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(213, 173, 69, 0.28);
+  border-radius: 999px;
+  background: rgba(213, 173, 69, 0.08);
+  color: var(--wf-accent-light);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.app-root .wf-survey-progress {
+  padding: 16px;
+  border: 1px solid rgba(213, 173, 69, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.11), rgba(255, 255, 255, 0.03)),
+    var(--wf-surface);
+}
+
+.app-root .wf-survey-progress__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.app-root .wf-survey-progress__label strong {
+  color: var(--wf-accent-light);
+  font-size: 14px;
+}
+
+.app-root .wf-survey-progress__track {
+  height: 8px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.app-root .wf-survey-progress__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--wf-accent), var(--wf-accent-light));
+  transition: width 0.22s ease;
 }
 
 @keyframes wf-survey-in {
@@ -39,8 +119,8 @@
 .app-root .wf-survey-opts {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 0;
 }
 
 .app-root .wf-opt {
@@ -49,8 +129,9 @@
   gap: 12px;
   width: 100%;
   text-align: left;
-  padding: 14px 16px;
-  border-radius: 10px;
+  min-height: 58px;
+  padding: 15px 17px;
+  border-radius: 12px;
   border: 1px solid var(--wf-border);
   background: rgba(255, 255, 255, 0.03);
   color: var(--wf-text);
@@ -102,9 +183,15 @@
 /* 우측 sticky 네비 */
 .app-root .wf-survey-nav {
   position: sticky;
-  top: 16px;
+  top: 88px;
   flex-shrink: 0;
-  width: 96px;
+  width: 132px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 16px;
+  background: rgba(23, 21, 27, 0.86);
+  box-shadow: var(--wf-shadow-sm);
+  backdrop-filter: blur(12px);
 }
 
 .app-root .wf-survey-nav__title {
@@ -127,8 +214,8 @@
 
 .app-root .wf-survey-nav__item {
   width: 100%;
-  height: 38px;
-  border-radius: 9px;
+  height: 40px;
+  border-radius: 10px;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface);
   color: var(--wf-muted);
@@ -164,18 +251,35 @@
 
 @media (max-width: 768px) {
   .app-root .wf-survey-layout {
-    flex-direction: column-reverse;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
+
+  .app-root .wf-survey-intro {
+    grid-template-columns: 1fr;
+  }
+
   .app-root .wf-survey-nav {
     position: static;
     width: 100%;
+    padding: 12px;
   }
+
   .app-root .wf-survey-nav__list {
     flex-direction: row;
     flex-wrap: wrap;
   }
+
   .app-root .wf-survey-nav__item {
     width: 44px;
+  }
+
+  .app-root .wf-survey-q {
+    padding: 20px;
+  }
+
+  .app-root .wf-survey-q__head {
+    flex-direction: column;
   }
 }
 

@@ -164,6 +164,8 @@ export default function SurveyPage() {
   const showNose = allScored;
   const showTaste = showNose && noseTags.length > 0;
   const canSubmit = showTaste && tasteTags.length > 0;
+  const completedCount = answeredCount + (noseTags.length > 0 ? 1 : 0) + (tasteTags.length > 0 ? 1 : 0);
+  const progressPercent = Math.round((completedCount / NAV_STEPS.length) * 100);
 
   // 완료 / 도달 가능 스텝 집합
   const doneIds = new Set<string>();
@@ -235,11 +237,22 @@ export default function SurveyPage() {
           {/* 본문 */}
           <main className="wf-survey-main">
             <header className="wf-survey-intro">
-              <p className="wf-text-label">설문조사</p>
-              <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
-              <p className="wf-subtitle wf-survey-intro__subtitle">
-                7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.
-              </p>
+              <div>
+                <p className="wf-text-label">설문조사</p>
+                <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
+                <p className="wf-subtitle wf-survey-intro__subtitle">
+                  7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.
+                </p>
+              </div>
+              <div className="wf-survey-progress" aria-label={`설문 진행률 ${progressPercent}%`}>
+                <div className="wf-survey-progress__label">
+                  <span>진행률</span>
+                  <strong>{completedCount}/7</strong>
+                </div>
+                <div className="wf-survey-progress__track">
+                  <span style={{ width: `${progressPercent}%` }} />
+                </div>
+              </div>
             </header>
 
             {/* Q1~Q5: 점수형 단일 선택 — 순차 노출 */}
@@ -253,7 +266,10 @@ export default function SurveyPage() {
                   ref={(el) => { blockRefs.current[`q-${q.key}`] = el; }}
                   className="wf-box wf-survey-q"
                 >
-                  <h2 className="wf-title">{q.title}</h2>
+                  <div className="wf-survey-q__head">
+                    <span className="wf-survey-q__step">{q.short}</span>
+                    <h2 className="wf-title">{q.title}</h2>
+                  </div>
                   <div className="wf-survey-opts">
                     {q.options.map((opt, oi) => {
                       const choice = oi + 1; // 1~5
@@ -335,7 +351,7 @@ export default function SurveyPage() {
 
             {canSubmit && (
               <Button block className="wf-survey-submit" onClick={handleSubmit} disabled={submitting}>
-                {submitting ? '분석 중...' : '저장'}
+                {submitting ? '분석 중...' : '결과 확인하기'}
               </Button>
             )}
           </main>

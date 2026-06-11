@@ -1,12 +1,219 @@
 /* ───────── OnboardingPage ───────── */
-.wf-onboarding-box {
-  max-width: 480px;
+.wf-onboarding-page {
+  min-height: calc(100vh - 72px);
+  justify-content: center;
+  padding: 48px 24px 96px;
 }
 
-.wf-onboarding-chips {
-  margin-top: 20px;
+.wf-onboarding-shell {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.95fr) minmax(360px, 1.05fr);
+  gap: 0;
+  width: min(1040px, 100%);
+  min-height: 560px;
+  overflow: hidden;
+  border-color: rgba(213, 173, 69, 0.18);
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.09), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-lg);
+}
+
+.wf-onboarding-visual {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
+  background: #100d10;
+}
+
+.wf-onboarding-visual__image {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(11, 10, 13, 0.26), rgba(11, 10, 13, 0.72)),
+    url('/images/landing-hero-whiskey.png');
+  background-position: 82% center;
+  background-size: cover;
+  transform: scale(1.01);
+}
+
+.wf-onboarding-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 36% 22%, rgba(240, 202, 104, 0.18), transparent 28%),
+    linear-gradient(180deg, transparent 48%, rgba(11, 10, 13, 0.68));
+  pointer-events: none;
+}
+
+.wf-onboarding-visual__glass {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 8px 14px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  background: rgba(14, 12, 16, 0.68);
+  box-shadow: var(--wf-shadow-md);
+  backdrop-filter: blur(14px);
+}
+
+.wf-onboarding-visual__glass span {
+  grid-row: 1 / 3;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(240, 202, 104, 0.9), rgba(155, 118, 41, 0.42) 44%, transparent 45%),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(240, 202, 104, 0.38);
+}
+
+.wf-onboarding-visual__glass strong {
+  color: var(--wf-text);
+  font-size: 15px;
+}
+
+.wf-onboarding-visual__glass em {
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.wf-onboarding-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 54px;
+  min-width: 0;
+}
+
+.wf-onboarding-title {
+  margin: 8px 0 0;
+  font-size: 40px;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.wf-onboarding-subtitle {
+  max-width: 460px;
+  margin-top: 14px;
+  line-height: 1.7;
+}
+
+.wf-onboarding-options {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.wf-onboarding-option {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 13px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--wf-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-onboarding-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.35);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.wf-onboarding-option--on {
+  border-color: rgba(213, 173, 69, 0.72);
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.17), rgba(143, 52, 76, 0.12)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow: var(--wf-shadow-accent);
+}
+
+.wf-onboarding-option__mark {
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border: 1px solid var(--wf-border);
+  border-radius: 50%;
+  background: var(--wf-surface-2);
+}
+
+.wf-onboarding-option--on .wf-onboarding-option__mark {
+  border-color: var(--wf-accent-light);
+  box-shadow: inset 0 0 0 6px var(--wf-surface-2);
+  background: var(--wf-accent-light);
+}
+
+.wf-onboarding-option strong {
+  display: block;
+  font-size: 16px;
+}
+
+.wf-onboarding-option em {
+  display: block;
+  margin-top: 5px;
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-style: normal;
+  line-height: 1.55;
 }
 
 .wf-onboarding-cta {
-  margin-top: 24px;
+  margin-top: 28px;
+  min-height: 50px;
+  border-radius: 14px;
+}
+
+.wf-onboarding-footnote {
+  margin: 14px 0 0;
+  color: var(--wf-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .wf-onboarding-page {
+    justify-content: flex-start;
+    padding: 24px 16px 72px;
+  }
+
+  .wf-onboarding-shell {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .wf-onboarding-visual {
+    min-height: 260px;
+  }
+
+  .wf-onboarding-visual__glass {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .wf-onboarding-content {
+    padding: 28px 22px 30px;
+  }
+
+  .wf-onboarding-title {
+    font-size: 31px;
+  }
 }
