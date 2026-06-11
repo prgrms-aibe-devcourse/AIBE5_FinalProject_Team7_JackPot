@@ -83,7 +83,7 @@
 }
 
 .wf-cabinet-wish-folder-item--drag-over {
-  background: rgba(201, 162, 39, 0.1);
+  background: rgba(213, 173, 69, 0.1);
   border-top-color: var(--wf-accent);
 }
 
@@ -239,6 +239,14 @@
   align-items: center;
   padding: 16px;
   margin-bottom: 12px;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-cabinet-pick:hover {
+  transform: translateY(-2px);
+  border-color: rgba(213, 173, 69, 0.3);
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .wf-cabinet-pick__thumb {
@@ -273,6 +281,14 @@
 .wf-cabinet-post {
   padding: 16px 20px;
   margin-top: 12px;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-cabinet-post:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.3);
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
 
 .wf-cabinet-post__title {
@@ -382,7 +398,7 @@
   transition: border-color 0.15s, background 0.15s;
   width: 100%;
 }
-.wf-wish-folder-opt--on { background: rgba(201, 162, 39, 0.1); border-color: var(--wf-accent); }
+.wf-wish-folder-opt--on { background: rgba(213, 173, 69, 0.1); border-color: var(--wf-accent); }
 .wf-wish-folder-opt:not(:disabled):hover { border-color: var(--wf-accent); }
 .wf-wish-folder-opt--on:not(:disabled):hover { border-color: var(--wf-danger); }
 .wf-wish-folder-opt:disabled { cursor: not-allowed; }

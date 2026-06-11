@@ -52,22 +52,26 @@
   padding: 14px 16px;
   border-radius: 10px;
   border: 1px solid var(--wf-border);
-  background: var(--wf-surface-2);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--wf-text);
   font: inherit;
   font-size: 14px;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .app-root .wf-opt:hover {
-  border-color: var(--wf-accent);
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.45);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
 .app-root .wf-opt--on {
   border-color: var(--wf-accent);
-  background: var(--wf-accent-dim);
+  background: linear-gradient(135deg, rgba(213, 173, 69, 0.16), rgba(213, 173, 69, 0.06));
   color: var(--wf-accent);
+  box-shadow: 0 4px 14px rgba(213, 173, 69, 0.15);
 }
 
 .app-root .wf-opt__ordinal {
@@ -146,9 +150,10 @@
 }
 
 .app-root .wf-survey-nav__item--active {
-  background: var(--wf-accent);
+  background: linear-gradient(180deg, var(--wf-accent-light), var(--wf-accent));
   border-color: var(--wf-accent);
-  color: #0c0c0f;
+  color: #15100a;
+  box-shadow: 0 4px 14px rgba(213, 173, 69, 0.3);
 }
 
 .app-root .wf-survey-nav__item--locked,
