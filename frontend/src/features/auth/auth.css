@@ -6,6 +6,26 @@
 .wf-auth-field { margin-top: 10px; }
 .wf-auth-submit { margin-top: 16px; }
 .wf-auth-oauth-btn { margin-top: 8px; }
+
+.wf-auth-oauth-btn--kakao {
+  background: #FEE500 !important;
+  border-color: #FEE500 !important;
+  color: #000000 !important;
+}
+.wf-auth-oauth-btn--kakao:hover {
+  background: #e6cf00 !important;
+  border-color: #e6cf00 !important;
+}
+
+.wf-auth-oauth-btn--google {
+  background: #ffffff !important;
+  border: 1px solid #dadce0 !important;
+  color: #3c4043 !important;
+}
+.wf-auth-oauth-btn--google:hover {
+  background: #f8f9fa !important;
+  border-color: #c6cacf !important;
+}
 .wf-auth-footer-text { text-align: center; margin-top: 16px; }
 
 /* ───────── Auth — RegisterPage ───────── */

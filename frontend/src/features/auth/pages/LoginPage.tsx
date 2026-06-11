@@ -72,8 +72,8 @@ export default function LoginPage() {
             {loading ? '로그인 중...' : '로그인'}
           </Button>
           </form>
-          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('kakao')}>카카오</Button>
-          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('google')}>Google</Button>
+          <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--kakao" onClick={() => handleOauth('kakao')}>카카오 로그인</Button>
+          <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--google" onClick={() => handleOauth('google')}>Google 로그인</Button>
 
           <p className="wf-text-xs wf-auth-footer-text">
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>
