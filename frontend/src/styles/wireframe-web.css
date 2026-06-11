@@ -14,38 +14,39 @@
 
 /* ─── Web chrome ─── */
 .wf-topnav {
-  height: 64px;
+  height: 68px;
   padding: 0 40px;
   display: flex;
   align-items: center;
-  gap: 32px;
-  border-bottom: 1px solid var(--wf-border-subtle);
-  background: rgba(22, 22, 28, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  gap: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(14, 12, 17, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 0 var(--wf-border-subtle);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
 }
 
 .wf-topnav__logo {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 800;
   color: var(--wf-accent);
   white-space: nowrap;
+  letter-spacing: 0;
 }
 
 .wf-topnav__search {
   flex: 1;
   max-width: 420px;
-  height: 40px;
+  height: 42px;
 }
 
 .wf-topnav__links {
   display: flex;
-  gap: 24px;
+  gap: 8px;
   font-size: 14px;
   color: var(--wf-muted);
   margin-left: auto;
@@ -78,7 +79,7 @@
 
 .wf-page__inner {
   flex: 1;
-  padding: 32px 40px;
+  padding: 36px 40px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -90,24 +91,24 @@
 }
 
 .wf-footer {
-  height: 48px;
+  height: 52px;
   padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--wf-border-subtle);
-  background: var(--wf-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(14, 12, 17, 0.9);
   font-size: 12px;
   color: var(--wf-muted);
   flex-shrink: 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
 }
 
 /* layouts */
 .wf-layout-sidebar {
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(220px, 260px) 1fr;
+  gap: 28px;
   flex: 1;
   min-height: 0;
 }
@@ -131,7 +132,7 @@
 .wf-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .wf-sidebar .wf-box {
@@ -222,9 +223,11 @@
 }
 
 .wf-auth-box {
-  max-width: 400px;
+  max-width: 416px;
   width: 100%;
-  padding: 32px;
+  padding: 34px 32px;
+  border-color: rgba(255, 255, 255, 0.075);
+  box-shadow: var(--wf-shadow-lg);
 }
 
 .wf-landing-hero {

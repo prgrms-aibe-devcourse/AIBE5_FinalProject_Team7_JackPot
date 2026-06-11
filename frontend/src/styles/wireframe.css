@@ -1,19 +1,21 @@
 /* Whiskey Note — Figma import wireframes (390×844 frames) */
 
 :root {
-  --wf-bg: #0c0c0f;
-  --wf-surface: #16161c;
-  --wf-surface-2: #1e1e26;
-  --wf-surface-3: #26262f;
-  --wf-border: #2e2e38;
-  --wf-border-subtle: #222229;
-  --wf-text: #ececf0;
-  --wf-muted: #8b8b96;
-  --wf-accent: #c9a227;
-  --wf-accent-light: #e8c547;
-  --wf-accent-dark: #a07e1a;
+  --wf-bg: #0b0a0d;
+  --wf-surface: #17151b;
+  --wf-surface-2: #211f27;
+  --wf-surface-3: #2b2832;
+  --wf-border: #383340;
+  --wf-border-subtle: #28242d;
+  --wf-text: #f3f0ea;
+  --wf-muted: #a29aa8;
+  --wf-accent: #d5ad45;
+  --wf-accent-light: #f0ca68;
+  --wf-accent-dark: #9b7629;
   --wf-accent-dim: rgba(201, 162, 39, 0.12);
   --wf-accent-subtle: rgba(201, 162, 39, 0.06);
+  --wf-wine: #8f344c;
+  --wf-wine-dim: rgba(143, 52, 76, 0.16);
   --wf-success: #4ade80;
   --wf-danger: #f87171;
   --wf-frame-w: 390px;
@@ -21,10 +23,10 @@
   --wf-radius: 12px;
   --wf-font: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 
-  --wf-shadow-sm: 0 1px 8px rgba(0, 0, 0, 0.3);
-  --wf-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
-  --wf-shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
-  --wf-shadow-accent: 0 4px 20px rgba(201, 162, 39, 0.2);
+  --wf-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --wf-shadow-md: 0 18px 44px rgba(0, 0, 0, 0.34);
+  --wf-shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.48);
+  --wf-shadow-accent: 0 12px 32px rgba(213, 173, 69, 0.2);
 }
 
 *,
@@ -215,17 +217,18 @@ body {
 /* primitives */
 .wf-box {
   background: var(--wf-surface);
+  border: 1px solid var(--wf-border-subtle);
   border-radius: var(--wf-radius);
   box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-box--solid {
-  border: 1px solid var(--wf-border-subtle);
+  border-color: var(--wf-border);
 }
 
 .wf-box--accent {
-  border: 1px solid rgba(201, 162, 39, 0.3);
-  background: var(--wf-accent-dim);
+  border: 1px solid rgba(213, 173, 69, 0.38);
+  background: linear-gradient(180deg, rgba(213, 173, 69, 0.16), rgba(143, 52, 76, 0.08));
   box-shadow: var(--wf-shadow-accent);
 }
 
@@ -264,7 +267,7 @@ body {
   font-weight: 700;
   color: var(--wf-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
 }
 
 .wf-title {
@@ -287,39 +290,45 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
   user-select: none;
 }
 
+.wf-btn:hover {
+  transform: translateY(-1px);
+}
+
 .wf-btn:active {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.98);
   opacity: 0.85;
 }
 
 .wf-btn--primary {
-  background: var(--wf-accent);
-  color: #0c0c0f;
+  background: linear-gradient(180deg, var(--wf-accent-light), var(--wf-accent));
+  color: #15100a;
   box-shadow: var(--wf-shadow-accent);
 }
 
 .wf-btn--primary:hover {
-  background: var(--wf-accent-light);
-  box-shadow: 0 6px 24px rgba(201, 162, 39, 0.35);
+  background: linear-gradient(180deg, #f7d884, var(--wf-accent));
+  box-shadow: 0 14px 34px rgba(213, 173, 69, 0.3);
 }
 
 .wf-btn--ghost {
-  background: var(--wf-surface-2);
+  background: rgba(255, 255, 255, 0.035);
   border: 1px solid var(--wf-border);
   color: var(--wf-text);
 }
 
 .wf-btn--ghost:hover {
-  background: var(--wf-surface-3);
-  border-color: var(--wf-muted);
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(213, 173, 69, 0.45);
 }
 
 .wf-btn--danger {
@@ -340,10 +349,10 @@ body {
 }
 
 .wf-input {
-  height: 44px;
-  background: var(--wf-surface-2);
+  height: 46px;
+  background: rgba(255, 255, 255, 0.045);
   border: 1px solid var(--wf-border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0 14px;
   display: flex;
   align-items: center;
@@ -354,18 +363,21 @@ body {
 
 .wf-input:focus-within {
   border-color: var(--wf-accent);
-  box-shadow: 0 0 0 3px var(--wf-accent-dim);
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow: 0 0 0 3px rgba(213, 173, 69, 0.16);
   outline: none;
 }
 
 .wf-chip {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 13px;
   border: 1px solid var(--wf-border);
   color: var(--wf-muted);
-  background: var(--wf-surface-2);
+  background: rgba(255, 255, 255, 0.04);
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
   cursor: pointer;
 }
@@ -395,6 +407,7 @@ body {
   padding: 14px;
   display: flex;
   gap: 12px;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-card__thumb {
@@ -413,7 +426,8 @@ body {
 
 .wf-card__title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .wf-card__meta {
