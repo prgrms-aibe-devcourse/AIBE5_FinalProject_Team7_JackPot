@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { authApi } from '../api/authApi';
+import '../auth.css';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BIRTHDAY_REGEX = /^\d{8}$/;

@@ -6,6 +6,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { authApi } from '../api/authApi';
+import '../auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();

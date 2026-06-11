@@ -1,5 +1,6 @@
 import { PATHS } from '@/app/router/paths';
 import { Button } from '@/shared/components/ui/Button';
+import '../landing.css';
 
 export default function LandingPage() {
   return (
