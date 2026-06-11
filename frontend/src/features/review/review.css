@@ -14,5 +14,17 @@
 .wf-pick-input-wrap { flex: 1; }
 .wf-pick-search-btn { width: 80px; }
 .wf-pick-msg-box { padding: 16px; }
-.wf-pick-card { padding: 16px; margin-top: 12px; cursor: pointer; }
+.wf-pick-card {
+  padding: 16px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-pick-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(213, 173, 69, 0.35);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
 .wf-pick-card-thumb { width: 56px; height: 76px; object-fit: cover; }
