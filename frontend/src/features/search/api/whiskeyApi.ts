@@ -49,6 +49,11 @@ export interface WhiskeyKeywordCorrection {
   correctedKeyword: string | null;
 }
 
+const LOCAL_SEARCH_ERROR_CONFIG = {
+  skipAuthRedirect: true,
+  skipGlobalErrorRedirect: true,
+};
+
 function toFilterSearchParams(params: WhiskeyFilterParams) {
   const searchParams = new URLSearchParams();
 
@@ -69,6 +74,7 @@ function toFilterSearchParams(params: WhiskeyFilterParams) {
 /** FN-031 GET /api/v1/whiskeys - 위스키 전체 목록 */
 export async function fetchWhiskeys(params: WhiskeyListParams = {}): Promise<PageResponse<WhiskeyCard>> {
   const { data } = await apiClient.get<PageResponse<WhiskeyCard>>('/whiskeys', {
+    ...LOCAL_SEARCH_ERROR_CONFIG,
     params,
   });
 
@@ -78,6 +84,7 @@ export async function fetchWhiskeys(params: WhiskeyListParams = {}): Promise<Pag
 /** FN-028 GET /api/v1/whiskeys/search - 검색어로 위스키 목록 검색 */
 export async function searchWhiskeys(params: WhiskeySearchParams): Promise<PageResponse<WhiskeyCard>> {
   const { data } = await apiClient.get<PageResponse<WhiskeyCard>>('/whiskeys/search', {
+    ...LOCAL_SEARCH_ERROR_CONFIG,
     params,
   });
 
@@ -89,6 +96,7 @@ export async function autocompleteWhiskeys(
   params: WhiskeyAutocompleteParams,
 ): Promise<WhiskeyAutocompleteItem[]> {
   const { data } = await apiClient.get<WhiskeyAutocompleteItem[]>('/whiskeys/autocomplete', {
+    ...LOCAL_SEARCH_ERROR_CONFIG,
     params,
   });
 
@@ -98,6 +106,7 @@ export async function autocompleteWhiskeys(
 /** GET /api/v1/whiskeys/search/correction - 오타 교정 검색어 추천 */
 export async function correctWhiskeyKeyword(q: string): Promise<WhiskeyKeywordCorrection> {
   const { data } = await apiClient.get<WhiskeyKeywordCorrection>('/whiskeys/search/correction', {
+    ...LOCAL_SEARCH_ERROR_CONFIG,
     params: { q },
   });
 
@@ -113,6 +122,7 @@ export async function fetchWhiskeyById(id: number): Promise<WhiskeyCard> {
 /** GET /api/v1/whiskeys/filter - 키워드와 사이드바 필터 조합 검색 */
 export async function filterWhiskeys(params: WhiskeyFilterParams): Promise<PageResponse<WhiskeyCard>> {
   const { data } = await apiClient.get<PageResponse<WhiskeyCard>>('/whiskeys/filter', {
+    ...LOCAL_SEARCH_ERROR_CONFIG,
     params: toFilterSearchParams(params),
   });
 

@@ -1,0 +1,188 @@
+.app-root .wf-survey-scroll {
+  overflow: visible;
+  flex: 1 0 auto;
+  padding: 24px 24px 120px;
+  align-items: stretch;
+}
+
+.app-root .wf-survey-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  max-width: 840px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-root .wf-survey-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-root .wf-survey-intro {
+  margin-bottom: 20px;
+}
+
+.app-root .wf-survey-q {
+  border-style: solid;
+  padding: 24px;
+  margin-top: 20px;
+  animation: wf-survey-in 0.28s ease;
+  scroll-margin-top: 16px;
+}
+
+@keyframes wf-survey-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app-root .wf-survey-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.app-root .wf-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--wf-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--wf-text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.app-root .wf-opt:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.45);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.app-root .wf-opt--on {
+  border-color: var(--wf-accent);
+  background: linear-gradient(135deg, rgba(213, 173, 69, 0.16), rgba(213, 173, 69, 0.06));
+  color: var(--wf-accent);
+  box-shadow: 0 4px 14px rgba(213, 173, 69, 0.15);
+}
+
+.app-root .wf-opt__ordinal {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
+  color: var(--wf-muted);
+}
+
+.app-root .wf-opt--on .wf-opt__ordinal {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+}
+
+.app-root .wf-survey-q .wf-chip {
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+/* 우측 sticky 네비 */
+.app-root .wf-survey-nav {
+  position: sticky;
+  top: 16px;
+  flex-shrink: 0;
+  width: 96px;
+}
+
+.app-root .wf-survey-nav__title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wf-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 10px 4px;
+}
+
+.app-root .wf-survey-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-root .wf-survey-nav__item {
+  width: 100%;
+  height: 38px;
+  border-radius: 9px;
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.app-root .wf-survey-nav__item:hover:not(:disabled) {
+  border-color: var(--wf-accent);
+  color: var(--wf-text);
+}
+
+.app-root .wf-survey-nav__item--done {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+}
+
+.app-root .wf-survey-nav__item--active {
+  background: linear-gradient(180deg, var(--wf-accent-light), var(--wf-accent));
+  border-color: var(--wf-accent);
+  color: #15100a;
+  box-shadow: 0 4px 14px rgba(213, 173, 69, 0.3);
+}
+
+.app-root .wf-survey-nav__item--locked,
+.app-root .wf-survey-nav__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .app-root .wf-survey-layout {
+    flex-direction: column-reverse;
+  }
+  .app-root .wf-survey-nav {
+    position: static;
+    width: 100%;
+  }
+  .app-root .wf-survey-nav__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .app-root .wf-survey-nav__item {
+    width: 44px;
+  }
+}
+
+/* ─── Phase 8: SurveyPage ─── */
+.wf-survey-intro__title { margin-top: 4px; }
+.wf-survey-intro__subtitle { margin-top: 6px; }
+.wf-survey-q__h2 { margin-top: 4px; }
+.wf-survey-tag-group { margin-top: 16px; }
+.wf-survey-tag-label { margin-bottom: 8px; }
+.wf-survey-submit { margin-top: 24px; }

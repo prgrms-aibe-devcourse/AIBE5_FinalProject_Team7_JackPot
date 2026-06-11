@@ -2,6 +2,14 @@ import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    _retry?: boolean;
+    skipAuthRedirect?: boolean;
+    skipGlobalErrorRedirect?: boolean;
+  }
+}
+
 /** 비로그인 조회 허용 API — 401이어도 로그인 페이지로 보내지 않음 */
 const PUBLIC_READ_PATH =
   /^\/users\/\d+\/(picks|cabinet\/stats)(?:\?|$)|^\/reviews(?:\?|$)/;
@@ -52,7 +60,7 @@ apiClient.interceptors.response.use(
 
       // RefreshToken 없으면 로그인 유도 (타인 캐비넷 등 공개 조회는 제외)
       if (!refreshToken) {
-        if (!isPublicReadRequest(originalRequest?.url)) {
+        if (!originalRequest?.skipAuthRedirect && !isPublicReadRequest(originalRequest?.url)) {
           localStorage.clear();
           window.location.href = '/login';
         }
@@ -100,17 +108,19 @@ apiClient.interceptors.response.use(
     const message = error.response?.data?.error?.message ?? '요청에 실패했습니다.';
 
     if (error.response?.status === 403) {
-      const code = error.response?.data?.error?.code;
-      const target = code === 'USER_BANNED' ? '/error/banned' : '/error/403';
-      // replaceState로 현재 히스토리 엔트리를 교체 → 뒤로가기 시 프로필 페이지가 아닌 그 이전 페이지로 이동
-      window.history.replaceState(null, '', target);
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      if (!originalRequest?.skipGlobalErrorRedirect) {
+        const code = error.response?.data?.error?.code;
+        const target = code === 'USER_BANNED' ? '/error/banned' : '/error/403';
+        window.history.replaceState(null, '', target);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     }
 
     // 500번대 서버 오류 → 에러 페이지로 이동
     if (error.response?.status >= 500) {
-      console.error('[500 ERROR]', error.response?.config?.url, error.response?.data);
-      window.location.href = '/error/500';
+      if (!originalRequest?.skipGlobalErrorRedirect) {
+        window.location.href = '/error/500';
+      }
     }
 
     return Promise.reject(new Error(message));

@@ -13,6 +13,7 @@ import {
   fetchWhiskeys,
   type WhiskeyCard,
 } from '@/features/search/api/whiskeyApi';
+import '../review.css';
 
 function buildMeta(whiskey: WhiskeyCard) {
   const age = whiskey.ageYears == null ? null : whiskey.ageYears === 0 ? 'NAS' : `${whiskey.ageYears}년`;

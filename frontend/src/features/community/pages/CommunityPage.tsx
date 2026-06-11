@@ -4,6 +4,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { useTopPosts } from '../hooks/useCommunity';
 import { POST_CATEGORY_LABEL } from '../types';
+import '../community.css';
 
 const BOARDS = [
   { path: PATHS.COMMUNITY_COLUMNS, label: '칼럼', desc: '위스키 칼럼 콘텐츠' },

@@ -5,6 +5,7 @@ import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import '../lounge.css';
 
 function stripHtml(html: string) {
   const doc = new DOMParser().parseFromString(html, 'text/html');

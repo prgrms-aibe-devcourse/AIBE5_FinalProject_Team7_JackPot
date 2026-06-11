@@ -21,25 +21,25 @@ export function PostList({ posts, isLoading, showCategory = true }: PostListProp
   if (posts.length === 0) return <p className="wf-text-sm">게시글이 없습니다.</p>;
 
   return (
-    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <ul className="wf-post-list">
       {posts.map((post) => (
         <li key={post.id}>
           {/* PATHS 상수를 통해 URL을 생성해 경로 변경 시 한 곳만 수정하면 됨 */}
           <Link
             to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            className="wf-post-list-link"
           >
-            <div className="wf-box" style={{ padding: '12px 16px', marginBottom: 8 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+            <div className="wf-box wf-post-list-item">
+              <div className="wf-post-list-item__head">
                 {showCategory && (
-                  <span className="wf-chip" style={{ fontSize: 11 }}>
+                  <span className="wf-chip wf-post-list-item__chip">
                     {/* 알 수 없는 카테고리 코드는 원본 그대로 표시해 데이터 손실을 방지 */}
                     {POST_CATEGORY_LABEL[post.category] ?? post.category}
                   </span>
                 )}
-                <strong style={{ fontSize: 14 }}>{post.title}</strong>
+                <strong className="wf-post-list-item__title">{post.title}</strong>
               </div>
-              <p className="wf-text-xs" style={{ margin: 0, color: '#888' }}>
+              <p className="wf-text-xs wf-post-list-item__meta">
                 ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
               </p>
             </div>

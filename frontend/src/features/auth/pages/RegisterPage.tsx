@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { authApi } from '../api/authApi';
+import '../auth.css';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BIRTHDAY_REGEX = /^\d{8}$/;
@@ -100,6 +101,7 @@ export default function RegisterPage() {
           {/* 구분선 */}
           <div className="wf-register-divider" />
 
+          <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
           {/* 이메일 */}
           <div className="wf-register-field-group">
             <label className="wf-register-label">이메일 <span className="wf-register-required">*</span></label>
@@ -180,13 +182,13 @@ export default function RegisterPage() {
 
           {/* 회원가입 버튼 */}
           <button
-            type="button"
-            onClick={handleRegister}
+            type="submit"
             disabled={loading}
             className="wf-register-submit"
           >
             {loading ? '가입 중...' : '회원가입'}
           </button>
+          </form>
 
           {/* 로그인 링크 */}
           <p className="wf-text-xs wf-register-footer">

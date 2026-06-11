@@ -13,6 +13,7 @@ import { fetchMyReviews } from '@/features/review/api/reviewApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { toast } from '@/shared/components/ui/Toast';
+import '@/features/cabinet/cabinet.css';
 
 function parseSection(v: string | null): CabinetSection {
   return v === 'community' ? 'community' : 'bar';

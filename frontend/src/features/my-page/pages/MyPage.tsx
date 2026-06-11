@@ -9,6 +9,7 @@ import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
+import '../my-page.css';
 
 /**
  * 마이페이지 화면

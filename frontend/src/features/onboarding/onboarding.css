@@ -1,0 +1,12 @@
+/* ───────── OnboardingPage ───────── */
+.wf-onboarding-box {
+  max-width: 480px;
+}
+
+.wf-onboarding-chips {
+  margin-top: 20px;
+}
+
+.wf-onboarding-cta {
+  margin-top: 24px;
+}

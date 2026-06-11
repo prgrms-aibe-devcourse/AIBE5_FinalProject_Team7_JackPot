@@ -1,0 +1,16 @@
+.app-root .wf-input--field {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--wf-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.app-root .wf-input--field::placeholder {
+  color: var(--wf-muted);
+}
+
+.wf-input-label { display: block; }
+.wf-input--labeled { margin-top: 6px; }

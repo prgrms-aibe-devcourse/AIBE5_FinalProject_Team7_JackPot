@@ -111,43 +111,23 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
       role="dialog"
       aria-modal="true"
       aria-label="위시 폴더 관리"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-        background: 'rgba(0,0,0,0.65)',
-      }}
+      className="wf-modal-overlay"
       onClick={onClose}
     >
       <div
-        style={{
-          width: 'min(400px, 100%)',
-          background: '#1e1e26',
-          border: '1px solid #2e2e38',
-          borderRadius: '12px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-        }}
+        className="wf-modal-panel wf-modal-panel--wish"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="wf-modal-header">
           <div>
-            <span style={{ color: '#ececf0', fontWeight: 600, fontSize: 15 }}>위시 폴더 관리</span>
-            <p style={{ color: '#8b8b96', fontSize: 12, margin: '4px 0 0' }}>
-              폴더를 클릭해서 추가하거나 제거할 수 있어요
-            </p>
+            <span className="wf-modal-title">위시 폴더 관리</span>
+            <p className="wf-modal-subtitle">폴더를 클릭해서 추가하거나 제거할 수 있어요</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#8b8b96', fontSize: 18, cursor: 'pointer' }}
+            className="wf-modal-close-btn"
           >
             ✕
           </button>
@@ -155,7 +135,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
 
         {/* 폴더 목록 */}
         {loading ? (
-          <p style={{ color: '#8b8b96', fontSize: 13 }}>불러오는 중...</p>
+          <p className="wf-modal-muted">불러오는 중...</p>
         ) : folders.length > 0 && !showCreate ? (
           <>
             {folders.map((folder) => {
@@ -166,34 +146,13 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
                   type="button"
                   disabled={adding}
                   onClick={() => handleFolderClick(folder.folderId)}
-                  style={{
-                    background: isWished ? 'rgba(201,162,39,0.1)' : '#16161c',
-                    border: `1px solid ${isWished ? '#c9a227' : '#2e2e38'}`,
-                    borderRadius: 10,
-                    padding: '12px 16px',
-                    color: '#ececf0',
-                    fontSize: 14,
-                    cursor: adding ? 'not-allowed' : 'pointer',
-                    textAlign: 'left',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    transition: 'border-color 0.15s, background 0.15s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = isWished ? '#f87171' : '#c9a227';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = isWished ? '#c9a227' : '#2e2e38';
-                  }}
+                  className={`wf-wish-folder-opt${isWished ? ' wf-wish-folder-opt--on' : ''}`}
                 >
                   <span>📁 {folder.name}</span>
                   {isWished ? (
-                    <span style={{ color: '#c9a227', fontSize: 12, fontWeight: 600 }}>
-                      ♥ 등록됨 (클릭 시 제거)
-                    </span>
+                    <span className="wf-wish-folder-status--on">♥ 등록됨 (클릭 시 제거)</span>
                   ) : (
-                    <span style={{ color: '#8b8b96', fontSize: 12 }}>+ 추가</span>
+                    <span className="wf-wish-folder-status--off">+ 추가</span>
                   )}
                 </button>
               );
@@ -201,15 +160,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              style={{
-                background: 'none',
-                border: '1px dashed #2e2e38',
-                borderRadius: 10,
-                padding: '10px 16px',
-                color: '#8b8b96',
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
+              className="wf-wish-create-btn"
             >
               + 새 폴더 만들기
             </button>
@@ -220,9 +171,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
         {showCreate && (
           <>
             {folders.length === 0 && (
-              <p style={{ color: '#8b8b96', fontSize: 13, margin: 0 }}>
-                폴더가 없습니다. 새 폴더를 만들어주세요.
-              </p>
+              <p className="wf-modal-muted">폴더가 없습니다. 새 폴더를 만들어주세요.</p>
             )}
             <input
               type="text"
@@ -231,32 +180,14 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
               onChange={(e) => setNewFolderName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreateAndAdd()}
               autoFocus
-              style={{
-                background: '#16161c',
-                border: '1px solid #2e2e38',
-                borderRadius: 10,
-                padding: '10px 14px',
-                color: '#ececf0',
-                fontSize: 14,
-                outline: 'none',
-              }}
+              className="wf-wish-modal-input"
             />
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="wf-modal-footer">
               <button
                 type="button"
                 disabled={adding}
                 onClick={handleCreateAndAdd}
-                style={{
-                  flex: 1,
-                  background: '#c9a227',
-                  border: 'none',
-                  borderRadius: 10,
-                  padding: '10px',
-                  color: '#0c0c0f',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                }}
+                className="wf-modal-submit-btn"
               >
                 {adding ? '처리 중...' : '만들고 추가'}
               </button>
@@ -264,15 +195,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
-                  style={{
-                    background: 'none',
-                    border: '1px solid #2e2e38',
-                    borderRadius: 10,
-                    padding: '10px 14px',
-                    color: '#8b8b96',
-                    fontSize: 14,
-                    cursor: 'pointer',
-                  }}
+                  className="wf-modal-cancel-btn"
                 >
                   취소
                 </button>
@@ -285,16 +208,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
         <button
           type="button"
           onClick={onClose}
-          style={{
-            background: 'none',
-            border: '1px solid #2e2e38',
-            borderRadius: 10,
-            padding: '10px',
-            color: '#8b8b96',
-            fontSize: 14,
-            cursor: 'pointer',
-            marginTop: 4,
-          }}
+          className="wf-modal-cancel-btn"
         >
           닫기
         </button>

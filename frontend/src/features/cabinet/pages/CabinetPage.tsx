@@ -18,6 +18,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import type { CabinetStatsResponse, WishlistFolder, WishlistItem } from '@/features/cabinet/api/cabinetApi';
+import '../cabinet.css';
 
 // Pick API 응답 타입
 interface PickItem {
@@ -715,19 +716,14 @@ export default function CabinetPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedFolderId(folder.folderId)}
-                          className="wf-cabinet-wish-folder-btn"
-                          style={{
-                            color: isActive ? 'var(--wf-accent)' : 'var(--wf-text)',
-                            fontWeight: isActive ? 700 : 400,
-                          }}
+                          className={`wf-cabinet-wish-folder-btn${isActive ? ' wf-cabinet-wish-folder-btn--active' : ''}`}
                         >
                           {folder.name}
                         </button>
                         <button
                           type="button"
-                          className="wf-link wf-text-xs"
+                          className="wf-link wf-text-xs wf-cabinet-wish-folder-del"
                           onClick={() => handleDeleteFolder(folder.folderId)}
-                          style={{ flexShrink: 0, marginLeft: 4 }}
                         >
                           ✕
                         </button>

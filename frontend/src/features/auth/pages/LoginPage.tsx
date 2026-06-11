@@ -6,6 +6,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { authApi } from '../api/authApi';
+import '../auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function LoginPage() {
         <div className="wf-box wf-auth-box">
           <h2 className="wf-title wf-auth-title">로그인</h2>
           <p className="wf-subtitle">취향 설문 후 맞춤 추천을 받아보세요</p>
+          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
           <Input
             placeholder="이메일"
             className="wf-auth-field-first"
@@ -66,11 +68,13 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button block className="wf-auth-submit" onClick={handleLogin} disabled={loading}>
+          <Button type="submit" block className="wf-auth-submit" disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
-          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('kakao')}>카카오</Button>
-          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('google')}>Google</Button>
+          </form>
+          <div className="wf-auth-divider" aria-hidden="true">또는</div>
+          <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--kakao" onClick={() => handleOauth('kakao')}>카카오 로그인</Button>
+          <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--google" onClick={() => handleOauth('google')}>Google 로그인</Button>
 
           <p className="wf-text-xs wf-auth-footer-text">
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>

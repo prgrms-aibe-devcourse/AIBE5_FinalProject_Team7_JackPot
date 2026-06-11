@@ -8,6 +8,7 @@ import { StarRatingInput } from '../components/StarRatingInput';
 import { useCreateReview, useMyReviews, useUpdateReview } from '../hooks/useReviews';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import { fetchMyTastingNoteForWhiskey } from '@/features/tasting-note/api/noteApi';
+import '../review.css';
 
 function getCurrentUserId(): number | null {
   const value = localStorage.getItem('userId');

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import './Toast.css';
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -17,16 +18,8 @@ const ICONS: Record<ToastType, string> = {
   warning: '⚠',
 };
 
-const STYLES: Record<ToastType, { border: string; icon: string }> = {
-  success: { border: '#4ade80', icon: '#4ade80' },
-  error:   { border: '#f87171', icon: '#f87171' },
-  info:    { border: '#c9a227', icon: '#c9a227' },
-  warning: { border: '#c9a227', icon: '#c9a227' },
-};
-
 function ToastComponent({ message, type = 'info', duration = 3000, onClose }: ToastProps) {
   const [visible, setVisible] = useState(true);
-  const style = STYLES[type];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,57 +31,20 @@ function ToastComponent({ message, type = 'info', duration = 3000, onClose }: To
 
   return (
     <div
+      className={`wf-toast wf-toast--${type}`}
       style={{
-        position: 'relative',
         transform: `translateY(${visible ? 0 : '-20px'})`,
         opacity: visible ? 1 : 0,
-        transition: 'opacity 0.3s ease, transform 0.3s ease',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        background: '#1e1e26',
-        border: `1px solid ${style.border}`,
-        borderRadius: '12px',
-        padding: '14px 20px',
-        color: '#ececf0',
-        fontSize: '14px',
-        fontFamily: '"Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
-        width: '420px',
-        whiteSpace: 'pre-line',
       }}
     >
-      <span
-        style={{
-          width: '22px',
-          height: '22px',
-          borderRadius: '50%',
-          border: `1.5px solid ${style.icon}`,
-          color: style.icon,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '12px',
-          fontWeight: 700,
-          flexShrink: 0,
-        }}
-      >
+      <span className={`wf-toast__icon wf-toast__icon--${type}`}>
         {ICONS[type]}
       </span>
-      <span style={{ flex: 1, lineHeight: 1.5 }}>{message}</span>
+      <span className="wf-toast__message">{message}</span>
       <button
         type="button"
+        className="wf-toast__close"
         onClick={() => { setVisible(false); setTimeout(() => onClose?.(), 300); }}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#8b8b96',
-          fontSize: '16px',
-          cursor: 'pointer',
-          padding: '0 2px',
-          lineHeight: 1,
-          flexShrink: 0,
-        }}
       >
         ✕
       </button>
@@ -110,17 +66,7 @@ function renderQueue() {
   }
 
   _root!.render(
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      alignItems: 'center',
-      position: 'fixed',
-      top: '24px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 9999,
-    }}>
+    <div className="wf-toast-container">
       {_queue.map((item) => (
         <ToastComponent
           key={item.id}

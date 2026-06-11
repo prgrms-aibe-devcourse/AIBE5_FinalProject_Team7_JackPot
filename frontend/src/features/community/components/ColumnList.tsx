@@ -22,40 +22,36 @@ export function ColumnList({ columns, isLoading }: ColumnListProps) {
   if (columns.length === 0) return <p className="wf-text-sm">칼럼이 없습니다.</p>;
 
   return (
-    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <ul className="wf-column-list">
       {columns.map((column) => (
         <li key={column.id}>
           <Link
             to={PATHS.COMMUNITY_COLUMN.replace(':columnId', String(column.id))}
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            className="wf-column-list-link"
           >
-            <div className="wf-box" style={{ padding: '14px 16px', marginBottom: 10, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <div className="wf-box wf-column-list-item">
               {/* 썸네일 */}
               {column.thumbnailUrl && (
                 <img
                   src={column.thumbnailUrl}
                   alt={column.title}
-                  style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }}
+                  className="wf-column-list-thumb"
                   // 외부 이미지 URL이 만료되거나 접근 불가한 경우 깨진 이미지 아이콘 대신 숨김 처리
                   onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
               )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
-                  <span className="wf-chip" style={{ fontSize: 10 }}>
+              <div className="wf-column-list-body">
+                <div className="wf-column-list-body__tags">
+                  <span className="wf-chip wf-column-list-body__chip">
                     {column.sourceType === 'YOUTUBE' ? '유튜브' : '블로그'}
                   </span>
                   {column.sourceName && (
-                    <span style={{ fontSize: 11, color: '#999' }}>{column.sourceName}</span>
+                    <span className="wf-column-list-body__source">{column.sourceName}</span>
                   )}
                 </div>
-                <strong style={{ fontSize: 14, lineHeight: 1.4, display: 'block', marginBottom: 4 }}>{column.title}</strong>
+                <strong className="wf-column-list-body__title">{column.title}</strong>
                 {column.description && (
-                  <p className="wf-text-xs" style={{
-                    margin: '0 0 4px', color: '#666',
-                    overflow: 'hidden', display: '-webkit-box',
-                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                  }}>
+                  <p className="wf-text-xs wf-column-list-body__desc">
                     {/* 마크다운 기호를 제거하는 이유: description이 마크다운 원문이므로
                         목록 카드에서 #, *, _, `, > 같은 기호가 그대로 노출되면 가독성이 떨어진다.
                         ReactMarkdown을 쓰지 않고 단순 정규식으로 제거해 성능 부담을 최소화하고
@@ -63,7 +59,7 @@ export function ColumnList({ columns, isLoading }: ColumnListProps) {
                     {column.description.replace(/#+\s|[*_`>]/g, '').slice(0, 120)}
                   </p>
                 )}
-                <p className="wf-text-xs" style={{ margin: 0, color: '#aaa' }}>
+                <p className="wf-text-xs wf-column-list-body__meta">
                   {column.author && <span>{column.author} · </span>}
                   {/* publishedAt이 없으면 createdAt(수집일)으로 대체 표시 */}
                   {formatDate(column.publishedAt || column.createdAt)}

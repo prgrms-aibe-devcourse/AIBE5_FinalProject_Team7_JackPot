@@ -1,0 +1,132 @@
+.app-root .wf-topnav__links a {
+  color: var(--wf-muted);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.app-root .wf-topnav__links a:hover {
+  color: var(--wf-text);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.app-root .wf-topnav__links a.active,
+.app-root .wf-topnav__links a.is-active {
+  color: var(--wf-accent);
+  font-weight: 600;
+  background: rgba(213, 173, 69, 0.1);
+}
+
+.app-root .wf-topnav__logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-root .wf-topnav__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.app-root .wf-topnav__profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.app-root .wf-topnav__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--wf-accent);
+  overflow: hidden;
+  background: var(--wf-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
+}
+
+.app-root .wf-topnav__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-root .wf-topnav__avatar span {
+  font-size: 16px;
+}
+
+.app-root .wf-topnav__profile:hover .wf-topnav__avatar {
+  border-color: var(--wf-accent-light);
+}
+
+.app-root .wf-topnav__nickname {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wf-text);
+  white-space: nowrap;
+}
+
+.app-root .wf-topnav__logout {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--wf-border);
+  background: transparent;
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.app-root .wf-topnav__logout:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
+}
+
+.app-root .wf-topnav__login {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(213, 173, 69, 0.5);
+  background: rgba(213, 173, 69, 0.1);
+  color: var(--wf-accent-light);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.app-root .wf-topnav__login:hover {
+  background: rgba(213, 173, 69, 0.18);
+  border-color: var(--wf-accent-light);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 960px) {
+  .app-root .wf-topnav {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .app-root .wf-topnav__links {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

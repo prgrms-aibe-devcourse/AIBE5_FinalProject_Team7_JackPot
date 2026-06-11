@@ -1,0 +1,1108 @@
+/* 09-detail — 위스키 상세 (3열 + 태그 버블 + 관련 칼럼) */
+.wf-detail-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid rgba(213, 173, 69, 0.16);
+}
+
+.wf-detail-hero__copy {
+  min-width: 0;
+}
+
+.wf-detail-hero__eyebrow {
+  margin: 0 0 8px;
+  color: var(--wf-accent-light);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wf-detail-hero__title {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.wf-detail-hero__meta {
+  color: var(--wf-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.wf-detail-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
+  gap: 10px;
+  width: min(420px, 100%);
+  flex-shrink: 0;
+}
+
+.wf-detail-hero__stat {
+  min-height: 78px;
+  padding: 14px 16px;
+  border: 1px solid rgba(213, 173, 69, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(213, 173, 69, 0.1), rgba(255, 255, 255, 0.035)),
+    var(--wf-surface);
+}
+
+.wf-detail-hero__stat span {
+  display: block;
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-hero__stat strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--wf-accent-light);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.wf-layout-detail-v2 {
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr) minmax(260px, 340px);
+  gap: 32px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+.wf-detail-sidebar__image {
+  width: 100%;
+  height: 360px;
+  border-radius: 18px;
+  object-fit: contain;
+  display: block;
+  background: radial-gradient(circle at 50% 20%, rgba(213, 173, 69, 0.2), transparent 58%);
+}
+
+.wf-detail-sidebar__image.wf-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(243, 240, 234, 0.58);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wf-detail-sidebar__image.wf-placeholder::after {
+  content: "Whiskey Note";
+}
+
+.wf-detail-sidebar__image-frame {
+  padding: 20px;
+  border: 1px solid rgba(213, 173, 69, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(143, 52, 76, 0.18), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
+}
+
+.wf-detail-sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.wf-detail-sidebar__actions .wf-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.wf-detail-action {
+  min-height: 46px;
+  border-radius: 14px;
+}
+
+.wf-detail-action--on {
+  box-shadow: var(--wf-shadow-accent);
+}
+
+.wf-detail-sidebar__secondary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.wf-detail-sidebar__secondary-actions .wf-btn {
+  min-width: 0;
+  padding-inline: 10px;
+}
+
+.wf-detail-sidebar__hint {
+  font-size: 12px;
+  color: var(--wf-muted);
+  margin: 6px 0 0;
+}
+
+.wf-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wf-grid2__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 68px;
+  padding: 12px !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wf-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+.wf-detail-info__meta {
+  color: var(--wf-muted);
+  margin-top: 8px;
+}
+
+.wf-detail-panel {
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-detail-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.wf-detail-section-head .wf-section-title {
+  margin: 0;
+}
+
+.wf-detail-section-head__count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(213, 173, 69, 0.22);
+  border-radius: 999px;
+  color: var(--wf-accent-light);
+  background: rgba(213, 173, 69, 0.08);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.wf-detail-state,
+.wf-detail-error {
+  padding: 22px;
+  border-color: rgba(213, 173, 69, 0.18);
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.1), rgba(255, 255, 255, 0.025)),
+    var(--wf-surface);
+}
+
+.wf-detail-error {
+  margin-top: 24px;
+}
+
+.wf-detail-error__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.wf-detail-tasting__toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.wf-detail-tasting__note {
+  color: var(--wf-muted);
+  margin: 5px 0 0;
+}
+
+.wf-detail-tasting__axes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.wf-detail-tasting__axis-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.wf-detail-tasting__axis-score {
+  color: var(--wf-accent);
+  font-weight: 700;
+}
+
+.wf-detail-tasting__bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
+  overflow: hidden;
+}
+
+.wf-detail-tasting__bar-fill {
+  height: 100%;
+  background: var(--wf-accent);
+  border-radius: 4px;
+}
+
+.wf-detail-tasting__tags {
+  margin: 6px 0 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tasting__radar {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 0;
+}
+
+.wf-detail-tasting__radar-chart {
+  width: 340px;
+  height: 340px;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.wf-detail-tasting__radar-grid {
+  fill: transparent;
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-detail-tasting__radar-axis {
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-detail-tasting__radar-fill {
+  fill: rgba(201, 162, 39, 0.28);
+  stroke: var(--wf-accent);
+  stroke-width: 2;
+}
+
+.wf-detail-tasting__radar-dot {
+  fill: var(--wf-accent);
+  stroke: var(--wf-bg);
+  stroke-width: 2;
+}
+
+.wf-detail-tasting__radar-label {
+  fill: var(--wf-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-tasting__radar-score {
+  fill: var(--wf-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-tasting__reviews-link {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface-2);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--wf-muted);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.wf-detail-tasting__reviews-link:hover {
+  border-color: var(--wf-muted);
+  color: var(--wf-text);
+}
+
+.wf-detail-reviews {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.wf-detail-reviews__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.wf-detail-reviews__more {
+  color: var(--wf-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.wf-detail-reviews__more:hover {
+  color: var(--wf-accent);
+}
+
+.wf-detail-reviews__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wf-detail-reviews__item {
+  padding: 16px 18px;
+  border-color: rgba(255, 255, 255, 0.075);
+}
+
+.wf-detail-reviews__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wf-detail-reviews__rating {
+  color: var(--wf-accent);
+  font-weight: 800;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.wf-detail-reviews__stats {
+  font-weight: 400;
+  margin-left: 8px;
+  color: var(--wf-muted);
+  font-size: 13px;
+}
+
+.wf-detail-reviews__text {
+  margin: 8px 0 0;
+  line-height: 1.7;
+}
+
+.wf-review-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin-top: 10px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.wf-review-like:hover,
+.wf-review-like--on {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--wf-accent);
+}
+
+.wf-review-like:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.wf-detail-reviews__note-badge {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 4px 8px;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 999px;
+  color: var(--wf-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-reviews__note-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin-top: 12px;
+  padding: 0 12px;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 8px;
+  background: rgba(201, 162, 39, 0.08);
+  color: var(--wf-accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wf-detail-reviews__note-button:hover {
+  background: rgba(201, 162, 39, 0.16);
+}
+
+.wf-attached-note {
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.wf-attached-note__title {
+  margin: 4px 0 0;
+  font-size: 16px;
+}
+
+.wf-attached-note__body {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.wf-attached-note__radar {
+  width: 220px;
+  max-width: 100%;
+}
+
+.wf-attached-note__radar-grid {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1;
+}
+
+.wf-attached-note__radar-axis {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.wf-attached-note__radar-fill {
+  fill: rgba(201, 162, 39, 0.24);
+  stroke: var(--wf-accent);
+  stroke-width: 2;
+}
+
+.wf-attached-note__radar-label {
+  fill: var(--wf-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wf-attached-note__radar-score {
+  fill: var(--wf-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wf-attached-note__content {
+  min-width: 0;
+}
+
+.wf-attached-note__memo {
+  margin: 0 0 14px;
+  color: var(--wf-muted);
+}
+
+.wf-attached-note__tag-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.wf-attached-note__tag-tab {
+  min-width: 74px;
+  height: 32px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wf-attached-note__tag-tab--on {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.14);
+  color: var(--wf-accent);
+}
+
+.wf-attached-note__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wf-attached-note__tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 20px;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 999px;
+  color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.wf-attached-note__empty {
+  color: var(--wf-muted);
+}
+
+.wf-review-textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--wf-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.wf-star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wf-star-rating__button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.22);
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.12s, transform 0.12s, text-shadow 0.12s;
+}
+
+.wf-star-rating__button:hover {
+  transform: translateY(-1px);
+}
+
+.wf-star-rating__button--filled {
+  color: var(--wf-accent);
+  text-shadow: 0 0 10px rgba(201, 162, 39, 0.22);
+}
+
+.wf-review-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.wf-review-card__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.wf-review-card__rating-input {
+  width: 96px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--wf-text);
+  font: inherit;
+}
+
+.wf-review-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.wf-review-card__action-button {
+  min-width: 86px;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 13px;
+  justify-content: center;
+}
+
+.wf-review-card__action-button.wf-btn--ghost {
+  border: 1px solid var(--wf-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--wf-muted);
+}
+
+.wf-review-card__action-button.wf-btn--ghost:hover {
+  border-color: rgba(201, 162, 39, 0.45);
+  color: var(--wf-text);
+}
+
+.wf-review-note-attach {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.wf-review-note-attach__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wf-review-note-attach__toggle {
+  min-width: 76px;
+  height: 34px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wf-review-note-attach__toggle--on {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.16);
+  color: var(--wf-accent);
+}
+
+.wf-review-note-attach__toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.wf-review-note-attach__message {
+  margin: 12px 0 0;
+  color: var(--wf-muted);
+}
+
+.wf-review-note-attach__preview {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--wf-border);
+}
+
+.wf-review-note-attach__memo {
+  margin: 8px 0 0;
+}
+
+.wf-detail-columns__list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wf-detail-columns__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.075);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.wf-detail-columns__item:hover {
+  border-color: rgba(213, 173, 69, 0.35);
+  background: rgba(213, 173, 69, 0.07);
+  transform: translateY(-1px);
+}
+
+.wf-detail-columns__title {
+  color: var(--wf-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.wf-detail-columns__subtitle {
+  color: var(--wf-muted);
+}
+
+.wf-detail-columns__stats {
+  color: var(--wf-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.wf-detail-columns__item--loading {
+  min-height: 76px;
+  pointer-events: none;
+}
+
+.wf-detail-columns__item--loading span,
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.wf-detail-columns__item--loading span::after,
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(213, 173, 69, 0.14), transparent);
+  animation: wf-detail-skeleton 1.35s ease-in-out infinite;
+}
+
+.wf-detail-columns__item--loading span:first-child {
+  width: 72%;
+  height: 15px;
+}
+
+.wf-detail-columns__item--loading span:last-child {
+  width: 42%;
+  height: 12px;
+}
+
+.wf-detail-tags {
+  padding: 18px 16px 14px;
+}
+
+.wf-detail-tags__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.wf-detail-tags__hint {
+  margin: 4px 0 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__sub {
+  margin: 4px 0 12px;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__filters {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.wf-detail-tags__filter-button {
+  min-width: 54px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.wf-detail-tags__filter-button:hover {
+  border-color: rgba(201, 162, 39, 0.55);
+  color: var(--wf-text);
+}
+
+.wf-detail-tags__filter-button--active {
+  border-color: var(--wf-accent);
+  background: rgba(201, 162, 39, 0.16);
+  color: var(--wf-accent);
+}
+
+.wf-detail-tags__empty {
+  padding: 24px 0;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 12px;
+}
+
+.wf-detail-tags__grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wf-detail-tags__bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  color: #f5f5f5;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.wf-detail-tags__bubble:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.35);
+}
+
+.wf-detail-tags__name {
+  font-size: 12px;
+  color: #9a9aa4;
+  text-align: center;
+}
+
+.wf-detail-tags__legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--wf-muted);
+}
+
+.wf-detail-tags__legend-bar {
+  width: 34px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid var(--wf-border);
+}
+
+.wf-detail-tags__legend-bar--low {
+  background: #9b5a5a;
+}
+
+.wf-detail-tags__legend-bar--mid {
+  background: #8b7d52;
+}
+
+.wf-detail-tags__legend-bar--high {
+  background: #4a9b6e;
+}
+
+@media (max-width: 1100px) {
+  .wf-detail-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wf-detail-hero__stats {
+    width: 100%;
+  }
+
+  .wf-layout-detail-v2 {
+    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  }
+
+  .wf-detail-aside {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .wf-detail-hero {
+    padding-top: 20px;
+  }
+
+  .wf-detail-hero__title {
+    font-size: 32px;
+  }
+
+  .wf-detail-hero__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .wf-layout-detail-v2 {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .wf-detail-sidebar__image {
+    height: 300px;
+  }
+
+  .wf-detail-section-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wf-detail-tasting__toggle {
+    justify-content: flex-start;
+  }
+
+  .wf-detail-sidebar__secondary-actions,
+  .wf-grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .wf-detail-panel {
+    padding: 18px;
+  }
+}
+
+/* ─── 비슷한 위스키 추천 (WhiskeyDetailPage) ─── */
+.app-root .wf-related-whiskeys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.app-root .wf-related-whiskeys__card {
+  text-decoration: none;
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.075);
+  border-style: solid;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-root .wf-related-whiskeys__card:hover {
+  border-color: rgba(213, 173, 69, 0.42);
+  box-shadow: var(--wf-shadow-accent);
+  transform: translateY(-2px);
+}
+
+.app-root .wf-related-whiskeys__card .wf-card__thumb {
+  width: 100%;
+  height: 148px;
+  object-fit: contain;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(213, 173, 69, 0.16), transparent 56%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.app-root .wf-related-whiskeys__card .wf-card__body {
+  padding: 14px;
+}
+
+.app-root .wf-related-whiskeys__meta {
+  font-size: 12px;
+  color: var(--wf-muted);
+  margin: 2px 0 0;
+}
+
+.app-root .wf-related-whiskeys__rating {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-text);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.app-root .wf-related-whiskeys__rating .wf-stars {
+  margin-right: 2px;
+}
+
+.app-root .wf-related-whiskeys__score {
+  font-size: 11px;
+  color: var(--wf-muted);
+  font-weight: 400;
+}
+
+.app-root .wf-related-whiskeys__reason {
+  font-size: 12px;
+  color: var(--wf-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.app-root .wf-related-whiskeys__card--loading {
+  pointer-events: none;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span {
+  height: 12px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(1) {
+  width: 80%;
+  height: 16px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(2) {
+  width: 58%;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(3) {
+  width: 44%;
+}
+
+@keyframes wf-detail-skeleton {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ─── Phase 7: WhiskeyReviewsPage ─── */
+.wf-review-card { padding: 16px; }
+.wf-review-card__header { display: flex; justify-content: space-between; gap: 16px; }
+.wf-review-card__rating { color: var(--wf-accent); }
+.wf-review-card__text { margin-top: 8px; }
+
+/* ─── WhiskeyReviewsPage ─── */
+.wf-review-page-header { display: flex; gap: 24px; align-items: center; justify-content: space-between; }

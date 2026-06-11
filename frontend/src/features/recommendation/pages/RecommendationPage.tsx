@@ -7,6 +7,7 @@ import { isLoggedIn } from '@/shared/lib/authSession';
 import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/survey/api/surveyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { saveResultImage } from '../utils/exportImage';
+import '../recommendation.css';
 
 const SCORE_META: { key: keyof SurveyResult['profile']; ko: string; en: string; low: string; high: string }[] = [
   { key: 'sweetScore', ko: '단맛', en: 'Sweet', low: '드라이', high: '달콤' },
