@@ -33,23 +33,22 @@ export default function FreeBoardPage() {
 
   return (
     <WireframePage scroll>
-      <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+      <nav className="wf-community-nav">
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
         <span className="wf-chip wf-chip--on">자유게시판</span>
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <h1 className="wf-title" style={{ margin: 0 }}>자유게시판</h1>
+      <div className="wf-community-page-header">
+        <h1 className="wf-title wf-community-page-title">자유게시판</h1>
         {/* 글쓰기 URL에 ?type=FREE를 붙여 PostFormPage가 postType을 구분하도록 함 */}
         <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`} className="wf-chip wf-chip--on">글쓰기</Link>
       </div>
-      <div className="wf-chips" style={{ marginBottom: 12 }}>
+      <div className="wf-chips wf-community-filter-chips">
         {CATEGORIES.map((c) => (
           <button
             key={c.label}
-            className={`wf-chip${category === c.value ? ' wf-chip--on' : ''}`}
-            style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+            className={`wf-chip wf-community-filter-btn${category === c.value ? ' wf-chip--on' : ''}`}
             onClick={() => handleCategory(c.value)}
           >
             {c.label}

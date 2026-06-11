@@ -51,28 +51,28 @@ export default function LoginPage() {
       <TopNav searchPlaceholder="Whiskey Note" />
       <div className="wf-page wf-guest-center">
         <div className="wf-box wf-auth-box">
-          <h2 className="wf-title" style={{ fontSize: 22 }}>로그인</h2>
+          <h2 className="wf-title wf-auth-title">로그인</h2>
           <p className="wf-subtitle">취향 설문 후 맞춤 추천을 받아보세요</p>
           <Input
             placeholder="이메일"
-            style={{ marginTop: 20 }}
+            className="wf-auth-field-first"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             placeholder="비밀번호"
             type="password"
-            style={{ marginTop: 10 }}
+            className="wf-auth-field"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button block style={{ marginTop: 16 }} onClick={handleLogin} disabled={loading}>
+          <Button block className="wf-auth-submit" onClick={handleLogin} disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('kakao')}>카카오</Button>
-          <Button variant="ghost" block style={{ marginTop: 8 }} onClick={() => handleOauth('google')}>Google</Button>
+          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('kakao')}>카카오</Button>
+          <Button variant="ghost" block className="wf-auth-oauth-btn" onClick={() => handleOauth('google')}>Google</Button>
 
-          <p className="wf-text-xs" style={{ textAlign: 'center', marginTop: 16 }}>
+          <p className="wf-text-xs wf-auth-footer-text">
             계정이 없으신가요? <Link to={PATHS.REGISTER} className="wf-link">회원가입</Link>
           </p>
         </div>

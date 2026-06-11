@@ -14,7 +14,7 @@ export default function NoticePage() {
   return (
     <WireframePage scroll>
       {/* 공지·FAQ는 글쓰기 버튼을 노출하지 않음 — 관리자만 작성 가능하기 때문 */}
-      <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+      <nav className="wf-community-nav">
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <Link to={PATHS.COMMUNITY_COLUMNS} className="wf-chip">칼럼</Link>
         <Link to={PATHS.COMMUNITY_FREE} className="wf-chip">자유게시판</Link>
