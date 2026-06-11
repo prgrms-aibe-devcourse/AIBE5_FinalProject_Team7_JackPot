@@ -18,35 +18,25 @@ function ColumnCard({ post }: { post: PostSummaryResponse }) {
   return (
     <Link
       to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
-      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+      className="wf-column-card-link"
     >
-      <div className="wf-box" style={{
-        display: 'flex', gap: 16, padding: '16px',
-        marginBottom: 12, alignItems: 'center',
-      }}>
+      <div className="wf-box wf-column-card">
         {/* 썸네일 — 없으면 회색 placeholder */}
-        <div style={{
-          width: 90, height: 68, flexShrink: 0,
-          borderRadius: 8, overflow: 'hidden',
-          background: 'var(--wf-surface-2)',
-        }}>
+        <div className="wf-column-card__thumb">
           {post.thumbnailUrl ? (
             <img
               src={post.thumbnailUrl}
               alt={post.title}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={e => { (e.target as HTMLImageElement).parentElement!.style.background = 'var(--wf-surface-2)'; (e.target as HTMLImageElement).style.display = 'none'; }}
             />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📄</div>
+            <div className="wf-column-card__thumb-empty">📄</div>
           )}
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <strong style={{ fontSize: 15, display: 'block', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {post.title}
-          </strong>
-          <p className="wf-text-xs" style={{ margin: 0, color: '#888' }}>
+        <div className="wf-column-card__body">
+          <strong className="wf-column-card__title">{post.title}</strong>
+          <p className="wf-text-xs wf-column-card__meta">
             ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
           </p>
         </div>
@@ -62,20 +52,19 @@ export default function ColumnsPage() {
 
   return (
     <WireframePage scroll>
-      <nav style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+      <nav className="wf-community-nav">
         <Link to={PATHS.COMMUNITY} className="wf-chip">커뮤니티 홈</Link>
         <span className="wf-chip wf-chip--on">칼럼</span>
         <Link to={PATHS.COMMUNITY_FREE} className="wf-chip">자유게시판</Link>
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <h1 className="wf-title" style={{ margin: 0 }}>칼럼</h1>
+      <div className="wf-column-header">
+        <h1 className="wf-title wf-community-page-title">칼럼</h1>
         {isLoggedIn() && (
           <Link
             to={`${PATHS.COMMUNITY_POST_NEW}?type=COLUMN`}
-            className="wf-chip"
-            style={{ background: 'var(--wf-accent)', color: '#fff', textDecoration: 'none' }}
+            className="wf-chip wf-community-write-btn"
           >
             + 글쓰기
           </Link>

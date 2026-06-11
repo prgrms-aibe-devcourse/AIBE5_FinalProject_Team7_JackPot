@@ -31,29 +31,6 @@ function validate(
   return null;
 }
 
-const fieldStyle: React.CSSProperties = {
-  width: '100%',
-  height: 48,
-  background: 'var(--wf-surface-2)',
-  border: '1px solid var(--wf-border)',
-  borderRadius: 10,
-  padding: '0 14px',
-  fontSize: 14,
-  color: 'var(--wf-text)',
-  outline: 'none',
-  boxSizing: 'border-box',
-  fontFamily: 'inherit',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 11,
-  fontWeight: 700,
-  color: 'var(--wf-muted)',
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.06em',
-  marginBottom: 6,
-  display: 'block',
-};
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -111,23 +88,23 @@ export default function RegisterPage() {
     <>
       <TopNav searchPlaceholder="Whiskey Note" />
       <div className="wf-page wf-guest-center">
-        <div className="wf-auth-box wf-box wf-box--solid" style={{ maxWidth: 440 }}>
+        <div className="wf-auth-box wf-box wf-box--solid wf-register-box">
 
           {/* 헤더 */}
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>🥃</div>
-            <h2 className="wf-title" style={{ fontSize: 22, marginBottom: 6 }}>회원가입</h2>
+          <div className="wf-register-header">
+            <div className="wf-register-emoji">🥃</div>
+            <h2 className="wf-title wf-auth-title wf-register-title">회원가입</h2>
             <p className="wf-subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
           </div>
 
           {/* 구분선 */}
-          <div style={{ height: 1, background: 'var(--wf-border)', marginBottom: 24 }} />
+          <div className="wf-register-divider" />
 
           {/* 이메일 */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>이메일 <span style={{ color: 'var(--wf-accent)' }}>*</span></label>
+          <div className="wf-register-field-group">
+            <label className="wf-register-label">이메일 <span className="wf-register-required">*</span></label>
             <input
-              style={fieldStyle}
+              className="wf-register-field"
               placeholder="whiskey@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -135,10 +112,10 @@ export default function RegisterPage() {
           </div>
 
           {/* 비밀번호 */}
-          <div style={{ marginBottom: 10 }}>
-            <label style={labelStyle}>비밀번호 <span style={{ color: 'var(--wf-accent)' }}>*</span></label>
+          <div className="wf-register-field-group--sm">
+            <label className="wf-register-label">비밀번호 <span className="wf-register-required">*</span></label>
             <input
-              style={fieldStyle}
+              className="wf-register-field"
               type="password"
               placeholder="8자 이상 입력"
               value={password}
@@ -147,11 +124,11 @@ export default function RegisterPage() {
           </div>
 
           {/* 비밀번호 확인 + 확인 버튼 */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>비밀번호 확인 <span style={{ color: 'var(--wf-accent)' }}>*</span></label>
-            <div style={{ display: 'flex', gap: 8 }}>
+          <div className="wf-register-field-group">
+            <label className="wf-register-label">비밀번호 확인 <span className="wf-register-required">*</span></label>
+            <div className="wf-register-pwd-row">
               <input
-                style={{ ...fieldStyle, flex: 1 }}
+                className="wf-register-field wf-register-field--flex"
                 type="password"
                 placeholder="비밀번호 재입력"
                 value={passwordConfirm}
@@ -160,20 +137,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={handlePasswordCheck}
-                style={{
-                  height: 48,
-                  padding: '0 16px',
-                  borderRadius: 10,
-                  border: `1px solid ${passwordChecked ? 'var(--wf-success)' : 'var(--wf-accent)'}`,
-                  background: passwordChecked ? 'rgba(74, 222, 128, 0.12)' : 'var(--wf-accent-dim)',
-                  color: passwordChecked ? 'var(--wf-success)' : 'var(--wf-accent)',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  fontFamily: 'inherit',
-                  flexShrink: 0,
-                }}
+                className={`wf-register-pwd-check-btn${passwordChecked ? ' wf-register-pwd-check-btn--checked' : ''}`}
               >
                 {passwordChecked ? '✓ 일치' : '확인'}
               </button>
@@ -181,20 +145,20 @@ export default function RegisterPage() {
           </div>
 
           {/* 이름 (선택) + 닉네임 나란히 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+          <div className="wf-register-grid2">
             <div>
-              <label style={labelStyle}>이름 <span style={{ color: 'var(--wf-muted)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(선택)</span></label>
+              <label className="wf-register-label">이름 <span className="wf-register-optional">(선택)</span></label>
               <input
-                style={fieldStyle}
+                className="wf-register-field"
                 placeholder="홍길동"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
-              <label style={labelStyle}>닉네임 <span style={{ color: 'var(--wf-accent)' }}>*</span></label>
+              <label className="wf-register-label">닉네임 <span className="wf-register-required">*</span></label>
               <input
-                style={fieldStyle}
+                className="wf-register-field"
                 placeholder="2~20자"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
@@ -203,10 +167,10 @@ export default function RegisterPage() {
           </div>
 
           {/* 생년월일 */}
-          <div style={{ marginBottom: 28 }}>
-            <label style={labelStyle}>생년월일 <span style={{ color: 'var(--wf-accent)' }}>*</span></label>
+          <div className="wf-register-field-group--last">
+            <label className="wf-register-label">생년월일 <span className="wf-register-required">*</span></label>
             <input
-              style={fieldStyle}
+              className="wf-register-field"
               placeholder="예: 19900115"
               value={birthday}
               onChange={(e) => setBirthday(e.target.value)}
@@ -219,27 +183,15 @@ export default function RegisterPage() {
             type="button"
             onClick={handleRegister}
             disabled={loading}
-            style={{
-              width: '100%',
-              height: 50,
-              borderRadius: 12,
-              border: 'none',
-              background: loading ? 'var(--wf-border)' : 'var(--wf-accent)',
-              color: loading ? 'var(--wf-muted)' : '#0c0c0f',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontFamily: 'inherit',
-              letterSpacing: '0.02em',
-            }}
+            className="wf-register-submit"
           >
             {loading ? '가입 중...' : '회원가입'}
           </button>
 
           {/* 로그인 링크 */}
-          <p className="wf-text-xs" style={{ textAlign: 'center', marginTop: 18, color: 'var(--wf-muted)' }}>
+          <p className="wf-text-xs wf-register-footer">
             이미 계정이 있으신가요?{' '}
-            <Link to={PATHS.LOGIN} style={{ color: 'var(--wf-accent)', fontWeight: 600, textDecoration: 'none' }}>
+            <Link to={PATHS.LOGIN} className="wf-register-login-link">
               로그인
             </Link>
           </p>
