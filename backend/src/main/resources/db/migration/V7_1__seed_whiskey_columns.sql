@@ -2,7 +2,7 @@
 -- 팀원 로컬 DB 세팅 시 수동 실행:
 --   mysql -u root -p whiskeynote < V7_1__seed_whiskey_columns.sql
 
-INSERT INTO whiskey_columns
+INSERT IGNORE INTO whiskey_columns
   (id, created_at, description, published_at, source_type, thumbnail_url, title, url, whiskey_keyword, author, source_name)
 VALUES
   (1, '2026-06-08 15:06:23', '## 22년의 기다림이 만든 기적
