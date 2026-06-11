@@ -2,17 +2,21 @@
   color: var(--wf-muted);
   text-decoration: none;
   font-size: 14px;
-  transition: color 0.15s ease;
+  padding: 8px 10px;
+  border-radius: 999px;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .app-root .wf-topnav__links a:hover {
   color: var(--wf-text);
+  background: rgba(255, 255, 255, 0.055);
 }
 
 .app-root .wf-topnav__links a.active,
 .app-root .wf-topnav__links a.is-active {
   color: var(--wf-accent);
   font-weight: 600;
+  background: rgba(213, 173, 69, 0.1);
 }
 
 .app-root .wf-topnav__logo-link {
@@ -91,24 +95,25 @@
 }
 
 .app-root .wf-topnav__login {
-  height: 32px;
-  padding: 0 16px;
-  border-radius: 8px;
-  border: 1px solid var(--wf-accent);
-  background: var(--wf-accent-dim);
-  color: var(--wf-accent);
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(213, 173, 69, 0.5);
+  background: rgba(213, 173, 69, 0.1);
+  color: var(--wf-accent-light);
   font-size: 13px;
   font-weight: 700;
   display: flex;
   align-items: center;
   text-decoration: none;
   white-space: nowrap;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .app-root .wf-topnav__login:hover {
-  background: rgba(201, 162, 39, 0.2);
+  background: rgba(213, 173, 69, 0.18);
   border-color: var(--wf-accent-light);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 960px) {
