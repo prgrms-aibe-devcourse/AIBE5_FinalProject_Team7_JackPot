@@ -50,31 +50,38 @@ export function TastingSummaryPanel({
   reviewPath,
 }: TastingSummaryPanelProps) {
   return (
-    <section className="wf-detail-tasting" aria-label="시음 요약">
-      <h2 className="wf-section-title">시음 요약</h2>
-      <div className="wf-detail-tasting__toggle">
-        <button
-          type="button"
-          className={`wf-chip ${source === 'official' ? 'wf-chip--on' : ''}`}
-          disabled={!hasOfficial}
-          onClick={() => onSourceChange('official')}
-        >
-          오피셜
-        </button>
-        <button
-          type="button"
-          className={`wf-chip ${source === 'userAvg' ? 'wf-chip--on' : ''}`}
-          onClick={() => onSourceChange('userAvg')}
-        >
-          사용자 평균
-        </button>
+    <section className="wf-detail-tasting wf-detail-panel" aria-label="시음 요약">
+      <div className="wf-detail-section-head">
+        <div>
+          <h2 className="wf-section-title">시음 요약</h2>
+          <p className="wf-text-xs wf-detail-tasting__note">
+            노트 첨부 리뷰 기반 · 오피셜 없으면 평균 고정
+          </p>
+        </div>
+        <div className="wf-detail-tasting__toggle">
+          <button
+            type="button"
+            className={`wf-chip ${source === 'official' ? 'wf-chip--on' : ''}`}
+            disabled={!hasOfficial}
+            onClick={() => onSourceChange('official')}
+          >
+            오피셜
+          </button>
+          <button
+            type="button"
+            className={`wf-chip ${source === 'userAvg' ? 'wf-chip--on' : ''}`}
+            onClick={() => onSourceChange('userAvg')}
+          >
+            사용자 평균
+          </button>
+        </div>
       </div>
-      <p className="wf-text-xs wf-detail-tasting__note">
-        노트 첨부 리뷰 기반 · 오피셜 없으면 평균 고정
-      </p>
 
       {axes.length === 0 ? (
-        <p className="wf-text-sm">시음 데이터가 아직 없습니다.</p>
+        <div className="wf-detail-state">
+          <p className="wf-card__title">시음 데이터가 아직 없습니다.</p>
+          <p className="wf-card__meta">첫 리뷰와 노트를 남기면 이 위스키의 맛 지도가 채워집니다.</p>
+        </div>
       ) : (
         <div className="wf-detail-tasting__radar">
           <svg
@@ -141,7 +148,7 @@ export function TastingSummaryPanel({
       )}
 
       <Link to={reviewPath} className="wf-detail-tasting__reviews-link wf-text-sm">
-        리뷰 탭 →
+        리뷰 전체 보기
       </Link>
     </section>
   );

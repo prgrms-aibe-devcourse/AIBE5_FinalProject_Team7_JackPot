@@ -1,13 +1,30 @@
 /* 09-detail — 위스키 상세 (3열 + 태그 버블 + 관련 칼럼) */
 .wf-detail-hero {
-  padding: 24px 0 20px;
-  border-bottom: 1px solid var(--wf-border-subtle);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid rgba(213, 173, 69, 0.16);
+}
+
+.wf-detail-hero__copy {
+  min-width: 0;
+}
+
+.wf-detail-hero__eyebrow {
+  margin: 0 0 8px;
+  color: var(--wf-accent-light);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .wf-detail-hero__title {
   margin: 0 0 8px;
-  font-size: 28px;
-  line-height: 1.25;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: 0;
 }
 
 .wf-detail-hero__meta {
@@ -16,11 +33,37 @@
   margin: 0;
 }
 
-.wf-detail-hero__rating {
-  margin: 10px 0 0;
-  color: var(--wf-accent);
-  font-weight: 600;
-  font-size: 16px;
+.wf-detail-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
+  gap: 10px;
+  width: min(420px, 100%);
+  flex-shrink: 0;
+}
+
+.wf-detail-hero__stat {
+  min-height: 78px;
+  padding: 14px 16px;
+  border: 1px solid rgba(213, 173, 69, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(213, 173, 69, 0.1), rgba(255, 255, 255, 0.035)),
+    var(--wf-surface);
+}
+
+.wf-detail-hero__stat span {
+  display: block;
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-detail-hero__stat strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--wf-accent-light);
+  font-size: 24px;
+  line-height: 1;
 }
 
 .wf-layout-detail-v2 {
@@ -33,10 +76,36 @@
 
 .wf-detail-sidebar__image {
   width: 100%;
-  height: 320px;
-  border-radius: var(--wf-radius);
-  object-fit: cover;
+  height: 360px;
+  border-radius: 18px;
+  object-fit: contain;
   display: block;
+  background: radial-gradient(circle at 50% 20%, rgba(213, 173, 69, 0.2), transparent 58%);
+}
+
+.wf-detail-sidebar__image.wf-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(243, 240, 234, 0.58);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wf-detail-sidebar__image.wf-placeholder::after {
+  content: "Whiskey Note";
+}
+
+.wf-detail-sidebar__image-frame {
+  padding: 20px;
+  border: 1px solid rgba(213, 173, 69, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(143, 52, 76, 0.18), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-detail-sidebar__actions {
@@ -49,6 +118,26 @@
 .wf-detail-sidebar__actions .wf-btn {
   width: 100%;
   justify-content: center;
+}
+
+.wf-detail-action {
+  min-height: 46px;
+  border-radius: 14px;
+}
+
+.wf-detail-action--on {
+  box-shadow: var(--wf-shadow-accent);
+}
+
+.wf-detail-sidebar__secondary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.wf-detail-sidebar__secondary-actions .wf-btn {
+  min-width: 0;
+  padding-inline: 10px;
 }
 
 .wf-detail-sidebar__hint {
@@ -68,7 +157,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 10px 12px !important;
+  min-height: 68px;
+  padding: 12px !important;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .wf-detail-main {
@@ -83,16 +174,72 @@
   margin-top: 8px;
 }
 
+.wf-detail-panel {
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+    var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-detail-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.wf-detail-section-head .wf-section-title {
+  margin: 0;
+}
+
+.wf-detail-section-head__count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(213, 173, 69, 0.22);
+  border-radius: 999px;
+  color: var(--wf-accent-light);
+  background: rgba(213, 173, 69, 0.08);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.wf-detail-state,
+.wf-detail-error {
+  padding: 22px;
+  border-color: rgba(213, 173, 69, 0.18);
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.1), rgba(255, 255, 255, 0.025)),
+    var(--wf-surface);
+}
+
+.wf-detail-error {
+  margin-top: 24px;
+}
+
+.wf-detail-error__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
 .wf-detail-tasting__toggle {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin: 10px 0 6px;
+  justify-content: flex-end;
 }
 
 .wf-detail-tasting__note {
   color: var(--wf-muted);
-  margin-bottom: 12px;
+  margin: 5px 0 0;
 }
 
 .wf-detail-tasting__axes {
@@ -137,8 +284,8 @@
 
 .wf-detail-tasting__radar {
   display: flex;
-  justify-content: flex-start;
-  padding: 8px 0 4px;
+  justify-content: center;
+  padding: 4px 0 0;
 }
 
 .wf-detail-tasting__radar-chart {
@@ -201,8 +348,8 @@
 }
 
 .wf-detail-reviews {
-  border-top: 1px solid var(--wf-border);
-  padding-top: 18px;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .wf-detail-reviews__title-row {
@@ -233,7 +380,8 @@
 }
 
 .wf-detail-reviews__item {
-  padding: 14px 16px;
+  padding: 16px 18px;
+  border-color: rgba(255, 255, 255, 0.075);
 }
 
 .wf-detail-reviews__header {
@@ -259,6 +407,7 @@
 
 .wf-detail-reviews__text {
   margin: 8px 0 0;
+  line-height: 1.7;
 }
 
 .wf-review-like {
@@ -593,19 +742,23 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s;
+  border-color: rgba(255, 255, 255, 0.075);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
 }
 
 .wf-detail-columns__item:hover {
-  border-color: var(--wf-accent);
+  border-color: rgba(213, 173, 69, 0.35);
+  background: rgba(213, 173, 69, 0.07);
+  transform: translateY(-1px);
 }
 
 .wf-detail-columns__title {
-  color: var(--wf-accent);
-  font-size: 13px;
+  color: var(--wf-text);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .wf-detail-columns__subtitle {
@@ -617,6 +770,40 @@
   font-size: 12px;
   margin-top: 4px;
   display: block;
+}
+
+.wf-detail-columns__item--loading {
+  min-height: 76px;
+  pointer-events: none;
+}
+
+.wf-detail-columns__item--loading span,
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.wf-detail-columns__item--loading span::after,
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(213, 173, 69, 0.14), transparent);
+  animation: wf-detail-skeleton 1.35s ease-in-out infinite;
+}
+
+.wf-detail-columns__item--loading span:first-child {
+  width: 72%;
+  height: 15px;
+}
+
+.wf-detail-columns__item--loading span:last-child {
+  width: 42%;
+  height: 12px;
 }
 
 .wf-detail-tags {
@@ -746,6 +933,15 @@
 }
 
 @media (max-width: 1100px) {
+  .wf-detail-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wf-detail-hero__stats {
+    width: 100%;
+  }
+
   .wf-layout-detail-v2 {
     grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
   }
@@ -756,15 +952,50 @@
 }
 
 @media (max-width: 768px) {
+  .wf-detail-hero {
+    padding-top: 20px;
+  }
+
+  .wf-detail-hero__title {
+    font-size: 32px;
+  }
+
+  .wf-detail-hero__stats {
+    grid-template-columns: 1fr;
+  }
+
   .wf-layout-detail-v2 {
     grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .wf-detail-sidebar__image {
+    height: 300px;
+  }
+
+  .wf-detail-section-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wf-detail-tasting__toggle {
+    justify-content: flex-start;
+  }
+
+  .wf-detail-sidebar__secondary-actions,
+  .wf-grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .wf-detail-panel {
+    padding: 18px;
   }
 }
 
 /* ─── 비슷한 위스키 추천 (WhiskeyDetailPage) ─── */
 .app-root .wf-related-whiskeys {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
@@ -772,22 +1003,32 @@
 .app-root .wf-related-whiskeys__card {
   text-decoration: none;
   color: inherit;
+  border-color: rgba(255, 255, 255, 0.075);
   border-style: solid;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
   display: flex;
   flex-direction: column;
 }
 
 .app-root .wf-related-whiskeys__card:hover {
-  border-color: var(--wf-accent);
+  border-color: rgba(213, 173, 69, 0.42);
   box-shadow: var(--wf-shadow-accent);
+  transform: translateY(-2px);
 }
 
 .app-root .wf-related-whiskeys__card .wf-card__thumb {
   width: 100%;
-  height: 120px;
-  object-fit: cover;
+  height: 148px;
+  object-fit: contain;
   border-radius: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(213, 173, 69, 0.16), transparent 56%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.app-root .wf-related-whiskeys__card .wf-card__body {
+  padding: 14px;
 }
 
 .app-root .wf-related-whiskeys__meta {
@@ -822,6 +1063,39 @@
   color: var(--wf-muted);
   margin-top: 4px;
   line-height: 1.5;
+}
+
+.app-root .wf-related-whiskeys__card--loading {
+  pointer-events: none;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span {
+  height: 12px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(1) {
+  width: 80%;
+  height: 16px;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(2) {
+  width: 58%;
+}
+
+.app-root .wf-related-whiskeys__card--loading .wf-card__body span:nth-child(3) {
+  width: 44%;
+}
+
+@keyframes wf-detail-skeleton {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 /* ─── Phase 7: WhiskeyReviewsPage ─── */
