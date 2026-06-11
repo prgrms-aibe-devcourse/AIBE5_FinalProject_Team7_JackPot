@@ -106,7 +106,7 @@ export default function UserProfilePage() {
     cabinetApi
       .getPickList(targetUserId)
       .then((res) => setPicks(res.data.data.content ?? []))
-      .catch((err) => { setPicks([]); })
+      .catch(() => { setPicks([]); })
       .finally(() => setPicksLoading(false));
   }, [targetUserId]);
 
