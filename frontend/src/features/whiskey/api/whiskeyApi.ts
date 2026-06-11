@@ -16,6 +16,11 @@ import type {
 
 const USE_MOCK_ONLY = import.meta.env.VITE_API_MOCK === 'true';
 
+const LOCAL_DETAIL_READ_ERROR_CONFIG = {
+  skipAuthRedirect: true,
+  skipGlobalErrorRedirect: true,
+};
+
 async function withMockFallback<T>(
   fetcher: () => Promise<T>,
   fallback: () => T,
@@ -32,7 +37,10 @@ async function withMockFallback<T>(
 export async function fetchWhiskeyDetail(whiskeyId: string): Promise<WhiskeyDetail> {
   return withMockFallback(
     async () => {
-      const { data } = await apiClient.get<WhiskeyDetail>(`/whiskeys/${whiskeyId}`);
+      const { data } = await apiClient.get<WhiskeyDetail>(
+        `/whiskeys/${whiskeyId}`,
+        LOCAL_DETAIL_READ_ERROR_CONFIG,
+      );
       return data;
     },
     () => getMockWhiskeyDetail(whiskeyId),
@@ -45,6 +53,7 @@ export async function fetchRelatedColumns(whiskeyId: string): Promise<RelatedCol
     async () => {
       const { data } = await apiClient.get<RelatedColumnPost[]>(
         `/whiskeys/${whiskeyId}/related-posts`,
+        LOCAL_DETAIL_READ_ERROR_CONFIG,
       );
       return data;
     },
@@ -63,7 +72,10 @@ export async function fetchWhiskeyReviews(
     async () => {
       const { data } = await apiClient.get<PageResponse<WhiskeyReview>>(
         `/whiskeys/${whiskeyId}/reviews`,
-        { params: { page, size, ...(userId != null ? { userId } : {}) } },
+        {
+          ...LOCAL_DETAIL_READ_ERROR_CONFIG,
+          params: { page, size, ...(userId != null ? { userId } : {}) },
+        },
       );
       return data;
     },
@@ -77,6 +89,7 @@ export async function fetchWhiskeyReviewStats(whiskeyId: string): Promise<Whiske
     async () => {
       const { data } = await apiClient.get<WhiskeyReviewStats>(
         `/whiskeys/${whiskeyId}/reviewstats`,
+        LOCAL_DETAIL_READ_ERROR_CONFIG,
       );
       return data;
     },
@@ -92,7 +105,10 @@ export async function fetchWhiskeyReviewStats(whiskeyId: string): Promise<Whiske
 export async function fetchSimilarWhiskeys(whiskeyId: string): Promise<SimilarWhiskey[]> {
   return withMockFallback(
     async () => {
-      const { data } = await apiClient.get<SimilarWhiskey[]>(`/whiskeys/${whiskeyId}/similar`);
+      const { data } = await apiClient.get<SimilarWhiskey[]>(
+        `/whiskeys/${whiskeyId}/similar`,
+        LOCAL_DETAIL_READ_ERROR_CONFIG,
+      );
       return data;
     },
     () => getMockSimilarWhiskeys(whiskeyId),

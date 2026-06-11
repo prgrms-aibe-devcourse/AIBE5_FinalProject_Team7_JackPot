@@ -15,15 +15,37 @@ interface RelatedWhiskeysProps {
   isLoading?: boolean;
 }
 
+function formatSimilarityScore(score: number) {
+  const percent = score <= 1 ? score * 100 : score;
+  return Number.isInteger(percent) ? `${percent}%` : `${percent.toFixed(1)}%`;
+}
+
 export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
   return (
-    <section className="wf-detail-columns" aria-label="비슷한 위스키 추천">
-      <h2 className="wf-section-title">비슷한 위스키 추천</h2>
+    <section className="wf-detail-columns wf-detail-panel" aria-label="비슷한 위스키 추천">
+      <div className="wf-detail-section-head">
+        <h2 className="wf-section-title">비슷한 위스키 추천</h2>
+        <span className="wf-detail-section-head__count">최대 3개</span>
+      </div>
 
       {isLoading ? (
-        <p className="wf-text-sm">추천 위스키를 불러오는 중…</p>
+        <div className="wf-related-whiskeys">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="wf-box wf-related-whiskeys__card wf-related-whiskeys__card--loading">
+              <div className="wf-card__thumb wf-placeholder" />
+              <div className="wf-card__body">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : items.length === 0 ? (
-        <p className="wf-text-sm">추천할 위스키가 아직 없습니다.</p>
+        <div className="wf-detail-state">
+          <p className="wf-card__title">추천할 위스키가 아직 없습니다.</p>
+          <p className="wf-card__meta">향과 맛 데이터가 쌓이면 가까운 취향의 위스키를 보여드릴게요.</p>
+        </div>
       ) : (
         <div className="wf-related-whiskeys">
           {items.map((w) => {
@@ -51,7 +73,7 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
                   <p className="wf-related-whiskeys__rating">
                     <span className="wf-stars">★</span> {w.avgRating.toFixed(1)}
                     {w.score > 0 && (
-                      <span className="wf-related-whiskeys__score">· 유사도 {(w.score * 100).toFixed(2)}%</span>
+                      <span className="wf-related-whiskeys__score">· 유사도 {formatSimilarityScore(w.score)}</span>
                     )}
                   </p>
                   {w.reason && (

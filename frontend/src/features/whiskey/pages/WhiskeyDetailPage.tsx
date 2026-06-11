@@ -46,6 +46,13 @@ function formatTenPointScore(score?: number): string {
   return Number.isInteger(normalized) ? `${normalized}` : normalized.toFixed(1);
 }
 
+function formatFivePointScore(score?: number | null): string {
+  if (score == null) return '—';
+
+  const normalized = score > 20 ? score / 20 : score > 5 ? score / 2 : score;
+  return Number.isInteger(normalized) ? `${normalized}` : normalized.toFixed(1);
+}
+
 function formatReviewDate(value: string): string {
   return new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
@@ -294,7 +301,18 @@ export default function WhiskeyDetailPage() {
   if (isError || !detail) {
     return (
       <WireframePage scroll>
-        <p className="wf-text-sm">위스키 정보를 불러오지 못했습니다.</p>
+        <div className="wf-box wf-detail-error">
+          <p className="wf-card__title">위스키 정보를 불러오지 못했습니다.</p>
+          <p className="wf-card__meta">잠시 후 다시 시도하거나 검색 페이지에서 다른 위스키를 찾아보세요.</p>
+          <div className="wf-detail-error__actions">
+            <Button variant="ghost" onClick={() => navigate(PATHS.SEARCH)}>
+              검색으로 이동
+            </Button>
+            <Button onClick={() => window.location.reload()}>
+              다시 시도
+            </Button>
+          </div>
+        </div>
       </WireframePage>
     );
   }
@@ -307,6 +325,8 @@ export default function WhiskeyDetailPage() {
     '700ml',
   ].join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
+  const displayRating = reviewStats?.avgRating ?? detail.avgRating;
+  const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
 
   return (
     <WireframePage scroll>
@@ -318,12 +338,25 @@ export default function WhiskeyDetailPage() {
         />
       )}
       <header className="wf-detail-hero">
-        <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
-        <p className="wf-detail-hero__meta">{metaLine}</p>
-        <p className="wf-detail-hero__rating">
-          종합 {formatTenPointScore(detail.noteSummary?.bodyScore)} / 10
-          <span className="wf-text-xs"> · {detail.noteSummary?.noteCount ?? 0} 노트</span>
-        </p>
+        <div className="wf-detail-hero__copy">
+          <p className="wf-detail-hero__eyebrow">{detail.distillery ?? detail.region}</p>
+          <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
+          <p className="wf-detail-hero__meta">{metaLine}</p>
+        </div>
+        <div className="wf-detail-hero__stats" aria-label="위스키 요약">
+          <div className="wf-detail-hero__stat">
+            <span>시음 점수</span>
+            <strong>{formatTenPointScore(detail.noteSummary?.bodyScore)}</strong>
+          </div>
+          <div className="wf-detail-hero__stat">
+            <span>리뷰 평점</span>
+            <strong>{formatFivePointScore(displayRating)}</strong>
+          </div>
+          <div className="wf-detail-hero__stat">
+            <span>노트</span>
+            <strong>{detail.noteSummary?.noteCount ?? 0}</strong>
+          </div>
+        </div>
       </header>
 
       <div className="wf-tabs">
@@ -338,29 +371,41 @@ export default function WhiskeyDetailPage() {
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
-          {imageSrc && !imgError ? (
-            <img
-              src={imageSrc}
-              alt={detail.name}
-              className="wf-detail-sidebar__image"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
-          )}
+          <div className="wf-detail-sidebar__image-frame">
+            {imageSrc && !imgError ? (
+              <img
+                src={imageSrc}
+                alt={detail.name}
+                className="wf-detail-sidebar__image"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
+            )}
+          </div>
           <div className="wf-detail-sidebar__actions">
-            <Button variant="ghost" onClick={handleWishToggle}>
+            <Button
+              variant={isWished ? 'primary' : 'ghost'}
+              className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
+              onClick={handleWishToggle}
+            >
               {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
             </Button>
-            <Button onClick={handlePickToggle} disabled={pickLoading}>
+            <Button
+              className={`wf-detail-action ${isPicked ? 'wf-detail-action--on' : ''}`}
+              onClick={handlePickToggle}
+              disabled={pickLoading}
+            >
               {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
             </Button>
-            <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
-              리뷰 작성
-            </Button>
-            <Button variant="ghost" to={notePath}>
-              📝 My Note 작성
-            </Button>
+            <div className="wf-detail-sidebar__secondary-actions">
+              <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
+                리뷰 작성
+              </Button>
+              <Button variant="ghost" to={notePath}>
+                My Note 작성
+              </Button>
+            </div>
           </div>
           <p className="wf-detail-sidebar__hint">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
           <div className="wf-grid2">
@@ -379,8 +424,11 @@ export default function WhiskeyDetailPage() {
         </aside>
 
         <main className="wf-detail-main">
-          <section className="wf-detail-info">
-            <h2 className="wf-section-title">제품 정보</h2>
+          <section className="wf-detail-info wf-detail-panel">
+            <div className="wf-detail-section-head">
+              <h2 className="wf-section-title">제품 정보</h2>
+              <span className="wf-detail-section-head__count">리뷰 {reviewCount}개</span>
+            </div>
             {detail.description && <p className="wf-text-sm">{detail.description}</p>}
             <p className="wf-text-sm wf-detail-info__meta">
               증류소 · {detail.distillery ?? detail.name} · {detail.region} · 캐스크 {detail.cask ?? '—'}
@@ -402,7 +450,7 @@ export default function WhiskeyDetailPage() {
                 {reviewStats && reviewStats.reviewCount > 0 && (
                   <span className="wf-detail-reviews__stats">
                     <span className="wf-stars">★</span>{' '}
-                    {reviewStats.avgRating != null ? reviewStats.avgRating.toFixed(1) : '—'}
+                    {formatFivePointScore(reviewStats.avgRating)}
                     {' · '}{reviewStats.reviewCount}개
                   </span>
                 )}
