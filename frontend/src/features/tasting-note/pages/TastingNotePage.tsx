@@ -232,7 +232,7 @@ export default function TastingNotePage() {
           ))}
         </section>
 
-        <label style={{ display: 'block' }}>
+        <label className="wf-note-editor__memo-label">
           <span className="wf-text-label">메모</span>
           <textarea
             className="wf-review-textarea"
@@ -273,7 +273,7 @@ export default function TastingNotePage() {
               ))}
             </div>
           ) : (
-            <p className="wf-text-sm" style={{ margin: 0 }}>선택된 태그가 없습니다.</p>
+            <p className="wf-text-sm wf-note-editor__no-tags">선택된 태그가 없습니다.</p>
           )}
         </section>
 
@@ -287,7 +287,7 @@ export default function TastingNotePage() {
         </label>
 
         {errorMessage && (
-          <p className="wf-text-sm" style={{ color: '#ff8a8a' }}>
+          <p className="wf-text-sm wf-note-editor__error">
             {errorMessage}
           </p>
         )}
@@ -330,10 +330,10 @@ export default function TastingNotePage() {
           >
             <div className="wf-note-editor__tag-modal-head">
               <div>
-                <p className="wf-text-label" style={{ margin: 0 }}>{tagModalTitle}</p>
-                <p className="wf-text-sm" style={{ margin: '4px 0 0' }}>선택 {currentSelectedCount}개</p>
+                <p className="wf-text-label wf-note-editor__modal-title">{tagModalTitle}</p>
+                <p className="wf-text-sm wf-note-editor__modal-count">선택 {currentSelectedCount}개</p>
               </div>
-              <Button type="button" variant="ghost" style={{ width: 84, height: 36 }} onClick={() => setTagModalType(null)}>
+              <Button type="button" variant="ghost" className="wf-note-editor__modal-close-btn" onClick={() => setTagModalType(null)}>
                 닫기
               </Button>
             </div>

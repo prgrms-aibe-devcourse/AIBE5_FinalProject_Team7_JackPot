@@ -64,10 +64,10 @@ export default function NotePickPage() {
   return (
     <WireframePage scroll>
       <h1 className="wf-title">노트 작성 · 위스키 선택</h1>
-      <p className="wf-subtitle" style={{ marginBottom: 16 }}>노트를 작성할 위스키를 검색해서 선택하세요</p>
+      <p className="wf-subtitle wf-pick-subtitle">노트를 작성할 위스키를 검색해서 선택하세요</p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <div className="wf-search-autocomplete" style={{ flex: 1 }}>
+      <form onSubmit={handleSubmit} className="wf-pick-form">
+        <div className="wf-search-autocomplete wf-pick-input-wrap">
           <Input
             aria-label="위스키 검색어"
             placeholder="위스키 이름을 검색해보세요"
@@ -95,19 +95,19 @@ export default function NotePickPage() {
             </div>
           )}
         </div>
-        <Button type="submit" style={{ width: 80 }}>검색</Button>
+        <Button type="submit" className="wf-pick-search-btn">검색</Button>
       </form>
 
       {isLoading && <p className="wf-text-sm">불러오는 중...</p>}
 
       {isError && (
-        <div className="wf-box" style={{ padding: 16 }}>
+        <div className="wf-box wf-pick-msg-box">
           <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
         </div>
       )}
 
       {!isLoading && !isError && results.length === 0 && (
-        <div className="wf-box" style={{ padding: 20 }}>
+        <div className="wf-box wf-pick-msg-box">
           <p className="wf-card__title">검색 결과가 없습니다.</p>
           <p className="wf-card__meta">다른 검색어로 다시 찾아보세요.</p>
         </div>
@@ -118,20 +118,18 @@ export default function NotePickPage() {
         return (
           <div
             key={whiskey.id}
-            className="wf-card wf-box wf-card--clickable"
-            style={{ padding: 16, marginTop: 12, cursor: 'pointer' }}
+            className="wf-card wf-box wf-card--clickable wf-pick-card"
             onClick={() => handleSelect(whiskey.id)}
           >
             {thumbSrc && !imgErrors.has(whiskey.id) ? (
               <img
                 src={thumbSrc}
                 alt={whiskey.name}
-                className="wf-card__thumb"
-                style={{ width: 56, height: 76, objectFit: 'cover' }}
+                className="wf-card__thumb wf-pick-card-thumb"
                 onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
               />
             ) : (
-              <div className="wf-card__thumb wf-placeholder" style={{ width: 56, height: 76 }} />
+              <div className="wf-card__thumb wf-placeholder wf-pick-card-thumb" />
             )}
             <div className="wf-card__body">
               <div className="wf-card__title">{whiskey.name}</div>

@@ -10,12 +10,12 @@ export default function TasteMatchPage() {
         { name: 'GlassOfWhisky', match: '94%' },
         { name: 'peat_lover', match: '89%' },
       ].map((u) => (
-        <div key={u.name} className="wf-box wf-panel" style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div key={u.name} className="wf-box wf-panel wf-taste-match-card">
           <div>
             <strong>{u.name}</strong>
             <p className="wf-text-sm">매칭 {u.match}</p>
           </div>
-          <Button variant="ghost" style={{ height: 36 }}>프로필</Button>
+          <Button variant="ghost" className="wf-taste-match-profile-btn">프로필</Button>
         </div>
       ))}
     </WireframePage>

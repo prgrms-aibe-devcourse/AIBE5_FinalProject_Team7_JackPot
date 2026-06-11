@@ -43,17 +43,17 @@ function ReviewCard({ review }: { review: WhiskeyReview }) {
   };
 
   return (
-    <div className="wf-box" style={{ padding: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+    <div className="wf-box wf-review-card">
+      <div className="wf-review-card__header">
         <div>
           <UserProfileLink userId={review.userId}>
             <strong>{review.nickname}</strong>
           </UserProfileLink>
           <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
         </div>
-        <span style={{ color: 'var(--wf-accent)' }}>{Number(review.rating).toFixed(1)}점</span>
+        <span className="wf-review-card__rating">{Number(review.rating).toFixed(1)}점</span>
       </div>
-      <p className="wf-text-sm" style={{ marginTop: 8 }}>
+      <p className="wf-text-sm wf-review-card__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
       <button
@@ -89,7 +89,7 @@ export default function WhiskeyReviewsPage() {
   return (
     <WireframePage scroll>
       <p className="wf-breadcrumb"><Link to={detailPath}>위스키 상세</Link> / <strong>리뷰</strong></p>
-      <div className="wf-box wf-panel" style={{ display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="wf-box wf-panel wf-review-page-header">
         <div>
           <span className="wf-text-label">리뷰</span>
           <strong> {reviews?.totalElements ?? 0}개</strong>

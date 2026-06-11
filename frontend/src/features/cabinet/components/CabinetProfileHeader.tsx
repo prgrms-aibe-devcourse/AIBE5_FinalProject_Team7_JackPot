@@ -40,12 +40,11 @@ export function CabinetProfileHeader({
           <img
             src={avatarSrc}
             alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
           />
         ) : null}
       </div>
       <div className="wf-cabinet-profile__info">
-        <h1 className="wf-title" style={{ fontSize: 28, margin: 0 }}>
+        <h1 className="wf-title wf-cabinet-profile__name">
           {name}
         </h1>
         <p className="wf-text-sm">{subtitle}</p>
@@ -66,7 +65,7 @@ export function CabinetProfileHeader({
         {showFollowButton ? (
           <Button
             variant={isFollowing ? 'ghost' : 'primary'}
-            style={{ marginTop: 8, height: 40, width: 96 }}
+            className="wf-cabinet-follow-btn"
             onClick={onFollowClick}
             disabled={followBusy}
           >
