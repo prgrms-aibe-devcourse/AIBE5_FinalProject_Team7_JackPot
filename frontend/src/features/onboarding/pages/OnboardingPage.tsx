@@ -25,20 +25,11 @@ export default function OnboardingPage() {
       <TopNav searchPlaceholder="Whiskey Note" />
       <div className="wf-page wf-onboarding-page">
         <section className="wf-box wf-onboarding-shell" aria-label="온보딩">
-          <div className="wf-onboarding-visual" aria-hidden="true">
-            <div className="wf-onboarding-visual__image" />
-            <div className="wf-onboarding-visual__glass">
-              <span />
-              <strong>Taste Profile</strong>
-              <em>Sweet · Body · Smoke</em>
-            </div>
-          </div>
-
           <div className="wf-onboarding-content">
             <p className="wf-text-label">Start your note</p>
             <h1 className="wf-title wf-onboarding-title">위스키 경험 수준</h1>
             <p className="wf-subtitle wf-onboarding-subtitle">
-              지금 익숙한 정도를 알려주면 설문 문항과 추천 흐름을 더 자연스럽게 맞출게요.
+              지금 익숙한 정도에 맞춰 첫 질문의 깊이를 조절할게요.
             </p>
 
             <div className="wf-onboarding-options" role="radiogroup" aria-label="위스키 경험 수준">
