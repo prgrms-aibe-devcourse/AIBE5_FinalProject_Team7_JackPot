@@ -25,6 +25,12 @@ export default function OnboardingPage() {
       <TopNav searchPlaceholder="Whiskey Note" />
       <div className="wf-page wf-onboarding-page">
         <section className="wf-box wf-onboarding-shell" aria-label="온보딩">
+          <div className="wf-onboarding-brand" aria-hidden="true">
+            <p>Whiskey Note</p>
+            <span />
+            <em>"Good things take time."</em>
+          </div>
+
           <div className="wf-onboarding-content">
             <p className="wf-text-label">Start your note</p>
             <h1 className="wf-title wf-onboarding-title">위스키 경험 수준</h1>
