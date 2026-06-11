@@ -76,11 +76,14 @@
   padding: 14px;
   margin-top: 8px;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-mypage-nav-item:hover {
-  border-color: var(--wf-accent);
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.45);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
 .wf-mypage-nav-item__row {
