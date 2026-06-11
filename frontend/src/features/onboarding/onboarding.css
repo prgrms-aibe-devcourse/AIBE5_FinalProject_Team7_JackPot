@@ -1,12 +1,256 @@
 /* ───────── OnboardingPage ───────── */
-.wf-onboarding-box {
-  max-width: 480px;
+.wf-onboarding-page {
+  position: relative;
+  min-height: calc(100vh - 72px);
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 48px 24px 82px;
+  background: #070609;
 }
 
-.wf-onboarding-chips {
-  margin-top: 20px;
+.wf-onboarding-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(7, 6, 9, 0.92) 0%, rgba(7, 6, 9, 0.86) 42%, rgba(7, 6, 9, 0.38) 68%, rgba(7, 6, 9, 0.72) 100%),
+    linear-gradient(180deg, rgba(7, 6, 9, 0.2), rgba(7, 6, 9, 0.34) 58%, rgba(7, 6, 9, 0.88)),
+    url('/images/landing-hero-whiskey.png');
+  background-position: 96% center;
+  background-repeat: no-repeat;
+  background-size: auto 112%;
+  filter: saturate(0.88) contrast(1.04);
+}
+
+.wf-onboarding-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 31% 50%, rgba(7, 6, 9, 0.9) 0%, rgba(7, 6, 9, 0.78) 26%, rgba(7, 6, 9, 0.24) 48%, transparent 66%),
+    linear-gradient(180deg, transparent 54%, rgba(7, 6, 9, 0.78));
+  pointer-events: none;
+}
+
+.wf-onboarding-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  width: min(1180px, 100%);
+  min-height: 600px;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.wf-onboarding-brand {
+  position: relative;
+  align-self: center;
+  width: min(690px, 56vw);
+  margin-left: 72px;
+  padding: 14px 0 18px;
+  transform: translateY(-18px);
+}
+
+.wf-onboarding-brand::before {
+  content: "";
+  position: absolute;
+  inset: -24px -34px;
+  z-index: -1;
+  background: radial-gradient(ellipse at 38% 50%, rgba(7, 6, 9, 0.86), rgba(7, 6, 9, 0.48) 46%, transparent 72%);
+  filter: blur(8px);
+}
+
+.wf-onboarding-brand p {
+  margin: 0;
+  color: rgba(239, 231, 214, 0.9);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(82px, 8.2vw, 142px);
+  font-style: italic;
+  line-height: 0.88;
+  letter-spacing: 0;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.08),
+    0 24px 48px rgba(0, 0, 0, 0.72);
+}
+
+.wf-onboarding-brand span {
+  display: block;
+  width: min(420px, 62%);
+  height: 1px;
+  margin: 34px 0 0;
+  background: linear-gradient(90deg, transparent, rgba(240, 202, 104, 0.5), transparent);
+}
+
+.wf-onboarding-brand em {
+  display: block;
+  margin-top: 18px;
+  color: rgba(239, 231, 214, 0.5);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-style: italic;
+  padding-left: 250px;
+  text-align: left;
+}
+
+.wf-onboarding-content {
+  align-self: end;
+  width: min(660px, 54vw);
+  margin: 0 0 34px 72px;
+  padding: 22px 24px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
+    rgba(8, 7, 10, 0.7);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+}
+
+.wf-onboarding-title {
+  margin: 5px 0 0;
+  font-size: 27px;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.wf-onboarding-subtitle {
+  max-width: 480px;
+  margin-top: 7px;
+  line-height: 1.6;
+}
+
+.wf-onboarding-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.wf-onboarding-option {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 13px;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 92px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--wf-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-onboarding-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(240, 202, 104, 0.38);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.wf-onboarding-option--on {
+  border-color: rgba(240, 202, 104, 0.76);
+  background:
+    linear-gradient(135deg, rgba(213, 173, 69, 0.18), rgba(143, 52, 76, 0.14)),
+    rgba(255, 255, 255, 0.05);
+  box-shadow: 0 14px 36px rgba(213, 173, 69, 0.16);
+}
+
+.wf-onboarding-option__mark {
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wf-onboarding-option--on .wf-onboarding-option__mark {
+  border-color: var(--wf-accent-light);
+  box-shadow: inset 0 0 0 6px #17121a;
+  background: var(--wf-accent-light);
+}
+
+.wf-onboarding-option strong {
+  display: block;
+  font-size: 16px;
+}
+
+.wf-onboarding-option em {
+  display: block;
+  margin-top: 5px;
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-style: normal;
+  line-height: 1.55;
 }
 
 .wf-onboarding-cta {
-  margin-top: 24px;
+  margin-top: 14px;
+  min-height: 46px;
+  border-radius: 14px;
+}
+
+.wf-onboarding-footnote {
+  margin: 12px 0 0;
+  color: var(--wf-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .wf-onboarding-page {
+    justify-content: flex-end;
+    min-height: calc(100vh - 64px);
+    padding: 220px 16px 52px;
+  }
+
+  .wf-onboarding-page::before {
+    background-position: 58% center;
+  }
+
+  .wf-onboarding-shell {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    align-items: flex-end;
+  }
+
+  .wf-onboarding-brand {
+    width: 100%;
+    margin: 0 0 22px;
+    transform: none;
+  }
+
+  .wf-onboarding-brand p {
+    font-size: 58px;
+  }
+
+  .wf-onboarding-brand span,
+  .wf-onboarding-brand em {
+    display: none;
+  }
+
+  .wf-onboarding-content {
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .wf-onboarding-options {
+    grid-template-columns: 1fr;
+  }
+
+  .wf-onboarding-title {
+    font-size: 32px;
+  }
 }
