@@ -3,14 +3,17 @@ package com.jackpot.whiskeynote.domain.whiskey.search.entity;
 import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyCardResponse;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 
+import java.util.List;
+
 public class WhiskeySearchMapper {
     private WhiskeySearchMapper(){
     }
 
-    public static WhiskeyDocument fromEntity(Whiskey whiskey){
+    public static WhiskeyDocument fromEntity(Whiskey whiskey, List<String> aliases){
         return WhiskeyDocument.builder()
                 .id(whiskey.getId())
                 .name(whiskey.getName())
+                .aliases(aliases)
                 .type(whiskey.getType())
                 .region(whiskey.getRegion())
                 .country(whiskey.getCountry())
