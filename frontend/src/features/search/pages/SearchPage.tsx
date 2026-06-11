@@ -20,6 +20,7 @@ import {
   type WhiskeyCard,
   type WhiskeyType,
 } from '../api/whiskeyApi';
+import '../search.css';
 
 const DEFAULT_PAGE_SIZE = 20;
 const ABV_RANGE_MIN = 1;

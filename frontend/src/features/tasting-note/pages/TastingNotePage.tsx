@@ -12,6 +12,7 @@ import {
   updateTastingNote,
   type TastingNoteSaveRequest,
 } from '../api/noteApi';
+import '../tasting-note.css';
 
 const SCORE_FIELDS = [
   { key: 'bodyScore', label: '바디' },

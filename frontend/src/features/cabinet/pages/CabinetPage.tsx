@@ -18,6 +18,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import type { CabinetStatsResponse, WishlistFolder, WishlistItem } from '@/features/cabinet/api/cabinetApi';
+import '../cabinet.css';
 
 // Pick API 응답 타입
 interface PickItem {
