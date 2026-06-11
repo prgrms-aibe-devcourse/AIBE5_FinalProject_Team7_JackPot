@@ -1,7 +1,7 @@
 /* ───────── OnboardingPage ───────── */
 .wf-onboarding-root {
   overflow: hidden;
-  background: #070609;
+  background: #010101;
 }
 
 .wf-onboarding-page {
@@ -11,7 +11,7 @@
   align-items: stretch;
   overflow: hidden;
   padding: 48px 24px 82px;
-  background: #070609;
+  background: #010101;
 }
 
 .wf-onboarding-page::before {
@@ -19,13 +19,13 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(90deg, rgba(7, 6, 9, 0.92) 0%, rgba(7, 6, 9, 0.86) 42%, rgba(7, 6, 9, 0.38) 68%, rgba(7, 6, 9, 0.72) 100%),
-    linear-gradient(180deg, rgba(7, 6, 9, 0.2), rgba(7, 6, 9, 0.34) 58%, rgba(7, 6, 9, 0.88)),
+    linear-gradient(90deg, rgba(7, 6, 9, 0.95) 0%, rgba(7, 6, 9, 0.9) 44%, rgba(7, 6, 9, 0.12) 62%, rgba(7, 6, 9, 0.2) 100%),
+    linear-gradient(180deg, rgba(7, 6, 9, 0.08), rgba(7, 6, 9, 0.14) 58%, rgba(7, 6, 9, 0.6)),
     url('/images/landing-hero-whiskey.png');
-  background-position: 96% center;
+  background-position: 58% center;
   background-repeat: no-repeat;
   background-size: auto 112%;
-  filter: saturate(0.88) contrast(1.04);
+  filter: brightness(1.16) saturate(0.95) contrast(1.06);
 }
 
 .wf-onboarding-page::after {
@@ -33,8 +33,11 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 31% 50%, rgba(7, 6, 9, 0.9) 0%, rgba(7, 6, 9, 0.78) 26%, rgba(7, 6, 9, 0.24) 48%, transparent 66%),
-    linear-gradient(180deg, transparent 54%, rgba(7, 6, 9, 0.78));
+    linear-gradient(90deg, transparent 72%, rgba(1, 1, 1, 0.18) 86%, #010101 100%),
+    linear-gradient(90deg, rgba(7, 6, 9, 0.98) 0%, rgba(7, 6, 9, 0.94) 44%, rgba(7, 6, 9, 0.38) 55%, transparent 68%),
+    radial-gradient(ellipse at 49% 49%, rgba(7, 6, 9, 0.88) 0%, rgba(7, 6, 9, 0.74) 18%, rgba(7, 6, 9, 0.2) 33%, transparent 48%),
+    radial-gradient(ellipse at 31% 50%, rgba(7, 6, 9, 0.95) 0%, rgba(7, 6, 9, 0.84) 32%, rgba(7, 6, 9, 0.38) 52%, transparent 70%),
+    linear-gradient(180deg, transparent 58%, rgba(7, 6, 9, 0.62));
   pointer-events: none;
 }
 
@@ -43,7 +46,7 @@
   z-index: 1;
   display: grid;
   grid-template-rows: 1fr auto;
-  width: min(1180px, 100%);
+  width: min(1420px, 100%);
   min-height: 600px;
   margin: 0 auto;
   padding: 0;
@@ -56,7 +59,7 @@
   position: relative;
   align-self: center;
   width: min(690px, 56vw);
-  margin-left: 72px;
+  margin-left: clamp(24px, 4vw, 48px);
   padding: 14px 0 18px;
   transform: translateY(-18px);
 }
@@ -105,7 +108,7 @@
 .wf-onboarding-content {
   align-self: end;
   width: min(660px, 54vw);
-  margin: 0 0 34px 72px;
+  margin: 0 0 34px clamp(24px, 4vw, 48px);
   padding: 22px 24px 20px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 20px;
