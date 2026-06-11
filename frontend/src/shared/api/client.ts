@@ -109,7 +109,10 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 403) {
       if (!originalRequest?.skipGlobalErrorRedirect) {
-        window.location.href = '/error/403';
+        const code = error.response?.data?.error?.code;
+        const target = code === 'USER_BANNED' ? '/error/banned' : '/error/403';
+        window.history.replaceState(null, '', target);
+        window.dispatchEvent(new PopStateEvent('popstate'));
       }
     }
 

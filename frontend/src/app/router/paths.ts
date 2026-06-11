@@ -40,6 +40,7 @@ export const PATHS = {
   SERVER_ERROR: '/error/500',
   UNAUTHORIZED: '/error/401',
   FORBIDDEN: '/error/403',
+  BANNED_USER: '/error/banned',
 } as const;
 
 export type AppPath = (typeof PATHS)[keyof typeof PATHS];

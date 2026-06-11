@@ -21,11 +21,11 @@ public class CabinetController {
         return ApiResponse.ok(cabinetService.getStats(userId));
     }
 
-    // 일단 로그인 안해도 다른사람 프로필 조회 가능한
+    // 타인 캐비넷 통계 — 밴·탈퇴 계정 차단
     @GetMapping("/api/v1/users/{id}/cabinet/stats")
     public ApiResponse<CabinetStatsResponse> getCabinetStatsByUserId(
             @PathVariable Long id
     ) {
-        return ApiResponse.ok(cabinetService.getStats(id));
+        return ApiResponse.ok(cabinetService.getStatsByUserId(id));
     }
 }

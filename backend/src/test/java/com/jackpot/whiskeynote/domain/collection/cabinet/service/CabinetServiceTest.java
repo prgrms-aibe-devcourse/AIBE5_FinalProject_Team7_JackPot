@@ -3,6 +3,7 @@ package com.jackpot.whiskeynote.domain.collection.cabinet.service;
 import com.jackpot.whiskeynote.domain.collection.cabinet.dto.CabinetStatsResponse;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
 import com.jackpot.whiskeynote.domain.collection.wishlist.repository.WishListItemRepository;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepository;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ class CabinetServiceTest {
     WishListItemRepository wishListItemRepository;
     ReviewRepository reviewRepository;
     TastingNoteRepository tastingNoteRepository;
+    UsersRepository usersRepository;
 
     @BeforeEach
     void setUp() {
@@ -29,12 +31,15 @@ class CabinetServiceTest {
         wishListItemRepository = mock(WishListItemRepository.class);
         reviewRepository = mock(ReviewRepository.class);
         tastingNoteRepository = mock(TastingNoteRepository.class);
+        usersRepository = mock(UsersRepository.class);
+
 
         cabinetService = new CabinetService(
                 pickRepository,
                 wishListItemRepository,
                 reviewRepository,
-                tastingNoteRepository
+                tastingNoteRepository,
+                usersRepository
         );
     }
 

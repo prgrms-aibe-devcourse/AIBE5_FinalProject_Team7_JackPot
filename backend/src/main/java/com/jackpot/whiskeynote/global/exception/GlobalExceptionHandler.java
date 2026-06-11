@@ -1,6 +1,8 @@
 package com.jackpot.whiskeynote.global.exception;
 
 import com.jackpot.whiskeynote.global.response.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,10 +19,18 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     public ApiResponse<Void> handleUnauthorized(UnauthorizedException ex) {
         return ApiResponse.fail("UNAUTHORIZED", ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(BannedUserException.class)
+    public ApiResponse<Void> handleBannedUser(BannedUserException ex) {
+        return ApiResponse.fail("USER_BANNED", ex.getMessage());
     }
 
     // @Valid 검증 실패 (이메일 형식 오류, 빈 값 등)
@@ -68,7 +78,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleException(Exception ex) {
-        ex.printStackTrace(); // 서버 로그에만 출력
+        log.error("[500 INTERNAL ERROR] {} : {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
         return ApiResponse.fail("INTERNAL_ERROR", "서버 오류가 발생했습니다.");
     }
 }

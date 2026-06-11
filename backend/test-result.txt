@@ -1,0 +1,6229 @@
+﻿Initialized native services in: C:\Users\snew4\.gradle\native
+Initialized jansi services in: C:\Users\snew4\.gradle\native
+The client will now receive all logging from the daemon (pid: 33024). The daemon log file: C:\Users\snew4\.gradle\daemon\9.4.1\daemon-33024.out.log
+Starting 17th build in daemon [uptime: 48 mins 41.955 secs, performance: 100%, GC rate: 0.00/s, heap usage: 0% of 512 MiB, non-heap usage: 26% of 384 MiB]
+Using 32 worker leases.
+Operational build model parameters: {cachingModelBuilding=false, configurationCache=false, configurationCacheDisabledReason=null, configurationCacheParallelLoad=false, configurationCacheParallelStore=false, configureOnDemand=false, invalidateCoupledProjects=false, isolatedProjects=false, modelAsProjectDependency=false, modelBuilding=false, parallelModelBuilding=false, parallelProjectConfiguration=false, parallelProjectExecution=false, resilientModelBuilding=false}
+Now considering [D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Resolved plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0']
+Settings evaluated using settings file 'D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\settings.gradle'.
+Projects loaded. Root project using build file 'D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\build.gradle'.
+Included projects: [root project 'whiskeynote']
+
+> Configure project :
+Evaluating root project 'whiskeynote' using build file 'D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\build.gradle'.
+Resolved plugin [id: 'java']
+Resolved plugin [id: 'org.springframework.boot', version: '4.0.6']
+Resolved plugin [id: 'io.spring.dependency-management', version: '1.1.7']
+Applying dependency management to configuration 'annotationProcessor' in project 'whiskeynote'
+Applying dependency management to configuration 'apiElements' in project 'whiskeynote'
+Applying dependency management to configuration 'archives' in project 'whiskeynote'
+Applying dependency management to configuration 'bootArchives' in project 'whiskeynote'
+Applying dependency management to configuration 'compileClasspath' in project 'whiskeynote'
+Applying dependency management to configuration 'compileOnly' in project 'whiskeynote'
+Applying dependency management to configuration 'default' in project 'whiskeynote'
+Applying dependency management to configuration 'developmentOnly' in project 'whiskeynote'
+Applying dependency management to configuration 'implementation' in project 'whiskeynote'
+Applying dependency management to configuration 'mainSourceElements' in project 'whiskeynote'
+Applying dependency management to configuration 'productionRuntimeClasspath' in project 'whiskeynote'
+Applying dependency management to configuration 'runtimeClasspath' in project 'whiskeynote'
+Applying dependency management to configuration 'runtimeElements' in project 'whiskeynote'
+Applying dependency management to configuration 'runtimeOnly' in project 'whiskeynote'
+Applying dependency management to configuration 'testAndDevelopmentOnly' in project 'whiskeynote'
+Applying dependency management to configuration 'testAnnotationProcessor' in project 'whiskeynote'
+Applying dependency management to configuration 'testCompileClasspath' in project 'whiskeynote'
+Applying dependency management to configuration 'testCompileOnly' in project 'whiskeynote'
+Applying dependency management to configuration 'testImplementation' in project 'whiskeynote'
+Applying dependency management to configuration 'testResultsElementsForTest' in project 'whiskeynote'
+Applying dependency management to configuration 'testRuntimeClasspath' in project 'whiskeynote'
+Applying dependency management to configuration 'testRuntimeOnly' in project 'whiskeynote'
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Resolving global dependency management for project 'whiskeynote'
+Excluding [com.google.protobuf:protobuf-java]
+Excluding []
+Excluding []
+Excluding []
+Excluding []
+Excluding []
+Tasks to be executed: [task ':compileJava', task ':processResources', task ':classes', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':test']
+Tasks that were excluded: []
+Resolve mutations for :compileJava (Thread[#1567,Execution worker,5,main]) started.
+:compileJava (Thread[#1567,Execution worker,5,main]) started.
+
+> Task :compileJava UP-TO-DATE
+Custom actions are attached to task ':compileJava'.
+Caching disabled for task ':compileJava' because:
+  Build cache is disabled
+Skipping task ':compileJava' as it is up-to-date.
+Resolve mutations for :processResources (Thread[#1570,Execution worker Thread 4,5,main]) started.
+:processResources (Thread[#1570,Execution worker Thread 4,5,main]) started.
+
+> Task :processResources UP-TO-DATE
+Caching disabled for task ':processResources' because:
+  Build cache is disabled
+  Not worth caching
+Skipping task ':processResources' as it is up-to-date.
+Resolve mutations for :classes (Thread[#1570,Execution worker Thread 4,5,main]) started.
+:classes (Thread[#1570,Execution worker Thread 4,5,main]) started.
+
+> Task :classes UP-TO-DATE
+Skipping task ':classes' as it has no actions.
+Resolve mutations for :compileTestJava (Thread[#1570,Execution worker Thread 4,5,main]) started.
+:compileTestJava (Thread[#1570,Execution worker Thread 4,5,main]) started.
+
+> Task :compileTestJava UP-TO-DATE
+Custom actions are attached to task ':compileTestJava'.
+Caching disabled for task ':compileTestJava' because:
+  Build cache is disabled
+Skipping task ':compileTestJava' as it is up-to-date.
+Resolve mutations for :processTestResources (Thread[#1570,Execution worker Thread 4,5,main]) started.
+:processTestResources (Thread[#1570,Execution worker Thread 4,5,main]) started.
+
+> Task :processTestResources UP-TO-DATE
+Caching disabled for task ':processTestResources' because:
+  Build cache is disabled
+  Not worth caching
+Skipping task ':processTestResources' as it is up-to-date.
+Resolve mutations for :testClasses (Thread[#1570,Execution worker Thread 4,5,main]) started.
+:testClasses (Thread[#1595,Execution worker Thread 28,5,main]) started.
+
+> Task :testClasses UP-TO-DATE
+Skipping task ':testClasses' as it has no actions.
+Resolve mutations for :test (Thread[#1595,Execution worker Thread 28,5,main]) started.
+:test (Thread[#1595,Execution worker Thread 28,5,main]) started.
+Gradle Test Executor 11 started executing tests.
+
+> Task :test
+Caching disabled for task ':test' because:
+  Build cache is disabled
+Task ':test' is not up-to-date because:
+  Task.upToDateWhen is false.
+Starting process 'Gradle Test Executor 11'. Working directory: D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend Command: C:\Program Files\Java\jdk-21.0.11\bin\java.exe -Dorg.gradle.internal.worker.tmpdir=D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\build\tmp\test\work @C:\Users\snew4\.gradle\.tmp\gradle-worker-classpath8379269266120837316txt -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=KR -Duser.language=ko -Duser.variant -ea worker.org.gradle.process.internal.worker.GradleWorkerMain 'Gradle Test Executor 11'
+Successfully started process 'Gradle Test Executor 11'
+
+AdminUserControllerTest STANDARD_OUT
+    10:26:17.691 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.jackpot.whiskeynote.domain.admin.AdminUserControllerTest]: AdminUserControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+    10:26:17.876 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.jackpot.whiskeynote.WhiskeynoteApplication for test class com.jackpot.whiskeynote.domain.admin.AdminUserControllerTest
+    10:26:17.949 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.jackpot.whiskeynote.domain.admin.AdminUserControllerTest]: AdminUserControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+    10:26:17.950 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.jackpot.whiskeynote.WhiskeynoteApplication for test class com.jackpot.whiskeynote.domain.admin.AdminUserControllerTest
+
+      .   ____          _            __ _ _
+     /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+    ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+     \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+      '  |____| .__|_| |_|_| |_\__, | / / / /
+     =========|_|==============|___/=/_/_/_/
+
+     :: Spring Boot ::                (v4.0.6)
+
+    2026-06-11T10:26:18.327+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] c.j.w.d.admin.AdminUserControllerTest    : Starting AdminUserControllerTest using Java 21.0.11 with PID 53536 (started by user in D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend)
+    2026-06-11T10:26:18.328+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] c.j.w.d.admin.AdminUserControllerTest    : The following 1 profile is active: "test"
+    2026-06-11T10:26:19.463+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+    2026-06-11T10:26:19.465+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+    2026-06-11T10:26:19.594+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.jackpot.whiskeynote.domain.whiskey.search.repository.WhiskeySearchKeywordRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+    2026-06-11T10:26:19.596+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.jackpot.whiskeynote.domain.whiskey.search.repository.WhiskeySearchRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+    2026-06-11T10:26:19.685+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 207 ms. Found 25 JPA repository interfaces.
+    2026-06-11T10:26:20.791+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+    2026-06-11T10:26:20.811+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+    2026-06-11T10:26:20.812+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+    2026-06-11T10:26:20.935+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2581 ms
+    2026-06-11T10:26:21.458+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+    2026-06-11T10:26:21.588+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+    2026-06-11T10:26:22.118+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+    2026-06-11T10:26:22.167+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+    2026-06-11T10:26:22.348+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+    2026-06-11T10:26:22.350+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+    2026-06-11T10:26:22.372+09:00  WARN 53536 --- [whiskeynote-test] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+    2026-06-11T10:26:22.395+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+    	Database JDBC URL [jdbc:h2:mem:testdb]
+    	Database driver: H2 JDBC Driver
+    	Database dialect: H2Dialect
+    	Database version: 2.4.240
+    	Default catalog/schema: TESTDB/PUBLIC
+    	Autocommit mode: undefined/unknown
+    	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+    	JDBC fetch size: 100
+    	Pool: DataSourceConnectionProvider
+    	Minimum pool size: undefined/unknown
+    	Maximum pool size: undefined/unknown
+    2026-06-11T10:26:23.792+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+    Hibernate: 
+        drop table if exists avg_whiskey_tags cascade 
+    Hibernate: 
+        drop table if exists follows cascade 
+    Hibernate: 
+        drop table if exists my_picks cascade 
+    Hibernate: 
+        drop table if exists post_comment_tree cascade 
+    Hibernate: 
+        drop table if exists post_comments cascade 
+    Hibernate: 
+        drop table if exists post_likes cascade 
+    Hibernate: 
+        drop table if exists post_whiskeys cascade 
+    Hibernate: 
+        drop table if exists posts cascade 
+    Hibernate: 
+        drop table if exists refresh_tokens cascade 
+    Hibernate: 
+        drop table if exists report_actions cascade 
+    Hibernate: 
+        drop table if exists reports cascade 
+    Hibernate: 
+        drop table if exists review_likes cascade 
+    Hibernate: 
+        drop table if exists reviews cascade 
+    Hibernate: 
+        drop table if exists tags cascade 
+    Hibernate: 
+        drop table if exists tasting_note_tags cascade 
+    Hibernate: 
+        drop table if exists tasting_notes cascade 
+    Hibernate: 
+        drop table if exists user_taste_profiles cascade 
+    Hibernate: 
+        drop table if exists users cascade 
+    Hibernate: 
+        drop table if exists whiskey_columns cascade 
+    Hibernate: 
+        drop table if exists whiskey_requests cascade 
+    Hibernate: 
+        drop table if exists whiskey_view_logs cascade 
+    Hibernate: 
+        drop table if exists whiskeys cascade 
+    Hibernate: 
+        drop table if exists whiskeys_note_cache cascade 
+    Hibernate: 
+        drop table if exists wishlist_folders cascade 
+    Hibernate: 
+        drop table if exists wishlist_items cascade 
+    Hibernate: 
+        create table avg_whiskey_tags (
+            count integer,
+            cache_id bigint,
+            id bigint generated by default as identity,
+            tag_id bigint,
+            primary key (id)
+        )
+    Hibernate: 
+        create table follows (
+            created_at timestamp(6) not null,
+            follower_id bigint not null,
+            following_id bigint not null,
+            id bigint generated by default as identity,
+            primary key (id)
+        )
+    Hibernate: 
+        create table my_picks (
+            created_at timestamp(6),
+            id bigint generated by default as identity,
+            user_id bigint not null,
+            whiskey_id bigint not null,
+            primary key (id),
+            constraint uk_my_picks_user_whiskey unique (user_id, whiskey_id)
+        )
+    Hibernate: 
+        create table post_comment_tree (
+            depth integer not null,
+            ancestor_id bigint not null,
+            descendant_id bigint not null,
+            id bigint generated by default as identity,
+            primary key (id)
+        )
+    Hibernate: 
+        create table post_comments (
+            is_deleted boolean not null,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            post_id bigint not null,
+            updated_at timestamp(6) not null,
+            user_id bigint not null,
+            content MEDIUMTEXT not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table post_likes (
+            up boolean not null,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            post_id bigint not null,
+            user_id bigint not null,
+            primary key (id),
+            unique (user_id, post_id)
+        )
+    Hibernate: 
+        create table post_whiskeys (
+            "order" integer not null,
+            id bigint generated by default as identity,
+            post_id bigint not null,
+            whiskey_id bigint not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table posts (
+            is_deleted boolean not null,
+            like_count integer not null,
+            view_count integer not null,
+            author_id bigint not null,
+            created_at timestamp(6) not null,
+            deleted_at timestamp(6),
+            id bigint generated by default as identity,
+            updated_at timestamp(6) not null,
+            title varchar(512) not null,
+            context TEXT not null,
+            category enum ('B','F','G','L','Q','R') not null,
+            post_type enum ('COLUMN','FEED','FREE','NOTICE','QA') not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table refresh_tokens (
+            expires_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            user_id bigint not null unique,
+            token varchar(512) not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table report_actions (
+            admin_id bigint not null,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            report_id bigint not null,
+            note varchar(500),
+            action enum ('DELETE_CONTENT','DISMISS','HIDE','RESTORE') not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table reports (
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            reporter_id bigint,
+            target_id bigint not null,
+            updated_at timestamp(6) not null,
+            detail varchar(500),
+            reason enum ('ABUSE','ILLEGAL','OBSCENE','OTHER','SPAM') not null,
+            status enum ('DISMISSED','HIDDEN','PENDING','RESTORED') not null,
+            target_type enum ('COMMENT','POST') not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table review_likes (
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            review_id bigint not null,
+            user_id bigint not null,
+            primary key (id),
+            constraint UK_REVIEW_LIKE_USER_REVIEW unique (user_id, review_id)
+        )
+    Hibernate: 
+        create table reviews (
+            rating numeric(2,1) not null,
+            attached_note_id bigint,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            updated_at timestamp(6) not null,
+            user_id bigint not null,
+            whiskey_id bigint not null,
+            public_text MEDIUMTEXT,
+            primary key (id)
+        )
+    Hibernate: 
+        create table tags (
+            display_order integer,
+            id bigint generated by default as identity,
+            image_url varchar(255),
+            name varchar(255),
+            category enum ('finish','nose','taste'),
+            primary key (id)
+        )
+    Hibernate: 
+        create table tasting_note_tags (
+            id bigint generated by default as identity,
+            note_id bigint not null,
+            tag_id bigint not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table tasting_notes (
+            body_score smallint,
+            finish_score smallint,
+            is_draft boolean not null,
+            smoky_score smallint,
+            spicy_score smallint,
+            sweet_score smallint,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            updated_at timestamp(6) not null,
+            user_id bigint not null,
+            whiskey_id bigint not null,
+            memo MEDIUMTEXT,
+            primary key (id)
+        )
+    Hibernate: 
+        create table user_taste_profiles (
+            body_score integer not null,
+            finish_score integer not null,
+            smoky_score integer not null,
+            spicy_score integer not null,
+            sweet_score integer not null,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            updated_at timestamp(6) not null,
+            user_id bigint not null unique,
+            user_type varchar(128),
+            nose_tag_ids varchar(512),
+            taste_tag_ids varchar(512),
+            primary key (id)
+        )
+    Hibernate: 
+        create table users (
+            birthday date not null,
+            is_banned boolean not null,
+            is_deleted boolean not null,
+            is_email_verified boolean not null,
+            is_new_user boolean not null,
+            banned_at timestamp(6),
+            created_at timestamp(6) not null,
+            deleted_at timestamp(6),
+            email_verified_at timestamp(6),
+            id bigint generated by default as identity,
+            last_login_at timestamp(6),
+            updated_at timestamp(6) not null,
+            nickname varchar(64) not null,
+            name varchar(128),
+            email varchar(255),
+            password_hash varchar(255),
+            profile_image_url varchar(255),
+            provider_id varchar(255),
+            auth_provider enum ('GOOGLE','KAKAO','LOCAL','NAVER') not null,
+            role enum ('ADMIN','PRO','USER') not null,
+            primary key (id),
+            constraint uk_users_email unique (email),
+            constraint uk_users_nickname unique (nickname),
+            constraint uk_users_provider unique (auth_provider, provider_id)
+        )
+    Hibernate: 
+        create table whiskey_columns (
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            published_at timestamp(6),
+            author varchar(200),
+            source_name varchar(200),
+            title varchar(512) not null,
+            thumbnail_url varchar(1024),
+            url varchar(1024) not null,
+            description TEXT,
+            whiskey_keyword varchar(255),
+            source_type enum ('BLOG','YOUTUBE') not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table whiskey_requests (
+            approved_whiskey_id bigint,
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            requester_id bigint,
+            reviewed_by bigint,
+            updated_at timestamp(6) not null,
+            description JSON not null,
+            status enum ('approved','pending','rejected') not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table whiskey_view_logs (
+            created_at timestamp(6) not null,
+            id bigint generated by default as identity,
+            user_id bigint,
+            whiskey_id bigint,
+            primary key (id)
+        )
+    Hibernate: 
+        create table whiskeys (
+            abv float(53),
+            age_years integer,
+            created_at timestamp(6),
+            id bigint generated by default as identity,
+            updated_at timestamp(6),
+            cask varchar(255),
+            country varchar(255),
+            etc_detail varchar(255),
+            image_url varchar(255),
+            name varchar(255),
+            region varchar(255),
+            status enum ('active','pending'),
+            type enum ('blended','bourbon','etc','rye','single_malt'),
+            primary key (id)
+        )
+    Hibernate: 
+        create table whiskeys_note_cache (
+            count integer,
+            body_score bigint,
+            finish_score bigint,
+            id bigint generated by default as identity,
+            smoky_score bigint,
+            spicy_score bigint,
+            sweet_score bigint,
+            whiskey_id bigint unique,
+            primary key (id)
+        )
+    Hibernate: 
+        create table wishlist_folders (
+            sort_order INT DEFAULT 0 not null,
+            created_at timestamp(6),
+            id bigint generated by default as identity,
+            user_id bigint not null,
+            name varchar(128) not null,
+            primary key (id)
+        )
+    Hibernate: 
+        create table wishlist_items (
+            created_at timestamp(6),
+            folder_id bigint,
+            id bigint generated by default as identity,
+            user_id bigint not null,
+            whiskey_id bigint not null,
+            primary key (id)
+        )
+    Hibernate: 
+        alter table if exists avg_whiskey_tags 
+           add constraint FKsm6xm6r2qjde1m2jjjfa118ow 
+           foreign key (cache_id) 
+           references whiskeys_note_cache
+    Hibernate: 
+        alter table if exists avg_whiskey_tags 
+           add constraint FK81kvs14uamxfbiy0o95gl3p0h 
+           foreign key (tag_id) 
+           references tags
+    Hibernate: 
+        alter table if exists my_picks 
+           add constraint FKn67972y4780jyf2tim0kkvky6 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists my_picks 
+           add constraint FKdk1hydpd8l6ixwlhjbxspyluy 
+           foreign key (whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists report_actions 
+           add constraint FKhwjycs9itwdl65jw3bam9mq56 
+           foreign key (admin_id) 
+           references users
+    Hibernate: 
+        alter table if exists report_actions 
+           add constraint FK50u2s9dft4d7y56y0avgn29ia 
+           foreign key (report_id) 
+           references reports
+    Hibernate: 
+        alter table if exists reports 
+           add constraint FKd3qiw2om5d2oh5xb7fbdcq225 
+           foreign key (reporter_id) 
+           references users
+    Hibernate: 
+        alter table if exists review_likes 
+           add constraint FKm2uonfg8ky6jwtu6iugkilox8 
+           foreign key (review_id) 
+           references reviews
+    Hibernate: 
+        alter table if exists review_likes 
+           add constraint FKnual15vv88tiqnwmi60tb2l8d 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists reviews 
+           add constraint FKcgy7qjc1r99dp117y9en6lxye 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists reviews 
+           add constraint FK50k9cswbjfepaqpbu8t3d5mux 
+           foreign key (whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists tasting_note_tags 
+           add constraint FKadexbtc26woencxho6ute084k 
+           foreign key (note_id) 
+           references tasting_notes
+    Hibernate: 
+        alter table if exists tasting_note_tags 
+           add constraint FKgexwcesre61wmsumu0lbc3s1u 
+           foreign key (tag_id) 
+           references tags
+    Hibernate: 
+        alter table if exists tasting_notes 
+           add constraint FKbvfeu750lnidgsa3qyyfwqmte 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists tasting_notes 
+           add constraint FKo88igid2b7ool2t2fm5d3q982 
+           foreign key (whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists whiskey_requests 
+           add constraint FK3weocyfxyisn5lmn1dts7rorf 
+           foreign key (approved_whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists whiskey_requests 
+           add constraint FKg7lbqepb74g9p4nx5sa85ot4c 
+           foreign key (requester_id) 
+           references users
+    Hibernate: 
+        alter table if exists whiskey_requests 
+           add constraint FK8i6jf853mtfov3p7m2qm7gu4l 
+           foreign key (reviewed_by) 
+           references users
+    Hibernate: 
+        alter table if exists whiskey_view_logs 
+           add constraint FKdytl8os2rf0jlecvidx21pb0g 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists whiskey_view_logs 
+           add constraint FK3d8p16e22p9pgaoqbix24v0on 
+           foreign key (whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists whiskeys_note_cache 
+           add constraint FK4rbujoccvjc35xxpw1gcnoem9 
+           foreign key (whiskey_id) 
+           references whiskeys
+    Hibernate: 
+        alter table if exists wishlist_folders 
+           add constraint FKen42eg0n21oupqh8a726knlu 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists wishlist_items 
+           add constraint FKbjr22kmlwb4h948hxtl2215lv 
+           foreign key (folder_id) 
+           references wishlist_folders
+    Hibernate: 
+        alter table if exists wishlist_items 
+           add constraint FKmmj2k1i459yu449k3h1vx5abp 
+           foreign key (user_id) 
+           references users
+    Hibernate: 
+        alter table if exists wishlist_items 
+           add constraint FK72c7twxkppvahwtusn1t2scr6 
+           foreign key (whiskey_id) 
+           references whiskeys
+    2026-06-11T10:26:23.909+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+    2026-06-11T10:26:24.025+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+
+AdminUserControllerTest STANDARD_ERROR
+    Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+    WARNING: A Java agent has been loaded dynamically (C:\Users\snew4\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.17.8\f09415827a71be7ed621c7bd02550678f28bc81c\byte-buddy-agent-1.17.8.jar)
+    WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+    WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+    WARNING: Dynamic loading of agents will be disallowed by default in a future release
+
+./gradlew : Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootst
+rap classpath has been appended
+At line:1 char:1
++ ./gradlew test --tests "com.jackpot.whiskeynote.domain.admin.AdminUse ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Java HotSpot(TM...s been appended:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+> Task :test
+
+AdminUserControllerTest STANDARD_OUT
+    2026-06-11T10:26:28.956+09:00  WARN 53536 --- [whiskeynote-test] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+    2026-06-11T10:26:29.395+09:00  WARN 53536 --- [whiskeynote-test] [    Test worker] .s.a.UserDetailsServiceAutoConfiguration : 
+
+    Using generated security password: c3f40372-a2a9-4151-87c3-456d622a3771
+
+    This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+    2026-06-11T10:26:29.427+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+    2026-06-11T10:26:31.378+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+    2026-06-11T10:26:31.515+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 55944 (http) with context path '/'
+    2026-06-11T10:26:31.525+09:00  INFO 53536 --- [whiskeynote-test] [    Test worker] c.j.w.d.admin.AdminUserControllerTest    : Started AdminUserControllerTest in 13.521 seconds (process running for 14.968)
+
+AdminUserControllerTest > ADM-USR-04 | 존재하지 않는 유저 밴 해제 → 404 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    2026-06-11T10:26:32.145+09:00  INFO 53536 --- [whiskeynote-test] [o-auto-1-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+    2026-06-11T10:26:32.145+09:00  INFO 53536 --- [whiskeynote-test] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+    2026-06-11T10:26:32.147+09:00  INFO 53536 --- [whiskeynote-test] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-01 | 밴 필터 → 밴된 유저만 반환 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.is_banned=? 
+        order by
+            u1_0.created_at desc 
+        fetch
+            first ? rows only
+    2026-06-11T10:26:33.163+09:00  WARN 53536 --- [whiskeynote-test] [o-auto-1-exec-7] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+    	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+    	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+
+AdminUserControllerTest > ADM-USR-02 | 잘못된 권한 값 → 400 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-02 | 존재하지 않는 유저 권한 변경 → 404 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-03 | 밴 처리 후 로그인 시도 → 400 (밴 차단) STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+
+AdminUserControllerTest > ADM-USR-02 | ADMIN → USER 권한 변경 성공 → 200 + role=USER STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+
+AdminUserControllerTest > ADM-USR-04 | 밴 해제 후 로그인 성공 → 200 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        update
+            refresh_tokens 
+        set
+            expires_at=?,
+            token=?,
+            user_id=? 
+        where
+            id=?
+
+AdminUserControllerTest > ADM-USR-02 | PRO 권한 변경 시도 → 400 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-04 | 밴 처리 안 된 유저 밴 해제 → 409 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-03 | 이미 밴된 유저 재밴 → 409 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-01 | 일반 유저 접근 → 403 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+
+AdminUserControllerTest > ADM-USR-01 | 닉네임 키워드 검색 → 해당 유저만 반환 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            (
+                ? is null 
+                or u1_0.email like ? escape '' 
+                or u1_0.nickname like ? escape ''
+            ) 
+        order by
+            u1_0.created_at desc 
+        fetch
+            first ? rows only
+
+AdminUserControllerTest > ADM-USR-03 | 존재하지 않는 유저 밴 → 404 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-01 | 응답에 필요한 필드 포함 확인 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            (
+                ? is null 
+                or u1_0.email like ? escape '' 
+                or u1_0.nickname like ? escape ''
+            ) 
+        order by
+            u1_0.created_at desc 
+        fetch
+            first ? rows only
+
+AdminUserControllerTest > ADM-USR-04 | 밴 해제 성공 → 200 + isBanned=false + bannedAt=null STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-02 | USER → ADMIN 권한 변경 성공 → 200 + role=ADMIN STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-03 | 밴 처리 성공 → 200 + isBanned=true STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.id=?
+
+AdminUserControllerTest > ADM-USR-01 | 전체 목록 조회 성공 → 200 + 2명 반환 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        order by
+            u1_0.created_at desc 
+        fetch
+            first ? rows only
+
+AdminUserControllerTest > ADM-USR-01 | 이메일 키워드 검색 → 해당 유저만 반환 STANDARD_OUT
+    Hibernate: 
+        select
+            wli1_0.id,
+            wli1_0.created_at,
+            wli1_0.folder_id,
+            wli1_0.user_id,
+            wli1_0.whiskey_id 
+        from
+            wishlist_items wli1_0
+    Hibernate: 
+        select
+            wlf1_0.id,
+            wlf1_0.created_at,
+            wlf1_0.name,
+            wlf1_0.sort_order,
+            wlf1_0.user_id 
+        from
+            wishlist_folders wlf1_0
+    Hibernate: 
+        select
+            mp1_0.id,
+            mp1_0.created_at,
+            mp1_0.user_id,
+            mp1_0.whiskey_id 
+        from
+            my_picks mp1_0
+    Hibernate: 
+        select
+            wr1_0.id,
+            wr1_0.approved_whiskey_id,
+            wr1_0.created_at,
+            wr1_0.description,
+            wr1_0.requester_id,
+            wr1_0.reviewed_by,
+            wr1_0.status,
+            wr1_0.updated_at 
+        from
+            whiskey_requests wr1_0
+    Hibernate: 
+        select
+            ra1_0.id,
+            ra1_0.action,
+            ra1_0.admin_id,
+            ra1_0.created_at,
+            ra1_0.note,
+            ra1_0.report_id 
+        from
+            report_actions ra1_0
+    Hibernate: 
+        select
+            r1_0.id,
+            r1_0.created_at,
+            r1_0.detail,
+            r1_0.reason,
+            r1_0.reporter_id,
+            r1_0.status,
+            r1_0.target_id,
+            r1_0.target_type,
+            r1_0.updated_at 
+        from
+            reports r1_0
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            refresh_tokens 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        delete 
+        from
+            users 
+        where
+            id=?
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            u1_0.email=?
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        update
+            users 
+        set
+            auth_provider=?,
+            banned_at=?,
+            birthday=?,
+            deleted_at=?,
+            email=?,
+            email_verified_at=?,
+            is_banned=?,
+            is_deleted=?,
+            is_email_verified=?,
+            last_login_at=?,
+            name=?,
+            is_new_user=?,
+            nickname=?,
+            password_hash=?,
+            profile_image_url=?,
+            provider_id=?,
+            role=?,
+            updated_at=? 
+        where
+            id=?
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.email=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        select
+            u1_0.id 
+        from
+            users u1_0 
+        where
+            u1_0.nickname=? 
+        fetch
+            first ? rows only
+    Hibernate: 
+        insert 
+        into
+            users
+            (auth_provider, banned_at, birthday, created_at, deleted_at, email, email_verified_at, is_banned, is_deleted, is_email_verified, last_login_at, name, is_new_user, nickname, password_hash, profile_image_url, provider_id, role, updated_at, id) 
+        values
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+    Hibernate: 
+        select
+            rt1_0.id,
+            rt1_0.expires_at,
+            rt1_0.token,
+            rt1_0.user_id 
+        from
+            refresh_tokens rt1_0 
+        where
+            rt1_0.user_id=?
+    Hibernate: 
+        insert 
+        into
+            refresh_tokens
+            (expires_at, token, user_id, id) 
+        values
+            (?, ?, ?, default)
+    Hibernate: 
+        select
+            u1_0.id,
+            u1_0.auth_provider,
+            u1_0.banned_at,
+            u1_0.birthday,
+            u1_0.created_at,
+            u1_0.deleted_at,
+            u1_0.email,
+            u1_0.email_verified_at,
+            u1_0.is_banned,
+            u1_0.is_deleted,
+            u1_0.is_email_verified,
+            u1_0.last_login_at,
+            u1_0.name,
+            u1_0.is_new_user,
+            u1_0.nickname,
+            u1_0.password_hash,
+            u1_0.profile_image_url,
+            u1_0.provider_id,
+            u1_0.role,
+            u1_0.updated_at 
+        from
+            users u1_0 
+        where
+            (
+                ? is null 
+                or u1_0.email like ? escape '' 
+                or u1_0.nickname like ? escape ''
+            ) 
+        order by
+            u1_0.created_at desc 
+        fetch
+            first ? rows only
+
+Gradle Test Executor 11 finished executing tests.
+2026-06-11T10:26:37.536+09:00  INFO 53536 --- [whiskeynote-test] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-11T10:26:37.543+09:00  INFO 53536 --- [whiskeynote-test] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-11T10:26:37.603+09:00  INFO 53536 --- [whiskeynote-test] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+Hibernate: 
+    drop table if exists avg_whiskey_tags cascade 
+Hibernate: 
+    drop table if exists follows cascade 
+Hibernate: 
+    drop table if exists my_picks cascade 
+Hibernate: 
+    drop table if exists post_comment_tree cascade 
+Hibernate: 
+    drop table if exists post_comments cascade 
+Hibernate: 
+    drop table if exists post_likes cascade 
+Hibernate: 
+    drop table if exists post_whiskeys cascade 
+Hibernate: 
+    drop table if exists posts cascade 
+Hibernate: 
+    drop table if exists refresh_tokens cascade 
+Hibernate: 
+    drop table if exists report_actions cascade 
+Hibernate: 
+    drop table if exists reports cascade 
+Hibernate: 
+    drop table if exists review_likes cascade 
+Hibernate: 
+    drop table if exists reviews cascade 
+Hibernate: 
+    drop table if exists tags cascade 
+Hibernate: 
+    drop table if exists tasting_note_tags cascade 
+Hibernate: 
+    drop table if exists tasting_notes cascade 
+Hibernate: 
+    drop table if exists user_taste_profiles cascade 
+Hibernate: 
+    drop table if exists users cascade 
+Hibernate: 
+    drop table if exists whiskey_columns cascade 
+Hibernate: 
+    drop table if exists whiskey_requests cascade 
+Hibernate: 
+    drop table if exists whiskey_view_logs cascade 
+Hibernate: 
+    drop table if exists whiskeys cascade 
+Hibernate: 
+    drop table if exists whiskeys_note_cache cascade 
+Hibernate: 
+    drop table if exists wishlist_folders cascade 
+Hibernate: 
+    drop table if exists wishlist_items cascade 
+2026-06-11T10:26:37.617+09:00  INFO 53536 --- [whiskeynote-test] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-11T10:26:37.620+09:00  INFO 53536 --- [whiskeynote-test] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+> Task :test
+Generating HTML test report...
+Finished generating test html results (0.029 secs) into: D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\build\reports\tests\test
+Finished generating test XML results (0.006 secs) into: D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend\build\test-results\test
+
+BUILD SUCCESSFUL in 22s
+5 actionable tasks: 1 executed, 4 up-to-date
+Watched directory hierarchies: [D:\AIBE5\Team_project\AIBE5_Projcet_final_Team7\AIBE5_FinalProject_Team7_JackPot\backend]
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html
