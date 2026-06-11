@@ -93,7 +93,7 @@ public class Users {
     // 탈퇴 여부
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -108,6 +108,13 @@ public class Users {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_banned", nullable = false)
+    @Builder.Default
+    private boolean banned = false;
+
+    @Column(name = "banned_at")
+    private LocalDateTime bannedAt;
 
     // 마지막 로그인 시각 갱신
     public void updateLastLoginAt() {
@@ -135,10 +142,27 @@ public class Users {
 
     // USER-04: 탈퇴(소프트 삭제)
     public void withdraw() {
-        if (this.isDeleted) {
+        if (this.deleted) {
             return;
         }
-        this.isDeleted = true;
+        this.deleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    // ban 처리
+    public void ban() {
+        this.banned = true;
+        this.bannedAt = LocalDateTime.now();
+    }
+
+    // unban 처리
+    public void unban() {
+        this.banned = false;
+        this.bannedAt = null;
+    }
+
+    // 권한 변경 메서드
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

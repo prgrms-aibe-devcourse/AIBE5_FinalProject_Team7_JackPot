@@ -100,11 +100,16 @@ apiClient.interceptors.response.use(
     const message = error.response?.data?.error?.message ?? '요청에 실패했습니다.';
 
     if (error.response?.status === 403) {
-      window.location.href = '/error/403';
+      const code = error.response?.data?.error?.code;
+      const target = code === 'USER_BANNED' ? '/error/banned' : '/error/403';
+      // replaceState로 현재 히스토리 엔트리를 교체 → 뒤로가기 시 프로필 페이지가 아닌 그 이전 페이지로 이동
+      window.history.replaceState(null, '', target);
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
 
     // 500번대 서버 오류 → 에러 페이지로 이동
     if (error.response?.status >= 500) {
+      console.error('[500 ERROR]', error.response?.config?.url, error.response?.data);
       window.location.href = '/error/500';
     }
 

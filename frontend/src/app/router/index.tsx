@@ -11,6 +11,7 @@ const NotFoundPage      = lazy(() => import('@/shared/components/error/NotFoundP
 const ServerErrorPage   = lazy(() => import('@/shared/components/error/ServerErrorPage'));
 const UnauthorizedPage  = lazy(() => import('@/shared/components/error/UnauthorizedPage'));
 const ForbiddenPage     = lazy(() => import('@/shared/components/error/ForbiddenPage'));
+const BannedUserPage    = lazy(() => import('@/shared/components/error/BannedUserPage'));
 
 const featureRoutes = collectFeatureRoutes();
 
@@ -77,6 +78,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader label="오류 페이지" />}>
         <ForbiddenPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: PATHS.BANNED_USER,
+    element: (
+      <Suspense fallback={<PageLoader label="오류 페이지" />}>
+        <BannedUserPage />
       </Suspense>
     ),
   },

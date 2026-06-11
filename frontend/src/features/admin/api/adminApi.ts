@@ -40,21 +40,27 @@ export interface ReportDetail extends Report {
   }>;
 }
 
+// 백엔드 AdminUserDto와 1:1 매핑
 export interface AdminUser {
   id: number;
   email: string;
+  name: string | null;
   nickname: string;
-  role: string;
+  birthday: string | null;       // "YYYY-MM-DD"
+  role: string;                  // "USER" | "ADMIN" | "PRO"
   isDeleted: boolean;
+  isBanned: boolean;
+  bannedAt: string | null;       // ISO datetime
+  lastLoginAt: string | null;    // ISO datetime
   createdAt: string;
-  lastLoginAt: string | null;
+  isNewUser: boolean;            // 온보딩 미완료 여부
 }
 
 // ── API 함수 ──────────────────────────────────────
 
 export const adminApi = {
   // ADM-01: 위스키 등록 요청 목록 (관리자용 전체)
-  getWhiskeyRequests: (status?: WhiskeyRequestStatus, page = 0, size = 20) =>
+  getWhiskeyRequests: (status?: WhiskeyRequestStatus, page = 0, size = 10) =>
     apiClient.get('/admin/whiskey-requests', { params: { status, page, size } }),
 
   // ADM-02: 위스키 등록 요청 승인/반려
@@ -73,9 +79,21 @@ export const adminApi = {
   createReportAction: (id: number, action: ReportAction, note?: string) =>
     apiClient.post(`/admin/reports/${id}/actions`, { action, note }),
 
-  // ADM-05: 회원 목록
-  getUsers: (page = 0, size = 20) =>
-    apiClient.get('/admin/users', { params: { page, size } }),
+  // ADM-USR-01: 회원 목록 (검색 / 필터 / 페이징)
+  getUsers: (keyword?: string, filter?: string, page = 0, size = 10) =>
+    apiClient.get('/admin/users', { params: { keyword, filter, page, size } }),
+
+  // ADM-USR-02: 권한 변경
+  updateUserRole: (id: number, role: string) =>
+    apiClient.patch(`/admin/users/${id}/role`, { role }),
+
+  // ADM-USR-03: 밴 처리
+  banUser: (id: number) =>
+    apiClient.patch(`/admin/users/${id}/ban`),
+
+  // ADM-USR-04: 밴 해제
+  unbanUser: (id: number) =>
+    apiClient.patch(`/admin/users/${id}/unban`),
 
   // RPT-01: 신고 생성 (사용자용)
   createReport: (body: {

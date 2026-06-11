@@ -248,14 +248,8 @@ function ReportsTab() {
     }
   };
 
-  // 신고 대상 링크 — POST는 게시글, COMMENT는 해당 게시글
-  const getTargetLink = (report: Report | ReportDetail) => {
-    if (report.targetType === 'POST') {
-      return `/community/posts/${report.targetId}`;
-    }
-    // 댓글은 댓글 ID가 아닌 게시글로 이동 (상세 패널에서 postId 제공 시 사용)
-    return null;
-  };
+  const getTargetLink = (report: Report | ReportDetail) =>
+    report.targetType === 'POST' ? `/community/posts/${report.targetId}` : null;
 
   return (
     <div>
@@ -277,7 +271,6 @@ function ReportsTab() {
         const targetLink = getTargetLink(report);
         return (
           <div key={report.reportId} style={{ marginBottom: 8 }}>
-            {/* 신고 목록 행 */}
             <div
               onClick={() => handleSelectReport(report)}
               style={{
@@ -288,43 +281,24 @@ function ReportsTab() {
                 cursor: 'pointer', transition: 'border-color 0.15s',
               }}
             >
-              <span style={badgeStyle(REPORT_STATUS_COLOR[report.status])}>
-                {REPORT_STATUS_LABEL[report.status]}
-              </span>
+              <span style={badgeStyle(REPORT_STATUS_COLOR[report.status])}>{REPORT_STATUS_LABEL[report.status]}</span>
               <span style={badgeStyle('#8b8b96')}>{report.targetType}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ color: '#ececf0', fontSize: 13, fontWeight: 600, margin: 0 }}>
                   {REASON_LABEL_KO[report.reason] ?? report.reason} 신고
                 </p>
                 {report.detail && (
-                  <p style={{ color: '#8b8b96', fontSize: 12, margin: '3px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ color: '#8b8b96', fontSize: 12, margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {report.detail}
                   </p>
                 )}
-                <p style={{ margin: '4px 0 0', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ color: '#c9a227', fontWeight: 600 }}>{report.reporterNickname}</span>
-                  <span style={{ color: '#3e3e4a' }}>·</span>
-                  <span style={{ color: '#8b8b96' }}>{new Date(report.createdAt).toLocaleDateString()}</span>
+                <p style={{ color: '#666', fontSize: 11, margin: '2px 0 0' }}>
+                  신고자 {report.reporterNickname} · {new Date(report.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              {/* 1번: 원본 게시글 바로가기 버튼 */}
               {targetLink && (
-                <a
-                  href={targetLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    border: '1px solid #2e2e38',
-                    color: '#8b8b96',
-                    fontSize: 11,
-                    textDecoration: 'none',
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <a href={targetLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+                  style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #2e2e38', color: '#8b8b96', fontSize: 11, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
                   원문 보기 ↗
                 </a>
               )}
@@ -333,62 +307,39 @@ function ReportsTab() {
               </span>
             </div>
 
-            {/* 상세 패널 */}
             {isOpen && (
               <div style={{ background: '#1a1a22', border: '1px solid #c9a227', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: 16 }}>
                 {detailLoading ? (
                   <p style={{ color: '#8b8b96', fontSize: 13 }}>불러오는 중...</p>
                 ) : selectedReport ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    {/* 신고 상세 정보 — 3열 그리드 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, padding: '14px 16px', background: '#16161c', borderRadius: 10, border: '1px solid #2e2e38' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                       <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고 사유</p>
-                        <p style={{ color: '#ececf0', fontSize: 14, margin: 0, fontWeight: 700 }}>
-                          {REASON_LABEL_KO[selectedReport.reason]}
-                        </p>
-                        {selectedReport.detail && (
-                          <p style={{ color: '#8b8b96', fontSize: 12, margin: '6px 0 0', lineHeight: 1.6 }}>
-                            {selectedReport.detail}
-                          </p>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 4px' }}>신고 사유</p>
+                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0, fontWeight: 600 }}>{REASON_LABEL_KO[selectedReport.reason]}</p>
+                        {selectedReport.detail && <p style={{ color: '#8b8b96', fontSize: 12, margin: '4px 0 0', lineHeight: 1.5 }}>{selectedReport.detail}</p>}
+                      </div>
+                      <div>
+                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 4px' }}>신고 일시</p>
+                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0 }}>{new Date(selectedReport.createdAt).toLocaleString()}</p>
+                        {selectedReport.targetType === 'COMMENT' && (
+                          <div style={{ marginTop: 8 }}>
+                            <span style={{ color: '#8b8b96', fontSize: 11 }}>댓글 ID #{selectedReport.targetId}</span>
+                            {selectedReport.postId ? (
+                              <a href={`/community/posts/${selectedReport.postId}`} target="_blank" rel="noreferrer"
+                                style={{ display: 'block', marginTop: 4, color: '#c9a227', fontSize: 12 }}>원본 게시글 보기 ↗</a>
+                            ) : (
+                              <span style={{ display: 'block', marginTop: 4, color: '#666', fontSize: 11 }}>(게시글 삭제됨)</span>
+                            )}
+                          </div>
                         )}
-                      </div>
-                      <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고자</p>
-                        <p style={{ color: '#c9a227', fontSize: 14, margin: 0, fontWeight: 700 }}>
-                          {selectedReport.reporterNickname}
-                        </p>
-                      </div>
-                      <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>신고 일시</p>
-                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0 }}>
-                          {new Date(selectedReport.createdAt).toLocaleString()}
-                        </p>
-                        <div style={{ marginTop: 8 }}>
-                          {selectedReport.targetType === 'COMMENT' && (
-                            <>
-                              <span style={{ color: '#8b8b96', fontSize: 11 }}>댓글 ID #{selectedReport.targetId}</span>
-                              {selectedReport.postId ? (
-                                <a href={`/community/posts/${selectedReport.postId}`} target="_blank" rel="noreferrer"
-                                  style={{ display: 'block', marginTop: 4, color: '#c9a227', fontSize: 12 }}>
-                                  원본 게시글 보기 ↗
-                                </a>
-                              ) : (
-                                <span style={{ display: 'block', marginTop: 4, color: '#666', fontSize: 11 }}>(게시글 삭제됨)</span>
-                              )}
-                            </>
-                          )}
-                          {selectedReport.targetType === 'POST' && (
-                            <a href={`/community/posts/${selectedReport.targetId}`} target="_blank" rel="noreferrer"
-                              style={{ color: '#c9a227', fontSize: 12 }}>
-                              게시글 보기 ↗
-                            </a>
-                          )}
-                        </div>
+                        {selectedReport.targetType === 'POST' && (
+                          <a href={`/community/posts/${selectedReport.targetId}`} target="_blank" rel="noreferrer"
+                            style={{ display: 'block', marginTop: 8, color: '#c9a227', fontSize: 12 }}>게시글 보기 ↗</a>
+                        )}
                       </div>
                     </div>
 
-                    {/* 처리 이력 */}
                     {selectedReport.actions?.length > 0 && (
                       <div>
                         <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리 이력</p>
@@ -396,31 +347,21 @@ function ReportsTab() {
                           {selectedReport.actions.map((a) => (
                             <div key={a.actionId} style={{ padding: '8px 12px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                               <div>
-                                <span style={{ color: '#c9a227', fontWeight: 600 }}>
-                                  {ACTION_LABEL[a.action as ReportAction] ?? a.action}
-                                </span>
+                                <span style={{ color: '#c9a227', fontWeight: 600 }}>{ACTION_LABEL[a.action as ReportAction] ?? a.action}</span>
                                 {a.note && <span style={{ color: '#8b8b96', marginLeft: 8 }}>{a.note}</span>}
                               </div>
-                              <span style={{ color: '#666', flexShrink: 0 }}>
-                                {new Date(a.createdAt).toLocaleString()}
-                              </span>
+                              <span style={{ color: '#666', flexShrink: 0 }}>{new Date(a.createdAt).toLocaleString()}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* 처리하기 — PENDING */}
                     {selectedReport.status === 'PENDING' && (
                       <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
                         <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
-                        <textarea
-                          placeholder="처리 메모 (선택)"
-                          value={actionNote}
-                          onChange={(e) => setActionNote(e.target.value)}
-                          rows={2}
-                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
-                        />
+                        <textarea placeholder="처리 메모 (선택)" value={actionNote} onChange={(e) => setActionNote(e.target.value)} rows={2}
+                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }} />
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button type="button" disabled={processing} style={btnStyle('ghost')} onClick={() => handleAction('DISMISS')}>✓ 기각</button>
                           <button type="button" disabled={processing} style={{ ...btnStyle('ghost'), borderColor: '#f87171', color: '#f87171' }} onClick={() => handleAction('HIDE')}>🙈 숨김</button>
@@ -429,17 +370,11 @@ function ReportsTab() {
                       </div>
                     )}
 
-                    {/* 처리하기 — HIDDEN */}
                     {selectedReport.status === 'HIDDEN' && (
                       <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
                         <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
-                        <textarea
-                          placeholder="처리 메모 (선택)"
-                          value={actionNote}
-                          onChange={(e) => setActionNote(e.target.value)}
-                          rows={2}
-                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
-                        />
+                        <textarea placeholder="처리 메모 (선택)" value={actionNote} onChange={(e) => setActionNote(e.target.value)} rows={2}
+                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }} />
                         <button type="button" disabled={processing} style={btnStyle('primary')} onClick={() => handleAction('RESTORE')}>↩ 복구</button>
                       </div>
                     )}
@@ -459,38 +394,253 @@ function ReportsTab() {
 function UsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [keyword, setKeyword] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const PAGE_SIZE = 10;
 
-  useEffect(() => {
-    adminApi.getUsers()
-      .then((res) => setUsers(res.data.data?.content ?? res.data.data ?? []))
-      .catch(() => toast('회원 목록을 불러오지 못했습니다.', 'error'))
-      .finally(() => setLoading(false));
-  }, []);
+  const load = async (kw: string, f: string, p: number) => {
+    setLoading(true);
+    try {
+      const res = await adminApi.getUsers(kw || undefined, f === 'all' ? undefined : f, p, PAGE_SIZE);
+      const data = res.data.data;
+      setUsers(data?.content ?? data ?? []);
+      setTotalPages(data?.totalPages ?? 1);
+    } catch {
+      toast('회원 목록을 불러오지 못했습니다.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { setPage(0); load(keyword, filter, 0); }, [filter]);
+  useEffect(() => { load(keyword, filter, page); }, [page]);
+
+  const handleSearch = () => { setPage(0); load(keyword, filter, 0); };
+  const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); };
+
+  const handleRoleChange = async (user: AdminUser) => {
+    const newRole = user.role === 'ADMIN' ? 'USER' : 'ADMIN';
+    const ok = await confirmToast({
+      message: `${user.nickname}의 권한을 ${newRole}로 변경할까요?`,
+      confirmLabel: '변경',
+      danger: false,
+    });
+    if (!ok) return;
+    try {
+      await adminApi.updateUserRole(user.id, newRole);
+      toast(`권한이 ${newRole}로 변경되었습니다.`, 'success');
+      load(keyword, filter, page);
+    } catch {
+      toast('권한 변경에 실패했습니다.', 'error');
+    }
+  };
+
+  const handleBan = async (user: AdminUser) => {
+    const ok = await confirmToast({
+      message: `${user.nickname} 계정을 이용 제한(밴)할까요?`,
+      confirmLabel: '밴',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await adminApi.banUser(user.id);
+      toast('이용 제한 처리되었습니다.', 'success');
+      load(keyword, filter, page);
+    } catch (err: any) {
+      toast(err?.message ?? '밴 처리에 실패했습니다.', 'error');
+    }
+  };
+
+  const handleUnban = async (user: AdminUser) => {
+    const ok = await confirmToast({
+      message: `${user.nickname} 계정의 이용 제한을 해제할까요?`,
+      confirmLabel: '해제',
+      danger: false,
+    });
+    if (!ok) return;
+    try {
+      await adminApi.unbanUser(user.id);
+      toast('이용 제한이 해제되었습니다.', 'success');
+      load(keyword, filter, page);
+    } catch (err: any) {
+      toast(err?.message ?? '밴 해제에 실패했습니다.', 'error');
+    }
+  };
+
+  const formatLastLogin = (dt: string | null) => {
+    if (!dt) return '없음';
+    const d = new Date(dt);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
 
   const ROLE_COLOR: Record<string, string> = { USER: '#8b8b96', ADMIN: '#c9a227', PRO: '#4ade80' };
 
   return (
     <div>
+      {/* 검색 + 필터 */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flex: 1, minWidth: 220 }}>
+          <input
+            type="text"
+            placeholder="이메일 또는 닉네임 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{
+              flex: 1, background: '#16161c', border: '1px solid #2e2e38',
+              borderRight: 'none', borderRadius: '8px 0 0 8px',
+              padding: '7px 14px', color: '#ececf0', fontSize: 14, outline: 'none',
+            }}
+          />
+          <button type="button" onClick={handleSearch} style={{
+            padding: '7px 16px', background: '#c9a227', border: 'none',
+            borderRadius: '0 8px 8px 0', color: '#0c0c0f', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+          }}>
+            검색
+          </button>
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {([
+            { value: 'all',     label: '전체' },
+            { value: 'banned',  label: '🚫 밴' },
+            { value: 'deleted', label: '🗑 탈퇴' },
+          ] as const).map(({ value, label }) => (
+            <button key={value} type="button" style={filterBtnStyle(filter === value)} onClick={() => setFilter(value)}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 목록 */}
       {loading ? (
         <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
       ) : users.length === 0 ? (
         <p style={{ color: '#8b8b96' }}>회원이 없습니다.</p>
       ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 130px 80px', gap: 8, padding: '8px 16px', color: '#8b8b96', fontSize: 12, marginBottom: 4 }}>
-            <span>닉네임</span><span>이메일</span><span>권한</span><span>마지막 로그인</span><span>상태</span>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {users.map((user) => (
-            <div key={user.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 130px 80px', gap: 8, padding: '12px 16px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 10, marginBottom: 6, alignItems: 'center' }}>
-              <span style={{ color: '#ececf0', fontSize: 14, fontWeight: 600 }}>{user.nickname}</span>
-              <span style={{ color: '#8b8b96', fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</span>
-              <span style={badgeStyle(ROLE_COLOR[user.role?.toUpperCase()] ?? '#8b8b96')}>{user.role}</span>
-              <span style={{ color: '#8b8b96', fontSize: 12 }}>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : '없음'}</span>
-              <span style={badgeStyle(user.isDeleted ? '#f87171' : '#4ade80')}>{user.isDeleted ? '탈퇴' : '정상'}</span>
+            <div key={user.id} style={{
+              background: '#16161c',
+              border: `1px solid ${user.isBanned ? '#f8717144' : '#2e2e38'}`,
+              borderRadius: 10, padding: '16px 18px',
+            }}>
+              {/* 1행 — 닉네임 + 뱃지 + 버튼 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+
+                {/* 닉네임 */}
+                <p style={{ color: '#ececf0', fontSize: 16, fontWeight: 700, margin: 0, marginRight: 4 }}>
+                  {user.nickname}
+                  {user.name && (
+                    <span style={{ color: '#8b8b96', fontWeight: 400, marginLeft: 6, fontSize: 13 }}>
+                      ({user.name})
+                    </span>
+                  )}
+                </p>
+
+                {/* 온보딩 미완료 뱃지 — 권한 앞 */}
+                {user.isNewUser && (
+                  <span style={badgeStyle('#a78bfa')}>온보딩 미완료</span>
+                )}
+
+                {/* 권한 뱃지 */}
+                <span style={badgeStyle(ROLE_COLOR[user.role?.toUpperCase()] ?? '#8b8b96')}>
+                  {user.role}
+                </span>
+
+                {/* 밴 뱃지 */}
+                {user.isBanned && <span style={badgeStyle('#f87171')}>이용 제한</span>}
+
+                {/* 탈퇴 뱃지 */}
+                {user.isDeleted && <span style={badgeStyle('#555')}>탈퇴</span>}
+
+                {/* 액션 버튼 영역 */}
+                {!user.isDeleted && (
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+
+                    {/* 권한 토글 — PRO 제외 */}
+                    {user.role !== 'PRO' && (
+                      <div
+                        onClick={() => handleRoleChange(user)}
+                        title={`${user.role === 'ADMIN' ? 'USER' : 'ADMIN'}으로 변경`}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 0,
+                          background: '#0c0c14', border: '1px solid #2e2e38',
+                          borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+                        }}
+                      >
+                        {/* USER 쪽 */}
+                        <span style={{
+                          padding: '5px 12px', fontSize: 12, fontWeight: 700,
+                          background: user.role === 'USER' ? '#8b8b9633' : 'transparent',
+                          color: user.role === 'USER' ? '#ececf0' : '#555',
+                          borderRight: '1px solid #2e2e38',
+                          transition: 'all 0.15s',
+                        }}>USER</span>
+                        {/* ADMIN 쪽 */}
+                        <span style={{
+                          padding: '5px 12px', fontSize: 12, fontWeight: 700,
+                          background: user.role === 'ADMIN' ? '#c9a22733' : 'transparent',
+                          color: user.role === 'ADMIN' ? '#c9a227' : '#555',
+                          transition: 'all 0.15s',
+                        }}>ADMIN</span>
+                      </div>
+                    )}
+
+                    {/* 밴 / 밴 해제 버튼 */}
+                    {user.isBanned ? (
+                      <button type="button" onClick={() => handleUnban(user)} style={{
+                        padding: '5px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                        cursor: 'pointer', border: '1px solid #4ade8044',
+                        background: '#4ade8011', color: '#4ade80',
+                      }}>밴 해제</button>
+                    ) : (
+                      <button type="button" onClick={() => handleBan(user)} style={{
+                        padding: '5px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                        cursor: 'pointer', border: '1px solid #f8717144',
+                        background: '#f8717111', color: '#f87171',
+                      }}>이용 제한</button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* 2행 — 상세 정보 */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px 20px' }}>
+                <div>
+                  <span style={{ color: '#8b8b96', fontSize: 12 }}>이메일 </span>
+                  <span style={{ color: '#ececf0', fontSize: 13 }}>{user.email ?? '-'}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#8b8b96', fontSize: 12 }}>생년월일 </span>
+                  <span style={{ color: '#ececf0', fontSize: 13 }}>{user.birthday ?? '-'}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#8b8b96', fontSize: 12 }}>마지막 로그인 </span>
+                  <span style={{ color: '#ececf0', fontSize: 13 }}>{formatLastLogin(user.lastLoginAt)}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#8b8b96', fontSize: 12 }}>가입일 </span>
+                  <span style={{ color: '#ececf0', fontSize: 13 }}>{new Date(user.createdAt).toLocaleDateString()}</span>
+                </div>
+                {user.isBanned && user.bannedAt && (
+                  <div>
+                    <span style={{ color: '#f87171', fontSize: 12 }}>제한 일시 </span>
+                    <span style={{ color: '#f87171', fontSize: 13 }}>{new Date(user.bannedAt).toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
-        </>
+        </div>
       )}
+
+      <div style={{ marginTop: 16 }}>
+        <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+      </div>
     </div>
   );
 }

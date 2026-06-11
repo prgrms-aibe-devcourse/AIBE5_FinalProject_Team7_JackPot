@@ -49,7 +49,7 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
                     {(TYPE_LABEL[w.type] ?? w.type)} · {w.region}
                   </p>
                   <p className="wf-related-whiskeys__rating">
-                    <span className="wf-stars">★</span> {w.avgRating.toFixed(1)}
+                    <span className="wf-stars">★</span> {(w.avgRating ?? 0).toFixed(1)}
                     {w.score > 0 && (
                       <span className="wf-related-whiskeys__score">· 유사도 {(w.score * 100).toFixed(2)}%</span>
                     )}

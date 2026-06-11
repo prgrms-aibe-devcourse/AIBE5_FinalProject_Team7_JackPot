@@ -279,7 +279,7 @@ class ReviewControllerTest {
                 .birthday(LocalDate.of(1990, 1, 1))
                 .role(Role.USER)
                 .isEmailVerified(true)
-                .isDeleted(false)
+                .deleted(false)
                 .build();
     }
 

@@ -8,6 +8,7 @@ import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
+import com.jackpot.whiskeynote.global.exception.BannedUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,8 +29,10 @@ public class PickService {
     // Pick 목록
     @Transactional(readOnly = true)
     public Page<PickResponse> findAllByUserId(Long userId, int page, int size) {
-        if (!usersRepository.existsById(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+        if (user.isBanned() || user.isDeleted()) {
+            throw new BannedUserException();
         }
 
         PageRequest pageRequest = PageRequest.of(
