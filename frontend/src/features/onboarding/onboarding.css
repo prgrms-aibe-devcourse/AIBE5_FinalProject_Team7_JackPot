@@ -17,7 +17,8 @@
     linear-gradient(90deg, rgba(7, 6, 9, 0.92) 0%, rgba(7, 6, 9, 0.86) 42%, rgba(7, 6, 9, 0.38) 68%, rgba(7, 6, 9, 0.72) 100%),
     linear-gradient(180deg, rgba(7, 6, 9, 0.2), rgba(7, 6, 9, 0.34) 58%, rgba(7, 6, 9, 0.88)),
     url('/images/landing-hero-whiskey.png');
-  background-position: 78% center;
+  background-position: 96% center;
+  background-repeat: no-repeat;
   background-size: auto 112%;
   filter: saturate(0.88) contrast(1.04);
 }
@@ -50,7 +51,7 @@
   position: relative;
   align-self: center;
   width: min(690px, 56vw);
-  margin-left: 210px;
+  margin-left: 72px;
   padding: 14px 0 18px;
   transform: translateY(-18px);
 }
@@ -98,8 +99,8 @@
 
 .wf-onboarding-content {
   align-self: end;
-  width: min(700px, 58vw);
-  margin: 0 0 34px 210px;
+  width: min(660px, 54vw);
+  margin: 0 0 34px 72px;
   padding: 22px 24px 20px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 20px;
