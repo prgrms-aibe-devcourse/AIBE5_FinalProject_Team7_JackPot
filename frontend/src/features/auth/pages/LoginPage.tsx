@@ -72,6 +72,7 @@ export default function LoginPage() {
             {loading ? '로그인 중...' : '로그인'}
           </Button>
           </form>
+          <div className="wf-auth-divider" aria-hidden="true">또는</div>
           <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--kakao" onClick={() => handleOauth('kakao')}>카카오 로그인</Button>
           <Button variant="ghost" block className="wf-auth-oauth-btn wf-auth-oauth-btn--google" onClick={() => handleOauth('google')}>Google 로그인</Button>
 

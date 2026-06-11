@@ -81,6 +81,7 @@
 .wf-search-form {
   display: flex;
   gap: 8px;
+  align-items: stretch;
 }
 
 .wf-search-form .wf-search-autocomplete {
@@ -88,16 +89,24 @@
 }
 
 .wf-search-form__btn {
-  width: 80px;
+  min-width: 86px;
+  padding: 0 22px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 .wf-search-form__reset {
-  width: 100px;
+  min-width: 106px;
+  padding: 0 20px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--wf-muted);
+  font-weight: 700;
+}
+
+.wf-search-form__reset:hover {
+  color: var(--wf-text);
 }
 
 .wf-search-card {

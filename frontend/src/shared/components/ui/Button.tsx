@@ -51,9 +51,17 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
     );
   }
 
-  const { style, block: _b, variant: _v, size: _s, ...rest } = props as ButtonAsButton;
+  const nativeProps = { ...(props as ButtonAsButton) };
+  delete nativeProps.block;
+  delete nativeProps.variant;
+  delete nativeProps.size;
+  delete nativeProps.className;
+  delete nativeProps.children;
+  delete nativeProps.style;
+  delete nativeProps.to;
+
   return (
-    <button type="button" className={classes} style={style} {...rest}>
+    <button {...nativeProps} type={nativeProps.type ?? 'button'} className={classes} style={props.style}>
       {children}
     </button>
   );
