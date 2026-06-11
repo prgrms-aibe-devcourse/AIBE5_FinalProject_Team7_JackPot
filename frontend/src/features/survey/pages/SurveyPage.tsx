@@ -4,6 +4,7 @@ import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { surveyApi, type SurveyApiRequest } from '../api/surveyApi';
+import '../survey.css';
 
 /* ───────── 설문 정의 ───────── */
 

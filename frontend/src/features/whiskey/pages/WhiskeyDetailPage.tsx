@@ -27,6 +27,7 @@ import type { TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
+import '../whiskey.css';
 
 function formatType(type: string): string {
   const map: Record<string, string> = {
