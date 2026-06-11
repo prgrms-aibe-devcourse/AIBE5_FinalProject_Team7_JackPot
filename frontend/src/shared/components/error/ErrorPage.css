@@ -1,0 +1,14 @@
+.wf-error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.wf-error-box { text-align: center; width: 100%; max-width: 480px; }
+.wf-error-icon { font-size: 64px; margin-bottom: 8px; line-height: 1; }
+.wf-error-code { font-size: 80px; font-weight: 700; margin: 0 0 8px; opacity: 0.15; line-height: 1; }
+.wf-error-title { font-size: 22px; margin-bottom: 10px; }
+.wf-error-subtitle { margin-bottom: 32px; }
+.wf-error-actions { display: flex; flex-direction: column; gap: 10px; }
