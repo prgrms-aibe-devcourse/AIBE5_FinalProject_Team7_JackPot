@@ -52,7 +52,7 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
 
   return (
     <nav className="wf-topnav">
-      <Link to={PATHS.LOUNGE} className="wf-topnav__logo-link">
+      <Link to={PATHS.LANDING} className="wf-topnav__logo-link">
         <div className="wf-topnav__logo">Whiskey Note</div>
       </Link>
 
