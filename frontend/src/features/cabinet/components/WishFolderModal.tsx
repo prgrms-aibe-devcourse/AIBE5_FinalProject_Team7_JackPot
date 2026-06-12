@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { PATHS } from '@/app/router/paths';
 import { cabinetApi, type WishlistFolder } from '@/features/cabinet/api/cabinetApi';
 import { toast } from '@/shared/components/ui/Toast';
 import '@/features/community/community.css';
@@ -17,6 +19,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
   const [adding, setAdding] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [lastAction, setLastAction] = useState<'added' | 'removed' | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -60,6 +63,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
           return next;
         });
         toast('위시리스트에서 제거되었습니다.', 'info');
+        setLastAction('removed');
         onSuccess();
       } catch {
         toast('위시 제거에 실패했습니다.', 'error');
@@ -79,6 +83,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
           setWishedItemMap((prev) => ({ ...prev, [folderId]: found.itemId }));
         }
         toast('위시리스트에 추가되었습니다.', 'success');
+        setLastAction('added');
         onSuccess();
       } catch {
         toast('위시 추가에 실패했습니다.', 'error');
@@ -172,6 +177,30 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
             </button>
           </>
         ) : null}
+
+        {lastAction && (
+          <div className={`wf-wish-flow-notice wf-wish-flow-notice--${lastAction}`}>
+            <div>
+              <strong>
+                {lastAction === 'added' ? '캐비넷에 저장됐어요.' : '위시에서 제거됐어요.'}
+              </strong>
+              <span>
+                {lastAction === 'added'
+                  ? '위시 탭에서 폴더별로 다시 확인할 수 있어요.'
+                  : '다시 담고 싶다면 폴더를 한 번 더 선택해주세요.'}
+              </span>
+            </div>
+            {lastAction === 'added' && (
+              <Link
+                to={`${PATHS.CABINET}?section=bar&tab=wish`}
+                onClick={onClose}
+                className="wf-wish-flow-link"
+              >
+                캐비넷 보기
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* 새 폴더 생성 */}
         {showCreate && (
