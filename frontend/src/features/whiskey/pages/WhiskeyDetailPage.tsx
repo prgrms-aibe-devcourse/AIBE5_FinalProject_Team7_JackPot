@@ -73,10 +73,12 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
   const [showNote, setShowNote] = useState(false);
   const currentUserId = getCurrentUserId();
   const likeMutation = useToggleReviewLike(currentUserId);
+  const navigate = useNavigate();
 
   const handleLikeClick = () => {
     if (currentUserId == null) {
-      alert('로그인 후 리뷰에 좋아요를 누를 수 있습니다.');
+      toast('로그인 후 리뷰에 좋아요를 누를 수 있습니다.', 'info');
+      navigate(PATHS.LOGIN);
       return;
     }
 
@@ -149,6 +151,11 @@ export default function WhiskeyDetailPage() {
   const [wishedItemId, setWishedItemId] = useState<number | null>(null);
   const [imgError, setImgError] = useState(false);
 
+  // 위스키가 바뀌면 이미지 에러 상태 초기화
+  useEffect(() => {
+    setImgError(false);
+  }, [id]);
+
   // 로그인 유저가 10초 이상 머물면 조회 로그 1회 전송
   // (탭이 백그라운드면 타이머를 멈춰 실제 체류만 인정, 위스키가 바뀌면 리셋)
   useEffect(() => {
@@ -219,8 +226,8 @@ export default function WhiskeyDetailPage() {
   const handleWishToggle = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
-      if (goLogin) navigate(PATHS.LOGIN);
+      toast('로그인 후 위시리스트를 사용할 수 있습니다.', 'info');
+      navigate(PATHS.LOGIN);
       return;
     }
 
@@ -255,22 +262,21 @@ export default function WhiskeyDetailPage() {
   const handlePickToggle = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      // 확인 누르면 로그인 페이지로 이동
-      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
-      if (goLogin) navigate(PATHS.LOGIN);
+      toast('로그인 후 My Pick을 사용할 수 있습니다.', 'info');
+      navigate(PATHS.LOGIN);
       return;
     }
 
     setPickLoading(true);
     try {
       if (isPicked) {
-        // 이미 픽한 상태 → 제거
         await cabinetApi.deletePick(Number(id));
         setIsPicked(false);
+        toast('My Pick에서 제거했습니다.', 'info');
       } else {
-        // 픽 추가
         await cabinetApi.addPick(Number(id));
         setIsPicked(true);
+        toast('My Pick에 추가했습니다.', 'success');
       }
     } catch (error) {
       toast(error instanceof Error ? error.message : '픽 처리에 실패했습니다.', 'error');
@@ -429,10 +435,11 @@ export default function WhiskeyDetailPage() {
               <h2 className="wf-section-title">제품 정보</h2>
               <span className="wf-detail-section-head__count">리뷰 {reviewCount}개</span>
             </div>
-            {detail.description && <p className="wf-text-sm">{detail.description}</p>}
-            <p className="wf-text-sm wf-detail-info__meta">
-              증류소 · {detail.distillery ?? detail.name} · {detail.region} · 캐스크 {detail.cask ?? '—'}
-            </p>
+            {detail.description ? (
+              <p className="wf-text-sm">{detail.description}</p>
+            ) : (
+              <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
+            )}
           </section>
 
           <TastingSummaryPanel
@@ -461,7 +468,16 @@ export default function WhiskeyDetailPage() {
             </div>
 
             {reviewsLoading ? (
-              <p className="wf-text-sm">리뷰를 불러오는 중입니다.</p>
+              <ul className="wf-detail-reviews__list" aria-hidden>
+                {[0, 1, 2].map((i) => (
+                  <li key={i} className="wf-detail-reviews__item wf-box">
+                    <div className="wf-skeleton-line" style={{ width: '42%', height: 13 }} />
+                    <div className="wf-skeleton-line" style={{ width: '100%', marginTop: 12, height: 13 }} />
+                    <div className="wf-skeleton-line" style={{ width: '68%', marginTop: 6, height: 13 }} />
+                    <div className="wf-skeleton-line" style={{ width: '28%', marginTop: 14, height: 32, borderRadius: 999 }} />
+                  </li>
+                ))}
+              </ul>
             ) : reviews?.content.length ? (
               <ul className="wf-detail-reviews__list">
                 {reviews.content.map((review) => (
@@ -469,7 +485,13 @@ export default function WhiskeyDetailPage() {
                 ))}
               </ul>
             ) : (
-              <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
+              <div className="wf-detail-reviews__empty">
+                <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
+                <p className="wf-text-xs">첫 번째 리뷰를 남겨보세요.</p>
+                <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)} className="wf-detail-reviews__empty-cta">
+                  리뷰 작성하기 →
+                </Button>
+              </div>
             )}
           </section>
 
