@@ -3,22 +3,32 @@
 set -euo pipefail
 
 COMPOSE_DIR="${COMPOSE_DIR:-$HOME/whiskeynote}"
-MAX_WAIT="${MAX_WAIT:-120}"
-LOG_TAIL="${LOG_TAIL:-150}"
+MAX_WAIT="${MAX_WAIT:-180}"
 
 cd "$COMPOSE_DIR"
 
-echo "==> Polling for backend startup (max ${MAX_WAIT}s)..."
+# Docker healthcheck 상태 기반 폴링 (로그 기반 오인식 방지)
+echo "==> Waiting for backend healthy (max ${MAX_WAIT}s)..."
 ELAPSED=0
-INTERVAL=10
+INTERVAL=5
 while [[ $ELAPSED -lt $MAX_WAIT ]]; do
-  POLL_LOGS="$(docker compose logs backend --tail 50 2>&1)"
-  if echo "$POLL_LOGS" | grep -q 'Started WhiskeynoteApplication'; then
-    echo "==> Backend started after ${ELAPSED}s"
-    break
+  CONTAINER_ID="$(docker compose ps -q backend 2>/dev/null || true)"
+  if [[ -n "$CONTAINER_ID" ]]; then
+    HEALTH="$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_ID" 2>/dev/null || echo 'none')"
+    if [[ "$HEALTH" == "healthy" ]]; then
+      echo "==> Backend healthy after ${ELAPSED}s"
+      break
+    fi
+    if [[ "$HEALTH" == "unhealthy" ]]; then
+      echo "==> Backend marked unhealthy after ${ELAPSED}s"
+      break
+    fi
   fi
-  if echo "$POLL_LOGS" | grep -qE 'Application run failed|missing table|Schema validation:'; then
-    echo "==> Backend startup failure detected after ${ELAPSED}s"
+  # 치명적 기동 오류 조기 감지
+  LOGS_SNIPPET="$(docker compose logs backend --tail 30 2>&1)"
+  if echo "$LOGS_SNIPPET" | grep -qE 'Application run failed|missing table|Schema validation:|FlywayValidateException'; then
+    echo "==> Fatal startup error detected after ${ELAPSED}s"
+    HEALTH="failed"
     break
   fi
   sleep $INTERVAL
@@ -28,7 +38,7 @@ done
 echo "==> docker compose ps"
 docker compose ps
 
-LOGS="$(docker compose logs backend --tail "$LOG_TAIL" 2>&1)"
+LOGS="$(docker compose logs backend --tail 150 2>&1)"
 
 # RDS 테이블 누락 (ddl-auto=validate)
 if echo "$LOGS" | grep -q 'missing table'; then
@@ -70,15 +80,15 @@ fi
 if ! echo "$LOGS" | grep -q 'Started WhiskeynoteApplication'; then
   echo ""
   echo "BACKEND_START_FAILED"
-  echo "FAIL: Started WhiskeynoteApplication 로그 없음"
+  echo "FAIL: Started WhiskeynoteApplication 로그 없음 (${ELAPSED}s 경과)"
   echo "$LOGS" | tail -25
   exit 1
 fi
 
-# backend는 expose만 하고 호스트 8080 publish 없음 → compose healthcheck(컨테이너 내부 readiness)로 확인
+# Docker healthcheck 최종 확인
 if ! docker compose ps backend 2>/dev/null | grep -q '(healthy)'; then
   echo "BACKEND_HEALTH_FAILED"
-  echo "FAIL: backend container not healthy (see docker compose ps / logs)"
+  echo "FAIL: backend container not healthy after ${ELAPSED}s (see docker compose ps / logs)"
   docker compose logs backend --tail 30
   exit 1
 fi
