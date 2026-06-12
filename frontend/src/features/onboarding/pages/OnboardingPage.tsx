@@ -17,6 +17,8 @@ const EXPERIENCE_OPTIONS = [
   },
 ] as const;
 
+const ONBOARDING_VIDEO_URL = 'https://www.youtube.com/embed/UrEHWclh7Co?rel=0&modestbranding=1&playsinline=1';
+
 const ONBOARDING_FEATURES = [
   {
     label: 'Survey',
@@ -109,6 +111,15 @@ export default function OnboardingPage() {
                 설문 시작하기
               </Button>
               <p className="wf-onboarding-footnote">약 2분 · 7개 문항 · 결과는 바로 확인</p>
+            </div>
+
+            <div className="wf-onboarding-video" aria-label="Whiskey Note 영상">
+              <iframe
+                src={ONBOARDING_VIDEO_URL}
+                title="Whiskey Note mood video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </section>
         </div>
