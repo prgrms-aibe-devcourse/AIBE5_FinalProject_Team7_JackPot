@@ -5,25 +5,30 @@ import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordCorrectionResponse;
 import com.jackpot.whiskeynote.domain.whiskey.search.dto.WhiskeyKeywordSuggestResponse;
+import com.jackpot.whiskeynote.domain.whiskey.search.entity.WhiskeyAlias;
 import com.jackpot.whiskeynote.domain.whiskey.search.entity.WhiskeyDocument;
 import com.jackpot.whiskeynote.domain.whiskey.search.entity.WhiskeySearchKeywordDocument;
 import com.jackpot.whiskeynote.domain.whiskey.search.entity.WhiskeySearchMapper;
+import com.jackpot.whiskeynote.domain.whiskey.search.repository.WhiskeyAliasRepository;
 import com.jackpot.whiskeynote.domain.whiskey.search.repository.WhiskeySearchKeywordRepository;
 import com.jackpot.whiskeynote.domain.whiskey.search.repository.WhiskeySearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Profile("!test")
@@ -33,6 +38,7 @@ public class WhiskeySearchService {
     private final WhiskeySearchRepository whiskeySearchRepository;
     private final WhiskeySearchKeywordRepository whiskeySearchKeywordRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final WhiskeyAliasRepository whiskeyAliasRepository;
 
     private static final List<String> BRAND_KEYWORDS = List.of(
             "조니워커",
@@ -52,13 +58,35 @@ public class WhiskeySearchService {
     @Transactional(readOnly = true)
     public Page<WhiskeyCardResponse> searchByKeyword(String keyword,int page,int size){
         PageRequest pageRequest = PageRequest.of(page,size);
-
+        // 키워드가 없는 경우 전체 검색 - Elasticsearch에 저장된 위스키 데이터가 없는 경우에도 JPA로 전체 검색하여 빈 페이지 반환
         if(keyword == null || keyword.isBlank()){
             return whiskeyRepository.findAll(pageRequest).map(WhiskeyCardResponse::from);
         }
         String normalizedKeyword = normalizeSearchKeyword(keyword);
-        return whiskeySearchRepository.findByNameContaining(normalizedKeyword,pageRequest)
-                .map(WhiskeySearchMapper::toCardResponse);
+        // Elasticsearch에서 이름과 별칭 필드를 모두 검색하도록 쿼리를 구성하여 유연한 검색이 가능하도록 한다.
+        // 검색어가 포함된 이름 또는 별칭을 가진 위스키를 검색하는 NativeQuery를 작성한다.
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q->q.bool(b->b
+                        // 첫번째 조건 : 이름
+                        .should(s->s.match(m->m
+                                .field("name")
+                                .query(normalizedKeyword)
+                                // 두번째 조건 : 별칭
+                        )).should(s->s.match(m->m
+                                .field("aliases")
+                                .query(normalizedKeyword)
+                        ))
+                ))
+                .withPageable(pageRequest)
+                .build();
+        // ElasticsearchOperations를 사용하여 쿼리를 실행하고 검색 결과를 가져온다.
+        SearchHits<WhiskeyDocument> hits = elasticsearchOperations.search(query, WhiskeyDocument.class);
+
+        List<WhiskeyCardResponse> content = hits.stream()
+                .map(SearchHit::getContent)
+                .map(WhiskeySearchMapper::toCardResponse)
+                .toList();
+        return new PageImpl<>(content, pageRequest, hits.getTotalHits());
     }
     @Transactional(readOnly = true)
     public List<WhiskeyKeywordSuggestResponse> autocompleteKeyword(String q, int size){
@@ -88,15 +116,32 @@ public class WhiskeySearchService {
     public void indexOne(Long whiskeyId){
         Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
                 .orElseThrow(() -> new IllegalArgumentException("위스키를 찾을 수 없습니다."));
-
-        whiskeySearchRepository.save(WhiskeySearchMapper.fromEntity(whiskey));
+        Long id = whiskey.getId();
+         List<String> aliases = whiskeyAliasRepository.findByWhiskeyId(id)
+                .stream()
+                .map(WhiskeyAlias::getAlias)
+                .toList();
+        whiskeySearchRepository.save(WhiskeySearchMapper.fromEntity(whiskey, aliases));
     }
     @Transactional(readOnly = true)
     public void reindexAll(){
         List<Whiskey> whiskeys = whiskeyRepository.findAll();
 
+        List<Long> whiskeyIds = whiskeys.stream()
+                .map(Whiskey::getId)
+                .toList();
+        Map<Long, List<String>> aliasMap = whiskeyAliasRepository.findByWhiskeyIdIn(whiskeyIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        WhiskeyAlias::getWhiskeyId,
+                        Collectors.mapping(WhiskeyAlias::getAlias, Collectors.toList())
+                ));
+
         List<WhiskeyDocument> whiskeyDocuments = whiskeys.stream()
-                .map(WhiskeySearchMapper::fromEntity)
+                .map(whiskey-> WhiskeySearchMapper.fromEntity(
+                        whiskey,
+                        aliasMap.getOrDefault(whiskey.getId(), List.of())
+                ))
                 .toList();
 
         whiskeySearchRepository.saveAll(whiskeyDocuments);
