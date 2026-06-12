@@ -395,7 +395,9 @@ export default function CabinetPage() {
         total += (itemRes.data.data ?? []).length;
       }
       setTotalWishCount(total);
-    } catch {}
+    } catch {
+      // 위시 카운트는 보조 정보라 실패해도 화면 흐름은 유지합니다.
+    }
   };
 
   // 위시 총 개수 — 페이지 진입 시 바로 계산
@@ -697,7 +699,13 @@ export default function CabinetPage() {
 
                 {/* 폴더 목록 */}
                 {wishFolders.length === 0 ? (
-                  <p className="wf-text-xs">폴더가 없습니다.</p>
+                  <div className="wf-cabinet-wish-folder-empty">
+                    <strong>첫 폴더를 만들어보세요.</strong>
+                    <span>검색에서 저장한 위스키를 취향별로 모아둘 수 있어요.</span>
+                    <button type="button" onClick={() => setShowFolderInput(true)}>
+                      폴더 만들기
+                    </button>
+                  </div>
                 ) : (
                   wishFolders.map((folder) => {
                     const isActive = selectedFolderId === folder.folderId;
@@ -737,13 +745,27 @@ export default function CabinetPage() {
               <div className="wf-cabinet-wish-content">
                 {selectedFolderId === null ? (
                   <div className="wf-cabinet-wish-empty">
-                    폴더를 선택하거나 새로 만들어주세요.
+                    <strong className="wf-cabinet-wish-empty__title">폴더를 선택해주세요.</strong>
+                    <span className="wf-cabinet-wish-empty__text">
+                      저장한 위스키는 폴더별로 정리해서 다시 볼 수 있어요.
+                    </span>
                   </div>
                 ) : wishLoading ? (
-                  <div className="wf-cabinet-wish-empty">불러오는 중...</div>
+                  <div className="wf-cabinet-wish-empty wf-cabinet-wish-empty--loading">
+                    <strong className="wf-cabinet-wish-empty__title">불러오는 중...</strong>
+                    <span className="wf-cabinet-wish-empty__text">
+                      위시 폴더의 위스키를 확인하고 있어요.
+                    </span>
+                  </div>
                 ) : wishItems.length === 0 ? (
                   <div className="wf-cabinet-wish-empty">
-                    이 폴더에 위시한 위스키가 없습니다.
+                    <strong className="wf-cabinet-wish-empty__title">아직 담긴 위스키가 없어요.</strong>
+                    <span className="wf-cabinet-wish-empty__text">
+                      검색 페이지에서 마음에 드는 위스키를 이 폴더에 저장해보세요.
+                    </span>
+                    <Link to={PATHS.SEARCH} className="wf-cabinet-wish-empty__link">
+                      위스키 검색하기
+                    </Link>
                   </div>
                 ) : (
                   wishItems.map((item) => (
