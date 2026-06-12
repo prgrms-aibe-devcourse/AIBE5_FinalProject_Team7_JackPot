@@ -19,13 +19,13 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(90deg, rgba(7, 6, 9, 0.95) 0%, rgba(7, 6, 9, 0.9) 44%, rgba(7, 6, 9, 0.12) 62%, rgba(7, 6, 9, 0.2) 100%),
-    linear-gradient(180deg, rgba(7, 6, 9, 0.08), rgba(7, 6, 9, 0.14) 58%, rgba(7, 6, 9, 0.6)),
+    linear-gradient(90deg, rgba(7, 6, 9, 0.94) 0%, rgba(7, 6, 9, 0.88) 44%, rgba(7, 6, 9, 0.06) 62%, rgba(7, 6, 9, 0.12) 100%),
+    linear-gradient(180deg, rgba(7, 6, 9, 0.04), rgba(7, 6, 9, 0.08) 58%, rgba(7, 6, 9, 0.44)),
     url('/images/landing-hero-whiskey.png');
   background-position: 58% center;
   background-repeat: no-repeat;
   background-size: auto 112%;
-  filter: brightness(1.16) saturate(0.95) contrast(1.06);
+  filter: brightness(1.34) saturate(1.02) contrast(1.04);
 }
 
 .wf-onboarding-page::after {
@@ -33,11 +33,11 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, transparent 72%, rgba(1, 1, 1, 0.18) 86%, #010101 100%),
-    linear-gradient(90deg, rgba(7, 6, 9, 0.98) 0%, rgba(7, 6, 9, 0.94) 44%, rgba(7, 6, 9, 0.38) 55%, transparent 68%),
-    radial-gradient(ellipse at 49% 49%, rgba(7, 6, 9, 0.88) 0%, rgba(7, 6, 9, 0.74) 18%, rgba(7, 6, 9, 0.2) 33%, transparent 48%),
+    linear-gradient(90deg, transparent 74%, rgba(1, 1, 1, 0.1) 88%, #010101 100%),
+    linear-gradient(90deg, rgba(7, 6, 9, 0.98) 0%, rgba(7, 6, 9, 0.92) 44%, rgba(7, 6, 9, 0.28) 55%, transparent 68%),
+    radial-gradient(ellipse at 49% 49%, rgba(7, 6, 9, 0.84) 0%, rgba(7, 6, 9, 0.68) 18%, rgba(7, 6, 9, 0.14) 33%, transparent 48%),
     radial-gradient(ellipse at 31% 50%, rgba(7, 6, 9, 0.95) 0%, rgba(7, 6, 9, 0.84) 32%, rgba(7, 6, 9, 0.38) 52%, transparent 70%),
-    linear-gradient(180deg, transparent 58%, rgba(7, 6, 9, 0.62));
+    linear-gradient(180deg, transparent 60%, rgba(7, 6, 9, 0.48));
   pointer-events: none;
 }
 
