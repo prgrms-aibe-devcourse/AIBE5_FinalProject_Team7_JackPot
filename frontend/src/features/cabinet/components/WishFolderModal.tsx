@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { cabinetApi, type WishlistFolder } from '@/features/cabinet/api/cabinetApi';
 import { toast } from '@/shared/components/ui/Toast';
+import '@/features/community/community.css';
+import '@/features/cabinet/cabinet.css';
 
 interface WishFolderModalProps {
   whiskeyId: number;
@@ -111,7 +113,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
       role="dialog"
       aria-modal="true"
       aria-label="위시 폴더 관리"
-      className="wf-modal-overlay"
+      className="wf-modal-overlay wf-modal-overlay--wish"
       onClick={onClose}
     >
       <div
@@ -121,6 +123,7 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
         {/* 헤더 */}
         <div className="wf-modal-header">
           <div>
+            <p className="wf-modal-kicker">Save to cabinet</p>
             <span className="wf-modal-title">위시 폴더 관리</span>
             <p className="wf-modal-subtitle">폴더를 클릭해서 추가하거나 제거할 수 있어요</p>
           </div>
@@ -148,7 +151,10 @@ export function WishFolderModal({ whiskeyId, onClose, onSuccess }: WishFolderMod
                   onClick={() => handleFolderClick(folder.folderId)}
                   className={`wf-wish-folder-opt${isWished ? ' wf-wish-folder-opt--on' : ''}`}
                 >
-                  <span>📁 {folder.name}</span>
+                  <span className="wf-wish-folder-name">
+                    <span className="wf-wish-folder-icon" aria-hidden="true" />
+                    {folder.name}
+                  </span>
                   {isWished ? (
                     <span className="wf-wish-folder-status--on">♥ 등록됨 (클릭 시 제거)</span>
                   ) : (
