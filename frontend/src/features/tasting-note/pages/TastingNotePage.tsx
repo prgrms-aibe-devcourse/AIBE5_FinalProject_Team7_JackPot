@@ -5,7 +5,9 @@ import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
+import { toast } from '@/shared/components/ui/Toast';
 import {
+  analyzeNoteByAi,
   createTastingNote,
   deleteTastingNote,
   fetchMyTastingNoteForWhiskey,
@@ -102,6 +104,7 @@ export default function TastingNotePage() {
   const [tagModalType, setTagModalType] = useState<TagModalType>(null);
   const [isDraft, setIsDraft] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
 
   const isEditMode = Boolean(existingNote);
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
@@ -167,8 +170,41 @@ export default function TastingNotePage() {
   const currentSelectedCount = currentTagOptions.filter((tag) => selectedTagIds.includes(tag.id)).length;
   const tagModalTitle = tagModalType === 'nose' ? '향 태그' : '맛 태그';
 
-  const handleScoreChange = (key: ScoreKey, value: string) => {
-    const score = Number(value);
+  // AI 분석 버튼 핸들러
+  const handleAiAnalyze = async () => {
+    if (!memo.trim()) {
+      toast('메모를 먼저 입력해주세요.', 'warning');
+      return;
+    }
+    setAiAnalyzing(true);
+    try {
+      const result = await analyzeNoteByAi(memo);
+
+      // 점수 자동 채움 (null이면 0으로 처리)
+      setScores({
+        bodyScore:   result.scores.body   ?? 0,
+        finishScore: result.scores.finish ?? 0,
+        smokyScore:  result.scores.smoky  ?? 0,
+        spicyScore:  result.scores.spicy  ?? 0,
+        sweetScore:  result.scores.sweet  ?? 0,
+      });
+
+      // 태그 자동 선택 (기존 선택에 병합)
+      const aiTagIds = [...result.noseTagIds, ...result.palateTagIds];
+      setSelectedTagIds((prev) => {
+        const merged = [...new Set([...prev, ...aiTagIds])];
+        return merged;
+      });
+
+      toast('AI 분석이 완료되었습니다.', 'success');
+    } catch {
+      toast('AI 분석에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    } finally {
+      setAiAnalyzing(false);
+    }
+  };
+
+  const handleScoreChange = (key: ScoreKey, value: string) => {    const score = Number(value);
     setScores((prev) => ({
       ...prev,
       [key]: Number.isFinite(score) ? Math.min(Math.max(score, 0), 10) : 0,
@@ -234,13 +270,37 @@ export default function TastingNotePage() {
         </section>
 
         <label className="wf-note-editor__memo-label">
-          <span className="wf-text-label">메모</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span className="wf-text-label">메모</span>
+            {/* AI 분석 버튼 — 메모 입력 후 클릭하면 점수/태그 자동 채움 */}
+            <button
+              type="button"
+              disabled={aiAnalyzing || !memo.trim()}
+              onClick={handleAiAnalyze}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '4px 12px',
+                background: aiAnalyzing || !memo.trim() ? '#2e2e38' : '#c9a227',
+                border: 'none',
+                borderRadius: 8,
+                color: aiAnalyzing || !memo.trim() ? '#8b8b96' : '#0c0c0f',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: aiAnalyzing || !memo.trim() ? 'not-allowed' : 'pointer',
+                transition: 'background 0.15s',
+              }}
+            >
+              {aiAnalyzing ? '⏳ 분석 중...' : '✨ AI 분석'}
+            </button>
+          </div>
           <textarea
             className="wf-review-textarea"
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
             rows={6}
-            placeholder="향, 맛, 피니시, 마신 상황 등을 자유롭게 기록하세요."
+            placeholder="향, 맛, 피니시, 마신 상황 등을 자유롭게 기록하세요.&#10;&#10;메모 작성 후 ✨ AI 분석 버튼을 누르면 점수와 태그를 자동으로 채워드립니다."
           />
         </label>
 
