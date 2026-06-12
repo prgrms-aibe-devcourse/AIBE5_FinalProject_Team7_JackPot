@@ -29,7 +29,7 @@ SELECT * FROM (SELECT
 </ol>
 
 <p>궁금한 점은 언제든 Q&A 게시판에 남겨주세요. 빠르게 답변드리겠습니다. 🙏</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '🥃 WhiskeyNote에 오신 걸 환영합니다 — 서비스 소개 및 시작 가이드' AND post_type = 'NOTICE'
 );
@@ -64,7 +64,7 @@ SELECT * FROM (SELECT
 <p>테이스팅 노트는 기본적으로 공개됩니다. 나만 보고 싶은 기록은 리뷰 작성 시 비공개로 설정할 수 있어요.</p>
 
 <blockquote>💬 "처음엔 어렵게 느껴져도, 10번 쓰다 보면 자신만의 언어가 생겨요. 그게 WhiskeyNote의 가장 큰 재미입니다."</blockquote>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '📝 테이스팅 노트 작성 방법 안내' AND post_type = 'NOTICE'
 );
@@ -96,7 +96,7 @@ SELECT * FROM (SELECT
 
 <h3>🆕 업데이트 주기</h3>
 <p>새로운 칼럼은 매일 오전 자동으로 수집됩니다. 좋은 위스키 콘텐츠 소스를 알고 계시다면 Q&A 게시판에 추천해 주세요!</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '📚 위스키 칼럼 게시판 이용 안내' AND post_type = 'NOTICE'
 );
@@ -133,7 +133,7 @@ SELECT * FROM (SELECT
   <li>정확한 영문 제품명을 기재해 주세요</li>
   <li>동일한 위스키의 중복 요청은 자제 부탁드립니다</li>
 </ul>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '🔍 위스키 검색 & 위스키 등록 요청 방법' AND post_type = 'NOTICE'
 );
@@ -172,7 +172,7 @@ SELECT * FROM (SELECT
 
 <h3>🚨 신고 기능</h3>
 <p>부적절한 게시글이나 댓글을 발견하셨다면 신고 버튼을 이용해 주세요. 24시간 내 검토하겠습니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '👥 팔로우 & 커뮤니티 기능 이용 안내' AND post_type = 'NOTICE'
 );
@@ -209,7 +209,7 @@ SELECT * FROM (SELECT
 </ul>
 
 <p>위시리스트는 현재 본인만 볼 수 있으며, 향후 공개/공유 기능 업데이트를 계획하고 있습니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '⭐ 위시리스트 & 픽(Pick) 기능 사용 가이드' AND post_type = 'NOTICE'
 );
@@ -238,7 +238,7 @@ SELECT * FROM (SELECT
 
 <h3>Q. 이메일 인증 메일이 오지 않아요</h3>
 <p>스팸함을 먼저 확인해 주세요. 그래도 없다면 로그인 후 마이페이지 → "이메일 재인증 발송"을 클릭하거나, Q&A 게시판으로 문의해 주세요.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '❓ [FAQ] 회원가입 & 로그인 관련 자주 묻는 질문' AND post_type = 'NOTICE'
 );
@@ -274,7 +274,7 @@ SELECT * FROM (SELECT
 
 <h3>Q. 내 리뷰에 좋아요가 눌렸는지 알 수 있나요?</h3>
 <p>현재는 알림 기능이 준비 중입니다. 마이페이지 → 내 리뷰에서 좋아요 수를 직접 확인해 주세요. 알림 기능은 빠른 시일 내 업데이트 예정입니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '❓ [FAQ] 테이스팅 노트 & 리뷰 관련 자주 묻는 질문' AND post_type = 'NOTICE'
 );
@@ -305,7 +305,7 @@ SELECT * FROM (SELECT
 
 <h3>Q. 위스키 이미지가 없는 경우는 어떻게 하나요?</h3>
 <p>일부 위스키는 이미지가 없을 수 있습니다. 이미지 제보도 Q&A 게시판으로 해주시면 감사히 반영하겠습니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '❓ [FAQ] 위스키 검색 & 데이터 관련 자주 묻는 질문' AND post_type = 'NOTICE'
 );
@@ -335,7 +335,7 @@ SELECT * FROM (SELECT
 
 <h3>Q. 픽한 위스키를 한꺼번에 삭제할 수 있나요?</h3>
 <p>현재는 개별 삭제만 가능합니다. 일괄 삭제 기능은 향후 업데이트 예정입니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '❓ [FAQ] 위시리스트 & 픽 관련 자주 묻는 질문' AND post_type = 'NOTICE'
 );
@@ -371,7 +371,7 @@ SELECT * FROM (SELECT
 
 <h3>Q. 서비스 관련 제안이나 피드백은 어디에 남기나요?</h3>
 <p>Q&A 게시판의 <strong>"서비스 제안"</strong> 카테고리에 자유롭게 남겨주세요. 모든 피드백을 꼼꼼히 읽고 서비스 개선에 반영하겠습니다.</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '❓ [FAQ] 서비스 이용 & 기타 자주 묻는 질문' AND post_type = 'NOTICE'
 );
@@ -422,7 +422,7 @@ SELECT * FROM (SELECT
 
 <h3>💬 기능 제안은 언제나 환영!</h3>
 <p>원하시는 기능이 있다면 Q&A 게시판에 남겨주세요. 사용자 여러분의 의견이 WhiskeyNote을 만들어갑니다. 🥃</p>',
-  0, false, NOW(), NOW()) AS tmp
+  0, false, NOW() AS created_at, NOW() AS updated_at) AS tmp
 WHERE NOT EXISTS (
   SELECT 1 FROM posts WHERE title = '🔔 서비스 업데이트 예정 기능 안내 (2024년 하반기)' AND post_type = 'NOTICE'
 );
