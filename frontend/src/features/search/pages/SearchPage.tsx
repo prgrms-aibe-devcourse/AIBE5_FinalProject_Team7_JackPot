@@ -526,11 +526,19 @@ export default function SearchPage() {
             </Button>
           </form>
 
-          <p className="wf-text-sm">
-            {isInitialLoading ? '불러오는 중' : keyword ? `"${keyword}" 검색 결과 ${totalCount}건` : `전체 결과 ${totalCount}건`}
-            {isFilterActive ? ' · 필터 적용' : ''}
-            {isFetching && !isInitialLoading ? ' · 새로고침 중' : ''}
-          </p>
+          <div className="wf-search-result-status">
+            <div>
+              <p className="wf-text-label">Search result</p>
+              <strong>
+                {isInitialLoading ? '위스키를 찾는 중입니다' : keyword ? `"${keyword}" 검색 결과` : '전체 위스키'}
+              </strong>
+            </div>
+            <span>
+              {isInitialLoading ? 'Loading' : `${totalCount.toLocaleString()}건`}
+              {isFilterActive ? ' · 필터 적용' : ''}
+              {isFetching && !isInitialLoading ? ' · 갱신 중' : ''}
+            </span>
+          </div>
 
           {correctedKeyword ? (
             <div className="wf-search-correction wf-box">
@@ -547,7 +555,8 @@ export default function SearchPage() {
           ) : null}
 
           {isError ? (
-            <div className="wf-box wf-search-error-box">
+            <div className="wf-box wf-search-state-box wf-search-error-box">
+              <p className="wf-text-label">Connection issue</p>
               <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
               <p className="wf-card__meta">{searchErrorMessage}</p>
               <div className="wf-search-state-actions">
@@ -572,6 +581,11 @@ export default function SearchPage() {
 
           {isInitialLoading ? (
             <div className="wf-search-skeleton-list" aria-label="검색 결과를 불러오는 중">
+              <div className="wf-search-skeleton-intro wf-box">
+                <p className="wf-text-label">Curating bottles</p>
+                <strong>조건에 맞는 위스키를 정리하고 있어요.</strong>
+                <span>잠시만 기다리면 추천 후보가 차례로 나타납니다.</span>
+              </div>
               {Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="wf-box wf-search-skeleton-card">
                   <div className="wf-search-skeleton-card__thumb" />
@@ -586,24 +600,42 @@ export default function SearchPage() {
           ) : null}
 
           {!isInitialLoading && !isError && results.length === 0 ? (
-            <div className="wf-box wf-search-empty-box">
+            <div className="wf-box wf-search-state-box wf-search-empty-box">
+              <p className="wf-text-label">No matches</p>
               <p className="wf-card__title">검색 결과가 없습니다.</p>
-              <p className="wf-card__meta">다른 검색어로 다시 찾아보거나 등록을 요청해보세요.</p>
+              <p className="wf-card__meta">
+                검색어를 조금 줄이거나 필터를 초기화해보세요. 찾는 위스키가 없다면 등록 요청으로 남길 수 있어요.
+              </p>
               {/* 1번: 검색 결과 없을 때 등록 요청 버튼 */}
-              <button
-                type="button"
-                className="wf-search-register-btn"
-                onClick={() => {
-                  if (!localStorage.getItem('accessToken')) {
-                    const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
-                    if (go) navigate(PATHS.LOGIN);
-                    return;
-                  }
-                  setShowRequestModal(true);
-                }}
-              >
-                위스키 등록 요청하기
-              </button>
+              <div className="wf-search-state-actions">
+                <button
+                  type="button"
+                  className="wf-search-register-btn"
+                  onClick={() => {
+                    if (!localStorage.getItem('accessToken')) {
+                      const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+                      if (go) navigate(PATHS.LOGIN);
+                      return;
+                    }
+                    setShowRequestModal(true);
+                  }}
+                >
+                  위스키 등록 요청하기
+                </button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setInputValue('');
+                    setKeyword('');
+                    setPage(0);
+                    resetFilters();
+                  }}
+                >
+                  전체 목록 보기
+                </Button>
+              </div>
             </div>
           ) : null}
 
