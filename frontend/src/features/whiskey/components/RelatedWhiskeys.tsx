@@ -68,7 +68,7 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
                 <div className="wf-card__body">
                   <p className="wf-card__title">{w.name}</p>
                   <p className="wf-related-whiskeys__meta">
-                    {(TYPE_LABEL[w.type] ?? w.type)} · {w.region}
+                    {TYPE_LABEL[w.type] ?? w.type}
                   </p>
                   <p className="wf-related-whiskeys__rating">
                     <span className="wf-stars">★</span> {(w.avgRating ?? 0).toFixed(1)}

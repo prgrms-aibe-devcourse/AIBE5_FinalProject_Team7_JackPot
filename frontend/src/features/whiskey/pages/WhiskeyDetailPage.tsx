@@ -333,6 +333,12 @@ export default function WhiskeyDetailPage() {
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
   const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
+  const heroChips = [
+    formatType(detail.type),
+    detail.country,
+    ageLabel,
+    `${detail.abv}% ABV`,
+  ];
 
   return (
     <WireframePage scroll>
@@ -345,9 +351,14 @@ export default function WhiskeyDetailPage() {
       )}
       <header className="wf-detail-hero">
         <div className="wf-detail-hero__copy">
-          <p className="wf-detail-hero__eyebrow">{detail.distillery ?? detail.region}</p>
+          <p className="wf-detail-hero__eyebrow">{detail.distillery ?? detail.country}</p>
           <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
           <p className="wf-detail-hero__meta">{metaLine}</p>
+          <div className="wf-detail-hero__chips" aria-label="위스키 주요 정보">
+            {heroChips.map((chip, index) => (
+              <span key={`${chip}-${index}`}>{chip}</span>
+            ))}
+          </div>
         </div>
         <div className="wf-detail-hero__stats" aria-label="위스키 요약">
           <div className="wf-detail-hero__stat">
@@ -378,6 +389,7 @@ export default function WhiskeyDetailPage() {
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
           <div className="wf-detail-sidebar__image-frame">
+            <span className="wf-detail-sidebar__image-kicker">Bottle profile</span>
             {imageSrc && !imgError ? (
               <img
                 src={imageSrc}
@@ -388,6 +400,7 @@ export default function WhiskeyDetailPage() {
             ) : (
               <div className="wf-placeholder wf-detail-sidebar__image" aria-hidden />
             )}
+            <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
           <div className="wf-detail-sidebar__actions">
             <Button
@@ -418,8 +431,6 @@ export default function WhiskeyDetailPage() {
             {[
               ['숙성', ageLabel],
               ['도수', `${detail.abv}%`],
-              ['지역', detail.region],
-              ['캐스크', detail.cask ?? '—'],
             ].map(([k, v]) => (
               <div key={k} className="wf-box wf-grid2__item">
                 <div className="wf-text-xs">{k}</div>
