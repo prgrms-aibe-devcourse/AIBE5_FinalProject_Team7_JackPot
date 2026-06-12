@@ -1,4 +1,5 @@
 // 게시글 수정 페이지 — 기존 게시글 데이터를 불러와 폼에 초기화한 뒤 PATCH 요청으로 저장
+import '../community.css';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
