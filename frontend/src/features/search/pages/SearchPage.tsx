@@ -81,7 +81,7 @@ type TagModalType = 'nose' | 'taste' | null;
 
 function buildMeta(whiskey: WhiskeyCard) {
   const age = whiskey.ageYears == null ? null : whiskey.ageYears === 0 ? 'NAS' : `${whiskey.ageYears}년`;
-  return [whiskey.country, whiskey.abv != null ? `${whiskey.abv}%` : null, age]
+  return [whiskey.region, whiskey.country, whiskey.abv != null ? `${whiskey.abv}%` : null, age]
     .filter(Boolean)
     .join(' · ');
 }

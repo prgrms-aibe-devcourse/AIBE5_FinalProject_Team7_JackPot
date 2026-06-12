@@ -336,6 +336,7 @@ export default function WhiskeyDetailPage() {
   const heroChips = [
     formatType(detail.type),
     detail.country,
+    detail.region,
     ageLabel,
     `${detail.abv}% ABV`,
   ];
@@ -431,6 +432,7 @@ export default function WhiskeyDetailPage() {
             {[
               ['숙성', ageLabel],
               ['도수', `${detail.abv}%`],
+              ['지역', detail.region],
             ].map(([k, v]) => (
               <div key={k} className="wf-box wf-grid2__item">
                 <div className="wf-text-xs">{k}</div>
