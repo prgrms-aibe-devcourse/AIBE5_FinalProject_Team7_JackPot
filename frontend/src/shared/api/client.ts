@@ -26,6 +26,7 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+  timeout: 10_000,
 });
 
 // 요청 시 AccessToken 자동 첨부
