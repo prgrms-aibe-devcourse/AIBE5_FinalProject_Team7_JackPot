@@ -1,6 +1,7 @@
 // 사용자 작성 칼럼 게시판 목록 페이지
 // useColumns → GET /community/columns (PostType.COLUMN 기반 posts 테이블)
 // useWhiskeyColumns(GET /columns, 크롤링 외부 콘텐츠)와 다른 API임에 주의
+import '../community.css';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';

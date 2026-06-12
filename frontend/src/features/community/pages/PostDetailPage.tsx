@@ -1,5 +1,6 @@
 // 게시글 상세 페이지 — 본문·좋아요·댓글 스레드·관련 위스키 링크를 통합 표시
 // COLUMN 타입은 ReactMarkdown으로 렌더링해 칼럼 고유 디자인 유지
+import '../community.css';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';

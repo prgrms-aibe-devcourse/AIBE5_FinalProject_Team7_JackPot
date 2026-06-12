@@ -1,4 +1,5 @@
 // 게시글 작성 페이지 — URL 파라미터 ?type=으로 칼럼/자유게시판을 구분해 UI를 분기
+import '../community.css';
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';

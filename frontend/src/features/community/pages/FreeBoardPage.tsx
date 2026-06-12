@@ -1,4 +1,5 @@
 // 자유게시판 페이지 — 카테고리 필터 + 페이지네이션을 갖춘 자유 게시글 목록
+import '../community.css';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';

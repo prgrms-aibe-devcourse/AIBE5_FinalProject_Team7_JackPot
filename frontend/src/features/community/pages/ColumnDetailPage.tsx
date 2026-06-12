@@ -1,4 +1,5 @@
 // 위스키 칼럼 상세 페이지 — 마크다운 본문 렌더링 및 출처 카드 표시
+import '../community.css';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
