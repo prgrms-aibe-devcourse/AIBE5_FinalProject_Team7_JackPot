@@ -124,9 +124,9 @@
 .wf-onboarding-video {
   position: absolute;
   z-index: 2;
-  top: 48%;
-  right: clamp(28px, 5vw, 86px);
-  width: min(520px, 34vw);
+  top: 22%;
+  right: clamp(16px, 1vw, 86px);
+  width: min(620px, 40vw);
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid rgba(240, 202, 104, 0.2);
