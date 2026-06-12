@@ -121,7 +121,8 @@ public class SecurityConfig {
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
-                                "/api/v1/tasting-notes"
+                                "/api/v1/tasting-notes",
+                                "/api/v1/tasting-notes/analyze"
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.PATCH,

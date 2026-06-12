@@ -91,6 +91,24 @@ export async function deleteTastingNote(
   await apiClient.delete(`/tasting-notes/${noteId}`);
 }
 
+// AI 분석 응답 타입
+export interface AiAnalyzeResult {
+  scores: {
+    body:   number | null;
+    finish: number | null;
+    smoky:  number | null;
+    spicy:  number | null;
+    sweet:  number | null;
+  };
+  noseTagIds:   number[];
+  palateTagIds: number[];
+}
+
+export async function analyzeNoteByAi(memo: string): Promise<AiAnalyzeResult> {
+  const { data } = await apiClient.post<{ data: AiAnalyzeResult }>('/tasting-notes/analyze', { memo });
+  return data.data;
+}
+
 export const noteApi = {
   client: apiClient,
   fetchMyTastingNoteForWhiskey,

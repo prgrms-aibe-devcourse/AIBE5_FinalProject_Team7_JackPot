@@ -39,7 +39,13 @@ spring:
   #     data-locations: classpath:data.sql,classpath:local-whiskey-image-patch.sql
 
 # --------------------------------------------------
-# 추후 API 키가 생기면 아래 형식으로 추가하세요
+# Anthropic Claude API 키 (AI 테이스팅 노트 분석)
+# 각자 anthropic api key를 발급 후 (발급 주소 : https://console.anthropic.com)
+# 아래 코드를 복사 후 application-local.yaml에 추가
+#
+# anthropic:
+#   api-key: your_anthropic_api_key
+# --------------------------------------------------
 # kakao:
 #   api-key: your_kakao_api_key
 #

@@ -1,6 +1,10 @@
 package com.jackpot.whiskeynote.domain.taste.note.controller;
 
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.domain.taste.note.dto.AiNoteAnalyzeRequest;
+import com.jackpot.whiskeynote.domain.taste.note.dto.AiNoteAnalyzeResponse;
+import com.jackpot.whiskeynote.global.response.ApiResponse;
+import com.jackpot.whiskeynote.domain.taste.note.service.AnthropicService;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteResponse;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteTagResponse;
@@ -29,6 +33,7 @@ public class TastingNoteController {
     private final UsersRepository usersRepository;
     private final WhiskeyRepository whiskeyRepository;
     private final TastingNoteService tastingNoteService;
+    private final AnthropicService anthropicService;
     // 리뷰 작성 시, 특정 위스키에 대해 내가 작성한 공개 시음 노트 조회
     @GetMapping("/api/v1/whiskeys/{whiskeyId}/notes/my")
     public ResponseEntity<TastingNoteResponse> getMyNoteForReview(
@@ -57,6 +62,15 @@ public class TastingNoteController {
     ) {
         return tastingNoteService.getMyTastingNote(principal.userId(), noteId);
     }
+    // AI 테이스팅 노트 분석
+    @PostMapping("/api/v1/tasting-notes/analyze")
+    public ApiResponse<AiNoteAnalyzeResponse> analyzeTastingNote(
+            @AuthenticationPrincipal JwtUserPrincipal principal,
+            @Valid @RequestBody AiNoteAnalyzeRequest request
+    ) {
+        return ApiResponse.ok(anthropicService.analyze(request.memo()));
+    }
+
     // 시음 노트 생성
     @PostMapping("/api/v1/tasting-notes")
     @ResponseStatus(HttpStatus.CREATED)

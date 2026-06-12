@@ -47,6 +47,9 @@ aws:
     presign-duration-minutes: 10
     max-size-bytes: 5242880
 
+anthropic:
+  api-key: "${ANTHROPIC_API_KEY:}"  # 로컬 테스트 시 환경변수로 주입. 없으면 빈 값 → AI-06~08 스킵
+
 oauth:
   google:
     client-id: test-google-client-id
