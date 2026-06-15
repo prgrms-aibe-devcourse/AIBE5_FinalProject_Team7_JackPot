@@ -369,6 +369,9 @@ export default function CabinetPage() {
     try {
       await cabinetApi.deletePick(whiskeyId);
       setPicks((prev) => prev.filter((p) => p.whiskey.id !== whiskeyId));
+      setCabinetStats((prev) => (
+        prev ? { ...prev, pickCount: Math.max(0, prev.pickCount - 1) } : prev
+      ));
     } catch {
       toast('픽 제거에 실패했습니다.', 'error');
     }
