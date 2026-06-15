@@ -19,3 +19,9 @@ export function unwrapApiData<T>(payload: ApiResponse<T>): T {
   }
   return payload.data;
 }
+
+export function unwrapApiVoid(payload: ApiResponse<unknown>): void {
+  if (!payload.success) {
+    throw new Error(payload.error?.message ?? 'API request failed');
+  }
+}
