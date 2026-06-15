@@ -8,7 +8,7 @@
  * Authorization Bearer 자동 첨부 (apiClient)
  */
 import { apiClient } from '@/shared/api/client';
-import { unwrapApiData } from '@/shared/api/types/response';
+import { unwrapApiData, unwrapApiVoid } from '@/shared/api/types/response';
 
 export interface UserMeDto {
   userId: number;
@@ -47,7 +47,7 @@ export async function updateMe(body: UpdateUserMeRequest): Promise<UserMeDto> {
 // 의도: 탈퇴 API 호출 — 세션 삭제는 MyPage에서 clearAuthSession
 export async function deleteMe(): Promise<void> {
   const res = await apiClient.delete('/users/me');
-  unwrapApiData(res.data);
+  unwrapApiVoid(res.data);
 }
 
 // SET-01: updateMyPassword
