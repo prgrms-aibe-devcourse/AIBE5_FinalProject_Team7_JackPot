@@ -398,6 +398,7 @@ export default function CabinetPage() {
         total += (itemRes.data.data ?? []).length;
       }
       setTotalWishCount(total);
+      setCabinetStats((prev) => (prev ? { ...prev, wishCount: total } : prev));
     } catch {
       // 위시 카운트는 보조 정보라 실패해도 화면 흐름은 유지합니다.
     }
