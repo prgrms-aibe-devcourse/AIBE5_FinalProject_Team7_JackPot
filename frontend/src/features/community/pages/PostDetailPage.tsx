@@ -3,6 +3,7 @@
 import '../community.css';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
@@ -34,6 +35,7 @@ export default function PostDetailPage() {
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
 
+  const qc = useQueryClient();
   const { data: post, isLoading, isError } = usePost(numericId);
   const { data: comments = [], isLoading: commentsLoading } = useComments(numericId);
 
@@ -77,7 +79,9 @@ export default function PostDetailPage() {
   async function handleDelete() {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
     await deletePost(post!.id);
-    navigate(PATHS.COMMUNITY);
+    // 삭제 후 모든 community 목록 캐시를 무효화해 이전 목록 페이지에서 삭제된 글이 보이지 않도록 함
+    qc.invalidateQueries({ queryKey: ['community'] });
+    navigate(-1);
   }
 
   // 로그인 여부를 확인한 뒤에만 실제 동작을 실행 — 모든 인증 필요 액션에 공통 적용
