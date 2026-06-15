@@ -184,7 +184,7 @@ export default function UserProfilePage() {
       <WireframePage scroll>
         <CabinetProfileHeader
           name={displayName}
-          subtitle="애호가 · 보틀 쉐어 공개"
+          subtitle="애호가"
           profileImageUrl={profileImageUrl}
           followers={followerCount}
           following={followingCount}
@@ -204,7 +204,7 @@ export default function UserProfilePage() {
     <WireframePage scroll>
       <CabinetProfileHeader
         name={displayName}
-        subtitle="애호가 · 보틀 쉐어 공개"
+        subtitle="애호가"
         profileImageUrl={profileImageUrl}
         followers={followerCount}
         following={followingCount}

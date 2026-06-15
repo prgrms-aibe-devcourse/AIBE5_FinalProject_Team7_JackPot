@@ -588,7 +588,7 @@ export default function CabinetPage() {
     <WireframePage scroll>
       <CabinetProfileHeader
         name={currentNickname ? `${currentNickname} (my)` : '내 캐비넷'}
-        subtitle="애호가 · 보틀 쉐어 공개"
+        subtitle="애호가"
         profileImageUrl={currentProfileImageUrl}
         followers={followerCount?.count ?? 0}
         following={followingCount?.count ?? 0}

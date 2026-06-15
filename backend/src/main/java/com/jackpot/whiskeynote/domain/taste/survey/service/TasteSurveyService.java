@@ -1,6 +1,8 @@
 package com.jackpot.whiskeynote.domain.taste.survey.service;
 
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse.*;
@@ -28,6 +30,7 @@ public class TasteSurveyService {
     private final TagRepository tagRepository;
     private final UserTasteProfileRepository profileRepository;
     private final WhiskeyRecommendationService whiskeyRecommendationService;
+    private final UsersRepository usersRepository;
 
     @Transactional(readOnly = true)
     public SurveyResultResponse calculate(SurveyRequest req) {
@@ -79,7 +82,14 @@ public class TasteSurveyService {
         List<Long> noseTagIds  = req.noseTags()  != null ? req.noseTags()  : List.of();
         List<Long> tasteTagIds = req.tasteTags() != null ? req.tasteTags() : List.of();
         saveProfile(userId, sweet, body, smoky, spicy, finish, noseTagIds, tasteTagIds, result.userType());
+        completeOnboarding(userId);
         return result;
+    }
+
+    private void completeOnboarding(Long userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+        user.completeOnboarding();
     }
 
     @Transactional
