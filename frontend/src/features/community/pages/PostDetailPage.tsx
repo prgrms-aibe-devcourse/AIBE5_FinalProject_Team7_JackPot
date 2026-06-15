@@ -79,9 +79,14 @@ export default function PostDetailPage() {
   async function handleDelete() {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
     await deletePost(post!.id);
-    // 삭제 후 모든 community 목록 캐시를 무효화해 이전 목록 페이지에서 삭제된 글이 보이지 않도록 함
     qc.invalidateQueries({ queryKey: ['community'] });
-    navigate(-1);
+    const boardPath: Record<string, string> = {
+      COLUMN: PATHS.COMMUNITY_COLUMNS,
+      FREE: PATHS.COMMUNITY_FREE,
+      QA: PATHS.COMMUNITY_QNA,
+      NOTICE: PATHS.COMMUNITY_NOTICES,
+    };
+    navigate(boardPath[post!.postType] ?? PATHS.COMMUNITY);
   }
 
   // 로그인 여부를 확인한 뒤에만 실제 동작을 실행 — 모든 인증 필요 액션에 공통 적용
