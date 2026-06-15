@@ -623,11 +623,6 @@ export default function CabinetPage() {
               <Button to={PATHS.REVIEW_PICK} size="sm">+ 리뷰 작성</Button>
             )}
           </div>
-          {tab === 'pick' && (
-            <label className="wf-cabinet-share">
-              <input type="checkbox" defaultChecked /> 보틀 쉐어 공개
-            </label>
-          )}
           {tab === 'reviews' ? (
             <>
               {currentUserId == null ? (
