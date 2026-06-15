@@ -82,6 +82,11 @@ public class AuthService {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
+        // 탈퇴 계정 로그인 차단
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("탈퇴한 계정입니다.");
+        }
+
         // 밴 계정 로그인 차단
         if (user.isBanned()) {
             throw new IllegalArgumentException("관리자에 의해 이용이 제한된 계정입니다.");

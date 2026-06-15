@@ -217,7 +217,8 @@ public class AnthropicService {
     }
 
     // Short 값 파싱 (null 허용)
-    private Short parseShort(JsonNode node, String field) {        JsonNode value = node.path(field);
+    private Short parseShort(JsonNode node, String field) {
+        JsonNode value = node.path(field);
         return (value.isNull() || value.isMissingNode()) ? null : (short) value.asInt();
     }
 
