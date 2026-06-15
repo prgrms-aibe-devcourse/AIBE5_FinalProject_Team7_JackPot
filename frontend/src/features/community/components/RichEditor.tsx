@@ -50,7 +50,7 @@ export function RichEditor({ value, onChange, placeholder = '내용을 입력하
   useEffect(() => {
     if (!editor) return;
     if (!synced.current && value && editor.isEmpty) {
-      editor.commands.setContent(value, false);
+      editor.commands.setContent(value, { emitUpdate: false });
       synced.current = true;
     }
   }, [editor, value]);
