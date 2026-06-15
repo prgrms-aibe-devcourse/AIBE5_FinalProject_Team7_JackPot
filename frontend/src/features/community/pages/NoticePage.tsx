@@ -1,7 +1,6 @@
 // 공지·FAQ 페이지 — 운영 공지와 자주 묻는 질문을 하나의 목록으로 표시
 import '../community.css';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
@@ -9,7 +8,15 @@ import { PostList } from '../components/PostList';
 import { useNotices } from '../hooks/useCommunity';
 
 export default function NoticePage() {
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '0');
+  function setPage(n: number) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(n));
+      return next;
+    }, { replace: true });
+  }
   const { data, isLoading } = useNotices(page);
 
   return (

@@ -1,7 +1,6 @@
 // Q&A 게시판 페이지 — 질문/답변 유형의 게시글을 페이지네이션과 함께 표시
 import '../community.css';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
@@ -9,7 +8,15 @@ import { PostList } from '../components/PostList';
 import { useQnaPosts } from '../hooks/useCommunity';
 
 export default function QnaPage() {
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '0');
+  function setPage(n: number) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(n));
+      return next;
+    }, { replace: true });
+  }
   const { data, isLoading } = useQnaPosts(page);
 
   return (

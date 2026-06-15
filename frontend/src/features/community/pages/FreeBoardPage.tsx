@@ -1,7 +1,6 @@
 // 자유게시판 페이지 — 카테고리 필터 + 페이지네이션을 갖춘 자유 게시글 목록
 import '../community.css';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
@@ -22,14 +21,28 @@ const CATEGORIES: Array<{ value: PostCategory | undefined; label: string }> = [
 ];
 
 export default function FreeBoardPage() {
-  const [page, setPage] = useState(0);
-  const [category, setCategory] = useState<PostCategory | undefined>(undefined);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '0');
+  const category = (searchParams.get('category') as PostCategory | null) ?? undefined;
   const { data, isLoading } = useFreePosts(page, category);
+
+  function setPage(n: number) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(n));
+      return next;
+    }, { replace: true });
+  }
 
   // 카테고리를 변경하면 페이지를 0으로 초기화해야 이전 카테고리의 끝 페이지가 남지 않음
   function handleCategory(val: PostCategory | undefined) {
-    setCategory(val);
-    setPage(0);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', '0');
+      if (val === undefined) next.delete('category');
+      else next.set('category', val);
+      return next;
+    }, { replace: true });
   }
 
   return (

@@ -16,7 +16,7 @@ import {
   likePost,
   unlikePost,
 } from '../api/communityApi';
-import type { CommentCreateRequest, PostCategory } from '../types';
+import type { CommentCreateRequest, PostCategory, PostDetailDto } from '../types';
 
 // communityKeys: 쿼리 키를 중앙 집중식으로 관리하는 객체.
 // 배열 형태를 사용하는 이유는 React Query가 키의 prefix 기반으로 invalidate를 지원하기 때문이다.
@@ -89,17 +89,24 @@ export function useComments(postId: number | undefined) {
   });
 }
 
-// 낙관적 업데이트(optimistic update)를 적용하지 않은 이유:
-// 좋아요 상태는 서버의 실제 상태와 반드시 동기화되어야 한다.
-// 낙관적 업데이트를 하면 실패 시 롤백 로직이 복잡해지고,
-// 중복 클릭 방지(isLoading 체크)로도 UX가 충분히 자연스럽기 때문이다.
-// onSuccess에서 invalidateQueries를 호출해 서버 상태를 다시 받아온다.
+// invalidateQueries 대신 setQueryData를 사용하는 이유:
+// invalidateQueries → GET /posts/{id} 재호출 → 백엔드 getPost()가 incrementViewCount()를 실행 → 조회수 오증가.
+// 좋아요 API 성공 시 결과는 확정적이므로 캐시를 직접 업데이트해 불필요한 재조회를 방지한다.
 export function useLikePost(postId: number) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (isLiked: boolean) =>
       isLiked ? unlikePost(postId) : likePost(postId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: communityKeys.post(postId) }),
+    onSuccess: (_, isLiked) => {
+      qc.setQueryData(communityKeys.post(postId), (old: PostDetailDto | undefined) => {
+        if (!old) return old;
+        return {
+          ...old,
+          isLiked: !isLiked,
+          likeCount: isLiked ? old.likeCount - 1 : old.likeCount + 1,
+        };
+      });
+    },
   });
 }
 

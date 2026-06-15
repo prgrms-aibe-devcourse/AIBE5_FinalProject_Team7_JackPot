@@ -1,5 +1,5 @@
 // WYSIWYG 리치 에디터 컴포넌트 — Tiptap 기반으로 칼럼 작성 시 HTML 본문을 생성
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -43,6 +43,17 @@ export function RichEditor({ value, onChange, placeholder = '내용을 입력하
     // 에디터 내용이 바뀔 때마다 HTML을 상위 상태로 올려 제출 시 최신 HTML이 사용되도록 함
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
+
+  // 편집 페이지에서 value prop이 비동기로 채워지면(usePost 로딩 완료 후) 에디터에 반영
+  // synced 플래그로 한 번만 동기화하여 사용자 입력을 덮어쓰지 않음
+  const synced = useRef(false);
+  useEffect(() => {
+    if (!editor) return;
+    if (!synced.current && value && editor.isEmpty) {
+      editor.commands.setContent(value, { emitUpdate: false });
+      synced.current = true;
+    }
+  }, [editor, value]);
 
   // 에디터가 아직 초기화되지 않은 SSR/hydration 구간에서는 null 반환
   if (!editor) return null;
