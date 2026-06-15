@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -10,6 +10,7 @@ import {
   analyzeNoteByAi,
   createTastingNote,
   deleteTastingNote,
+  fetchTastingNote,
   fetchMyTastingNoteForWhiskey,
   updateTastingNote,
   type TastingNoteSaveRequest,
@@ -81,14 +82,25 @@ function toggleId(ids: number[], id: number) {
 
 export default function TastingNotePage() {
   const { whiskeyId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const id = whiskeyId ?? '1';
   const currentUserId = getCurrentUserId();
+  const noteIdParam = searchParams.get('noteId');
+  const parsedNoteId = noteIdParam ? Number(noteIdParam) : NaN;
+  const targetNoteId = Number.isFinite(parsedNoteId) && parsedNoteId > 0 ? parsedNoteId : null;
+  const returnTo = searchParams.get('returnTo');
   const { data: whiskey } = useWhiskeyDetail(id);
   const { data: existingNote, isLoading: noteLoading } = useQuery({
-    queryKey: ['tasting-note', 'my', currentUserId, id],
-    queryFn: () => fetchMyTastingNoteForWhiskey(id),
+    queryKey: targetNoteId
+      ? ['tasting-note', 'detail', currentUserId, targetNoteId]
+      : ['tasting-note', 'my', currentUserId, id],
+    queryFn: () => (
+      targetNoteId
+        ? fetchTastingNote(targetNoteId)
+        : fetchMyTastingNoteForWhiskey(id)
+    ),
     enabled: currentUserId != null,
   });
 
@@ -109,6 +121,8 @@ export default function TastingNotePage() {
 
   const isEditMode = Boolean(existingNote);
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
+  const cabinetNotePath = `${PATHS.CABINET}?section=bar&tab=note`;
+  const exitPath = returnTo === 'cabinet-note' ? cabinetNotePath : detailPath;
 
   useEffect(() => {
     if (!existingNote) return;
@@ -139,8 +153,12 @@ export default function TastingNotePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
+      queryClient.invalidateQueries({ queryKey: ['tasting-notes', 'my'] });
+      if (targetNoteId) {
+        queryClient.invalidateQueries({ queryKey: ['tasting-note', 'detail', currentUserId, targetNoteId] });
+      }
       queryClient.invalidateQueries({ queryKey: ['whiskey', 'detail', id] });
-      navigate(detailPath);
+      navigate(exitPath);
     },
   });
 
@@ -152,8 +170,12 @@ export default function TastingNotePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
+      queryClient.invalidateQueries({ queryKey: ['tasting-notes', 'my'] });
+      if (targetNoteId) {
+        queryClient.invalidateQueries({ queryKey: ['tasting-note', 'detail', currentUserId, targetNoteId] });
+      }
       queryClient.invalidateQueries({ queryKey: ['whiskey', 'detail', id] });
-      navigate(detailPath);
+      navigate(exitPath);
     },
   });
 
@@ -391,7 +413,7 @@ export default function TastingNotePage() {
               {deleteMutation.isPending ? '삭제 중...' : '삭제'}
             </Button>
           )}
-          <Button type="button" variant="ghost" onClick={() => navigate(detailPath)}>
+          <Button type="button" variant="ghost" onClick={() => navigate(exitPath)}>
             취소
           </Button>
         </div>

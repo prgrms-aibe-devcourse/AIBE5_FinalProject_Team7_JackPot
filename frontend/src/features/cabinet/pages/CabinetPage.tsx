@@ -199,7 +199,7 @@ function CabinetNoteDetail({ note }: { note: MyTastingNote }) {
 
 function MyNoteItem({ note }: { note: MyTastingNote }) {
   const [isOpen, setIsOpen] = useState(false);
-  const editPath = PATHS.TASTING_NOTE.replace(':whiskeyId', String(note.whiskeyId));
+  const editPath = `${PATHS.TASTING_NOTE.replace(':whiskeyId', String(note.whiskeyId))}?noteId=${note.id}&returnTo=cabinet-note`;
   const isDraft = Boolean(note.isDraft ?? note.draft);
   const tagPreview = note.tags?.slice(0, 4) ?? [];
 
