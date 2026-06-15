@@ -6,23 +6,22 @@ import { authApi } from '@/features/auth/api/authApi';
 import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 
-/** MyPage 등에서 프로필 저장 후 TopNav 아바타 갱신용 */
 export const PROFILE_UPDATED_EVENT = 'whiskeynote:profile-updated';
 
 const NAV = [
-  { to: PATHS.LOUNGE, label: '라운지' },
-  { to: PATHS.SEARCH, label: '검색' },
+  { to: PATHS.LOUNGE,    label: '라운지' },
+  { to: PATHS.SEARCH,    label: '검색' },
   { to: PATHS.COMMUNITY, label: '커뮤니티' },
-  { to: PATHS.CABINET, label: '캐비넷' },
-  { to: PATHS.SURVEY, label: '설문조사' },
-  { to: PATHS.MY_PAGE, label: '마이페이지' },
+  { to: PATHS.CABINET,   label: '캐비넷' },
+  { to: PATHS.SURVEY,    label: '설문조사' },
+  { to: PATHS.MY_PAGE,   label: '마이페이지' },
 ];
 
 interface TopNavProps {
   searchPlaceholder?: string;
 }
 
-export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) {
+export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
@@ -52,22 +51,21 @@ export function TopNav({ searchPlaceholder = '위스키 검색' }: TopNavProps) 
 
   return (
     <nav className="wf-topnav">
+      {/* 로고 */}
       <Link to={PATHS.LANDING} className="wf-topnav__logo-link">
         <div className="wf-topnav__logo">Whiskey Note</div>
       </Link>
 
-      <Link to={PATHS.SEARCH} className="wf-input wf-topnav__search">
-        {searchPlaceholder}
-      </Link>
-
+      {/* 네비게이션 링크 — 검색 입력창 제거, 메뉴만 유지 */}
       <div className="wf-topnav__links">
         {NAV.map(({ to, label }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => (isActive ? 'active' : undefined)}>
+          <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'active' : undefined}>
             {label}
           </NavLink>
         ))}
       </div>
 
+      {/* 유저 영역 */}
       <div className="wf-topnav__user">
         {isLoggedIn ? (
           <>

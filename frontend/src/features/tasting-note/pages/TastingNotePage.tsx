@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -10,6 +10,7 @@ import {
   analyzeNoteByAi,
   createTastingNote,
   deleteTastingNote,
+  fetchTastingNote,
   fetchMyTastingNoteForWhiskey,
   updateTastingNote,
   type TastingNoteSaveRequest,
@@ -81,14 +82,25 @@ function toggleId(ids: number[], id: number) {
 
 export default function TastingNotePage() {
   const { whiskeyId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const id = whiskeyId ?? '1';
   const currentUserId = getCurrentUserId();
+  const noteIdParam = searchParams.get('noteId');
+  const parsedNoteId = noteIdParam ? Number(noteIdParam) : NaN;
+  const targetNoteId = Number.isFinite(parsedNoteId) && parsedNoteId > 0 ? parsedNoteId : null;
+  const returnTo = searchParams.get('returnTo');
   const { data: whiskey } = useWhiskeyDetail(id);
   const { data: existingNote, isLoading: noteLoading } = useQuery({
-    queryKey: ['tasting-note', 'my', currentUserId, id],
-    queryFn: () => fetchMyTastingNoteForWhiskey(id),
+    queryKey: targetNoteId
+      ? ['tasting-note', 'detail', currentUserId, targetNoteId]
+      : ['tasting-note', 'my', currentUserId, id],
+    queryFn: () => (
+      targetNoteId
+        ? fetchTastingNote(targetNoteId)
+        : fetchMyTastingNoteForWhiskey(id)
+    ),
     enabled: currentUserId != null,
   });
 
@@ -105,9 +117,12 @@ export default function TastingNotePage() {
   const [isDraft, setIsDraft] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [aiError, setAiError] = useState('');  // AI 분석 인라인 에러 메시지
 
   const isEditMode = Boolean(existingNote);
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
+  const cabinetNotePath = `${PATHS.CABINET}?section=bar&tab=note`;
+  const exitPath = returnTo === 'cabinet-note' ? cabinetNotePath : detailPath;
 
   useEffect(() => {
     if (!existingNote) return;
@@ -138,8 +153,12 @@ export default function TastingNotePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
+      queryClient.invalidateQueries({ queryKey: ['tasting-notes', 'my'] });
+      if (targetNoteId) {
+        queryClient.invalidateQueries({ queryKey: ['tasting-note', 'detail', currentUserId, targetNoteId] });
+      }
       queryClient.invalidateQueries({ queryKey: ['whiskey', 'detail', id] });
-      navigate(detailPath);
+      navigate(exitPath);
     },
   });
 
@@ -151,8 +170,12 @@ export default function TastingNotePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasting-note', 'my', currentUserId, id] });
+      queryClient.invalidateQueries({ queryKey: ['tasting-notes', 'my'] });
+      if (targetNoteId) {
+        queryClient.invalidateQueries({ queryKey: ['tasting-note', 'detail', currentUserId, targetNoteId] });
+      }
       queryClient.invalidateQueries({ queryKey: ['whiskey', 'detail', id] });
-      navigate(detailPath);
+      navigate(exitPath);
     },
   });
 
@@ -173,10 +196,11 @@ export default function TastingNotePage() {
   // AI 분석 버튼 핸들러
   const handleAiAnalyze = async () => {
     if (!memo.trim()) {
-      toast('메모를 먼저 입력해주세요.', 'warning');
+      setAiError('메모를 먼저 입력해주세요.');
       return;
     }
     setAiAnalyzing(true);
+    setAiError('');  // 이전 에러 초기화
     try {
       const result = await analyzeNoteByAi(memo);
 
@@ -191,14 +215,14 @@ export default function TastingNotePage() {
 
       // 태그 자동 선택 (기존 선택에 병합)
       const aiTagIds = [...result.noseTagIds, ...result.palateTagIds];
-      setSelectedTagIds((prev) => {
-        const merged = [...new Set([...prev, ...aiTagIds])];
-        return merged;
-      });
+      setSelectedTagIds((prev) => [...new Set([...prev, ...aiTagIds])]);
 
       toast('AI 분석이 완료되었습니다.', 'success');
-    } catch {
-      toast('AI 분석에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    } catch (err: unknown) {
+      // 에러 화면으로 이동하지 않고 인라인 메시지로만 표시
+      // 작성 중인 내용(memo, scores, tags)은 그대로 유지
+      const message = err instanceof Error ? err.message : 'AI 분석에 실패했습니다.';
+      setAiError(`✨ AI 분석 실패: ${message} 잠시 후 다시 시도해주세요.`);
     } finally {
       setAiAnalyzing(false);
     }
@@ -298,10 +322,28 @@ export default function TastingNotePage() {
           <textarea
             className="wf-review-textarea"
             value={memo}
-            onChange={(event) => setMemo(event.target.value)}
+            onChange={(event) => {
+              setMemo(event.target.value);
+              if (aiError) setAiError(''); // 메모 수정 시 에러 초기화
+            }}
             rows={6}
             placeholder="향, 맛, 피니시, 마신 상황 등을 자유롭게 기록하세요.&#10;&#10;메모 작성 후 ✨ AI 분석 버튼을 누르면 점수와 태그를 자동으로 채워드립니다."
           />
+          {/* AI 분석 인라인 에러 메시지 — 에러 화면 이동 없이 여기서만 표시 */}
+          {aiError && (
+            <p style={{
+              color: '#f87171',
+              fontSize: 12,
+              margin: '6px 0 0',
+              padding: '8px 12px',
+              background: 'rgba(248,113,113,0.08)',
+              border: '1px solid rgba(248,113,113,0.3)',
+              borderRadius: 8,
+              lineHeight: 1.5,
+            }}>
+              {aiError}
+            </p>
+          )}
         </label>
 
         <section className="wf-note-editor__tags">
@@ -371,7 +413,7 @@ export default function TastingNotePage() {
               {deleteMutation.isPending ? '삭제 중...' : '삭제'}
             </Button>
           )}
-          <Button type="button" variant="ghost" onClick={() => navigate(detailPath)}>
+          <Button type="button" variant="ghost" onClick={() => navigate(exitPath)}>
             취소
           </Button>
         </div>

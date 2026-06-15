@@ -199,7 +199,7 @@ function CabinetNoteDetail({ note }: { note: MyTastingNote }) {
 
 function MyNoteItem({ note }: { note: MyTastingNote }) {
   const [isOpen, setIsOpen] = useState(false);
-  const editPath = PATHS.TASTING_NOTE.replace(':whiskeyId', String(note.whiskeyId));
+  const editPath = `${PATHS.TASTING_NOTE.replace(':whiskeyId', String(note.whiskeyId))}?noteId=${note.id}&returnTo=cabinet-note`;
   const isDraft = Boolean(note.isDraft ?? note.draft);
   const tagPreview = note.tags?.slice(0, 4) ?? [];
 
@@ -369,6 +369,9 @@ export default function CabinetPage() {
     try {
       await cabinetApi.deletePick(whiskeyId);
       setPicks((prev) => prev.filter((p) => p.whiskey.id !== whiskeyId));
+      setCabinetStats((prev) => (
+        prev ? { ...prev, pickCount: Math.max(0, prev.pickCount - 1) } : prev
+      ));
     } catch {
       toast('픽 제거에 실패했습니다.', 'error');
     }
@@ -395,6 +398,7 @@ export default function CabinetPage() {
         total += (itemRes.data.data ?? []).length;
       }
       setTotalWishCount(total);
+      setCabinetStats((prev) => (prev ? { ...prev, wishCount: total } : prev));
     } catch {
       // 위시 카운트는 보조 정보라 실패해도 화면 흐름은 유지합니다.
     }
