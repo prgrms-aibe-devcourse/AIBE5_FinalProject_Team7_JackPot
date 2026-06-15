@@ -388,13 +388,6 @@
   font-weight: 700;
 }
 
-.wf-cabinet-share {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 15px;
-  color: var(--wf-muted);
-}
-
 .wf-cabinet-pick {
   display: grid;
   grid-template-columns: 58px 1fr auto;
