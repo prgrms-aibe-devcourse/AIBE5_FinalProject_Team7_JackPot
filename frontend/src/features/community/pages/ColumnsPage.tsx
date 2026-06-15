@@ -2,8 +2,7 @@
 // useColumns → GET /community/columns (PostType.COLUMN 기반 posts 테이블)
 // useWhiskeyColumns(GET /columns, 크롤링 외부 콘텐츠)와 다른 API임에 주의
 import '../community.css';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
 import { Pagination } from '../components/Pagination';
@@ -47,8 +46,15 @@ function ColumnCard({ post }: { post: PostSummaryResponse }) {
 }
 
 export default function ColumnsPage() {
-  // 서버 페이지는 0-based index — Pagination 컴포넌트에도 동일 규칙 적용
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '0');
+  function setPage(n: number) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', String(n));
+      return next;
+    }, { replace: true });
+  }
   const { data, isLoading } = useColumns(page);
 
   return (

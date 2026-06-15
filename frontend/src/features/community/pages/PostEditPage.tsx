@@ -2,12 +2,13 @@
 import '../community.css';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { fetchWhiskeys, fetchWhiskeyById, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { updatePost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
-import { usePost } from '../hooks/useCommunity';
+import { communityKeys, usePost } from '../hooks/useCommunity';
 import type { PostCategory } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
@@ -24,6 +25,7 @@ export default function PostEditPage() {
   const { postId } = useParams();
   const numericId = postId ? Number(postId) : undefined;
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const { data: post, isLoading, isError } = usePost(numericId);
 
@@ -110,12 +112,13 @@ export default function PostEditPage() {
     if (!title.trim() || !content.trim()) return;
     setSubmitting(true);
     try {
-      await updatePost(post!.id, {
+      const updated = await updatePost(post!.id, {
         title: title.trim(),
         context: content,
         category,
         whiskeyIds: selectedWhiskeys.map((w) => w.id),
       });
+      qc.setQueryData(communityKeys.post(post!.id), updated);
       navigate(`/community/posts/${post!.id}`);
     } finally {
       setSubmitting(false);
