@@ -440,7 +440,7 @@ export default function WhiskeyDetailPage() {
     detail.country,
     `${detail.abv}%`,
     '700ml',
-  ].join(' · ');
+  ].filter(Boolean).join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
   const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
@@ -450,7 +450,7 @@ export default function WhiskeyDetailPage() {
     detail.region,
     ageLabel,
     `${detail.abv}% ABV`,
-  ];
+  ].filter(Boolean);
 
   return (
     <WireframePage scroll>
@@ -512,6 +512,24 @@ export default function WhiskeyDetailPage() {
         </button>
       </div>
 
+      <section className="wf-detail-quick-actions" aria-label="위스키 상세 빠른 액션">
+        <Link to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)} className="wf-detail-quick-action wf-box">
+          <span>Review</span>
+          <strong>리뷰 작성</strong>
+          <small>{reviewCount > 0 ? `${reviewCount}개 리뷰에 내 평가 더하기` : '첫 리뷰로 기록 시작하기'}</small>
+        </Link>
+        <Link to={notePath} className="wf-detail-quick-action wf-box">
+          <span>My Note</span>
+          <strong>시음 노트</strong>
+          <small>향, 맛, 피니시를 나중에 다시 볼 수 있게 저장</small>
+        </Link>
+        <Link to={reviewPath} className="wf-detail-quick-action wf-box">
+          <span>Community</span>
+          <strong>전체 리뷰</strong>
+          <small>다른 애호가들의 평가와 표현 확인</small>
+        </Link>
+      </section>
+
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
           <div className="wf-detail-sidebar__image-frame">
@@ -529,6 +547,10 @@ export default function WhiskeyDetailPage() {
             <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
           <div className="wf-detail-sidebar__actions">
+            <div className="wf-detail-sidebar__actions-head">
+              <span>Save to cabinet</span>
+              <strong>내 취향 보관</strong>
+            </div>
             <Button
               variant={isWished ? 'primary' : 'ghost'}
               className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
@@ -553,7 +575,7 @@ export default function WhiskeyDetailPage() {
               </Button>
             </div>
           </div>
-          <p className="wf-detail-sidebar__hint">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
+          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
           <div className="wf-grid2">
             {[
               ['숙성', ageLabel],
