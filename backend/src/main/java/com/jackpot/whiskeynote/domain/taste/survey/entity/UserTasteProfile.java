@@ -39,11 +39,19 @@ public class UserTasteProfile {
     @Column(name = "finish_score", nullable = false)
     private Integer finishScore;
 
+    // TODO: 1NF 정규화 필요 — 아래 5개 컬럼은 복수 값을 문자열로 저장해 1NF 위반
+    //  - nose_tag_ids, taste_tag_ids : "2,7,8" 형태 (쉼표 구분 ID 목록)
+    //  - style_tags                  : "single_malt,bourbon" 형태
+    //  - nose_tag_weights            : "1=2,7=1" 형태 (tagId=intensity 쌍)
+    //  - taste_tag_weights           : 동일
+    //  개선 방향: user_taste_profile_tags(profile_id, category, tag_id, intensity)
+    //            user_taste_profile_styles(profile_id, style) 별도 테이블로 분리
+
     @Column(name = "nose_tag_ids", length = 512)
-    private String noseTagIds;   // comma-separated: "2,7,8"
+    private String noseTagIds;
 
     @Column(name = "taste_tag_ids", length = 512)
-    private String tasteTagIds;  // comma-separated
+    private String tasteTagIds;
 
     @Column(name = "user_type", length = 128)
     private String userType;
@@ -53,10 +61,10 @@ public class UserTasteProfile {
     private String surveyType = "BEGINNER";
 
     @Column(name = "style_tags", length = 1000)
-    private String styleTags;        // 쉼표 구분: "single_malt,bourbon"
+    private String styleTags;
 
     @Column(name = "nose_tag_weights", length = 2000)
-    private String noseTagWeights;   // tagId=intensity 쌍: "1=2,7=1"
+    private String noseTagWeights;
 
     @Column(name = "taste_tag_weights", length = 2000)
     private String tasteTagWeights;

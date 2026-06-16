@@ -75,7 +75,13 @@ export default function RecommendationPage() {
         <div className="wf-page">
           <div className="wf-page__inner wf-reco-empty">
             <p className="wf-subtitle">설문 결과가 없어요.</p>
-            <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">설문 시작하기</Button>
+            <p className="wf-text-sm" style={{ color: 'var(--wf-muted)', marginBottom: 16 }}>
+              설문을 완료하면 취향에 맞는 위스키를 추천해 드려요.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">입문자 설문</Button>
+              <Button to={PATHS.SURVEY_ENTHUSIAST} className="wf-reco-empty-btn">애호가 설문</Button>
+            </div>
           </div>
         </div>
       </>
