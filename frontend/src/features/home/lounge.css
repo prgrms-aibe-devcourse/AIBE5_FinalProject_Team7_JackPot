@@ -81,11 +81,28 @@
 
 .wf-feed-card__body {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 14px;
+  align-items: flex-start;
   margin: 14px 0;
   color: inherit;
   text-decoration: none;
+}
+
+.wf-feed-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-feed-card__thumb {
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--wf-border);
 }
 
 .wf-feed-card__title {

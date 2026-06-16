@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
@@ -13,10 +14,24 @@ function stripHtml(html: string) {
   return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 }
 
+// 라운지 피드에는 썸네일 필드가 없어 본문(HTML/마크다운)에서 첫 이미지를 추출한다.
+function extractFirstImage(content: string): string | null {
+  const htmlImg = new DOMParser()
+    .parseFromString(content, 'text/html')
+    .querySelector('img')
+    ?.getAttribute('src');
+  if (htmlImg) return htmlImg;
+
+  const mdImg = content.match(/!\[[^\]]*\]\(([^)\s]+)/);
+  return mdImg ? mdImg[1] : null;
+}
+
 function FeedCard({ post }: { post: LoungePost }) {
+  const [thumbError, setThumbError] = useState(false);
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
   const contentPreview = stripHtml(post.context);
   const authorName = post.authorNickname || `사용자 #${post.authorId}`;
+  const thumbnail = resolveMediaUrl(extractFirstImage(post.context));
 
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
@@ -40,8 +55,19 @@ function FeedCard({ post }: { post: LoungePost }) {
       </div>
 
       <Link to={detailPath} className="wf-feed-card__body">
-        <h3 className="wf-feed-card__title">{post.title}</h3>
-        {contentPreview ? <p className="wf-feed-card__excerpt">{contentPreview}</p> : null}
+        <div className="wf-feed-card__text">
+          <h3 className="wf-feed-card__title">{post.title}</h3>
+          {contentPreview ? <p className="wf-feed-card__excerpt">{contentPreview}</p> : null}
+        </div>
+        {thumbnail && !thumbError ? (
+          <img
+            src={thumbnail}
+            alt=""
+            className="wf-feed-card__thumb"
+            loading="lazy"
+            onError={() => setThumbError(true)}
+          />
+        ) : null}
       </Link>
 
       <footer className="wf-feed-card__foot">
@@ -64,9 +90,12 @@ function FeedCardSkeleton() {
         </div>
       </div>
       <div className="wf-feed-card__body">
-        <Skeleton width="70%" height={17} radius={6} />
-        <Skeleton width="95%" height={12} radius={4} />
-        <Skeleton width="80%" height={12} radius={4} />
+        <div className="wf-feed-card__text">
+          <Skeleton width="70%" height={17} radius={6} />
+          <Skeleton width="95%" height={12} radius={4} />
+          <Skeleton width="80%" height={12} radius={4} />
+        </div>
+        <Skeleton className="wf-feed-card__thumb" radius={10} />
       </div>
       <div className="wf-feed-card__foot">
         <Skeleton width={96} height={12} radius={4} />
