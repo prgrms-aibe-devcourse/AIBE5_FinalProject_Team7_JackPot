@@ -205,7 +205,7 @@ function MyNoteItem({ note }: { note: MyTastingNote }) {
 
   return (
     <article className="wf-cabinet-post wf-box">
-      <div className="wf-review-card__head wf-cabinet-note-head">
+      <div className="wf-review-card__head wf-cabinet-post-head wf-cabinet-note-head">
         <div className="wf-cabinet-note-head__body">
           <h3 className="wf-cabinet-post__title">{note.whiskeyName}</h3>
           <p className="wf-text-sm">
@@ -217,7 +217,7 @@ function MyNoteItem({ note }: { note: MyTastingNote }) {
         </Link>
       </div>
 
-      <p className="wf-text-sm">{note.memo || '작성된 메모가 없습니다.'}</p>
+      <p className="wf-text-sm wf-cabinet-post__body-text">{note.memo || '작성된 메모가 없습니다.'}</p>
 
       {tagPreview.length > 0 ? (
         <footer className="wf-cabinet-post__foot">
@@ -270,7 +270,7 @@ function MyReviewItem({
 
   return (
     <article className="wf-cabinet-post wf-box">
-      <div className="wf-review-card__head">
+      <div className="wf-review-card__head wf-cabinet-post-head">
         <div>
           <h3 className="wf-cabinet-post__title">{whiskeyLabel}</h3>
           <p className="wf-text-sm">별점 {Number(review.rating).toFixed(1)} · 공개 리뷰</p>
@@ -305,7 +305,7 @@ function MyReviewItem({
         </div>
       ) : (
         <>
-          <p className="wf-text-sm">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
+          <p className="wf-text-sm wf-cabinet-post__body-text">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
           <footer className="wf-cabinet-post__foot">
             <button type="button" className="wf-link wf-text-sm" onClick={() => setIsEditing(true)}>
               수정
@@ -627,9 +627,9 @@ export default function CabinetPage() {
           {tab === 'reviews' ? (
             <>
               {currentUserId == null ? (
-                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+                <p className="wf-text-sm wf-cabinet-state">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
               ) : reviewsLoading ? (
-                <p className="wf-text-sm">내 리뷰를 불러오는 중입니다.</p>
+                <p className="wf-text-sm wf-cabinet-state">내 리뷰를 불러오는 중입니다.</p>
               ) : myReviews?.content.length ? (
                 myReviews.content.map((review) => (
                   <MyReviewItem
@@ -641,15 +641,15 @@ export default function CabinetPage() {
                   />
                 ))
               ) : (
-                <p className="wf-text-sm">아직 작성한 리뷰가 없습니다.</p>
+                <p className="wf-text-sm wf-cabinet-state">아직 작성한 리뷰가 없습니다.</p>
               )}
             </>
           ) : tab === 'pick' ? (
             // Pick 탭 — API 데이터 렌더링 (백엔드 연동)
             picksLoading ? (
-              <p className="wf-text-sm">픽 목록을 불러오는 중입니다...</p>
+              <p className="wf-text-sm wf-cabinet-state">픽 목록을 불러오는 중입니다...</p>
             ) : picks.length === 0 ? (
-              <p className="wf-text-sm">아직 픽한 위스키가 없습니다.</p>
+              <p className="wf-text-sm wf-cabinet-state">아직 픽한 위스키가 없습니다.</p>
             ) : (
               picks.map((pick) => (
                 <CabinetPickItem
@@ -784,13 +784,13 @@ export default function CabinetPage() {
           ) : tab === 'note' ? (
             <>
               {currentUserId == null ? (
-                <p className="wf-text-sm">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+                <p className="wf-text-sm wf-cabinet-state">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
               ) : notesLoading ? (
-                <p className="wf-text-sm">내 시음 노트를 불러오는 중입니다.</p>
+                <p className="wf-text-sm wf-cabinet-state">내 시음 노트를 불러오는 중입니다.</p>
               ) : myNotes?.content.length ? (
                 myNotes.content.map((note) => <MyNoteItem key={note.id} note={note} />)
               ) : (
-                <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다.</p>
+                <p className="wf-text-sm wf-cabinet-state">아직 작성한 시음 노트가 없습니다.</p>
               )}
             </>
           ) : null}
