@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,13 @@ export default function NotePickPage() {
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
 
   const suggestionKeyword = inputValue.trim();
+  // 키 입력마다 자동완성 API가 호출되지 않도록 입력이 잠시 멈춘 뒤에만 요청
+  const [debouncedSuggestion, setDebouncedSuggestion] = useState(suggestionKeyword);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSuggestion(suggestionKeyword), 250);
+    return () => clearTimeout(timer);
+  }, [suggestionKeyword]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['note-pick', 'whiskeys', keyword],
@@ -38,9 +45,9 @@ export default function NotePickPage() {
   });
 
   const { data: autocompleteItems = [] } = useQuery({
-    queryKey: ['note-pick', 'autocomplete', suggestionKeyword],
-    queryFn: () => autocompleteWhiskeys({ q: suggestionKeyword, size: 8 }),
-    enabled: suggestionKeyword.length > 0,
+    queryKey: ['note-pick', 'autocomplete', debouncedSuggestion],
+    queryFn: () => autocompleteWhiskeys({ q: debouncedSuggestion, size: 8 }),
+    enabled: debouncedSuggestion.length > 0,
   });
 
   const results = data?.content ?? [];
