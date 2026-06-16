@@ -555,9 +555,10 @@ export default function WhiskeyDetailPage() {
               </div>
             ))}
           </div>
+          <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
 
-        <main className={`wf-detail-main${activeTab === 'info' ? '' : ' wf-detail-main--wide'}`}>
+        <main className="wf-detail-main wf-detail-main--wide">
           {activeTab === 'info' ? (
             <>
               <section className="wf-detail-info wf-detail-panel">
@@ -648,11 +649,6 @@ export default function WhiskeyDetailPage() {
           ) : null}
         </main>
 
-        {activeTab === 'info' ? (
-          <aside className="wf-detail-aside">
-            <TastingTagsBubble tags={detail.tastingTags} />
-          </aside>
-        ) : null}
       </div>
     </WireframePage>
   );
