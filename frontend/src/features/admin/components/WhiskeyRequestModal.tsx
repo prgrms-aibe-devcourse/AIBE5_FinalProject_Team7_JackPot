@@ -176,10 +176,13 @@ export function WhiskeyRequestModal({ onClose, onSuccess }: WhiskeyRequestModalP
           <textarea
             placeholder="기타 정보를 자유롭게 입력해주세요."
             value={memo}
-            onChange={(e) => setMemo(e.target.value)}
+            onChange={(e) => { if (e.target.value.length <= 500) setMemo(e.target.value); }}
             rows={3}
             style={{ ...inputStyle, resize: 'none' }}
           />
+          <p style={{ textAlign: 'right', fontSize: 11, margin: '4px 0 0', color: memo.length >= 500 ? '#f87171' : '#8b8b96' }}>
+            {memo.length} / 500
+          </p>
         </div>
 
         {/* 버튼 */}
