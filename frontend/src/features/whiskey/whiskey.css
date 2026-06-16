@@ -248,6 +248,10 @@
   min-width: 0;
 }
 
+.wf-detail-main--wide {
+  grid-column: 2 / 4;
+}
+
 .wf-tabs {
   margin-top: 18px;
   padding: 6px;
@@ -1204,6 +1208,10 @@
   .wf-layout-detail-v2 {
     grid-template-columns: 1fr;
     gap: 22px;
+  }
+
+  .wf-detail-main--wide {
+    grid-column: auto;
   }
 
   .wf-detail-personal-note__scores {
