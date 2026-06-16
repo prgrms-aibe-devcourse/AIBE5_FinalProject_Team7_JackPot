@@ -66,6 +66,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/logout").authenticated()
                         // 취향 설문 — 결과 조회·저장은 인증 필수, 계산만은 비인증 허용
                         .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/taste/survey/me"
+                        ).authenticated()
+                        .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
                                 "/api/v1/taste/survey/save"
                         ).authenticated()

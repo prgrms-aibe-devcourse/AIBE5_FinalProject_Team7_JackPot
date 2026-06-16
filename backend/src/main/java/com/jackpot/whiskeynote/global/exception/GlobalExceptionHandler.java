@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -72,6 +74,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(ApiResponse.fail(code, message));
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ApiResponse<Void> handleNotFound(Exception ex) {
+        log.warn("[404 NOT FOUND] {} : {}", ex.getClass().getSimpleName(), ex.getMessage());
+        return ApiResponse.fail("NOT_FOUND", "요청한 리소스를 찾을 수 없습니다.");
     }
 
     // 예상치 못한 서버 오류
