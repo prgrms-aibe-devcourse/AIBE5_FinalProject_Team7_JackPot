@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  max-width: 760px;
+  width: min(100%, 760px);
   margin: 0 auto;
 }
 
@@ -44,12 +44,16 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
 
 .wf-note-editor__tag-picker-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
 .wf-note-editor__tag-picker {
@@ -58,6 +62,7 @@
   justify-content: space-between;
   gap: 12px;
   min-height: 58px;
+  min-width: 0;
   padding: 12px 14px;
   color: inherit;
   text-align: left;
@@ -82,18 +87,24 @@
 .wf-note-editor__tag-picker strong {
   color: var(--wf-text);
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .wf-note-editor__selected-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   margin-top: 4px;
+  overflow-wrap: anywhere;
 }
 
 .wf-note-editor__selected-tag {
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
   min-height: 30px;
   padding: 0 12px;
   border: 1px solid rgba(213, 173, 69, 0.4);
@@ -102,6 +113,9 @@
   color: var(--wf-accent);
   font-size: 13px;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wf-note-editor__tag-list {

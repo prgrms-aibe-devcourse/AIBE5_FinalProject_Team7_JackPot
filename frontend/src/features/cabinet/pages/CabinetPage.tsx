@@ -205,14 +205,14 @@ function MyNoteItem({ note }: { note: MyTastingNote }) {
 
   return (
     <article className="wf-cabinet-post wf-box">
-      <div className="wf-review-card__head">
-        <div>
+      <div className="wf-review-card__head wf-cabinet-note-head">
+        <div className="wf-cabinet-note-head__body">
           <h3 className="wf-cabinet-post__title">{note.whiskeyName}</h3>
           <p className="wf-text-sm">
             {isDraft ? '임시저장' : '작성 완료'} · 수정일 {note.updatedAt?.slice(0, 10) ?? '-'}
           </p>
         </div>
-        <Link to={editPath} className="wf-link wf-text-sm">
+        <Link to={editPath} className="wf-link wf-text-sm wf-cabinet-note-head__edit">
           수정
         </Link>
       </div>
