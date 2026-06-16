@@ -7,6 +7,7 @@ export const PATHS = {
   OAUTH_CALLBACK: '/oauth/:provider/callback',
   ONBOARDING: '/onboarding',
   SURVEY: '/survey',
+  SURVEY_ENTHUSIAST: '/survey/enthusiast',
   RECOMMEND: '/recommend',
   LOUNGE: '/lounge',
   SEARCH: '/search',

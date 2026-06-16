@@ -6,8 +6,14 @@ export interface SurveyApiRequest {
   smokyChoice: number;
   spicyChoice: number;
   finishChoice: number;
-  noseTags: number[]; // tag IDs
-  tasteTags: number[];
+  // 입문자: 태그 ID 목록
+  noseTags?: number[];
+  tasteTags?: number[];
+  // 애호가: 태그 ID → 강도(1=좋아함, 2=매우 좋아함)
+  noseTagWeights?: Record<number, 1 | 2>;
+  tasteTagWeights?: Record<number, 1 | 2>;
+  styleTags?: string[];
+  explorationLevel?: 1 | 2 | 3;
 }
 
 export interface TagInfo {

@@ -107,10 +107,18 @@ export default function OnboardingPage() {
                 })}
               </div>
 
-              <Button block className="wf-onboarding-cta" to={PATHS.SURVEY}>
+              <Button
+                block
+                className="wf-onboarding-cta"
+                to={experience === 'enthusiast' ? PATHS.SURVEY_ENTHUSIAST : `${PATHS.SURVEY}?type=beginner`}
+              >
                 설문 시작하기
               </Button>
-              <p className="wf-onboarding-footnote">약 2분 · 7개 문항 · 결과는 바로 확인</p>
+              <p className="wf-onboarding-footnote">
+                {experience === 'enthusiast'
+                  ? '약 5분 · 9개 문항 · 결과는 바로 확인'
+                  : '약 2분 · 7개 문항 · 결과는 바로 확인'}
+              </p>
             </div>
 
             <div className="wf-onboarding-video" aria-label="Whiskey Note 영상">

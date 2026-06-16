@@ -6,6 +6,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { toast } from '@/shared/components/ui/Toast';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/survey/api/surveyApi';
+import { enthusiastSurveyApi } from '@/features/survey/api/enthusiastSurveyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { saveResultImage } from '../utils/exportImage';
 import '../recommendation.css';
@@ -23,6 +24,7 @@ type ScoreKey = 'sweetScore' | 'bodyScore' | 'smokyScore' | 'spicyScore' | 'fini
 interface LocationState {
   result: SurveyResult;
   payload: SurveyApiRequest;
+  surveyType?: 'beginner' | 'enthusiast';
 }
 
 export default function RecommendationPage() {
@@ -32,6 +34,7 @@ export default function RecommendationPage() {
 
   const result = state?.result ?? null;
   const payload = state?.payload ?? null;
+  const surveyType = state?.surveyType ?? 'beginner';
 
   const [applied, setApplied] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -44,7 +47,11 @@ export default function RecommendationPage() {
     }
     setApplying(true);
     try {
-      await surveyApi.save(payload);
+      if (surveyType === 'enthusiast') {
+        await enthusiastSurveyApi.save(payload);
+      } else {
+        await surveyApi.save(payload);
+      }
       setApplied(true);
     } catch {
       toast('저장 중 문제가 발생했어요. 다시 시도해 주세요.', 'error');
@@ -69,7 +76,13 @@ export default function RecommendationPage() {
         <div className="wf-page">
           <div className="wf-page__inner wf-reco-empty">
             <p className="wf-subtitle">설문 결과가 없어요.</p>
-            <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">설문 시작하기</Button>
+            <p className="wf-text-sm" style={{ color: 'var(--wf-muted)', marginBottom: 16 }}>
+              설문을 완료하면 취향에 맞는 위스키를 추천해 드려요.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">입문자 설문</Button>
+              <Button to={PATHS.SURVEY_ENTHUSIAST} className="wf-reco-empty-btn">애호가 설문</Button>
+            </div>
           </div>
         </div>
       </>

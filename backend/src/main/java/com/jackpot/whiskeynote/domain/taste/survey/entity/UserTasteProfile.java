@@ -5,10 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user_taste_profiles")
@@ -17,6 +15,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 public class UserTasteProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,14 +38,18 @@ public class UserTasteProfile {
     @Column(name = "finish_score", nullable = false)
     private Integer finishScore;
 
-    @Column(name = "nose_tag_ids", length = 512)
-    private String noseTagIds;   // comma-separated: "2,7,8"
+    // 설문 유형: BEGINNER | ENTHUSIAST
+    @Column(name = "survey_type", length = 20, nullable = false)
+    @Builder.Default
+    private String surveyType = "BEGINNER";
 
-    @Column(name = "taste_tag_ids", length = 512)
-    private String tasteTagIds;  // comma-separated
+    // 위스키 스타일 선호 (애호가 설문 전용)
+    @Column(name = "style_tags", length = 1000)
+    private String styleTags;
 
-    @Column(name = "user_type", length = 128)
-    private String userType;
+    // 탐험 성향 (1=보수형, 2=균형형, 3=탐험형)
+    @Column(name = "exploration_level")
+    private Integer explorationLevel;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -55,34 +58,71 @@ public class UserTasteProfile {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // 1NF 정규화 — 태그는 user_taste_profile_tags 테이블로 분리
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<UserTasteProfileTag> tags = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
-    public List<Long> getNoseTagIdList() {
-        if (noseTagIds == null || noseTagIds.isBlank()) return Collections.emptyList();
-        return Arrays.stream(noseTagIds.split(","))
-                .map(Long::parseLong).collect(Collectors.toList());
+    // ── 헬퍼 ────────────────────────────────────────────────────
+
+    /** 향(nose) 태그 목록 반환 */
+    public List<UserTasteProfileTag> getNoseTags() {
+        return tags.stream()
+                .filter(t -> "nose".equals(t.getCategory()))
+                .toList();
     }
 
-    public List<Long> getTasteTagIdList() {
-        if (tasteTagIds == null || tasteTagIds.isBlank()) return Collections.emptyList();
-        return Arrays.stream(tasteTagIds.split(","))
-                .map(Long::parseLong).collect(Collectors.toList());
+    /** 맛(taste) 태그 목록 반환 */
+    public List<UserTasteProfileTag> getTasteTags() {
+        return tags.stream()
+                .filter(t -> "taste".equals(t.getCategory()))
+                .toList();
     }
 
+    /** 향(nose) 태그 ID 목록 반환 */
+    public List<Long> getNoseTagIds() {
+        return getNoseTags().stream()
+                .map(t -> t.getTag().getId())
+                .toList();
+    }
+
+    /** 맛(taste) 태그 ID 목록 반환 */
+    public List<Long> getTasteTagIds() {
+        return getTasteTags().stream()
+                .map(t -> t.getTag().getId())
+                .toList();
+    }
+
+    // ── 수정 메서드 ──────────────────────────────────────────────
+
+    /** 입문자 설문 점수 수정 */
     public void update(Integer sweetScore, Integer bodyScore, Integer smokyScore,
-                       Integer spicyScore, Integer finishScore,
-                       String noseTagIds, String tasteTagIds, String userType) {
-        this.sweetScore = sweetScore;
-        this.bodyScore = bodyScore;
-        this.smokyScore = smokyScore;
-        this.spicyScore = spicyScore;
+                       Integer spicyScore, Integer finishScore) {
+        this.sweetScore  = sweetScore;
+        this.bodyScore   = bodyScore;
+        this.smokyScore  = smokyScore;
+        this.spicyScore  = spicyScore;
         this.finishScore = finishScore;
-        this.noseTagIds = noseTagIds;
-        this.tasteTagIds = tasteTagIds;
-        this.userType = userType;
+        this.surveyType  = "BEGINNER";
+    }
+
+    /** 애호가 설문 점수 + 스타일/탐험 레벨 수정 */
+    public void updateEnthusiast(Integer sweetScore, Integer bodyScore, Integer smokyScore,
+                                  Integer spicyScore, Integer finishScore,
+                                  String styleTags, Integer explorationLevel) {
+        this.sweetScore      = sweetScore;
+        this.bodyScore       = bodyScore;
+        this.smokyScore      = smokyScore;
+        this.spicyScore      = spicyScore;
+        this.finishScore     = finishScore;
+        this.surveyType      = "ENTHUSIAST";
+        this.styleTags       = styleTags;
+        this.explorationLevel = explorationLevel;
     }
 }

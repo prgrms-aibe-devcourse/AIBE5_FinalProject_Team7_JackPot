@@ -180,6 +180,44 @@
   transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 
+/* 타입 선택 (입문자 / 애호가) */
+.app-root .wf-survey-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.app-root .wf-survey-type-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 1px solid var(--wf-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.app-root .wf-survey-type-option:hover {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+}
+
+.app-root .wf-survey-type-option strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wf-text);
+}
+
+.app-root .wf-survey-type-option em {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
 /* 우측 sticky 네비 */
 .app-root .wf-survey-nav {
   position: sticky;

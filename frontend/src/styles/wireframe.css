@@ -400,6 +400,16 @@ body {
   border-color: var(--wf-accent-light);
 }
 
+.wf-chip--strong {
+  background: var(--wf-accent);
+  color: #1a1612;
+  font-weight: 700;
+}
+
+.wf-chip--strong:hover {
+  background: var(--wf-accent-light);
+}
+
 .wf-chips {
   display: flex;
   flex-wrap: wrap;
