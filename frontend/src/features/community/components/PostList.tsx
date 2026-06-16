@@ -1,6 +1,7 @@
 // 게시글 목록 컴포넌트 — 여러 게시판 페이지에서 공통으로 재사용되는 요약 목록 렌더러
 import { Link } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
+import { Skeleton } from '@/shared/components/ui/Skeleton';
 import type { PostSummaryResponse } from '../types';
 import { POST_CATEGORY_LABEL } from '../types';
 
@@ -17,7 +18,22 @@ function formatDate(iso: string): string {
 }
 
 export function PostList({ posts, isLoading, showCategory = true }: PostListProps) {
-  if (isLoading) return <p className="wf-text-sm">불러오는 중…</p>;
+  if (isLoading) {
+    return (
+      <ul className="wf-post-list" aria-label="게시글을 불러오는 중">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <li key={index}>
+            <div className="wf-box wf-post-list-item" aria-hidden>
+              <div className="wf-post-list-item__head">
+                <Skeleton width="55%" height={15} />
+              </div>
+              <Skeleton width="40%" height={11} radius={4} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   if (posts.length === 0) return <p className="wf-text-sm">게시글이 없습니다.</p>;
 
   return (
