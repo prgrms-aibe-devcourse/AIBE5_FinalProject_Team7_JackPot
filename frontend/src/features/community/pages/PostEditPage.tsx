@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
+import { uploadImage } from '@/shared/api/mediaApi';
 import { fetchWhiskeys, fetchWhiskeyById, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { updatePost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
@@ -17,9 +18,21 @@ const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
   { value: 'R', label: POST_CATEGORY_LABEL.R },
   { value: 'L', label: POST_CATEGORY_LABEL.L },
   { value: 'Q', label: POST_CATEGORY_LABEL.Q },
-  { value: 'G', label: POST_CATEGORY_LABEL.G },
   { value: 'B', label: POST_CATEGORY_LABEL.B },
 ];
+
+// PostFormPage에서 저장한 HTML 형식: <p style="...">텍스트</p><img ...><img ...>
+// 수정 화면 진입 시 텍스트와 이미지를 분리해 각 UI에 복원
+function parseFreeContent(context: string): { text: string; images: Array<{ name: string; url: string }> } {
+  if (!context.startsWith('<')) return { text: context, images: [] };
+  const doc = new DOMParser().parseFromString(context, 'text/html');
+  const text = doc.querySelector('p')?.textContent ?? '';
+  const images = Array.from(doc.querySelectorAll('img')).map((img) => ({
+    name: img.alt || 'image',
+    url: img.getAttribute('src') ?? '',
+  }));
+  return { text, images };
+}
 
 export default function PostEditPage() {
   const { postId } = useParams();
@@ -34,6 +47,11 @@ export default function PostEditPage() {
   const [category, setCategory] = useState<PostCategory>('F');
   const [submitting, setSubmitting] = useState(false);
 
+  // 자유게시판 이미지 첨부
+  const [attachedImages, setAttachedImages] = useState<Array<{ name: string; url: string }>>([]);
+  const [uploading, setUploading] = useState(false);
+  const freeImageRef = useRef<HTMLInputElement>(null);
+
   // 위스키 검색은 칼럼 유형에서만 활성화
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
@@ -42,17 +60,21 @@ export default function PostEditPage() {
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // post 데이터가 로드된 후 폼 필드를 기존 값으로 초기화 — useEffect 의존성에 post 전체 대신 필요한 필드만 참조해도 됨
+  // post 로드 후 폼 초기화 — FREE 타입은 HTML을 파싱해 텍스트/이미지를 분리 복원
   useEffect(() => {
-    if (post) {
-      setTitle(post.title);
+    if (!post) return;
+    setTitle(post.title);
+    setCategory(post.category);
+    if (post.postType === 'FREE') {
+      const { text, images } = parseFreeContent(post.context);
+      setContent(text);
+      setAttachedImages(images);
+    } else {
       setContent(post.context);
-      setCategory(post.category);
     }
   }, [post]);
 
   // 기존에 연결된 whiskeyIds를 상세 정보로 변환해 selectedWhiskeys에 채움
-  // whiskeyIds 배열 레퍼런스가 바뀔 때만 재실행되도록 post?.whiskeyIds를 의존성에 사용
   useEffect(() => {
     if (!post?.whiskeyIds?.length) return;
     Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
@@ -61,7 +83,6 @@ export default function PostEditPage() {
   }, [post?.whiskeyIds]);
 
   // 위스키 검색 debounce — PostFormPage와 동일한 패턴
-  // post?.postType이 확정된 이후에만 실행되도록 조건 처리
   useEffect(() => {
     if (post?.postType !== 'COLUMN') return;
     if (searchTimer.current) clearTimeout(searchTimer.current);
@@ -101,20 +122,47 @@ export default function PostEditPage() {
     setSelectedWhiskeys((prev) => prev.filter((w) => w.id !== id));
   }
 
+  async function handleFreeImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert('이미지는 5MB 이하만 업로드 가능합니다.'); return; }
+    setUploading(true);
+    try {
+      const { mediaUrl } = await uploadImage(file, 'POST');
+      setAttachedImages((prev) => [...prev, { name: file.name, url: mediaUrl }]);
+    } catch {
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  }
+
+  function removeAttachedImage(url: string) {
+    setAttachedImages((prev) => prev.filter((img) => img.url !== url));
+  }
+
   // 로딩/에러/권한 상태를 조기 반환으로 처리해 이후 로직의 null 가능성을 제거
   if (isLoading) return <WireframePage scroll><PageLoader label="불러오는 중…" /></WireframePage>;
   if (isError || !post) return <WireframePage scroll><p className="wf-text-sm">게시글을 불러오지 못했습니다.</p></WireframePage>;
   // isOwner 검사는 서버 응답 기준 — URL 직접 접근으로 타인의 게시글 수정 시도를 차단
   if (!post.isOwner) return <WireframePage scroll><p className="wf-text-sm">수정 권한이 없습니다.</p></WireframePage>;
 
+  // postType은 서버에서 고정된 값이므로 수정 화면에서 변경 불가 — UI 분기만 사용
+  const isColumn = post.postType === 'COLUMN';
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
+    // PostFormPage와 동일한 방식으로 HTML 재조합 — 이미지가 있으면 텍스트를 <p>로 감싸고 img 태그를 뒤에 붙임
+    const finalContent = !isColumn && attachedImages.length > 0
+      ? `<p style="white-space:pre-wrap">${content}</p>` + attachedImages.map((img) => `<img src="${img.url}" alt="${img.name}" style="max-width:100%;margin:8px 0;">`).join('')
+      : content;
     setSubmitting(true);
     try {
       const updated = await updatePost(post!.id, {
         title: title.trim(),
-        context: content,
+        context: finalContent,
         category,
         whiskeyIds: selectedWhiskeys.map((w) => w.id),
       });
@@ -124,9 +172,6 @@ export default function PostEditPage() {
       setSubmitting(false);
     }
   }
-
-  // postType은 서버에서 고정된 값이므로 수정 화면에서 변경 불가 — UI 분기만 사용
-  const isColumn = post.postType === 'COLUMN';
 
   return (
     <WireframePage scroll>
@@ -208,13 +253,34 @@ export default function PostEditPage() {
         {isColumn ? (
           <RichEditor value={content} onChange={setContent} />
         ) : (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="내용을 입력하세요"
-            rows={12}
-            className="wf-post-textarea"
-          />
+          <>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="내용을 입력하세요"
+              rows={12}
+              className="wf-post-textarea"
+            />
+            <div>
+              <button type="button" className="wf-chip wf-post-image-btn"
+                onClick={() => freeImageRef.current?.click()}
+                disabled={uploading}>
+                {uploading ? '업로드 중…' : '🖼 이미지 첨부'}
+              </button>
+              <input ref={freeImageRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                hidden onChange={handleFreeImageUpload} />
+              {attachedImages.length > 0 && (
+                <div className="wf-post-image-previews">
+                  {attachedImages.map((img) => (
+                    <div key={img.url} className="wf-post-image-item">
+                      <img src={img.url} alt={img.name} className="wf-post-image-thumb" />
+                      <button type="button" className="wf-post-image-remove" onClick={() => removeAttachedImage(img.url)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
         )}
 
         <button

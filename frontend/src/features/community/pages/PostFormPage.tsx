@@ -23,7 +23,6 @@ const CATEGORY_OPTIONS: Array<{ value: PostCategory; label: string }> = [
   { value: 'R', label: POST_CATEGORY_LABEL.R },
   { value: 'L', label: POST_CATEGORY_LABEL.L },
   { value: 'Q', label: POST_CATEGORY_LABEL.Q },
-  { value: 'G', label: POST_CATEGORY_LABEL.G },
   { value: 'B', label: POST_CATEGORY_LABEL.B },
 ];
 
