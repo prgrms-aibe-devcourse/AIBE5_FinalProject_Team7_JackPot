@@ -30,19 +30,23 @@ function FeedCard({ post }: { post: LoungePost }) {
         ) : (
           <div className="wf-feed-card__avatar wf-placeholder" aria-hidden />
         )}
-        <div>
-          <strong>{authorName}</strong>
-          <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
-          <p className="wf-text-sm">{post.title}</p>
-          <p className="wf-text-xs">{contentPreview}</p>
+        <div className="wf-feed-card__author">
+          <div className="wf-feed-card__author-row">
+            <strong className="wf-feed-card__author-name">{authorName}</strong>
+            <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
+          </div>
+          <span className="wf-feed-card__date">{post.createdAt.slice(0, 10)}</span>
         </div>
       </div>
-      <div className="wf-feed-card__preview wf-placeholder" aria-hidden />
+
+      <Link to={detailPath} className="wf-feed-card__body">
+        <h3 className="wf-feed-card__title">{post.title}</h3>
+        {contentPreview ? <p className="wf-feed-card__excerpt">{contentPreview}</p> : null}
+      </Link>
+
       <footer className="wf-feed-card__foot">
-        <span className="wf-text-xs">{post.createdAt.slice(0, 10)}</span>
-        <span className="wf-text-xs">(댓글은 글 페이지에서)</span>
-        <Link to={detailPath} className="wf-link wf-text-sm">
-          → 글 상세
+        <Link to={detailPath} className="wf-feed-card__more">
+          글 상세 보기 →
         </Link>
       </footer>
     </article>
@@ -55,15 +59,17 @@ function FeedCardSkeleton() {
       <div className="wf-feed-card__head">
         <Skeleton className="wf-feed-card__avatar" circle />
         <div className="wf-feed-card__skeleton-lines">
-          <Skeleton width="40%" height={14} />
-          <Skeleton width="70%" height={12} />
-          <Skeleton width="90%" height={12} />
+          <Skeleton width="35%" height={13} />
+          <Skeleton width="20%" height={11} />
         </div>
       </div>
-      <Skeleton className="wf-feed-card__preview" />
+      <div className="wf-feed-card__body">
+        <Skeleton width="70%" height={17} radius={6} />
+        <Skeleton width="95%" height={12} radius={4} />
+        <Skeleton width="80%" height={12} radius={4} />
+      </div>
       <div className="wf-feed-card__foot">
-        <Skeleton width={80} height={11} />
-        <Skeleton width={60} height={11} />
+        <Skeleton width={96} height={12} radius={4} />
       </div>
     </article>
   );
