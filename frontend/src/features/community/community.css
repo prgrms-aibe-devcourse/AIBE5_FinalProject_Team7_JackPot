@@ -103,7 +103,27 @@
 .wf-community-page-title { margin: 0; }
 .wf-community-filter-chips { margin-bottom: 12px; }
 .wf-community-filter-btn { cursor: pointer; border: none; background: none; }
-.wf-community-back-btn { margin-bottom: 16px; cursor: pointer; border: none; background: none; }
+.wf-community-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 7px 14px 7px 11px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--wf-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--wf-border);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.wf-community-back-btn:hover {
+  color: var(--wf-text);
+  border-color: var(--wf-accent);
+  background: rgba(213, 173, 69, 0.08);
+  transform: translateX(-2px);
+}
 .wf-community-write-btn { background: var(--wf-accent); color: #fff; text-decoration: none; }
 .wf-chip--sm { font-size: 11px; }
 

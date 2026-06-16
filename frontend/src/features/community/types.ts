@@ -30,6 +30,7 @@ export interface PostSummaryResponse {
 export interface PostDetailDto {
   id: number;
   authorId: number;
+  authorNickname: string;
   postType: PostType;
   category: PostCategory;
   title: string;

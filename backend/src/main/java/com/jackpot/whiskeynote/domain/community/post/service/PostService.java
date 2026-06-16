@@ -12,6 +12,8 @@ import com.jackpot.whiskeynote.domain.community.post.entity.PostWhiskey;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostLikeRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostWhiskeyRepository;
+import com.jackpot.whiskeynote.domain.member.entity.Users;
+import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,14 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostWhiskeyRepository postWhiskeyRepository;
     private final PostCommentRepository postCommentRepository;
+    private final UsersRepository usersRepository;
+
+    /** 작성자 ID로 닉네임 조회. 탈퇴/삭제 등으로 사용자가 없으면 기본 문구 반환. */
+    private String resolveAuthorNickname(Long authorId) {
+        return usersRepository.findById(authorId)
+                .map(Users::getNickname)
+                .orElse("알 수 없는 사용자");
+    }
 
     // POST-01: 글 상세
     /**
@@ -49,7 +59,8 @@ public class PostService {
 
         int commentCount = postCommentRepository.countByPostIdAndIsDeletedFalse(postId);
 
-        return PostDetailDto.from(post, isLiked, isOwner, whiskeyIds, commentCount);
+        return PostDetailDto.from(post, resolveAuthorNickname(post.getAuthorId()),
+                isLiked, isOwner, whiskeyIds, commentCount);
     }
 
     /** 조회수 상위 N개 게시글 반환 (커뮤니티 홈 인기 게시글용) */
@@ -111,7 +122,7 @@ public class PostService {
                 .stream().map(PostWhiskey::getWhiskeyId).toList();
 
         // 수정 시 isLiked=false 고정: 좋아요 상태 재조회를 생략해 DB 쿼리를 줄이기 위한 선택
-        return PostDetailDto.from(post, false, true, whiskeyIds,
+        return PostDetailDto.from(post, resolveAuthorNickname(post.getAuthorId()), false, true, whiskeyIds,
                 postCommentRepository.countByPostIdAndIsDeletedFalse(postId));
     }
 
