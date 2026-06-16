@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
+import { toast } from '@/shared/components/ui/Toast';
 import { uploadImage } from '@/shared/api/mediaApi';
 import { fetchWhiskeys, fetchWhiskeyById, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { updatePost } from '../api/communityApi';
@@ -125,13 +126,13 @@ export default function PostEditPage() {
   async function handleFreeImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('이미지는 5MB 이하만 업로드 가능합니다.'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast('이미지는 5MB 이하만 업로드 가능합니다.', 'warning'); return; }
     setUploading(true);
     try {
       const { mediaUrl } = await uploadImage(file, 'POST');
       setAttachedImages((prev) => [...prev, { name: file.name, url: mediaUrl }]);
     } catch {
-      alert('이미지 업로드에 실패했습니다.');
+      toast('이미지 업로드에 실패했습니다.', 'error');
     } finally {
       setUploading(false);
       e.target.value = '';

@@ -5,6 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import { uploadImage } from '@/shared/api/mediaApi';
+import { toast } from '@/shared/components/ui/Toast';
 
 interface RichEditorProps {
   value: string;
@@ -62,7 +63,7 @@ export function RichEditor({ value, onChange, placeholder = '내용을 입력하
     if (!file.type.startsWith('image/')) return;
     // 클라이언트 측 크기 제한으로 불필요한 업로드 요청 차단
     if (file.size > 5 * 1024 * 1024) {
-      alert('이미지는 5MB 이하만 업로드 가능합니다.');
+      toast('이미지는 5MB 이하만 업로드 가능합니다.', 'warning');
       return;
     }
     try {
@@ -70,7 +71,7 @@ export function RichEditor({ value, onChange, placeholder = '내용을 입력하
       // 업로드 후 에디터 커서 위치에 이미지 노드를 삽입
       editor.chain().focus().setImage({ src: mediaUrl }).run();
     } catch {
-      alert('이미지 업로드에 실패했습니다.');
+      toast('이미지 업로드에 실패했습니다.', 'error');
     }
   }
 

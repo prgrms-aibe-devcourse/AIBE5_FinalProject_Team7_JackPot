@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
+import { toast } from '@/shared/components/ui/Toast';
 import { authApi } from '../api/authApi';
 import '../auth.css';
 
@@ -86,13 +87,13 @@ export default function RegisterPage() {
   const handlePasswordConfirmChange = (v: string) => { setPasswordConfirm(v); setPasswordChecked(false); };
 
   const handlePasswordCheck = () => {
-    if (!password || !passwordConfirm) { alert('비밀번호를 두 칸 모두 입력해주세요.'); return; }
+    if (!password || !passwordConfirm) { toast('비밀번호를 두 칸 모두 입력해주세요.', 'warning'); return; }
     if (password === passwordConfirm) {
       setPasswordChecked(true);
-      alert('비밀번호가 일치합니다.');
+      toast('비밀번호가 일치합니다.', 'success');
     } else {
       setPasswordChecked(false);
-      alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+      toast('비밀번호가 일치하지 않습니다. 다시 확인해주세요.', 'error');
     }
   };
 
@@ -126,7 +127,7 @@ export default function RegisterPage() {
 
   const handleRegister = async () => {
     const errorMsg = validate(email, password, passwordChecked, nickname, birthday);
-    if (errorMsg) { alert(errorMsg); return; }
+    if (errorMsg) { toast(errorMsg, 'warning'); return; }
     setLoading(true);
     try {
       const data = await authApi.register(email, password, nickname, formatBirthday(birthday), name || undefined);
@@ -138,7 +139,7 @@ export default function RegisterPage() {
       localStorage.setItem('role', data.role ?? 'USER');
       navigate(data.isNewUser ? PATHS.ONBOARDING : PATHS.LOUNGE);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '회원가입에 실패했습니다.');
+      toast(e instanceof Error ? e.message : '회원가입에 실패했습니다.', 'error');
     } finally {
       setLoading(false);
     }
@@ -170,6 +171,7 @@ export default function RegisterPage() {
                 placeholder="whiskey@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -182,6 +184,7 @@ export default function RegisterPage() {
                 placeholder="8자 이상 입력"
                 value={password}
                 onChange={(e) => handlePasswordChange(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -195,6 +198,7 @@ export default function RegisterPage() {
                   placeholder="비밀번호 재입력"
                   value={passwordConfirm}
                   onChange={(e) => handlePasswordConfirmChange(e.target.value)}
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -215,6 +219,7 @@ export default function RegisterPage() {
                   placeholder="홍길동"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -224,6 +229,7 @@ export default function RegisterPage() {
                   placeholder="2~20자"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -243,6 +249,7 @@ export default function RegisterPage() {
                   maxLength={8}
                   inputMode="numeric"
                   style={{ flex: 1 }}
+                  disabled={loading}
                 />
                 {/* 3번: 캘린더 버튼 — showPicker()로 date input 직접 열기 */}
                 <div style={{ position: 'relative', flexShrink: 0 }}>

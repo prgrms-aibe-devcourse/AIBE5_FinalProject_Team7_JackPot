@@ -8,6 +8,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
+import { toast } from '@/shared/components/ui/Toast';
 import { authApi } from '../api/authApi';
 
 export default function OauthCallbackPage() {
@@ -21,7 +22,7 @@ export default function OauthCallbackPage() {
     const run = async () => {
       const code = searchParams.get('code');
       if (!provider || !code) {
-        alert('소셜 로그인에 실패했습니다. (code 누락)');
+        toast('소셜 로그인에 실패했습니다. (code 누락)', 'error');
         navigate(PATHS.LOGIN, { replace: true });
         return;
       }
@@ -36,7 +37,7 @@ export default function OauthCallbackPage() {
         localStorage.setItem('role', data.role ?? 'USER');
         navigate(data.isNewUser ? PATHS.ONBOARDING : PATHS.LOUNGE, { replace: true });
       } catch (e: unknown) {
-        alert(e instanceof Error ? e.message : '소셜 로그인에 실패했습니다.');
+        toast(e instanceof Error ? e.message : '소셜 로그인에 실패했습니다.', 'error');
         navigate(PATHS.LOGIN, { replace: true });
       }
     };

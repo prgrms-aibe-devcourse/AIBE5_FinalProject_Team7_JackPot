@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { Input } from '@/shared/components/ui/Input';
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestModal';
@@ -302,7 +303,7 @@ export default function SearchPage() {
 
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      const goLogin = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+      const goLogin = await confirmToast({ message: '로그인이 필요합니다. 로그인 페이지로 이동할까요?', danger: false });
       if (goLogin) navigate(PATHS.LOGIN);
       return;
     }
@@ -465,9 +466,9 @@ export default function SearchPage() {
           <button
             type="button"
             className="wf-search-register-link"
-            onClick={() => {
+            onClick={async () => {
               if (!localStorage.getItem('accessToken')) {
-                const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+                const go = await confirmToast({ message: '로그인이 필요합니다. 로그인 페이지로 이동할까요?', danger: false });
                 if (go) navigate(PATHS.LOGIN);
                 return;
               }
@@ -507,7 +508,7 @@ export default function SearchPage() {
                 </div>
               ) : null}
             </div>
-            <Button type="submit" className="wf-search-form__btn">
+            <Button type="submit" className="wf-search-form__btn" disabled={isFetching}>
               검색
             </Button>
             <Button
@@ -611,9 +612,9 @@ export default function SearchPage() {
                 <button
                   type="button"
                   className="wf-search-register-btn"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!localStorage.getItem('accessToken')) {
-                      const go = confirm('로그인이 필요합니다. 로그인 페이지로 이동할까요?');
+                      const go = await confirmToast({ message: '로그인이 필요합니다. 로그인 페이지로 이동할까요?', danger: false });
                       if (go) navigate(PATHS.LOGIN);
                       return;
                     }

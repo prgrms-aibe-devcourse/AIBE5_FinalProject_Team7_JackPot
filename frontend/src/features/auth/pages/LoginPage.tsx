@@ -5,6 +5,7 @@ import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
+import { toast } from '@/shared/components/ui/Toast';
 import { authApi } from '../api/authApi';
 import '../auth.css';
 
@@ -35,7 +36,7 @@ export default function LoginPage() {
       localStorage.setItem('role', data.role ?? 'USER');
       navigate(data.isNewUser ? PATHS.ONBOARDING : PATHS.LOUNGE);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '로그인에 실패했습니다.');
+      toast(e instanceof Error ? e.message : '로그인에 실패했습니다.', 'error');
     } finally {
       setLoading(false);
     }
@@ -60,6 +61,7 @@ export default function LoginPage() {
             className="wf-auth-field-first"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
           />
           <Input
             placeholder="비밀번호"
@@ -67,6 +69,7 @@ export default function LoginPage() {
             className="wf-auth-field"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
           <Button type="submit" block className="wf-auth-submit" disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
+import { toast } from '@/shared/components/ui/Toast';
 import { surveyApi, type SurveyApiRequest } from '../api/surveyApi';
 import '../survey.css';
 
@@ -222,7 +223,7 @@ export default function SurveyPage() {
       const result = await surveyApi.submit(payload);
       navigate(PATHS.RECOMMEND, { state: { result, payload } });
     } catch {
-      alert('결과를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+      toast('결과를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.', 'error');
     } finally {
       setSubmitting(false);
     }

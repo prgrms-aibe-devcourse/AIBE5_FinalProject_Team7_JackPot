@@ -260,7 +260,7 @@ function MyReviewItem({
 
   const handleUpdate = () => {
     if (rating < 0 || rating > 5) {
-      alert('별점은 0점부터 5점 사이로 선택해주세요.');
+      toast('별점은 0점부터 5점 사이로 선택해주세요.', 'warning');
       return;
     }
 
@@ -570,17 +570,18 @@ export default function CabinetPage() {
         body: { rating, publicText },
       });
     } catch (error) {
-      alert(error instanceof Error ? error.message : '리뷰 수정에 실패했습니다.');
+      toast(error instanceof Error ? error.message : '리뷰 수정에 실패했습니다.', 'error');
     }
   };
 
   const handleDeleteReview = async (reviewId: number) => {
-    if (!confirm('리뷰를 삭제할까요?')) return;
+    const ok = await confirmToast({ message: '리뷰를 삭제할까요?', danger: true });
+    if (!ok) return;
 
     try {
       await deleteReviewMutation.mutateAsync(reviewId);
     } catch (error) {
-      alert(error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.');
+      toast(error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.', 'error');
     }
   };
 

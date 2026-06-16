@@ -8,6 +8,8 @@ import { uploadImage } from '@/shared/api/mediaApi';
 import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { clearAuthSession } from '@/shared/lib/authSession';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { toast } from '@/shared/components/ui/Toast';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
 import '../my-page.css';
 
@@ -31,6 +33,7 @@ export default function MyPage() {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
 
   // USER-01: 프로필 조회
   // 의도: 진입 시 서버 프로필 로드 + TopNav용 localStorage 갱신
@@ -45,6 +48,7 @@ export default function MyPage() {
         window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       } catch {
         // MVP: 오류 시에도 페이지는 렌더링(로그인은 TopNav에서 처리)
+        toast('프로필을 불러오지 못했습니다.', 'error');
       }
     };
     run();
@@ -65,7 +69,7 @@ export default function MyPage() {
       localStorage.setItem('profileImageUrl', updated.profileImageUrl ?? '');
       window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '저장에 실패했습니다.');
+      toast(e instanceof Error ? e.message : '저장에 실패했습니다.', 'error');
     } finally {
       setSaving(false);
     }
@@ -79,7 +83,7 @@ export default function MyPage() {
     if (!file) return;
 
     if (!ACCEPT_IMAGE.split(',').includes(file.type)) {
-      alert('JPEG, PNG, WebP, GIF 이미지만 업로드할 수 있습니다.');
+      toast('JPEG, PNG, WebP, GIF 이미지만 업로드할 수 있습니다.', 'warning');
       return;
     }
 
@@ -91,7 +95,7 @@ export default function MyPage() {
       localStorage.setItem('profileImageUrl', updated.profileImageUrl ?? '');
       window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : '프로필 이미지 업로드에 실패했습니다.');
+      toast(err instanceof Error ? err.message : '프로필 이미지 업로드에 실패했습니다.', 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -100,13 +104,19 @@ export default function MyPage() {
   // USER-04: 탈퇴
   // 의도: 탈퇴 API 후 세션 삭제하고 로그인 화면으로
   async function handleWithdraw() {
-    const ok = window.confirm('정말로 탈퇴하시겠습니까? 탈퇴 후에는 되돌릴 수 없습니다.');
+    if (withdrawing) return;
+    const ok = await confirmToast({
+      message: '정말로 탈퇴하시겠습니까? 탈퇴 후에는 되돌릴 수 없습니다.',
+      danger: true,
+    });
     if (!ok) return;
 
+    setWithdrawing(true);
     try {
       await userApi.deleteMe();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '탈퇴에 실패했습니다.');
+      toast(e instanceof Error ? e.message : '탈퇴에 실패했습니다.', 'error');
+      setWithdrawing(false);
       return;
     }
 
@@ -120,15 +130,15 @@ export default function MyPage() {
   async function handleChangePassword() {
     if (savingPassword) return;
     if (!currentPassword.trim() || !newPassword.trim()) {
-      alert('현재 비밀번호와 새 비밀번호를 입력해주세요.');
+      toast('현재 비밀번호와 새 비밀번호를 입력해주세요.', 'warning');
       return;
     }
     if (newPassword.trim().length < 8) {
-      alert('새 비밀번호는 최소 8자 이상이어야 합니다.');
+      toast('새 비밀번호는 최소 8자 이상이어야 합니다.', 'warning');
       return;
     }
     if (newPassword !== newPasswordConfirm) {
-      alert('새 비밀번호 확인이 일치하지 않습니다.');
+      toast('새 비밀번호 확인이 일치하지 않습니다.', 'warning');
       return;
     }
 
@@ -141,9 +151,9 @@ export default function MyPage() {
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordConfirm('');
-      alert('비밀번호가 변경되었습니다.');
+      toast('비밀번호가 변경되었습니다.', 'success');
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : '비밀번호 변경에 실패했습니다.');
+      toast(e instanceof Error ? e.message : '비밀번호 변경에 실패했습니다.', 'error');
     } finally {
       setSavingPassword(false);
     }
@@ -194,6 +204,7 @@ export default function MyPage() {
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="닉네임을 입력하세요"
+            disabled={saving}
           />
           <Button variant="primary" block disabled={saving} onClick={handleSave}>
             {saving ? '저장 중...' : '닉네임 저장'}
@@ -255,8 +266,8 @@ export default function MyPage() {
       </div>
       <div className="wf-box wf-mypage-settings-box">
         <p className="wf-text-sm wf-mypage-settings-box__label">회원</p>
-        <Button variant="danger" block onClick={handleWithdraw}>
-          회원 탈퇴
+        <Button variant="danger" block disabled={withdrawing} onClick={handleWithdraw}>
+          {withdrawing ? '탈퇴 중...' : '회원 탈퇴'}
         </Button>
       </div>
       <Button variant="ghost" to={PATHS.CABINET} className="wf-mypage-cabinet-link">
