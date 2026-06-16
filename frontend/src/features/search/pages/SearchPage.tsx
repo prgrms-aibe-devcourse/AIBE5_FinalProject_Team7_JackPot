@@ -188,6 +188,8 @@ export default function SearchPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const suggestionKeyword = inputValue.trim();
+  // 키 입력마다 자동완성 API가 호출되지 않도록 입력이 잠시 멈춘 뒤에만 요청
+  const [debouncedSuggestion, setDebouncedSuggestion] = useState(suggestionKeyword);
   const isFilterActive = hasActiveFilters(
     selectedTypes,
     selectedNoseTags,
@@ -201,6 +203,11 @@ export default function SearchPage() {
   useEffect(() => {
     setPage(0);
   }, [keyword, selectedTypes, selectedNoseTags, selectedTasteTags, minAbv, maxAbv, minAge, maxAge]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSuggestion(suggestionKeyword), 250);
+    return () => clearTimeout(timer);
+  }, [suggestionKeyword]);
 
   const { data, error, isError, isFetching, isLoading, refetch } = useQuery({
     queryKey: [
@@ -243,9 +250,9 @@ export default function SearchPage() {
   });
 
   const { data: autocompleteItems = [] } = useQuery({
-    queryKey: ['whiskeys', 'autocomplete', suggestionKeyword],
-    queryFn: () => autocompleteWhiskeys({ q: suggestionKeyword, size: 8 }),
-    enabled: suggestionKeyword.length > 0,
+    queryKey: ['whiskeys', 'autocomplete', debouncedSuggestion],
+    queryFn: () => autocompleteWhiskeys({ q: debouncedSuggestion, size: 8 }),
+    enabled: debouncedSuggestion.length > 0,
     retry: false,
   });
 
@@ -679,6 +686,7 @@ export default function SearchPage() {
               totalElements={totalCount}
               onPageChange={handlePageChange}
               onPageSizeChange={handlePageSizeChange}
+              disabled={isFetching}
             />
           ) : null}
         </div>

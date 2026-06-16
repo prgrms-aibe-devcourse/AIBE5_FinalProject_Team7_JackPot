@@ -7,6 +7,7 @@ interface SearchPaginationProps {
   totalElements: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
+  disabled?: boolean;
 }
 
 function getVisiblePages(current: number, total: number): (number | 'ellipsis')[] {
@@ -54,6 +55,7 @@ export function SearchPagination({
   totalElements,
   onPageChange,
   onPageSizeChange,
+  disabled = false,
 }: SearchPaginationProps) {
   if (totalElements === 0) return null;
 
@@ -68,6 +70,7 @@ export function SearchPagination({
           value={pageSize}
           onChange={(event) => onPageSizeChange(Number(event.target.value))}
           aria-label="페이지당 항목 수"
+          disabled={disabled}
         >
           {PAGE_SIZE_OPTIONS.map((option) => (
             <option key={option} value={option}>
@@ -90,6 +93,7 @@ export function SearchPagination({
                 type="button"
                 className={`wf-search-pagination__page${page + 1 === item ? ' wf-search-pagination__page--active' : ''}`}
                 onClick={() => onPageChange(item - 1)}
+                disabled={disabled}
                 aria-current={page + 1 === item ? 'page' : undefined}
               >
                 {item}
