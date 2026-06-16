@@ -302,6 +302,17 @@ export default function SearchPage() {
     correction?.correctedKeyword && correction.correctedKeyword !== keyword
       ? correction.correctedKeyword
       : null;
+  const activeFilterChips = [
+    ...selectedTypes.map((type) => WHISKEY_TYPE_OPTIONS.find((option) => option.value === type)?.label ?? type),
+    ...selectedNoseTags.map((tag) => `향 ${tag}`),
+    ...selectedTasteTags.map((tag) => `맛 ${tag}`),
+    minAbv !== ABV_RANGE_MIN || maxAbv !== ABV_RANGE_MAX
+      ? `도수 ${Math.min(minAbv, maxAbv)}-${Math.max(minAbv, maxAbv)}%`
+      : null,
+    minAge !== AGE_RANGE_MIN || maxAge !== AGE_RANGE_MAX
+      ? `숙성 ${Math.min(minAge, maxAge)}-${Math.max(minAge, maxAge)}년`
+      : null,
+  ].filter(Boolean) as string[];
 
   // 위시 버튼 클릭 — 항상 모달 열기 (B방법)
   const handleWishClick = async (e: React.MouseEvent, whiskeyId: number) => {
@@ -540,8 +551,15 @@ export default function SearchPage() {
               <strong>
                 {isInitialLoading ? '위스키를 찾는 중입니다' : keyword ? `"${keyword}" 검색 결과` : '전체 위스키'}
               </strong>
+              {activeFilterChips.length > 0 ? (
+                <div className="wf-search-active-filters" aria-label="적용된 필터">
+                  {activeFilterChips.map((chip) => (
+                    <span key={chip}>{chip}</span>
+                  ))}
+                </div>
+              ) : null}
             </div>
-            <span>
+            <span className="wf-search-result-status__count">
               {isInitialLoading ? 'Loading' : `${totalCount.toLocaleString()}건`}
               {isFilterActive ? ' · 필터 적용' : ''}
               {isFetching && !isInitialLoading ? ' · 갱신 중' : ''}
@@ -650,31 +668,41 @@ export default function SearchPage() {
           {results.map((whiskey) => {
             const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
             const isWished = wishedMap[whiskey.id] !== undefined;
+            const meta = buildMeta(whiskey);
             return (
-            <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable wf-search-card">
-              {thumbSrc && !imgErrors.has(whiskey.id) ? (
-                <img
-                  src={thumbSrc}
-                  alt={whiskey.name}
-                  className="wf-card__thumb wf-search-card__thumb"
-                  onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
-                />
-              ) : (
-                <div className="wf-card__thumb wf-placeholder wf-search-card__thumb" />
-              )}
-              <div className="wf-card__body">
-                <div className="wf-card__title">{whiskey.name}</div>
-                <div className="wf-card__meta">{buildMeta(whiskey)}</div>
-                <div className="wf-card__meta">{whiskey.type}</div>
-                <Button
-                    variant="ghost"
-                    className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
-                    onClick={(e) => handleWishClick(e, whiskey.id)}
-                  >
-                    ♥ 위시
-                  </Button>
-              </div>
-            </Link>
+              <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable wf-search-card">
+                <div className="wf-search-card__media">
+                  {thumbSrc && !imgErrors.has(whiskey.id) ? (
+                    <img
+                      src={thumbSrc}
+                      alt={whiskey.name}
+                      className="wf-search-card__thumb"
+                      onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
+                    />
+                  ) : (
+                    <div className="wf-placeholder wf-search-card__thumb" />
+                  )}
+                </div>
+                <div className="wf-card__body">
+                  <div className="wf-search-card__content">
+                    <div>
+                      <div className="wf-card__title">{whiskey.name}</div>
+                      {meta ? <div className="wf-card__meta">{meta}</div> : null}
+                    </div>
+                    <span className="wf-search-card__type">{whiskey.type || 'Whiskey'}</span>
+                  </div>
+                  <div className="wf-search-card__actions">
+                    <span className="wf-search-card__hint">상세 보기</span>
+                    <Button
+                      variant="ghost"
+                      className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
+                      onClick={(e) => handleWishClick(e, whiskey.id)}
+                    >
+                      ♥ 위시
+                    </Button>
+                  </div>
+                </div>
+              </Link>
             );
           })}
 
