@@ -14,4 +14,15 @@ export const routes: FeatureRoute[] = [
       apiIds: ['SUR-02', 'SUR-03'],
     },
   },
+  {
+    path: PATHS.SURVEY_ENTHUSIAST,
+    Component: lazy(() => import('./pages/EnthusiastSurveyPage')),
+    layout: 'guest',
+    meta: {
+      screenId: '04-survey-enthusiast',
+      title: 'Survey · 애호가 설문',
+      phase: 'MVP',
+      apiIds: ['SUR-04', 'SUR-05'],
+    },
+  },
 ];

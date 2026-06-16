@@ -48,6 +48,22 @@ public class UserTasteProfile {
     @Column(name = "user_type", length = 128)
     private String userType;
 
+    @Column(name = "survey_type", length = 20, nullable = false)
+    @Builder.Default
+    private String surveyType = "BEGINNER";
+
+    @Column(name = "style_tags", length = 1000)
+    private String styleTags;        // 쉼표 구분: "single_malt,bourbon"
+
+    @Column(name = "nose_tag_weights", length = 2000)
+    private String noseTagWeights;   // tagId=intensity 쌍: "1=2,7=1"
+
+    @Column(name = "taste_tag_weights", length = 2000)
+    private String tasteTagWeights;
+
+    @Column(name = "exploration_level")
+    private Integer explorationLevel; // 1=보수형 2=균형형 3=탐험형
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -84,5 +100,26 @@ public class UserTasteProfile {
         this.noseTagIds = noseTagIds;
         this.tasteTagIds = tasteTagIds;
         this.userType = userType;
+        this.surveyType = "BEGINNER";
+    }
+
+    public void updateEnthusiast(Integer sweetScore, Integer bodyScore, Integer smokyScore,
+                                  Integer spicyScore, Integer finishScore,
+                                  String noseTagIds, String tasteTagIds, String userType,
+                                  String styleTags, String noseTagWeights, String tasteTagWeights,
+                                  Integer explorationLevel) {
+        this.sweetScore = sweetScore;
+        this.bodyScore = bodyScore;
+        this.smokyScore = smokyScore;
+        this.spicyScore = spicyScore;
+        this.finishScore = finishScore;
+        this.noseTagIds = noseTagIds;
+        this.tasteTagIds = tasteTagIds;
+        this.userType = userType;
+        this.surveyType = "ENTHUSIAST";
+        this.styleTags = styleTags;
+        this.noseTagWeights = noseTagWeights;
+        this.tasteTagWeights = tasteTagWeights;
+        this.explorationLevel = explorationLevel;
     }
 }

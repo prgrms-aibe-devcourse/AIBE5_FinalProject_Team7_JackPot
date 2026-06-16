@@ -3,6 +3,7 @@ package com.jackpot.whiskeynote.domain.taste.survey.service;
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.domain.taste.survey.dto.EnthusiastSurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse.*;
@@ -110,6 +111,110 @@ public class TasteSurveyService {
         } else {
             profile.update(sweet, body, smoky, spicy, finish, noseStr, tasteStr, userType);
         }
+    }
+
+    // ─── 애호가 설문 ────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public SurveyResultResponse calculateEnthusiast(EnthusiastSurveyRequest req) {
+        int sweet  = choiceToScore(req.sweetChoice());
+        int body   = choiceToScore(req.bodyChoice());
+        int smoky  = choiceToScore(req.smokyChoice());
+        int spicy  = choiceToScore(req.spicyChoice());
+        int finish = choiceToScore(req.finishChoice());
+
+        // 강도(intensity)가 높을수록 추천 가중치를 높이기 위해 intensity 2인 태그를 두 번 포함
+        Set<Long> allTagIdSet = buildWeightedTagSet(req.noseTags(), req.tasteTags());
+
+        Map<Long, Tag> tagMap = tagRepository.findAllById(new ArrayList<>(
+                        buildFlatTagSet(req.noseTags(), req.tasteTags())))
+                .stream().collect(Collectors.toMap(Tag::getId, t -> t));
+
+        List<Tag> noseTags  = req.noseTags()  != null ? req.noseTags().keySet().stream()
+                .map(tagMap::get).filter(Objects::nonNull).toList() : List.of();
+        List<Tag> tasteTags = req.tasteTags() != null ? req.tasteTags().keySet().stream()
+                .map(tagMap::get).filter(Objects::nonNull).toList() : List.of();
+
+        FlavorProfile profile = new FlavorProfile(
+                sweet, body, smoky, spicy, finish,
+                noseTags.stream().map(t -> new TagInfo(t.getId(), t.getName(), t.getImageUrl())).toList(),
+                tasteTags.stream().map(t -> new TagInfo(t.getId(), t.getName(), t.getImageUrl())).toList()
+        );
+
+        String[] typeAndDesc = classifyUserType(sweet, body, smoky, spicy, finish);
+
+        List<WhiskeyRecommendationResponse> recommendationResponses = whiskeyRecommendationService.recommendBySurvey(
+                scoreToVo(body, finish, smoky, spicy, sweet), allTagIdSet
+        );
+
+        return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recommendationResponses);
+    }
+
+    @Transactional
+    public SurveyResultResponse calculateAndSaveEnthusiast(EnthusiastSurveyRequest req, Long userId) {
+        SurveyResultResponse result = calculateEnthusiast(req);
+
+        int sweet  = choiceToScore(req.sweetChoice());
+        int body   = choiceToScore(req.bodyChoice());
+        int smoky  = choiceToScore(req.smokyChoice());
+        int spicy  = choiceToScore(req.spicyChoice());
+        int finish = choiceToScore(req.finishChoice());
+
+        Set<Long> flatTagSet = buildFlatTagSet(req.noseTags(), req.tasteTags());
+        String noseStr  = req.noseTags()  != null ? req.noseTags().keySet().stream()
+                .map(String::valueOf).collect(Collectors.joining(",")) : "";
+        String tasteStr = req.tasteTags() != null ? req.tasteTags().keySet().stream()
+                .map(String::valueOf).collect(Collectors.joining(",")) : "";
+
+        String styleStr   = req.styleTags() != null ? String.join(",", req.styleTags()) : "";
+        String noseWeightsStr  = encodeWeights(req.noseTags());
+        String tasteWeightsStr = encodeWeights(req.tasteTags());
+
+        UserTasteProfile profile = profileRepository.findByUserId(userId).orElse(null);
+        if (profile == null) {
+            profileRepository.save(UserTasteProfile.builder()
+                    .userId(userId)
+                    .sweetScore(sweet).bodyScore(body).smokyScore(smoky)
+                    .spicyScore(spicy).finishScore(finish)
+                    .noseTagIds(noseStr).tasteTagIds(tasteStr)
+                    .userType(result.userType())
+                    .surveyType("ENTHUSIAST")
+                    .styleTags(styleStr)
+                    .noseTagWeights(noseWeightsStr)
+                    .tasteTagWeights(tasteWeightsStr)
+                    .explorationLevel(req.explorationLevel())
+                    .build());
+        } else {
+            profile.updateEnthusiast(sweet, body, smoky, spicy, finish,
+                    noseStr, tasteStr, result.userType(),
+                    styleStr, noseWeightsStr, tasteWeightsStr, req.explorationLevel());
+        }
+
+        completeOnboarding(userId);
+        return result;
+    }
+
+    /** tagId=intensity 형식으로 직렬화 — 예: "1=2,7=1,8=2" */
+    private String encodeWeights(Map<Long, Integer> tags) {
+        if (tags == null || tags.isEmpty()) return "";
+        return tags.entrySet().stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.joining(","));
+    }
+
+    /** intensity 2인 태그를 두 번 포함해 추천 가중치를 높임 */
+    private Set<Long> buildWeightedTagSet(Map<Long, Integer> noseTags, Map<Long, Integer> tasteTags) {
+        Set<Long> set = new HashSet<>();
+        if (noseTags  != null) noseTags.forEach((id, w)  -> { set.add(id); if (w >= 2) set.add(id); });
+        if (tasteTags != null) tasteTags.forEach((id, w) -> { set.add(id); if (w >= 2) set.add(id); });
+        return set;
+    }
+
+    private Set<Long> buildFlatTagSet(Map<Long, Integer> noseTags, Map<Long, Integer> tasteTags) {
+        Set<Long> set = new HashSet<>();
+        if (noseTags  != null) set.addAll(noseTags.keySet());
+        if (tasteTags != null) set.addAll(tasteTags.keySet());
+        return set;
     }
 
     @Transactional(readOnly = true)

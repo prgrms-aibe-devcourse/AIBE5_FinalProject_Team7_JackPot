@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.taste.survey.controller;
 
+import com.jackpot.whiskeynote.domain.taste.survey.dto.EnthusiastSurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyRequest;
 import com.jackpot.whiskeynote.domain.taste.survey.dto.SurveyResultResponse;
 import com.jackpot.whiskeynote.domain.taste.survey.service.TasteSurveyService;
@@ -31,5 +32,22 @@ public class TasteSurveyController {
             @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
         return surveyService.calculateAndSave(request, principal.userId());
+    }
+
+    /** 애호가 설문 제출 → 추천 결과 계산만 (저장 안 함, 로그인 불필요) */
+    @PostMapping("/enthusiast")
+    public SurveyResultResponse submitEnthusiast(
+            @Valid @RequestBody EnthusiastSurveyRequest request
+    ) {
+        return surveyService.calculateEnthusiast(request);
+    }
+
+    /** 애호가 취향 반영하기 — 계산 + DB 저장 (로그인 필수) */
+    @PostMapping("/enthusiast/save")
+    public SurveyResultResponse submitAndSaveEnthusiast(
+            @Valid @RequestBody EnthusiastSurveyRequest request,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ) {
+        return surveyService.calculateAndSaveEnthusiast(request, principal.userId());
     }
 }

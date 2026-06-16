@@ -153,6 +153,7 @@ const NAV_STEPS = [
 export default function SurveyPage() {
   const navigate = useNavigate();
 
+  const [typeChosen, setTypeChosen] = useState(false);
   const [scores, setScores] = useState<Partial<Record<ScoreQuestion['key'], number>>>({});
   const [noseTags, setNoseTags] = useState<number[]>([]);
   const [tasteTags, setTasteTags] = useState<number[]>([]);
@@ -241,22 +242,54 @@ export default function SurveyPage() {
                 <p className="wf-text-label">설문조사</p>
                 <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
                 <p className="wf-subtitle wf-survey-intro__subtitle">
-                  7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.
+                  {typeChosen
+                    ? '7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.'
+                    : '먼저 위스키 경험 수준을 선택해 주세요.'}
                 </p>
               </div>
-              <div className="wf-survey-progress" aria-label={`설문 진행률 ${progressPercent}%`}>
-                <div className="wf-survey-progress__label">
-                  <span>진행률</span>
-                  <strong>{completedCount}/7</strong>
+              {typeChosen && (
+                <div className="wf-survey-progress" aria-label={`설문 진행률 ${progressPercent}%`}>
+                  <div className="wf-survey-progress__label">
+                    <span>진행률</span>
+                    <strong>{completedCount}/7</strong>
+                  </div>
+                  <div className="wf-survey-progress__track">
+                    <span style={{ width: `${progressPercent}%` }} />
+                  </div>
                 </div>
-                <div className="wf-survey-progress__track">
-                  <span style={{ width: `${progressPercent}%` }} />
-                </div>
-              </div>
+              )}
             </header>
 
+            {/* 타입 선택: 입문자 / 애호가 */}
+            {!typeChosen && (
+              <section className="wf-box wf-survey-q wf-survey-type-select">
+                <div className="wf-survey-q__head">
+                  <span className="wf-survey-q__step">Type</span>
+                  <h2 className="wf-title">위스키 경험 수준을 선택해 주세요</h2>
+                </div>
+                <div className="wf-survey-type-options">
+                  <button
+                    type="button"
+                    className="wf-survey-type-option"
+                    onClick={() => setTypeChosen(true)}
+                  >
+                    <strong>입문자</strong>
+                    <em>향과 맛을 쉽게 고르는 짧은 설문 · 7개 문항</em>
+                  </button>
+                  <button
+                    type="button"
+                    className="wf-survey-type-option"
+                    onClick={() => navigate(PATHS.SURVEY_ENTHUSIAST)}
+                  >
+                    <strong>애호가</strong>
+                    <em>캐스크, 피트, 피니시까지 세밀한 취향 반영 · 9개 문항</em>
+                  </button>
+                </div>
+              </section>
+            )}
+
             {/* Q1~Q5: 점수형 단일 선택 — 순차 노출 */}
-            {SCORE_QUESTIONS.map((q, idx) => {
+            {typeChosen && SCORE_QUESTIONS.map((q, idx) => {
               const visible = idx === 0 || scores[SCORE_QUESTIONS[idx - 1].key] != null;
               if (!visible) return null;
               return (
@@ -292,7 +325,7 @@ export default function SurveyPage() {
             })}
 
             {/* Q6: 좋아하는 향 (복수 선택) */}
-            {showNose && (
+            {typeChosen && showNose && (
               <section
                 id="q-nose"
                 ref={(el) => { blockRefs.current['q-nose'] = el; }}
@@ -321,7 +354,7 @@ export default function SurveyPage() {
             )}
 
             {/* Q7: 좋아하는 맛 (복수 선택) */}
-            {showTaste && (
+            {typeChosen && showTaste && (
               <section
                 id="q-taste"
                 ref={(el) => { blockRefs.current['q-taste'] = el; }}
@@ -349,7 +382,7 @@ export default function SurveyPage() {
               </section>
             )}
 
-            {canSubmit && (
+            {typeChosen && canSubmit && (
               <Button block className="wf-survey-submit" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? '분석 중...' : '결과 확인하기'}
               </Button>
@@ -357,7 +390,7 @@ export default function SurveyPage() {
           </main>
 
           {/* 우측 sticky 네비 */}
-          <nav className="wf-survey-nav" aria-label="설문 문항 이동">
+          {typeChosen && <nav className="wf-survey-nav" aria-label="설문 문항 이동">
             <p className="wf-survey-nav__title">문항</p>
             <ul className="wf-survey-nav__list">
               {NAV_STEPS.map((step) => {
@@ -384,7 +417,7 @@ export default function SurveyPage() {
                 );
               })}
             </ul>
-          </nav>
+          </nav>}
         </div>
       </div>
     </>
