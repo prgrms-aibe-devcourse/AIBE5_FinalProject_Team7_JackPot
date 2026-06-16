@@ -192,10 +192,10 @@ export default function EnthusiastSurveyPage() {
   const navigate = useNavigate();
 
   const [scores, setScores] = useState<Partial<Record<ScoreQuestion['key'], number>>>({});
-  const [styleTags, setStyleTags]   = useState<string[]>([]);
-  // intensity: 태그별 강도 1(좋아함) / 2(매우 좋아함), 없으면 미선택
-  const [noseTags,   setNoseTags]   = useState<Record<number, 1 | 2>>({});
-  const [tasteTags,  setTasteTags]  = useState<Record<number, 1 | 2>>({});
+  const [styleTags, setStyleTags] = useState<string[]>([]);
+  // 단순 선택/해제 (가중치 없음)
+  const [noseTags,  setNoseTags]  = useState<number[]>([]);
+  const [tasteTags, setTasteTags] = useState<number[]>([]);
   const [exploration, setExploration] = useState<1 | 2 | 3 | null>(null);
   const [activeId, setActiveId]       = useState<string>('q-bodyScore');
   const [submitting, setSubmitting]   = useState(false);
@@ -204,24 +204,24 @@ export default function EnthusiastSurveyPage() {
   const allScored     = answeredCount === SCORE_QUESTIONS.length;
   const showStyle     = allScored;
   const showNose      = showStyle && styleTags.length > 0;
-  const showTaste     = showNose  && Object.keys(noseTags).length > 0;
-  const showExplore   = showTaste && Object.keys(tasteTags).length > 0;
+  const showTaste     = showNose  && noseTags.length > 0;
+  const showExplore   = showTaste && tasteTags.length > 0;
   const canSubmit     = showExplore && exploration != null;
 
   const completedCount =
     answeredCount +
-    (styleTags.length > 0                   ? 1 : 0) +
-    (Object.keys(noseTags).length > 0       ? 1 : 0) +
-    (Object.keys(tasteTags).length > 0      ? 1 : 0) +
-    (exploration != null                    ? 1 : 0);
+    (styleTags.length > 0  ? 1 : 0) +
+    (noseTags.length > 0   ? 1 : 0) +
+    (tasteTags.length > 0  ? 1 : 0) +
+    (exploration != null   ? 1 : 0);
   const progressPercent = Math.round((completedCount / TOTAL_STEPS) * 100);
 
   const doneIds = new Set<string>();
   SCORE_QUESTIONS.forEach((q) => { if (scores[q.key] != null) doneIds.add(`q-${q.key}`); });
-  if (styleTags.length > 0)              doneIds.add('q-style');
-  if (Object.keys(noseTags).length > 0)  doneIds.add('q-nose');
-  if (Object.keys(tasteTags).length > 0) doneIds.add('q-taste');
-  if (exploration != null)               doneIds.add('q-exploration');
+  if (styleTags.length > 0) doneIds.add('q-style');
+  if (noseTags.length > 0)  doneIds.add('q-nose');
+  if (tasteTags.length > 0) doneIds.add('q-taste');
+  if (exploration != null)  doneIds.add('q-exploration');
 
   const availIds = new Set<string>(['q-bodyScore']);
   SCORE_QUESTIONS.forEach((q, i) => {
@@ -255,23 +255,8 @@ export default function EnthusiastSurveyPage() {
       prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key],
     );
 
-  // 클릭 사이클: 미선택 → +1 → +2 → 미선택
-  const cycleTag = (
-    map: Record<number, 1 | 2>,
-    setMap: (v: Record<number, 1 | 2>) => void,
-    id: number,
-  ) => {
-    const cur = map[id];
-    if (cur == null) {
-      setMap({ ...map, [id]: 1 });
-    } else if (cur === 1) {
-      setMap({ ...map, [id]: 2 });
-    } else {
-      const next = { ...map };
-      delete next[id];
-      setMap(next);
-    }
-  };
+  const toggleTag = (list: number[], set: (v: number[]) => void, id: number) =>
+    set(list.includes(id) ? list.filter((t) => t !== id) : [...list, id]);
 
   const goTo = (id: string) =>
     blockRefs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -287,8 +272,8 @@ export default function EnthusiastSurveyPage() {
         spicyChoice:      scores.spicyScore!,
         sweetChoice:      scores.sweetScore!,
         styleTags,
-        noseTagWeights:   noseTags,
-        tasteTagWeights:  tasteTags,
+        noseTags,
+        tasteTags,
         explorationLevel: exploration!,
       };
       const result = await enthusiastSurveyApi.submit(payload);
@@ -298,18 +283,6 @@ export default function EnthusiastSurveyPage() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  /* ── 태그 버튼 스타일 helper ── */
-  const tagClass = (intensity: 1 | 2 | undefined) => {
-    if (intensity == null) return 'wf-chip';
-    if (intensity === 1)   return 'wf-chip wf-chip--on';
-    return 'wf-chip wf-chip--on wf-chip--strong';
-  };
-  const tagLabel = (name: string, intensity: 1 | 2 | undefined) => {
-    if (intensity == null) return name;
-    if (intensity === 1)   return `${name} +1`;
-    return `${name} +2`;
   };
 
   return (
@@ -403,18 +376,15 @@ export default function EnthusiastSurveyPage() {
               </section>
             )}
 
-            {/* Q7 Nose 태그 + 강도 */}
+            {/* Q7 Nose 태그 */}
             {showNose && (
               <section
                 id="q-nose"
                 ref={(el) => { blockRefs.current['q-nose'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">nose_tags · 복수 선택 + 선호도</p>
+                <p className="wf-text-label">nose_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q7. Nose에서 선호하는 노트를 선택해주세요.</h2>
-                <p className="wf-text-sm wf-survey-tag-label" style={{ marginBottom: 12 }}>
-                  한 번 클릭 = 좋아함(+1) · 두 번 클릭 = 매우 좋아함(+2) · 세 번 클릭 = 해제
-                </p>
                 {NOSE_GROUPS.map((g) => (
                   <div key={g.group} className="wf-survey-tag-group">
                     <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
@@ -423,10 +393,10 @@ export default function EnthusiastSurveyPage() {
                         <button
                           key={tag.id}
                           type="button"
-                          className={tagClass(noseTags[tag.id])}
-                          onClick={() => cycleTag(noseTags, setNoseTags, tag.id)}
+                          className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                          onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
                         >
-                          {tagLabel(tag.name, noseTags[tag.id])}
+                          {tag.name}
                         </button>
                       ))}
                     </div>
@@ -435,18 +405,15 @@ export default function EnthusiastSurveyPage() {
               </section>
             )}
 
-            {/* Q8 Taste 태그 + 강도 */}
+            {/* Q8 Taste 태그 */}
             {showTaste && (
               <section
                 id="q-taste"
                 ref={(el) => { blockRefs.current['q-taste'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">taste_tags · 복수 선택 + 선호도</p>
+                <p className="wf-text-label">taste_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q8. Palate에서 선호하는 노트를 선택해주세요.</h2>
-                <p className="wf-text-sm wf-survey-tag-label" style={{ marginBottom: 12 }}>
-                  한 번 클릭 = 좋아함(+1) · 두 번 클릭 = 매우 좋아함(+2) · 세 번 클릭 = 해제
-                </p>
                 {TASTE_GROUPS.map((g) => (
                   <div key={g.group} className="wf-survey-tag-group">
                     <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
@@ -455,10 +422,10 @@ export default function EnthusiastSurveyPage() {
                         <button
                           key={tag.id}
                           type="button"
-                          className={tagClass(tasteTags[tag.id])}
-                          onClick={() => cycleTag(tasteTags, setTasteTags, tag.id)}
+                          className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                          onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
                         >
-                          {tagLabel(tag.name, tasteTags[tag.id])}
+                          {tag.name}
                         </button>
                       ))}
                     </div>

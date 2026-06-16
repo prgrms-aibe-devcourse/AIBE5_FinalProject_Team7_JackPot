@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
@@ -152,8 +152,10 @@ const NAV_STEPS = [
 
 export default function SurveyPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [typeChosen, setTypeChosen] = useState(false);
+  // OnboardingPage에서 입문자 선택 후 넘어온 경우 타입 선택 화면 스킵
+  const [typeChosen, setTypeChosen] = useState(searchParams.get('type') === 'beginner');
   const [scores, setScores] = useState<Partial<Record<ScoreQuestion['key'], number>>>({});
   const [noseTags, setNoseTags] = useState<number[]>([]);
   const [tasteTags, setTasteTags] = useState<number[]>([]);

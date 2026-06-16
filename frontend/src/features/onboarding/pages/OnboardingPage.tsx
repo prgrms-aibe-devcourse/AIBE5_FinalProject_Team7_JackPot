@@ -110,7 +110,7 @@ export default function OnboardingPage() {
               <Button
                 block
                 className="wf-onboarding-cta"
-                to={experience === 'enthusiast' ? PATHS.SURVEY_ENTHUSIAST : PATHS.SURVEY}
+                to={experience === 'enthusiast' ? PATHS.SURVEY_ENTHUSIAST : `${PATHS.SURVEY}?type=beginner`}
               >
                 설문 시작하기
               </Button>

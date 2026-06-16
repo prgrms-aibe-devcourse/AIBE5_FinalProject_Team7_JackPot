@@ -5,6 +5,7 @@ import com.jackpot.whiskeynote.domain.activity.repository.WhiskeyViewLogReposito
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
+import com.jackpot.whiskeynote.domain.taste.review.dto.WhiskeyReviewStats;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.recommendation.dto.CacheVector;
@@ -83,10 +84,18 @@ public class WhiskeyRecommendationService {
         }
         responses.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
 
-        // 변환
+        // 최대 3개 (캐시가 3개 미만일 수도 있으므로 min 처리)
+        int limit = Math.min(responses.size(), 3);
         List<WhiskeyRecommendationResponse> res = new ArrayList<>();
-        for (WhiskeyRecommendationResponse response : responses.subList(0, 3)) {
-            Double avgScore = reviewService.getAverageRating(response.id()).getAvgRating();
+        for (WhiskeyRecommendationResponse response : responses.subList(0, limit)) {
+            // avgRating이 없는 위스키(리뷰 0개)는 0.0으로 처리
+            double avgScore = 0.0;
+            try {
+                WhiskeyReviewStats stats = reviewService.getAverageRating(response.id());
+                if (stats != null && stats.getAvgRating() != null) {
+                    avgScore = stats.getAvgRating();
+                }
+            } catch (Exception ignored) {}
             res.add(response.withAvgRating(avgScore));
         }
 
