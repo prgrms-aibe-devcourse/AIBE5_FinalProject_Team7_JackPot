@@ -512,24 +512,6 @@ export default function WhiskeyDetailPage() {
         </button>
       </div>
 
-      <section className="wf-detail-quick-actions" aria-label="위스키 상세 빠른 액션">
-        <Link to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)} className="wf-detail-quick-action wf-box">
-          <span>Review</span>
-          <strong>리뷰 작성</strong>
-          <small>{reviewCount > 0 ? `${reviewCount}개 리뷰에 내 평가 더하기` : '첫 리뷰로 기록 시작하기'}</small>
-        </Link>
-        <Link to={notePath} className="wf-detail-quick-action wf-box">
-          <span>My Note</span>
-          <strong>시음 노트</strong>
-          <small>향, 맛, 피니시를 나중에 다시 볼 수 있게 저장</small>
-        </Link>
-        <Link to={reviewPath} className="wf-detail-quick-action wf-box">
-          <span>Community</span>
-          <strong>전체 리뷰</strong>
-          <small>다른 애호가들의 평가와 표현 확인</small>
-        </Link>
-      </section>
-
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
           <div className="wf-detail-sidebar__image-frame">
@@ -566,14 +548,6 @@ export default function WhiskeyDetailPage() {
             >
               {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
             </Button>
-            <div className="wf-detail-sidebar__secondary-actions">
-              <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
-                리뷰 작성
-              </Button>
-              <Button variant="ghost" to={notePath}>
-                My Note 작성
-              </Button>
-            </div>
           </div>
           <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
           <div className="wf-grid2">
