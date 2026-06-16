@@ -185,13 +185,39 @@
 .wf-detail-sidebar__actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(240, 202, 104, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
+    rgba(0, 0, 0, 0.08);
 }
 
 .wf-detail-sidebar__actions .wf-btn {
   width: 100%;
   justify-content: center;
+}
+
+.wf-detail-sidebar__actions-head {
+  display: grid;
+  gap: 4px;
+  padding: 2px 2px 4px;
+}
+
+.wf-detail-sidebar__actions-head span {
+  color: var(--wf-accent-light);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wf-detail-sidebar__actions-head strong {
+  color: var(--wf-text);
+  font-size: 18px;
+  line-height: 1.25;
 }
 
 .wf-detail-action {
@@ -202,18 +228,6 @@
 
 .wf-detail-action--on {
   box-shadow: var(--wf-shadow-accent);
-}
-
-.wf-detail-sidebar__secondary-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.wf-detail-sidebar__secondary-actions .wf-btn {
-  min-width: 0;
-  padding-inline: 10px;
-  border-radius: 14px;
 }
 
 .wf-detail-sidebar__hint {

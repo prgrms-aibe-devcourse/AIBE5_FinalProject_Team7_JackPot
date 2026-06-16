@@ -440,7 +440,7 @@ export default function WhiskeyDetailPage() {
     detail.country,
     `${detail.abv}%`,
     '700ml',
-  ].join(' · ');
+  ].filter(Boolean).join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
   const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
@@ -450,7 +450,7 @@ export default function WhiskeyDetailPage() {
     detail.region,
     ageLabel,
     `${detail.abv}% ABV`,
-  ];
+  ].filter(Boolean);
 
   return (
     <WireframePage scroll>
@@ -529,6 +529,10 @@ export default function WhiskeyDetailPage() {
             <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
           <div className="wf-detail-sidebar__actions">
+            <div className="wf-detail-sidebar__actions-head">
+              <span>Save to cabinet</span>
+              <strong>내 취향 보관</strong>
+            </div>
             <Button
               variant={isWished ? 'primary' : 'ghost'}
               className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
@@ -544,16 +548,8 @@ export default function WhiskeyDetailPage() {
             >
               {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
             </Button>
-            <div className="wf-detail-sidebar__secondary-actions">
-              <Button variant="ghost" to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}>
-                리뷰 작성
-              </Button>
-              <Button variant="ghost" to={notePath}>
-                My Note 작성
-              </Button>
-            </div>
           </div>
-          <p className="wf-detail-sidebar__hint">위시=마시고 싶음 · My Pick=맛있어서 추천하는 술</p>
+          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
           <div className="wf-grid2">
             {[
               ['숙성', ageLabel],
