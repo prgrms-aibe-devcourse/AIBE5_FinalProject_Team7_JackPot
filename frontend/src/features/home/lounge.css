@@ -36,6 +36,14 @@
   border: 1px solid var(--wf-border);
 }
 
+.wf-feed-card__skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
 .wf-feed-card__badge {
   display: inline-block;
   margin-left: 8px;

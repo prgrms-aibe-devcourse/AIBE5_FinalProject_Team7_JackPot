@@ -1,0 +1,32 @@
+.wf-skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.wf-skeleton--circle {
+  border-radius: 50%;
+}
+
+.wf-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(213, 173, 69, 0.13), transparent);
+  animation: wf-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes wf-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-skeleton::after {
+    animation: none;
+  }
+}

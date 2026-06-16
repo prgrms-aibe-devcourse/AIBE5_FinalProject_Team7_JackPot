@@ -5,6 +5,7 @@ import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import { Skeleton } from '@/shared/components/ui/Skeleton';
 import '../lounge.css';
 
 function stripHtml(html: string) {
@@ -44,6 +45,26 @@ function FeedCard({ post }: { post: LoungePost }) {
           → 글 상세
         </Link>
       </footer>
+    </article>
+  );
+}
+
+function FeedCardSkeleton() {
+  return (
+    <article className="wf-feed-card wf-box wf-box--solid" aria-hidden>
+      <div className="wf-feed-card__head">
+        <Skeleton className="wf-feed-card__avatar" circle />
+        <div className="wf-feed-card__skeleton-lines">
+          <Skeleton width="40%" height={14} />
+          <Skeleton width="70%" height={12} />
+          <Skeleton width="90%" height={12} />
+        </div>
+      </div>
+      <Skeleton className="wf-feed-card__preview" />
+      <div className="wf-feed-card__foot">
+        <Skeleton width={80} height={11} />
+        <Skeleton width={60} height={11} />
+      </div>
     </article>
   );
 }
@@ -96,7 +117,11 @@ export default function HomePage() {
         <p className="wf-text-sm">팔로우한 유저의 커뮤니티 글을 모아 보는 타임라인</p>
       </header>
       {isLoading ? (
-        <p className="wf-text-sm">팔로잉 피드를 불러오는 중입니다.</p>
+        <div aria-label="팔로잉 피드를 불러오는 중">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <FeedCardSkeleton key={index} />
+          ))}
+        </div>
       ) : isError ? (
         <p className="wf-text-sm">팔로잉 피드를 불러오지 못했습니다.</p>
       ) : feed.length ? (
