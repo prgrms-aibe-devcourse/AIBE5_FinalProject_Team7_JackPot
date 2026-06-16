@@ -5,7 +5,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/survey/api/surveyApi';
-import { enthusiastSurveyApi, type EnthusiastSurveyRequest } from '@/features/survey/api/enthusiastSurveyApi';
+import { enthusiastSurveyApi } from '@/features/survey/api/enthusiastSurveyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { saveResultImage } from '../utils/exportImage';
 import '../recommendation.css';
@@ -22,7 +22,7 @@ type ScoreKey = 'sweetScore' | 'bodyScore' | 'smokyScore' | 'spicyScore' | 'fini
 
 interface LocationState {
   result: SurveyResult;
-  payload: SurveyApiRequest | EnthusiastSurveyRequest;
+  payload: SurveyApiRequest;
   surveyType?: 'beginner' | 'enthusiast';
 }
 
@@ -47,9 +47,9 @@ export default function RecommendationPage() {
     setApplying(true);
     try {
       if (surveyType === 'enthusiast') {
-        await enthusiastSurveyApi.save(payload as EnthusiastSurveyRequest);
+        await enthusiastSurveyApi.save(payload);
       } else {
-        await surveyApi.save(payload as SurveyApiRequest);
+        await surveyApi.save(payload);
       }
       setApplied(true);
     } catch {

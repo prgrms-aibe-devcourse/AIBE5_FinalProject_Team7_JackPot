@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
-import { enthusiastSurveyApi, type EnthusiastSurveyRequest } from '../api/enthusiastSurveyApi';
+import { enthusiastSurveyApi } from '../api/enthusiastSurveyApi';
+import type { SurveyApiRequest } from '../api/surveyApi';
 import '../survey.css';
 
 /* ───────── Q1~Q5 점수형 문항 정의 ───────── */
@@ -279,15 +280,15 @@ export default function EnthusiastSurveyPage() {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
-      const payload: EnthusiastSurveyRequest = {
+      const payload: SurveyApiRequest = {
         bodyChoice:       scores.bodyScore!,
         finishChoice:     scores.finishScore!,
         smokyChoice:      scores.smokyScore!,
         spicyChoice:      scores.spicyScore!,
         sweetChoice:      scores.sweetScore!,
         styleTags,
-        noseTags,
-        tasteTags,
+        noseTagWeights:   noseTags,
+        tasteTagWeights:  tasteTags,
         explorationLevel: exploration!,
       };
       const result = await enthusiastSurveyApi.submit(payload);
