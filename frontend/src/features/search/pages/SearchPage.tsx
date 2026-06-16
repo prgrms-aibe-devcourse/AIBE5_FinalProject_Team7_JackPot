@@ -711,7 +711,8 @@ export default function SearchPage() {
                   <button
                     key={tag}
                     type="button"
-                    className={`wf-box wf-search-tag-option${selected ? ' wf-box--accent' : ''}`}
+                    aria-pressed={selected}
+                    className={`wf-box wf-search-tag-option${selected ? ' wf-box--accent wf-search-tag-option--selected' : ''}`}
                     onClick={() => {
                       if (tagModalType === 'nose') {
                         setSelectedNoseTags((tags) => toggleItem(tags, tag));
