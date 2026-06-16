@@ -23,7 +23,7 @@ export function StarRatingInput({ value, onChange, max = 5 }: StarRatingInputPro
           key={score}
           type="button"
           className={`wf-star-rating__button${score <= displayValue ? ' wf-star-rating__button--filled' : ''}`}
-          onClick={() => onChange(value === score ? 0 : score)}
+          onClick={() => onChange(score)}
           onMouseEnter={() => setHoveredValue(score)}
           onFocus={() => setHoveredValue(score)}
           onBlur={() => setHoveredValue(null)}
