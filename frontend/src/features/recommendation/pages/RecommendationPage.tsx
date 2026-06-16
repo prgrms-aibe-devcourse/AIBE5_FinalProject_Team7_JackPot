@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
+import { toast } from '@/shared/components/ui/Toast';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/survey/api/surveyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
@@ -46,7 +47,7 @@ export default function RecommendationPage() {
       await surveyApi.save(payload);
       setApplied(true);
     } catch {
-      alert('저장 중 문제가 발생했어요. 다시 시도해 주세요.');
+      toast('저장 중 문제가 발생했어요. 다시 시도해 주세요.', 'error');
     } finally {
       setApplying(false);
     }
@@ -57,7 +58,7 @@ export default function RecommendationPage() {
     try {
       saveResultImage(result);
     } catch {
-      alert('이미지 저장 중 문제가 발생했어요. 다시 시도해 주세요.');
+      toast('이미지 저장 중 문제가 발생했어요. 다시 시도해 주세요.', 'error');
     }
   };
 

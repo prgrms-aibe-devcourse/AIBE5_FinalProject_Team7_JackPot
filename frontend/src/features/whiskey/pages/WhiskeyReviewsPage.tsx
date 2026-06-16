@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
+import { toast } from '@/shared/components/ui/Toast';
 import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import type { WhiskeyReview } from '../types';
@@ -33,7 +34,7 @@ function ReviewCard({ review }: { review: WhiskeyReview }) {
 
   const handleLikeClick = () => {
     if (currentUserId == null) {
-      alert('로그인 후 리뷰에 좋아요를 누를 수 있습니다.');
+      toast('로그인 후 리뷰에 좋아요를 누를 수 있습니다.', 'warning');
       return;
     }
 

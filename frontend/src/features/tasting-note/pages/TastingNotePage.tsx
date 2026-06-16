@@ -6,6 +6,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import { toast } from '@/shared/components/ui/Toast';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import {
   analyzeNoteByAi,
   createTastingNote,
@@ -404,8 +405,9 @@ export default function TastingNotePage() {
               type="button"
               variant="ghost"
               disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (confirm('노트를 삭제하시겠습니까?')) {
+              onClick={async () => {
+                const ok = await confirmToast({ message: '노트를 삭제하시겠습니까?', danger: true });
+                if (ok) {
                   deleteMutation.mutate();
                 }
               }}

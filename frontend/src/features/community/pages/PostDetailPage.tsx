@@ -9,6 +9,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
 import { isLoggedIn, getStoredUserId } from '@/shared/lib/authSession';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { deletePost } from '../api/communityApi';
@@ -77,7 +78,7 @@ export default function PostDetailPage() {
   }
 
   async function handleDelete() {
-    if (!confirm('게시글을 삭제하시겠습니까?')) return;
+    if (!(await confirmToast({ message: '게시글을 삭제하시겠습니까?', danger: true }))) return;
     await deletePost(post!.id);
     qc.invalidateQueries({ queryKey: ['community'] });
     const boardPath: Record<string, string> = {
@@ -298,6 +299,7 @@ export default function PostDetailPage() {
               placeholder={isLoggedIn() ? '댓글을 입력하세요…' : '로그인 후 댓글을 작성할 수 있어요'}
               rows={3}
               className="wf-comment-textarea"
+              disabled={createCommentMutation.isPending}
             />
             <button
               type="submit"

@@ -7,6 +7,7 @@ import { uploadImage } from '@/shared/api/mediaApi';
 import { fetchWhiskeys, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { PATHS } from '@/app/router/paths';
 import { isLoggedIn } from '@/shared/lib/authSession';
+import { toast } from '@/shared/components/ui/Toast';
 import { createPost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
 import type { PostType, PostCategory } from '../types';
@@ -103,13 +104,13 @@ export default function PostFormPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     // 5MB 초과 시 서버에 부담을 주기 전에 클라이언트에서 먼저 차단
-    if (file.size > 5 * 1024 * 1024) { alert('이미지는 5MB 이하만 업로드 가능합니다.'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast('이미지는 5MB 이하만 업로드 가능합니다.', 'warning'); return; }
     setUploading(true);
     try {
       const { mediaUrl } = await uploadImage(file, 'POST');
       setAttachedImages((prev) => [...prev, { name: file.name, url: mediaUrl }]);
     } catch {
-      alert('이미지 업로드에 실패했습니다.');
+      toast('이미지 업로드에 실패했습니다.', 'error');
     } finally {
       setUploading(false);
       // 같은 파일을 다시 선택할 수 있도록 value 초기화

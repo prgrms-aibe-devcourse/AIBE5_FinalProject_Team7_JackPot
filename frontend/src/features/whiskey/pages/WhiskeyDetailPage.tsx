@@ -248,6 +248,7 @@ export default function WhiskeyDetailPage() {
   // 위시 상태
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [isWished, setIsWished] = useState(false);
+  const [wishLoading, setWishLoading] = useState(false);
   const [wishedItemId, setWishedItemId] = useState<number | null>(null);
   const [imgError, setImgError] = useState(false);
 
@@ -325,6 +326,8 @@ export default function WhiskeyDetailPage() {
 
   // 위시 버튼 클릭 핸들러
   const handleWishToggle = async () => {
+    if (wishLoading) return;
+
     const token = localStorage.getItem('accessToken');
     if (!token) {
       toast('로그인 후 위시리스트를 사용할 수 있습니다.', 'info');
@@ -332,19 +335,24 @@ export default function WhiskeyDetailPage() {
       return;
     }
 
-    if (isWished && wishedItemId !== null) {
-      // 위시 삭제
-      try {
-        await cabinetApi.removeWish(wishedItemId, 0);
-        setIsWished(false);
-        setWishedItemId(null);
-        toast('위시리스트에서 제거되었습니다.', 'info');
-      } catch {
-        toast('위시 제거에 실패했습니다.', 'error');
+    setWishLoading(true);
+    try {
+      if (isWished && wishedItemId !== null) {
+        // 위시 삭제
+        try {
+          await cabinetApi.removeWish(wishedItemId, 0);
+          setIsWished(false);
+          setWishedItemId(null);
+          toast('위시리스트에서 제거되었습니다.', 'info');
+        } catch {
+          toast('위시 제거에 실패했습니다.', 'error');
+        }
+      } else {
+        // 위시 추가 → 폴더 선택 모달 열기
+        setWishModalOpen(true);
       }
-    } else {
-      // 위시 추가 → 폴더 선택 모달 열기
-      setWishModalOpen(true);
+    } finally {
+      setWishLoading(false);
     }
   };
 
@@ -361,6 +369,8 @@ export default function WhiskeyDetailPage() {
 
   // Pick 버튼 클릭 핸들러
   const handlePickToggle = async () => {
+    if (pickLoading) return;
+
     const token = localStorage.getItem('accessToken');
     if (!token) {
       toast('로그인 후 My Pick을 사용할 수 있습니다.', 'info');
@@ -523,6 +533,7 @@ export default function WhiskeyDetailPage() {
               variant={isWished ? 'primary' : 'ghost'}
               className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
               onClick={handleWishToggle}
+              disabled={wishLoading}
             >
               {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
             </Button>

@@ -1,6 +1,7 @@
 // 댓글 단일 항목 및 재귀 트리 렌더러 — 중첩 답글을 depth 인덴트로 시각화
 import { useState } from 'react';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
+import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { ReportModal } from './ReportModal';
 import type { CommentTreeResponse } from '../types';
 
@@ -127,7 +128,11 @@ export function CommentItem({
             {isOwner && onDelete && !comment.isDeleted && (
               <button
                 className="wf-text-xs wf-comment-action-btn wf-comment-action-btn--danger"
-                onClick={() => onDelete(comment.id)}
+                onClick={async () => {
+                  const ok = await confirmToast({ message: '댓글을 삭제하시겠습니까?', danger: true });
+                  if (!ok) return;
+                  onDelete(comment.id);
+                }}
               >
                 삭제
               </button>
