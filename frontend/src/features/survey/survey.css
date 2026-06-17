@@ -33,7 +33,7 @@
   padding: 28px;
   margin-top: 20px;
   border-color: var(--wf-border);
-  border-radius: 16px;
+  border-radius: var(--wf-radius-card);
   background: var(--wf-surface);
   box-shadow: var(--wf-shadow-sm);
   animation: wf-survey-in 0.28s ease;

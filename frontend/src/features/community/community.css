@@ -393,7 +393,7 @@
 .wf-modal-panel {
   background: var(--wf-surface);
   border: 1px solid var(--wf-border);
-  border-radius: 12px;
+  border-radius: var(--wf-radius-card);
   padding: 20px;
   display: flex;
   flex-direction: column;
