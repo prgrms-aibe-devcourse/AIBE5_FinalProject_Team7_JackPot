@@ -19,9 +19,73 @@ CREATE TABLE IF NOT EXISTS user_taste_profile_tags (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. 기존 컬럼 제거 (1NF 위반 + 미사용 컬럼)
-ALTER TABLE user_taste_profiles
-    DROP COLUMN nose_tag_ids,
-    DROP COLUMN taste_tag_ids,
-    DROP COLUMN user_type,
-    DROP COLUMN nose_tag_weights,
-    DROP COLUMN taste_tag_weights;
+-- 운영 DB별 컬럼 존재 상태가 다를 수 있어, 존재하는 컬럼만 삭제한다.
+SELECT IF(
+    EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'nose_tag_ids'
+    ),
+    'ALTER TABLE user_taste_profiles DROP COLUMN nose_tag_ids',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'taste_tag_ids'
+    ),
+    'ALTER TABLE user_taste_profiles DROP COLUMN taste_tag_ids',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'user_type'
+    ),
+    'ALTER TABLE user_taste_profiles DROP COLUMN user_type',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'nose_tag_weights'
+    ),
+    'ALTER TABLE user_taste_profiles DROP COLUMN nose_tag_weights',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'taste_tag_weights'
+    ),
+    'ALTER TABLE user_taste_profiles DROP COLUMN taste_tag_weights',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
