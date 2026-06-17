@@ -523,30 +523,23 @@
     rgba(23, 21, 27, 0.9);
 }
 
-/* 우측에 은은하게 페이드되는 병 이미지 (배경 액센트) */
+/* 우측 상단에 깔끔하게 들어가는 병 썸네일 (세로 비율, 중앙 크롭) */
 .wf-feed-promo__bottle {
   position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 168px;
-  width: auto;
-  object-fit: contain;
-  opacity: 0.92;
+  top: 22px;
+  right: 22px;
+  width: 70px;
+  height: 104px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to left, #000 58%, transparent);
-  mask-image: linear-gradient(to left, #000 58%, transparent);
 }
 
 .wf-feed-promo__copy {
   position: relative;
   z-index: 1;
-  max-width: 72%;
-}
-
-.wf-feed-promo--today .wf-btn {
-  position: relative;
-  z-index: 1;
+  max-width: calc(100% - 104px);
 }
 
 .wf-feed-promo--match {
