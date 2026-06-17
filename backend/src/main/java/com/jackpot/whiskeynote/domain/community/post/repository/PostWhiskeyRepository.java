@@ -14,6 +14,10 @@ public interface PostWhiskeyRepository extends JpaRepository<PostWhiskey, Long> 
     /** 게시글에 태그된 위스키 목록을 등록 순서(order) 기준으로 조회 */
     List<PostWhiskey> findByPostIdOrderByOrder(Long postId);
 
+    /** 여러 게시글에 태그된 위스키 목록을 게시글/등록 순서 기준으로 한 번에 조회 */
+    @Query("SELECT pw FROM PostWhiskey pw WHERE pw.postId IN :postIds ORDER BY pw.postId ASC, pw.order ASC")
+    List<PostWhiskey> findByPostIdsOrderByPostAndOrder(List<Long> postIds);
+
     /**
      * 게시글 수정 시 위스키 태그를 전면 교체하기 위해 기존 태그를 일괄 삭제.
      * 부분 업데이트 방식보다 전체 삭제 후 재삽입이 구현 단순성이 높아 이 방식을 선택.

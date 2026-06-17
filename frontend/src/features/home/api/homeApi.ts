@@ -8,6 +8,12 @@ export interface LoungePost {
   title: string;
   context: string;
   createdAt: string;
+  postType: 'NOTICE' | 'COLUMN' | 'QA' | 'FREE' | 'FEED';
+  category: 'F' | 'R' | 'L' | 'Q' | 'G' | 'B';
+  likeCount: number;
+  viewCount: number;
+  commentCount: number;
+  whiskeyNames: string[];
 }
 
 export const homeApi = {

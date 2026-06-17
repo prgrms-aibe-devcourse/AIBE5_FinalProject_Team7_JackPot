@@ -36,6 +36,29 @@ function extractFirstImage(content: string): string | null {
   return mdImg ? mdImg[1] : null;
 }
 
+const POST_TYPE_LABEL: Record<LoungePost['postType'], string> = {
+  NOTICE: '공지',
+  COLUMN: '칼럼',
+  QA: '질문',
+  FREE: '자유',
+  FEED: '피드',
+};
+
+const CATEGORY_LABEL: Record<LoungePost['category'], string> = {
+  F: '자유',
+  R: '리뷰',
+  L: '추천',
+  Q: '질문',
+  G: '일반',
+  B: '입문',
+};
+
+function formatCount(value: number) {
+  if (value >= 10000) return `${(value / 10000).toFixed(1).replace('.0', '')}만`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1).replace('.0', '')}천`;
+  return String(value);
+}
+
 function FeedCard({ post }: { post: LoungePost }) {
   const [thumbError, setThumbError] = useState(false);
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
@@ -43,6 +66,8 @@ function FeedCard({ post }: { post: LoungePost }) {
   const authorName = post.authorNickname || `사용자 #${post.authorId}`;
   const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
   const thumbnail = resolveMediaUrl(extractFirstImage(post.context));
+  const visibleWhiskeys = post.whiskeyNames.slice(0, 2);
+  const hiddenWhiskeyCount = Math.max(post.whiskeyNames.length - visibleWhiskeys.length, 0);
 
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
@@ -83,8 +108,32 @@ function FeedCard({ post }: { post: LoungePost }) {
         ) : null}
       </Link>
 
+      <div className="wf-feed-card__signals" aria-label="게시글 반응 정보">
+        <span className="wf-feed-card__signal">좋아요 {formatCount(post.likeCount)}</span>
+        <span className="wf-feed-card__signal">댓글 {formatCount(post.commentCount)}</span>
+        <span className="wf-feed-card__signal">조회 {formatCount(post.viewCount)}</span>
+      </div>
+
+      {(visibleWhiskeys.length > 0 || post.category) && (
+        <div className="wf-feed-card__tags" aria-label="게시글 태그">
+          <span className="wf-feed-card__tag wf-feed-card__tag--type">
+            {POST_TYPE_LABEL[post.postType]} · {CATEGORY_LABEL[post.category]}
+          </span>
+          {visibleWhiskeys.map((name) => (
+            <span key={name} className="wf-feed-card__tag">
+              {name}
+            </span>
+          ))}
+          {hiddenWhiskeyCount > 0 && (
+            <span className="wf-feed-card__tag wf-feed-card__tag--more">
+              +{hiddenWhiskeyCount}
+            </span>
+          )}
+        </div>
+      )}
+
       <footer className="wf-feed-card__foot">
-        <span className="wf-feed-card__meta">커뮤니티 포스트</span>
+        <span className="wf-feed-card__meta">{POST_TYPE_LABEL[post.postType]} 포스트</span>
         <Link to={detailPath} className="wf-feed-card__more">
           자세히 보기
         </Link>
@@ -112,6 +161,11 @@ function FeedCardSkeleton() {
         <Skeleton className="wf-feed-card__thumb" radius={10} />
       </div>
       <div className="wf-feed-card__foot">
+        <div className="wf-feed-card__skeleton-signal-row">
+          <Skeleton width={74} height={24} radius={999} />
+          <Skeleton width={68} height={24} radius={999} />
+          <Skeleton width={64} height={24} radius={999} />
+        </div>
         <Skeleton width={96} height={12} radius={4} />
       </div>
     </article>
