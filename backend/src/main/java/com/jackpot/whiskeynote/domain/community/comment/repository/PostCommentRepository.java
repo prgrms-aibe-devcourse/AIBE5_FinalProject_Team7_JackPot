@@ -3,10 +3,16 @@ package com.jackpot.whiskeynote.domain.community.comment.repository;
 
 import com.jackpot.whiskeynote.domain.community.comment.entity.PostComment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface PostCommentRepository extends JpaRepository<PostComment, Long> {
+
+    interface PostCommentCount {
+        Long getPostId();
+        long getCommentCount();
+    }
 
     /**
      * 특정 게시글의 모든 댓글을 작성 시간 오름차순으로 조회.
@@ -21,4 +27,12 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
      * - 논리 삭제된 댓글은 "삭제된 댓글"로 표시되지만 실제 댓글 수에는 미포함
      */
     int countByPostIdAndIsDeletedFalse(Long postId);
+
+    @Query("""
+            SELECT c.postId AS postId, COUNT(c.id) AS commentCount
+            FROM PostComment c
+            WHERE c.postId IN :postIds AND c.isDeleted = false
+            GROUP BY c.postId
+            """)
+    List<PostCommentCount> countByPostIds(List<Long> postIds);
 }
