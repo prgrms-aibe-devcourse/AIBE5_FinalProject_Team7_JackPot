@@ -5,6 +5,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { enthusiastSurveyApi } from '../api/enthusiastSurveyApi';
 import type { SurveyApiRequest } from '../api/surveyApi';
+import { useTags } from '../hooks/useTags';
 import '../survey.css';
 
 /* ───────── Q1~Q5 점수형 문항 정의 ───────── */
@@ -115,57 +116,6 @@ const STYLE_GROUPS: StyleGroup[] = [
 
 /* ───────── Q7 Nose 태그 ───────── */
 
-interface TagItem { id: number; name: string }
-interface TagGroup { group: string; tags: TagItem[] }
-
-const NOSE_GROUPS: TagGroup[] = [
-  { group: '과일', tags: [
-    { id: 200, name: '사과' }, { id: 201, name: '배' },
-    { id: 1,   name: '시트러스' }, { id: 202, name: '열대과일' },
-    { id: 2,   name: '베리' }, { id: 203, name: '건과일' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 7,   name: '꿀' }, { id: 8,   name: '바닐라' },
-    { id: 9,   name: '캐러멜' }, { id: 204, name: '토피' },
-    { id: 10,  name: '초콜릿' },
-  ]},
-  { group: '곡물·식물', tags: [
-    { id: 205, name: '몰트' }, { id: 5,   name: '곡물' },
-    { id: 4,   name: '허브' }, { id: 206, name: '플로럴' },
-  ]},
-  { group: '오크·향신료', tags: [
-    { id: 15,  name: '오크' }, { id: 13,  name: '시나몬' },
-    { id: 12,  name: '후추' }, { id: 207, name: '정향' },
-    { id: 16,  name: '가죽' }, { id: 208, name: '담배' },
-  ]},
-  { group: '피트', tags: [
-    { id: 209, name: '연기' }, { id: 210, name: '바다' },
-    { id: 211, name: '요오드' }, { id: 212, name: '약품향' },
-    { id: 18,  name: '흙내음' },
-  ]},
-];
-
-/* ───────── Q8 Taste 태그 ───────── */
-
-const TASTE_GROUPS: TagGroup[] = [
-  { group: '과일', tags: [
-    { id: 101, name: '시트러스' }, { id: 213, name: '사과' },
-    { id: 102, name: '베리' }, { id: 214, name: '건포도' },
-    { id: 215, name: '열대과일' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 106, name: '꿀' }, { id: 107, name: '바닐라' },
-    { id: 108, name: '캐러멜' }, { id: 109, name: '초콜릿' },
-    { id: 216, name: '토피' },
-  ]},
-  { group: '기타', tags: [
-    { id: 105, name: '견과류' }, { id: 110, name: '커피' },
-    { id: 217, name: '몰트' }, { id: 103, name: '허브' },
-    { id: 111, name: '오크' }, { id: 218, name: '스파이스' },
-    { id: 112, name: '피트' }, { id: 114, name: '소금기' },
-    { id: 219, name: '가죽' },
-  ]},
-];
 
 /* ───────── Q9 탐험 성향 ───────── */
 
@@ -199,6 +149,10 @@ export default function EnthusiastSurveyPage() {
   const [exploration, setExploration] = useState<1 | 2 | 3 | null>(null);
   const [activeId, setActiveId]       = useState<string>('q-bodyScore');
   const [submitting, setSubmitting]   = useState(false);
+
+  // 향/맛 태그는 서버에서 조회 (프론트 하드코딩 제거)
+  const { data: noseTagList = [], isLoading: noseLoading } = useTags('nose');
+  const { data: tasteTagList = [], isLoading: tasteLoading } = useTags('taste');
 
   const answeredCount = SCORE_QUESTIONS.filter((q) => scores[q.key] != null).length;
   const allScored     = answeredCount === SCORE_QUESTIONS.length;
@@ -385,23 +339,22 @@ export default function EnthusiastSurveyPage() {
               >
                 <p className="wf-text-label">nose_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q7. Nose에서 선호하는 노트를 선택해주세요.</h2>
-                {NOSE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                {noseLoading ? (
+                  <p className="wf-text-sm">향 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {noseTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 
@@ -414,23 +367,22 @@ export default function EnthusiastSurveyPage() {
               >
                 <p className="wf-text-label">taste_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q8. Palate에서 선호하는 노트를 선택해주세요.</h2>
-                {TASTE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                {tasteLoading ? (
+                  <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {tasteTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 

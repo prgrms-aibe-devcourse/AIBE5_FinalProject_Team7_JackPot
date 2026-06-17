@@ -5,6 +5,7 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { toast } from '@/shared/components/ui/Toast';
 import { surveyApi, type SurveyApiRequest } from '../api/surveyApi';
+import { useTags } from '../hooks/useTags';
 import '../survey.css';
 
 /* ───────── 설문 정의 ───────── */
@@ -82,66 +83,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
 ];
 
-interface TagItem {
-  id: number;
-  name: string;
-}
-interface TagGroup {
-  group: string;
-  tags: TagItem[];
-}
-
-const NOSE_GROUPS: TagGroup[] = [
-  { group: '과일·꽃', tags: [
-    { id: 1, name: '시트러스' },
-    { id: 2, name: '베리류' },
-    { id: 3, name: '꽃' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 7, name: '꿀' },
-    { id: 8, name: '바닐라' },
-    { id: 9, name: '캐러멜' },
-    { id: 10, name: '초콜릿' },
-  ]},
-  { group: '허브·식물', tags: [
-    { id: 4, name: '허브' },
-    { id: 5, name: '곡물' },
-    { id: 6, name: '견과류' },
-    { id: 11, name: '커피' },
-  ]},
-  { group: '나무·향신료', tags: [
-    { id: 15, name: '오크' },
-    { id: 12, name: '후추' },
-    { id: 13, name: '계피' },
-  ]},
-  { group: '개성 있는 향', tags: [
-    { id: 17, name: '피트' },
-    { id: 18, name: '흙' },
-    { id: 16, name: '가죽' },
-  ]},
-];
-
-const TASTE_GROUPS: TagGroup[] = [
-  { group: '과일', tags: [
-    { id: 101, name: '시트러스' },
-    { id: 102, name: '베리류' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 106, name: '꿀' },
-    { id: 107, name: '바닐라' },
-    { id: 108, name: '캐러멜' },
-    { id: 109, name: '초콜릿' },
-  ]},
-  { group: '기타', tags: [
-    { id: 105, name: '견과류' },
-    { id: 110, name: '커피' },
-    { id: 103, name: '허브' },
-    { id: 111, name: '오크' },
-    { id: 112, name: '피트' },
-    { id: 114, name: '짠맛' },
-  ]},
-];
-
 /** 우측 네비 스텝 (Q1~Q7) */
 const NAV_STEPS = [
   ...SCORE_QUESTIONS.map((q, i) => ({ id: `q-${q.key}`, label: `Q${i + 1}` })),
@@ -162,6 +103,10 @@ export default function SurveyPage() {
   const [tasteTags, setTasteTags] = useState<number[]>([]);
   const [activeId, setActiveId] = useState<string>('q-sweetScore');
   const [submitting, setSubmitting] = useState(false);
+
+  // 향/맛 태그는 서버에서 조회 (프론트 하드코딩 제거)
+  const { data: noseTagList = [], isLoading: noseLoading } = useTags('nose');
+  const { data: tasteTagList = [], isLoading: tasteLoading } = useTags('taste');
 
   const answeredCount = SCORE_QUESTIONS.filter((q) => scores[q.key] != null).length;
   const allScored = answeredCount === SCORE_QUESTIONS.length;
@@ -336,23 +281,22 @@ export default function SurveyPage() {
               >
                 <p className="wf-text-label">nose_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q6. 좋아하는 향을 골라주세요</h2>
-                {NOSE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                {noseLoading ? (
+                  <p className="wf-text-sm">향 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {noseTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 
@@ -365,23 +309,22 @@ export default function SurveyPage() {
               >
                 <p className="wf-text-label">taste_tags · 복수 선택</p>
                 <h2 className="wf-title wf-survey-q__h2">Q7. 좋아하는 맛을 골라주세요</h2>
-                {TASTE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                {tasteLoading ? (
+                  <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {tasteTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 
