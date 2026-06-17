@@ -6,6 +6,7 @@ import com.jackpot.whiskeynote.domain.community.post.entity.PostWhiskey;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostWhiskeyRepository;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.follow.repository.FollowsRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
@@ -61,6 +62,19 @@ public class LoungeService {
                     List<String> whiskeyNames = whiskeyNamesMap.getOrDefault(post.getId(), List.of());
                     return LoungePostResponse.from(post, nickname, profileImageUrl, commentCount, whiskeyNames);
                 })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<LoungeTrendingWhiskeyResponse> getTrendingWhiskeys(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 10));
+
+        return postWhiskeyRepository.findTrendingWhiskeys(safeLimit).stream()
+                .map(row -> new LoungeTrendingWhiskeyResponse(
+                        row.getWhiskeyId(),
+                        row.getWhiskeyName(),
+                        row.getMentionCount()
+                ))
                 .toList();
     }
 

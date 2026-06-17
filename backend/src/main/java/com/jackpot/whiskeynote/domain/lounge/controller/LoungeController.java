@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.lounge.controller;
 
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.lounge.service.LoungeService;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,12 @@ public class LoungeController {
             @RequestParam(defaultValue = "20") int size
             ) {
         return loungeService.getLoungeFeed(principal.userId(), page, size);
+    }
+
+    @GetMapping("/api/v1/lounge/trending-whiskeys")
+    public List<LoungeTrendingWhiskeyResponse> getTrendingWhiskeys(
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return loungeService.getTrendingWhiskeys(limit);
     }
 }
