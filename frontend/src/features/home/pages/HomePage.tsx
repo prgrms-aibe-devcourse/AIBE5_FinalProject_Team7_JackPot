@@ -46,15 +46,6 @@ const POST_TYPE_LABEL: Record<LoungePost['postType'], string> = {
   FEED: '피드',
 };
 
-const CATEGORY_LABEL: Record<LoungePost['category'], string> = {
-  F: '자유',
-  R: '리뷰',
-  L: '추천',
-  Q: '질문',
-  G: '일반',
-  B: '입문',
-};
-
 function formatCount(value: number) {
   if (value >= 10000) return `${(value / 10000).toFixed(1).replace('.0', '')}만`;
   if (value >= 1000) return `${(value / 1000).toFixed(1).replace('.0', '')}천`;
@@ -92,6 +83,7 @@ function FeedCard({ post }: { post: LoungePost }) {
           </div>
           <span className="wf-feed-card__date">{post.createdAt.slice(0, 10)}</span>
         </div>
+        <span className="wf-feed-card__type">{POST_TYPE_LABEL[post.postType]}</span>
       </div>
 
       <Link to={detailPath} className="wf-feed-card__body">
@@ -111,16 +103,13 @@ function FeedCard({ post }: { post: LoungePost }) {
       </Link>
 
       <div className="wf-feed-card__signals" aria-label="게시글 반응 정보">
-        <span className="wf-feed-card__signal">좋아요 {formatCount(post.likeCount)}</span>
+        <span className="wf-feed-card__signal">♥ {formatCount(post.likeCount)}</span>
         <span className="wf-feed-card__signal">댓글 {formatCount(post.commentCount)}</span>
         <span className="wf-feed-card__signal">조회 {formatCount(post.viewCount)}</span>
       </div>
 
-      {(visibleWhiskeys.length > 0 || post.category) && (
-        <div className="wf-feed-card__tags" aria-label="게시글 태그">
-          <span className="wf-feed-card__tag wf-feed-card__tag--type">
-            {POST_TYPE_LABEL[post.postType]} · {CATEGORY_LABEL[post.category]}
-          </span>
+      {visibleWhiskeys.length > 0 && (
+        <div className="wf-feed-card__tags" aria-label="위스키 태그">
           {visibleWhiskeys.map((name) => (
             <span key={name} className="wf-feed-card__tag">
               {name}
@@ -135,7 +124,6 @@ function FeedCard({ post }: { post: LoungePost }) {
       )}
 
       <footer className="wf-feed-card__foot">
-        <span className="wf-feed-card__meta">{POST_TYPE_LABEL[post.postType]} 포스트</span>
         <Link to={detailPath} className="wf-feed-card__more">
           자세히 보기
         </Link>
