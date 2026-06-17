@@ -114,6 +114,86 @@
   gap: 14px;
 }
 
+/* 오늘의 라운지 섹션 */
+.wf-lounge-today {
+  padding: 20px 22px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.wf-lounge-today__head {
+  margin-bottom: 14px;
+}
+
+.wf-lounge-today__head .wf-section-title {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.wf-lounge-today__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wf-lounge-today__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.wf-lounge-today__value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--wf-accent);
+  line-height: 1;
+}
+
+.wf-lounge-today__label {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+.wf-lounge-today__link {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--wf-text);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wf-lounge-today__link:hover {
+  color: var(--wf-accent);
+}
+
+.wf-lounge-today__highlight {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--wf-accent-light, var(--wf-accent));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-lounge-today__muted {
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
+@media (max-width: 720px) {
+  .wf-lounge-today__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .wf-lounge-tabs {
   display: flex;
   gap: 8px;

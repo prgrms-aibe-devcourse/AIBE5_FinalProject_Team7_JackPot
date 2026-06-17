@@ -61,4 +61,21 @@ public interface PostWhiskeyRepository extends JpaRepository<PostWhiskey, Long> 
             LIMIT :limit
             """, nativeQuery = true)
     List<TrendingWhiskeyProjection> findTrendingWhiskeys(@Param("limit") int limit);
+
+    /** 특정 시각 이후(=오늘 등) 작성된 글 기준으로 많이 언급된 위스키 */
+    @Query(value = """
+            SELECT
+                pw.whiskey_id AS whiskeyId,
+                w.name AS whiskeyName,
+                COUNT(pw.id) AS mentionCount
+            FROM post_whiskeys pw
+            JOIN posts p ON p.id = pw.post_id
+            JOIN whiskeys w ON w.id = pw.whiskey_id
+            WHERE p.is_deleted = false AND p.created_at >= :since
+            GROUP BY pw.whiskey_id, w.name
+            ORDER BY COUNT(pw.id) DESC, MAX(p.created_at) DESC
+            LIMIT :limit
+            """, nativeQuery = true)
+    List<TrendingWhiskeyProjection> findTrendingWhiskeysSince(
+            @Param("since") java.time.LocalDateTime since, @Param("limit") int limit);
 }

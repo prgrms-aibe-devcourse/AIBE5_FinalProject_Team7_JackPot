@@ -28,6 +28,12 @@ export interface LoungeSuggestedUser {
   profileImageUrl: string | null;
 }
 
+export interface LoungeToday {
+  newPostCount: number;
+  topPost: LoungePost | null;
+  topWhiskeyName: string | null;
+}
+
 export type LoungeFeedTab = 'following' | 'popular' | 'latest';
 
 const FEED_PATH: Record<LoungeFeedTab, string> = {
@@ -59,6 +65,10 @@ export const homeApi = {
     const res = await apiClient.get<LoungeSuggestedUser[]>('/lounge/suggested-users', {
       params: { limit },
     });
+    return res.data;
+  },
+  getToday: async (): Promise<LoungeToday> => {
+    const res = await apiClient.get<LoungeToday>('/lounge/today');
     return res.data;
   },
 };
