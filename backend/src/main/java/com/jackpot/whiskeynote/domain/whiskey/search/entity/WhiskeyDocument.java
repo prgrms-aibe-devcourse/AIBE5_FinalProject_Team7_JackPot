@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.List;
 
-@Document(indexName = "whiskeys", createIndex = false)
+@Document(indexName = "whiskeys_current", createIndex = false)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
