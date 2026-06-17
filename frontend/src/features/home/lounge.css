@@ -179,6 +179,12 @@
   color: var(--wf-muted);
 }
 
+.wf-lounge-feed-end {
+  margin: 4px 0 8px;
+  text-align: center;
+  color: var(--wf-muted);
+}
+
 .wf-lounge-tabs {
   display: flex;
   gap: 8px;

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeToday } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
@@ -391,16 +391,43 @@ const TAB_EMPTY: Record<LoungeFeedTab, { title: string; desc: string }> = {
   latest: { title: '아직 게시글이 없습니다', desc: '커뮤니티에 글이 올라오면 최신순으로 표시됩니다.' },
 };
 
+const LOUNGE_PAGE_SIZE = 20;
+
 export default function HomePage() {
   const [tab, setTab] = useState<LoungeFeedTab>('following');
   const {
-    data: feed = [],
+    data: feedPages,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ['lounge', 'feed', tab, 0, 20],
-    queryFn: () => homeApi.getFeedByTab(tab, 0, 20),
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['lounge', 'feed', tab],
+    queryFn: ({ pageParam }) => homeApi.getFeedByTab(tab, pageParam, LOUNGE_PAGE_SIZE),
+    initialPageParam: 0,
+    // 마지막 페이지가 꽉 찼으면(=size와 동일) 다음 페이지가 있다고 판단
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === LOUNGE_PAGE_SIZE ? allPages.length : undefined,
   });
+  const feed = feedPages?.pages.flat() ?? [];
+
+  // 스크롤 하단 감지용 sentinel — 보이면 다음 페이지 로드
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const { data: trendingWhiskeys = [] } = useQuery({
     queryKey: ['lounge', 'trending-whiskeys', 5],
     queryFn: () => homeApi.getTrendingWhiskeys(5),
@@ -452,7 +479,15 @@ export default function HomePage() {
               <p className="wf-text-sm">잠시 후 다시 라운지에 접속해주세요.</p>
             </section>
           ) : feed.length ? (
-            feed.map((post) => <FeedCard key={post.postId} post={post} />)
+            <>
+              {feed.map((post) => <FeedCard key={post.postId} post={post} />)}
+              {isFetchingNextPage && <FeedCardSkeleton />}
+              {/* 하단 도달 감지 sentinel */}
+              <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
+              {!hasNextPage && (
+                <p className="wf-text-sm wf-lounge-feed-end">모든 글을 확인했어요</p>
+              )}
+            </>
           ) : (
             <section className="wf-box wf-box--solid wf-lounge-empty">
               <h2 className="wf-section-title">{TAB_EMPTY[tab].title}</h2>
