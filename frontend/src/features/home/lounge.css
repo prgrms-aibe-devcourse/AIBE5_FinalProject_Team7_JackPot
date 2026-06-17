@@ -542,8 +542,9 @@
   flex-shrink: 0;
   object-fit: cover;
   object-position: center;
-  border-radius: 8px;
-  border: 1px solid rgba(213, 173, 69, 0.32);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 .wf-feed-promo--match {
