@@ -22,6 +22,12 @@ export interface LoungeTrendingWhiskey {
   mentionCount: number;
 }
 
+export interface LoungeSuggestedUser {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+}
+
 export type LoungeFeedTab = 'following' | 'popular' | 'latest';
 
 const FEED_PATH: Record<LoungeFeedTab, string> = {
@@ -45,6 +51,12 @@ export const homeApi = {
   },
   getTrendingWhiskeys: async (limit = 5): Promise<LoungeTrendingWhiskey[]> => {
     const res = await apiClient.get<LoungeTrendingWhiskey[]>('/lounge/trending-whiskeys', {
+      params: { limit },
+    });
+    return res.data;
+  },
+  getSuggestedUsers: async (limit = 5): Promise<LoungeSuggestedUser[]> => {
+    const res = await apiClient.get<LoungeSuggestedUser[]>('/lounge/suggested-users', {
       params: { limit },
     });
     return res.data;

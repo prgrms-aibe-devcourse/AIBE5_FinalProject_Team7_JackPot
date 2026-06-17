@@ -6,6 +6,7 @@ import com.jackpot.whiskeynote.domain.community.post.entity.PostWhiskey;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostWhiskeyRepository;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeSuggestedUserResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.follow.repository.FollowsRepository;
@@ -18,8 +19,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +89,36 @@ public class LoungeService {
                     List<String> whiskeyNames = whiskeyNamesMap.getOrDefault(post.getId(), List.of());
                     return LoungePostResponse.from(post, nickname, profileImageUrl, commentCount, whiskeyNames);
                 })
+                .toList();
+    }
+
+    /** 팔로우 추천 — 활동 많은 작성자 중 본인/이미 팔로우한 유저를 제외해 추천. */
+    @Transactional(readOnly = true)
+    public List<LoungeSuggestedUserResponse> getSuggestedUsers(Long userId, int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 10));
+
+        // 이미 팔로우한 유저 + 본인은 제외
+        Set<Long> excluded = new HashSet<>(followsRepository.findFollowingIdsByFollowerId(userId));
+        excluded.add(userId);
+
+        // 활동 많은 작성자를 넉넉히 가져온 뒤 필터링 (정렬 순서 유지)
+        List<Long> candidateIds = postRepository.findActiveAuthorIds(PageRequest.of(0, safeLimit * 4)).stream()
+                .filter(id -> id != null && !excluded.contains(id))
+                .limit(safeLimit)
+                .toList();
+        if (candidateIds.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, Users> userMap = usersRepository.findAllById(candidateIds)
+                .stream()
+                .collect(Collectors.toMap(Users::getId, u -> u));
+
+        return candidateIds.stream()
+                .map(userMap::get)
+                .filter(user -> user != null)
+                .map(user -> new LoungeSuggestedUserResponse(
+                        user.getId(), user.getNickname(), user.getProfileImageUrl()))
                 .toList();
     }
 

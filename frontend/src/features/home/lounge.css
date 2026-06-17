@@ -640,6 +640,83 @@
   gap: 12px;
 }
 
+/* 팔로우 추천 위젯 */
+.wf-lounge-suggest {
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.wf-lounge-suggest__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.wf-lounge-suggest__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wf-lounge-suggest__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.wf-lounge-suggest__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(213, 173, 69, 0.38);
+  background: var(--wf-surface-2);
+}
+
+.wf-lounge-suggest__avatar--initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--wf-accent);
+}
+
+.wf-lounge-suggest__name {
+  font-size: 13px;
+  color: var(--wf-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-lounge-suggest__follow {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.wf-lounge-suggest__follow:hover {
+  opacity: 0.8;
+}
+
+.wf-lounge-suggest__follow:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .wf-lounge-author {
   display: flex;
   align-items: center;

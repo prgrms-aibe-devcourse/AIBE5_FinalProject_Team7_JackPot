@@ -56,7 +56,8 @@ public class SecurityConfig {
                                 "/api/v1/lounge/feed",
                                 "/api/v1/lounge/popular",
                                 "/api/v1/lounge/latest",
-                                "/api/v1/lounge/trending-whiskeys"
+                                "/api/v1/lounge/trending-whiskeys",
+                                "/api/v1/lounge/suggested-users"
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
