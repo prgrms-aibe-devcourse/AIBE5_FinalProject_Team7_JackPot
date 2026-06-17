@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey } from '@/features/home/api/homeApi';
+import { fetchTopPosts } from '@/features/community/api/communityApi';
+import type { PostSummaryResponse } from '@/features/community/types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -286,6 +288,60 @@ function LoungeAuthors({ posts }: { posts: LoungePost[] }) {
   );
 }
 
+function LoungePopularPosts({ posts }: { posts: PostSummaryResponse[] }) {
+  if (!posts.length) return null;
+
+  return (
+    <section className="wf-lounge-discovery wf-box wf-box--solid">
+      <div className="wf-lounge-discovery__head">
+        <p className="wf-text-label">인기 게시글</p>
+        <Link to={PATHS.COMMUNITY} className="wf-lounge-discovery__more">전체</Link>
+      </div>
+      <div className="wf-lounge-rank-list">
+        {posts.slice(0, 4).map((post, index) => (
+          <Link
+            key={post.id}
+            to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
+            className="wf-lounge-rank-item"
+          >
+            <span className="wf-lounge-rank-item__rank">{index + 1}</span>
+            <span className="wf-lounge-rank-item__body">
+              <strong>{post.title}</strong>
+              <span>조회 {formatCount(post.viewCount)} · 댓글 {formatCount(post.commentCount)}</span>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LoungeTrendingWhiskeys({ whiskeys }: { whiskeys: LoungeTrendingWhiskey[] }) {
+  if (!whiskeys.length) return null;
+
+  return (
+    <section className="wf-lounge-discovery wf-box wf-box--solid">
+      <div className="wf-lounge-discovery__head">
+        <p className="wf-text-label">많이 언급된 위스키</p>
+        <Link to={PATHS.SEARCH} className="wf-lounge-discovery__more">검색</Link>
+      </div>
+      <div className="wf-lounge-bottle-list">
+        {whiskeys.slice(0, 5).map((whiskey, index) => (
+          <Link
+            key={whiskey.whiskeyId}
+            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(whiskey.whiskeyId))}
+            className="wf-lounge-bottle-item"
+          >
+            <span className="wf-lounge-bottle-item__mark">{index + 1}</span>
+            <span className="wf-lounge-bottle-item__name">{whiskey.whiskeyName}</span>
+            <span className="wf-lounge-bottle-item__count">{formatCount(whiskey.mentionCount)}회</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /** svg/pages/06-home.svg — 라운지 타임라인 */
 export default function HomePage() {
   const {
@@ -295,6 +351,14 @@ export default function HomePage() {
   } = useQuery({
     queryKey: ['lounge', 'feed', 0, 20],
     queryFn: () => homeApi.getLoungeFeed(0, 20),
+  });
+  const { data: topPosts = [] } = useQuery({
+    queryKey: ['lounge', 'top-posts', 4],
+    queryFn: () => fetchTopPosts(4),
+  });
+  const { data: trendingWhiskeys = [] } = useQuery({
+    queryKey: ['lounge', 'trending-whiskeys', 5],
+    queryFn: () => homeApi.getTrendingWhiskeys(5),
   });
   const authorCount = new Set(feed.map((post) => post.authorId)).size;
 
@@ -332,6 +396,8 @@ export default function HomePage() {
         </main>
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
           <PromoToday />
+          <LoungePopularPosts posts={topPosts} />
+          <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
           <LoungeAuthors posts={feed} />
           <LoungeQuickLinks />

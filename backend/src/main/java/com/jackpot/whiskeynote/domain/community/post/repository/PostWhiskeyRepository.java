@@ -6,17 +6,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface PostWhiskeyRepository extends JpaRepository<PostWhiskey, Long> {
+
+    interface TrendingWhiskeyProjection {
+        Long getWhiskeyId();
+        String getWhiskeyName();
+        long getMentionCount();
+    }
 
     /** 게시글에 태그된 위스키 목록을 등록 순서(order) 기준으로 조회 */
     List<PostWhiskey> findByPostIdOrderByOrder(Long postId);
 
     /** 여러 게시글에 태그된 위스키 목록을 게시글/등록 순서 기준으로 한 번에 조회 */
     @Query("SELECT pw FROM PostWhiskey pw WHERE pw.postId IN :postIds ORDER BY pw.postId ASC, pw.order ASC")
-    List<PostWhiskey> findByPostIdsOrderByPostAndOrder(List<Long> postIds);
+    List<PostWhiskey> findByPostIdsOrderByPostAndOrder(@Param("postIds") List<Long> postIds);
 
     /**
      * 게시글 수정 시 위스키 태그를 전면 교체하기 위해 기존 태그를 일괄 삭제.
@@ -39,4 +46,19 @@ public interface PostWhiskeyRepository extends JpaRepository<PostWhiskey, Long> 
            "WHERE pw.whiskeyId = :whiskeyId AND p.isDeleted = false " +
            "ORDER BY p.likeCount DESC")
     List<Long> findTopPostIdsByWhiskeyId(Long whiskeyId, Pageable pageable);
+
+    @Query(value = """
+            SELECT
+                pw.whiskey_id AS whiskeyId,
+                w.name AS whiskeyName,
+                COUNT(pw.id) AS mentionCount
+            FROM post_whiskeys pw
+            JOIN posts p ON p.id = pw.post_id
+            JOIN whiskeys w ON w.id = pw.whiskey_id
+            WHERE p.is_deleted = false
+            GROUP BY pw.whiskey_id, w.name
+            ORDER BY COUNT(pw.id) DESC, MAX(p.created_at) DESC
+            LIMIT :limit
+            """, nativeQuery = true)
+    List<TrendingWhiskeyProjection> findTrendingWhiskeys(@Param("limit") int limit);
 }

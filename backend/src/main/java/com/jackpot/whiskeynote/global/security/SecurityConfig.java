@@ -53,7 +53,8 @@ public class SecurityConfig {
                                 "/api/v1/follows/status",
                                 "/api/v1/followers/list",
                                 "/api/v1/followings/list",
-                                "/api/v1/lounge/feed"
+                                "/api/v1/lounge/feed",
+                                "/api/v1/lounge/trending-whiskeys"
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
