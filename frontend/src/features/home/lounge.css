@@ -374,6 +374,14 @@
   text-decoration: none;
 }
 
+/* stretched-link: 본문 링크의 클릭 영역을 카드 전체로 확장 (카드 어디를 눌러도 글 상세로 이동) */
+.wf-feed-card__body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .wf-feed-card__text {
   display: flex;
   flex-direction: column;
