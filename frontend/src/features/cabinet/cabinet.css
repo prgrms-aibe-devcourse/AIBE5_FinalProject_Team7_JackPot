@@ -20,10 +20,8 @@
   flex-shrink: 0;
   padding: 14px;
   align-self: flex-start;
-  border-color: rgba(240, 202, 104, 0.14);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
-    rgba(255, 255, 255, 0.025);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
 }
 
 .wf-cabinet-wish-folders__header {
@@ -89,8 +87,8 @@
 }
 
 .wf-cabinet-wish-folder-item:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.045);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
   transform: translateY(-1px);
 }
 
@@ -110,7 +108,7 @@
 .wf-cabinet-wish-folder-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--wf-text);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
@@ -137,11 +135,9 @@
   display: grid;
   gap: 8px;
   padding: 14px;
-  border: 1px solid rgba(240, 202, 104, 0.2);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
-  background:
-    linear-gradient(135deg, rgba(240, 202, 104, 0.08), rgba(255, 255, 255, 0.025)),
-    rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
 }
 
 .wf-cabinet-wish-folder-empty strong {
@@ -181,11 +177,9 @@
   gap: 10px;
   min-height: 200px;
   padding: 32px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--wf-border);
   border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(240, 202, 104, 0.09), transparent 38%),
-    rgba(255, 255, 255, 0.025);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font-size: 15px;
   text-align: center;
@@ -242,7 +236,7 @@
   padding: 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface);
   color: var(--wf-text);
   font: inherit;
   line-height: 1.6;
@@ -268,7 +262,7 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: rgba(255, 255, 255, 0.24);
+  color: var(--wf-border);
   font: inherit;
   font-size: 25px;
   line-height: 1;
@@ -309,13 +303,10 @@
   align-items: center;
   margin-bottom: 18px;
   padding: 22px 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 22px;
-  background:
-    radial-gradient(circle at 8% 16%, rgba(240, 202, 104, 0.1), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
-    rgba(255, 255, 255, 0.025);
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-cabinet-profile__avatar {
@@ -324,7 +315,7 @@
   border-radius: 50%;
   border: 2px solid var(--wf-accent);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(213, 173, 69, 0.16);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-profile__stats {
@@ -361,7 +352,7 @@
   padding: 0 20px;
   border-radius: 14px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
   font-size: 15px;
@@ -376,12 +367,10 @@
 }
 
 .wf-cabinet-primary__tab--on {
-  border-color: rgba(240, 202, 104, 0.7);
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.2), rgba(213, 173, 69, 0.09)),
-    rgba(255, 255, 255, 0.045);
-  color: var(--wf-accent-light);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle);
+  color: var(--wf-accent-dark);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-hint {
@@ -396,10 +385,8 @@
   gap: 10px;
   padding: 10px;
   margin-bottom: 16px;
-  border-color: rgba(240, 202, 104, 0.12);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
-    rgba(255, 255, 255, 0.025);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
 }
 
 .wf-cabinet-stats span {
@@ -407,9 +394,9 @@
   align-items: center;
   min-height: 38px;
   padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.075);
+  border: 1px solid var(--wf-border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface);
   font-size: 14px;
   font-weight: 850;
 }
@@ -443,7 +430,7 @@
   padding: 0 15px;
   border-radius: 12px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
   font-size: 15px;
@@ -458,11 +445,9 @@
 }
 
 .wf-cabinet-sub__tab--on {
-  border-color: rgba(240, 202, 104, 0.68);
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.18), rgba(213, 173, 69, 0.08)),
-    rgba(255, 255, 255, 0.045);
-  color: var(--wf-accent-light);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle);
+  color: var(--wf-accent-dark);
 }
 
 .wf-cabinet-pick {
@@ -473,18 +458,16 @@
   min-height: 92px;
   padding: 14px 16px;
   margin-bottom: 10px;
-  border-color: rgba(255, 255, 255, 0.085);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.1);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-pick:hover {
   transform: translateY(-2px);
   border-color: rgba(213, 173, 69, 0.3);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-pick__thumb {
@@ -527,18 +510,16 @@
   gap: 12px;
   padding: 18px 20px;
   margin-top: 10px;
-  border-color: rgba(255, 255, 255, 0.085);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.1);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-post:hover {
   transform: translateY(-1px);
   border-color: rgba(213, 173, 69, 0.3);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-post__title {
@@ -579,7 +560,7 @@
   gap: 12px;
   margin-top: 2px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--wf-border-subtle);
 }
 
 .wf-cabinet-post__foot .wf-text-sm {
@@ -600,11 +581,9 @@
   min-height: 96px;
   margin: 10px 0 0;
   padding: 22px 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(240, 202, 104, 0.08), transparent 42%),
-    rgba(255, 255, 255, 0.025);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
 }
 
@@ -703,10 +682,8 @@
 
 /* ─── Phase 8: WishFolderModal folder buttons ─── */
 .wf-wish-folder-opt {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
-    rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
   border-radius: 16px;
   padding: 14px;
   color: var(--wf-text);
@@ -721,16 +698,14 @@
   width: 100%;
 }
 .wf-wish-folder-opt--on {
-  background:
-    linear-gradient(135deg, rgba(213, 173, 69, 0.18), rgba(143, 52, 76, 0.12)),
-    rgba(255, 255, 255, 0.04);
-  border-color: rgba(240, 202, 104, 0.7);
-  box-shadow: 0 14px 36px rgba(213, 173, 69, 0.14);
+  background: var(--wf-accent-subtle);
+  border-color: var(--wf-accent);
+  box-shadow: var(--wf-shadow-sm);
 }
 .wf-wish-folder-opt:not(:disabled):hover {
   transform: translateY(-1px);
   border-color: rgba(240, 202, 104, 0.42);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--wf-surface-2);
 }
 .wf-wish-folder-opt--on:not(:disabled):hover { border-color: rgba(239, 84, 84, 0.72); }
 .wf-wish-folder-opt:disabled { cursor: not-allowed; }
@@ -745,11 +720,9 @@
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border: 1px solid rgba(240, 202, 104, 0.24);
+  border: 1px solid var(--wf-border);
   border-radius: 9px;
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.3), rgba(213, 173, 69, 0.08)),
-    rgba(255, 255, 255, 0.05);
+  background: var(--wf-accent-dim);
 }
 .wf-wish-folder-status--on { color: var(--wf-accent-light); font-size: 12px; font-weight: 800; white-space: nowrap; }
 .wf-wish-folder-status--off { color: var(--wf-muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
@@ -776,17 +749,14 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 15px;
-  border: 1px solid rgba(240, 202, 104, 0.26);
+  border: 1px solid var(--wf-accent);
   border-radius: 16px;
-  background:
-    linear-gradient(135deg, rgba(240, 202, 104, 0.14), rgba(255, 255, 255, 0.035)),
-    rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  background: var(--wf-accent-subtle);
 }
 
 .wf-wish-flow-notice--removed {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.045);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
 }
 
 .wf-wish-flow-notice div {
@@ -827,8 +797,8 @@
 }
 
 .wf-wish-modal-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
   padding: 13px 15px;
   color: var(--wf-text);

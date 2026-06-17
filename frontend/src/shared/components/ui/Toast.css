@@ -22,13 +22,13 @@
   color: var(--wf-text);
   font-size: 14px;
   font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--wf-shadow-lg);
   width: 420px;
   white-space: pre-line;
 }
 
-.wf-toast--success { border: 1px solid #4ade80; }
-.wf-toast--error   { border: 1px solid #f87171; }
+.wf-toast--success { border: 1px solid #16a34a; }
+.wf-toast--error   { border: 1px solid #dc2626; }
 .wf-toast--info    { border: 1px solid var(--wf-accent); }
 .wf-toast--warning { border: 1px solid var(--wf-accent); }
 
@@ -45,8 +45,8 @@
   flex-shrink: 0;
 }
 
-.wf-toast__icon--success { color: #4ade80; }
-.wf-toast__icon--error   { color: #f87171; }
+.wf-toast__icon--success { color: #16a34a; }
+.wf-toast__icon--error   { color: #dc2626; }
 .wf-toast__icon--info    { color: var(--wf-accent); }
 .wf-toast__icon--warning { color: var(--wf-accent); }
 
