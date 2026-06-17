@@ -527,7 +527,7 @@
 .wf-feed-promo__head {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -537,8 +537,8 @@
 }
 
 .wf-feed-promo__bottle {
-  width: 72px;
-  height: 104px;
+  width: 96px;
+  height: 132px;
   flex-shrink: 0;
   object-fit: cover;
   object-position: center;
