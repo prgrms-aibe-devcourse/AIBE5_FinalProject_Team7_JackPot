@@ -240,6 +240,7 @@
   padding: 22px 24px 18px;
   margin-bottom: 14px;
   border-radius: 8px;
+  cursor: pointer;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
     rgba(23, 21, 27, 0.9);
@@ -371,6 +372,14 @@
   margin: 16px 0;
   color: inherit;
   text-decoration: none;
+}
+
+/* stretched-link: 본문 링크의 클릭 영역을 카드 전체로 확장 (카드 어디를 눌러도 글 상세로 이동) */
+.wf-feed-card__body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .wf-feed-card__text {
