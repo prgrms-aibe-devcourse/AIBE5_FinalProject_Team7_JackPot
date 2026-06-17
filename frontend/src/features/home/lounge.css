@@ -227,17 +227,6 @@
   font-size: 22px;
 }
 
-.wf-lounge-section-count {
-  min-width: 56px;
-  padding: 7px 12px;
-  border: 1px solid rgba(213, 173, 69, 0.28);
-  border-radius: 999px;
-  background: rgba(213, 173, 69, 0.08);
-  color: var(--wf-accent-light);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
-}
 
 .wf-feed-card {
   position: relative;
