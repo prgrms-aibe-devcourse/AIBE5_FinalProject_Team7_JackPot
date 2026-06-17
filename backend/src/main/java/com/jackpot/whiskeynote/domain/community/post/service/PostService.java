@@ -36,6 +36,7 @@ public class PostService {
     /** 작성자 ID로 닉네임 조회. 탈퇴/삭제 등으로 사용자가 없으면 기본 문구 반환. */
     private String resolveAuthorNickname(Long authorId) {
         return usersRepository.findById(authorId)
+                .filter(user -> !user.isDeleted())
                 .map(Users::getNickname)
                 .orElse("알 수 없는 사용자");
     }
