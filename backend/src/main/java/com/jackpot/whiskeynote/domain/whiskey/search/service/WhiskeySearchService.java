@@ -64,29 +64,14 @@ public class WhiskeySearchService {
             return whiskeyRepository.findAll(pageRequest).map(WhiskeyCardResponse::from);
         }
         String normalizedKeyword = normalizeSearchKeyword(keyword);
-        // 검색어를 포함하는 패턴으로 변환하여 Elasticsearch에서 유연한 검색이 가능하도록 한다. 예: "맥캘란" -> "*맥캘란*"
-        String wildcardKeyword = "*" + normalizedKeyword + "*";
-        // Elasticsearch에서 이름과 별칭 필드를 모두 검색하도록 쿼리를 구성하여 유연한 검색이 가능하도록 한다.
-        // 검색어가 포함된 이름 또는 별칭을 가진 위스키를 검색하는 NativeQuery를 작성한다.
+        // name + aliases를 합쳐 색인한 searchText 필드를 edge_ngram 분석기로 검색한다.
+        // 색인 analyzer(whiskey_index_analyzer)가 edge_ngram 토큰을 생성하므로,
+        // 검색 analyzer(whiskey_search_analyzer)로 분석된 검색어가 접두어/부분 일치로 매칭된다.
+        // (기존 leading-wildcard 방식 대비 성능·스코어링 개선)
         NativeQuery query = NativeQuery.builder()
-                .withQuery(q->q.bool(b->b
-                        // 첫번째 조건 : 이름
-                        .should(s->s.match(m->m
-                                .field("name")
-                                .query(normalizedKeyword)
-                                // 두번째 조건 : 별칭
-                        )).should(s->s.match(m->m
-                                .field("aliases")
-                                .query(normalizedKeyword)
-                        ))
-                        .should(s -> s.wildcard(w -> w
-                                .field("name")
-                                .value(wildcardKeyword)
-                        ))
-                        .should(s -> s.wildcard(w -> w
-                                .field("aliases")
-                                .value(wildcardKeyword)
-                        ))
+                .withQuery(q -> q.match(m -> m
+                        .field("searchText")
+                        .query(normalizedKeyword)
                 ))
                 .withPageable(pageRequest)
                 .build();
