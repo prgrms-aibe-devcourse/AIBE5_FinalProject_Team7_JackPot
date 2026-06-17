@@ -516,9 +516,37 @@
 }
 
 .wf-feed-promo--today {
+  position: relative;
+  overflow: hidden;
   background:
     linear-gradient(145deg, rgba(213, 173, 69, 0.2), rgba(143, 52, 76, 0.1)),
     rgba(23, 21, 27, 0.9);
+}
+
+/* 우측에 은은하게 페이드되는 병 이미지 (배경 액센트) */
+.wf-feed-promo__bottle {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 168px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.92;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to left, #000 58%, transparent);
+  mask-image: linear-gradient(to left, #000 58%, transparent);
+}
+
+.wf-feed-promo__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 72%;
+}
+
+.wf-feed-promo--today .wf-btn {
+  position: relative;
+  z-index: 1;
 }
 
 .wf-feed-promo--match {
@@ -538,12 +566,6 @@
   color: var(--wf-text);
 }
 
-.wf-feed-promo__meta {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: var(--wf-accent-light);
-  font-weight: 700;
-}
 
 
 .wf-lounge-quick,
