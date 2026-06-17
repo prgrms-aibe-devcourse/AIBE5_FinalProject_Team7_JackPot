@@ -540,10 +540,10 @@
   width: 116px;
   height: 116px;
   flex-shrink: 0;
-  margin-right: 24px;
   object-fit: cover;
   object-position: center;
   border-radius: 8px;
+  border: 1px solid rgba(213, 173, 69, 0.32);
 }
 
 .wf-feed-promo--match {
