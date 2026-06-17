@@ -81,9 +81,9 @@
 
 .wf-mypage-nav-item:hover {
   transform: translateY(-1px);
-  border-color: rgba(213, 173, 69, 0.45);
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  border-color: var(--wf-accent);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-mypage-nav-item__row {

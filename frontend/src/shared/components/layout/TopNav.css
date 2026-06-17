@@ -41,14 +41,14 @@
 
 .app-root .wf-topnav__links a:hover {
   color: var(--wf-text);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-topnav__links a.active,
 .app-root .wf-topnav__links a.is-active {
   color: var(--wf-accent);
   font-weight: 700;
-  background: rgba(213, 173, 69, 0.08);
+  background: var(--wf-accent-dim);
 }
 
 .app-root .wf-topnav__links a.active::after,
@@ -77,7 +77,7 @@
 
 .app-root .wf-topnav__profile:hover {
   border-color: var(--wf-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-topnav__avatar {
@@ -141,9 +141,9 @@
   height: 34px;
   padding: 0 18px;
   border-radius: 8px;
-  border: 1px solid rgba(213, 173, 69, 0.5);
-  background: rgba(213, 173, 69, 0.1);
-  color: var(--wf-accent-light);
+  border: 1px solid var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
   font-size: 13px;
   font-weight: 700;
   display: flex;
@@ -155,8 +155,8 @@
 }
 
 .app-root .wf-topnav__login:hover {
-  background: rgba(213, 173, 69, 0.18);
-  border-color: var(--wf-accent-light);
+  background: var(--wf-accent-subtle);
+  border-color: var(--wf-accent-dark);
   transform: translateY(-1px);
 }
 

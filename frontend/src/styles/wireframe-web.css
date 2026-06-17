@@ -19,15 +19,15 @@
   display: flex;
   align-items: center;
   gap: 28px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(14, 12, 17, 0.82);
+  border-bottom: 1px solid var(--wf-border);
+  background: var(--wf-surface);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-topnav__logo {
@@ -96,8 +96,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(14, 12, 17, 0.9);
+  border-top: 1px solid var(--wf-border);
+  background: var(--wf-surface);
   font-size: 12px;
   color: var(--wf-muted);
   flex-shrink: 0;
@@ -226,7 +226,7 @@
   max-width: 416px;
   width: 100%;
   padding: 34px 32px;
-  border-color: rgba(255, 255, 255, 0.075);
+  border-color: var(--wf-border);
   box-shadow: var(--wf-shadow-lg);
 }
 

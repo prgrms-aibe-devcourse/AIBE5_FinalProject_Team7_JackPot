@@ -76,8 +76,8 @@
 .app-root .wf-reco-card:hover {
   transform: translateY(-2px);
   border-color: rgba(213, 173, 69, 0.35);
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .app-root .wf-reco-card__thumb {

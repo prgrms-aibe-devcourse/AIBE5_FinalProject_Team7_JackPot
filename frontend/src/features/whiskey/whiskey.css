@@ -7,23 +7,14 @@
   justify-content: space-between;
   gap: 28px;
   padding: 30px 34px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 20px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018) 54%, rgba(213, 173, 69, 0.035)),
-    linear-gradient(180deg, rgba(23, 21, 27, 0.98), rgba(12, 11, 14, 0.98));
-  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-detail-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(240, 202, 104, 0.055), transparent 30%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 72px);
-  opacity: 0.26;
+  content: none;
 }
 
 .wf-detail-hero__copy {
@@ -49,7 +40,6 @@
   letter-spacing: 0;
   color: var(--wf-text);
   text-wrap: balance;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
 }
 
 .wf-detail-hero__meta {
@@ -71,10 +61,10 @@
   align-items: center;
   min-height: 32px;
   padding: 0 12px;
-  border: 1px solid rgba(240, 202, 104, 0.18);
+  border: 1px solid var(--wf-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
-  color: rgba(243, 240, 234, 0.82);
+  background: var(--wf-surface-2);
+  color: var(--wf-text);
   font-size: 12px;
   font-weight: 800;
 }
@@ -91,12 +81,9 @@
 .wf-detail-hero__stat {
   min-height: 82px;
   padding: 14px 15px;
-  border: 1px solid rgba(240, 202, 104, 0.18);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
-  background:
-    linear-gradient(145deg, rgba(240, 202, 104, 0.14), rgba(255, 255, 255, 0.04)),
-    rgba(255, 255, 255, 0.035);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  background: var(--wf-surface-2);
 }
 
 .wf-detail-hero__stat span {
@@ -131,7 +118,7 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--wf-surface-2);
   filter: none;
 }
 
@@ -139,7 +126,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(243, 240, 234, 0.58);
+  color: var(--wf-muted);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -153,13 +140,10 @@
   position: relative;
   overflow: hidden;
   padding: 42px 18px 18px;
-  border: 1px solid rgba(240, 202, 104, 0.14);
+  border: 1px solid var(--wf-border);
   border-radius: 22px;
-  background:
-    linear-gradient(145deg, rgba(143, 52, 76, 0.1), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018)),
-    #111014;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-detail-sidebar__image-frame::after {
@@ -171,7 +155,7 @@
   z-index: 2;
   top: 18px;
   left: 20px;
-  color: rgba(243, 240, 234, 0.48);
+  color: var(--wf-muted);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -188,11 +172,9 @@
   gap: 10px;
   margin-top: 16px;
   padding: 14px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.08);
+  background: var(--wf-surface-2);
 }
 
 .wf-detail-sidebar__actions .wf-btn {
@@ -249,10 +231,8 @@
   gap: 4px;
   min-height: 74px;
   padding: 14px !important;
-  border-color: rgba(240, 202, 104, 0.12);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
-    rgba(255, 255, 255, 0.025);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
 }
 
 .wf-detail-main {
@@ -269,10 +249,9 @@
 .wf-tabs {
   margin-top: 18px;
   padding: 6px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.032);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  background: var(--wf-surface-2);
 }
 
 .wf-tab-item {
@@ -286,10 +265,8 @@
 }
 
 .wf-tab-item--on {
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.18), rgba(213, 173, 69, 0.08)),
-    rgba(255, 255, 255, 0.045);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-detail-info__meta {
@@ -313,9 +290,9 @@
   gap: 4px;
   min-height: 62px;
   padding: 10px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface-2);
   color: var(--wf-accent-light);
   font-weight: 800;
 }
@@ -328,9 +305,9 @@
 .wf-detail-personal-note__memo {
   margin: 0;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.028);
+  background: var(--wf-surface-2);
   line-height: 1.7;
 }
 
@@ -359,12 +336,10 @@
 
 .wf-detail-panel {
   padding: 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 20px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-    #151319;
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-detail-section-head {
@@ -396,10 +371,8 @@
 .wf-detail-state,
 .wf-detail-error {
   padding: 22px;
-  border-color: rgba(213, 173, 69, 0.18);
-  background:
-    linear-gradient(135deg, rgba(213, 173, 69, 0.1), rgba(255, 255, 255, 0.025)),
-    var(--wf-surface);
+  border-color: var(--wf-border);
+  background: var(--wf-surface);
 }
 
 .wf-detail-error {
@@ -471,9 +444,7 @@
   justify-content: center;
   padding: 10px 0 0;
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.036), rgba(255, 255, 255, 0.014)),
-    rgba(0, 0, 0, 0.12);
+  background: var(--wf-surface-2);
 }
 
 .wf-detail-tasting__radar-chart {
@@ -542,12 +513,10 @@
 
 .wf-detail-reviews {
   padding: 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
+  border: 1px solid var(--wf-border);
   border-radius: 20px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
-    #151319;
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.2);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-detail-reviews__title-row {
@@ -596,19 +565,17 @@
 
 .wf-detail-reviews__item {
   padding: 18px 20px;
-  border-color: rgba(255, 255, 255, 0.085);
+  border-color: var(--wf-border);
   border-radius: 18px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.1);
+  background: var(--wf-surface-2);
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-detail-reviews__item:hover {
   transform: translateY(-1px);
   border-color: rgba(213, 173, 69, 0.3);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-detail-reviews__header {
@@ -709,7 +676,7 @@
 .wf-attached-note {
   margin-top: 12px;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
 }
 
 .wf-attached-note__title {
@@ -732,12 +699,12 @@
 
 .wf-attached-note__radar-grid {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.16);
+  stroke: var(--wf-border);
   stroke-width: 1;
 }
 
 .wf-attached-note__radar-axis {
-  stroke: rgba(255, 255, 255, 0.12);
+  stroke: var(--wf-border);
   stroke-width: 1;
 }
 
@@ -823,7 +790,7 @@
   padding: 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface);
   color: var(--wf-text);
   font: inherit;
   resize: vertical;
@@ -842,7 +809,7 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: rgba(255, 255, 255, 0.22);
+  color: var(--wf-border);
   font: inherit;
   font-size: 25px;
   line-height: 1;
@@ -879,7 +846,7 @@
   padding: 0 10px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface);
   color: var(--wf-text);
   font: inherit;
 }
@@ -901,7 +868,7 @@
 
 .wf-review-card__action-button.wf-btn--ghost {
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
 }
 
@@ -915,7 +882,7 @@
   padding: 14px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
 }
 
 .wf-review-note-attach__head {
@@ -980,7 +947,7 @@
   padding: 16px 18px;
   text-decoration: none;
   color: inherit;
-  border-color: rgba(255, 255, 255, 0.075);
+  border-color: var(--wf-border);
   transition: border-color 0.15s, background 0.15s, transform 0.15s;
 }
 
@@ -1018,7 +985,7 @@
   display: block;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.075);
+  background: var(--wf-surface-3);
 }
 
 .wf-detail-columns__item--loading span::after,
@@ -1122,7 +1089,7 @@
   justify-content: center;
   border: none;
   border-radius: 50%;
-  color: #f5f5f5;
+  color: #ffffff;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
@@ -1137,7 +1104,7 @@
 
 .wf-detail-tags__name {
   font-size: 12px;
-  color: #9a9aa4;
+  color: var(--wf-muted);
   text-align: center;
 }
 
@@ -1280,7 +1247,7 @@
 .app-root .wf-related-whiskeys__card {
   text-decoration: none;
   color: inherit;
-  border-color: rgba(255, 255, 255, 0.075);
+  border-color: var(--wf-border);
   border-style: solid;
   overflow: hidden;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
@@ -1300,7 +1267,7 @@
   object-fit: cover;
   object-position: center center;
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-related-whiskeys__card .wf-card__body {
@@ -1377,7 +1344,7 @@
 /* ─── Skeleton line (리뷰 로딩 상태) ─── */
 .wf-skeleton-line {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--wf-surface-3);
   position: relative;
   overflow: hidden;
   height: 12px;

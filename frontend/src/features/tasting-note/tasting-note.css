@@ -35,7 +35,7 @@
   padding: 0 10px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface-2);
   color: var(--wf-text);
   font: inherit;
 }
@@ -74,8 +74,8 @@
 .wf-note-editor__tag-picker:hover {
   transform: translateY(-1px);
   border-color: rgba(213, 173, 69, 0.4);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-note-editor__tag-picker span {
@@ -129,7 +129,7 @@
   padding: 0 16px;
   border: 1px solid var(--wf-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font: inherit;
   font-size: 14px;
@@ -141,8 +141,8 @@
 .wf-note-editor__tag:hover {
   transform: translateY(-1px);
   border-color: rgba(213, 173, 69, 0.35);
-  background: rgba(255, 255, 255, 0.055);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-note-editor__tag--on {
@@ -224,7 +224,7 @@
 /* ─── Phase 7: TastingNotePage ─── */
 .wf-note-editor__memo-label { display: block; }
 .wf-note-editor__no-tags { margin: 0; }
-.wf-note-editor__error { color: #ff8a8a; }
+.wf-note-editor__error { color: #c0392b; }
 .wf-note-editor__modal-title { margin: 0; }
 .wf-note-editor__modal-count { margin: 4px 0 0; }
 .wf-note-editor__modal-close-btn { width: 84px; height: 36px; }

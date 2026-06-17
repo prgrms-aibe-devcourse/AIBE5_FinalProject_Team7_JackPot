@@ -20,9 +20,9 @@
 
 .wf-community-board-item:hover {
   transform: translateY(-2px);
-  border-color: rgba(213, 173, 69, 0.45);
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  border-color: var(--wf-accent);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-community-board-label {
@@ -60,8 +60,8 @@
 
 .wf-community-top-item:hover {
   transform: translateY(-1px);
-  border-color: rgba(213, 173, 69, 0.35);
-  background: rgba(255, 255, 255, 0.025);
+  border-color: var(--wf-accent);
+  background: var(--wf-surface-2);
 }
 
 .wf-community-top-rank {
@@ -114,14 +114,14 @@
   font-weight: 600;
   cursor: pointer;
   color: var(--wf-muted);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface-2);
   border: 1px solid var(--wf-border);
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
 .wf-community-back-btn:hover {
   color: var(--wf-text);
   border-color: var(--wf-accent);
-  background: rgba(213, 173, 69, 0.08);
+  background: var(--wf-accent-dim);
   transform: translateX(-2px);
 }
 .wf-community-write-btn { background: var(--wf-accent); color: #fff; text-decoration: none; }
@@ -181,7 +181,7 @@
 .wf-markdown-body h3 { font-size: 17px; font-weight: 700; margin: 22px 0 8px; color: var(--wf-text); }
 .wf-markdown-body h4 { font-size: 15px; font-weight: 600; margin: 16px 0 6px; color: var(--wf-accent); }
 .wf-markdown-body p { margin: 0 0 14px; color: var(--wf-text); }
-.wf-markdown-body strong { font-weight: 700; color: #fff; }
+.wf-markdown-body strong { font-weight: 700; color: var(--wf-text); }
 .wf-markdown-body em { color: var(--wf-muted); }
 .wf-markdown-body a { color: var(--wf-accent); text-decoration: underline; }
 .wf-markdown-body hr { border: none; border-top: 1px solid var(--wf-border); margin: 20px 0; }
@@ -190,7 +190,7 @@
 .wf-markdown-body ol { padding-left: 20px; margin: 0 0 14px; color: var(--wf-text); }
 .wf-markdown-body li { margin-bottom: 4px; }
 .wf-markdown-body code { background: var(--wf-surface-2); color: var(--wf-accent); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-.wf-markdown-body img { width: 40%; min-width: 160px; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 12px rgba(0,0,0,0.40); }
+.wf-markdown-body img { width: 40%; min-width: 160px; border-radius: 10px; object-fit: cover; box-shadow: var(--wf-shadow-sm); }
 .wf-markdown-img-wrap { display: flex; justify-content: center; margin: 20px 0; }
 
 /* ───────── PostDetailPage ───────── */
@@ -403,12 +403,10 @@
   width: min(440px, 100%);
   gap: 14px;
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--wf-border);
   border-radius: 18px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
-    rgba(10, 8, 12, 0.94);
-  box-shadow: 0 28px 88px rgba(0, 0, 0, 0.58);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-lg);
 }
 .wf-modal-header { display: flex; justify-content: space-between; align-items: center; }
 .wf-modal-kicker {
@@ -436,12 +434,12 @@
   place-items: center;
   width: 34px;
   height: 34px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
   border-radius: 50%;
   font-size: 16px;
 }
-.wf-modal-panel--wish .wf-modal-close-btn:hover { border-color: rgba(240, 202, 104, 0.38); color: var(--wf-text); }
+.wf-modal-panel--wish .wf-modal-close-btn:hover { border-color: var(--wf-accent); color: var(--wf-text); }
 .wf-modal-options { display: flex; flex-direction: column; gap: 8px; }
 .wf-modal-option {
   padding: 10px 14px;
@@ -457,7 +455,7 @@
 }
 .wf-modal-option--on {
   border-color: var(--wf-accent);
-  background: rgba(213, 173, 69, 0.1);
+  background: var(--wf-accent-dim);
   color: var(--wf-accent);
 }
 .wf-modal-input {
@@ -490,9 +488,9 @@
 .wf-modal-panel--wish .wf-modal-submit-btn {
   border-radius: 14px;
   padding: 13px 16px;
-  background: linear-gradient(180deg, var(--wf-accent-light), var(--wf-accent));
+  background: var(--wf-accent);
   font-weight: 800;
-  box-shadow: 0 16px 36px rgba(213, 173, 69, 0.2);
+  box-shadow: var(--wf-shadow-accent);
 }
 .wf-modal-submit-btn:disabled { cursor: not-allowed; opacity: 0.6; }
 .wf-modal-cancel-btn {
@@ -507,10 +505,10 @@
 .wf-modal-panel--wish .wf-modal-cancel-btn {
   border-radius: 14px;
   padding: 13px 16px;
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--wf-surface-2);
+  border-color: var(--wf-border);
 }
-.wf-modal-panel--wish .wf-modal-cancel-btn:hover { border-color: rgba(240, 202, 104, 0.3); color: var(--wf-text); }
+.wf-modal-panel--wish .wf-modal-cancel-btn:hover { border-color: var(--wf-accent); color: var(--wf-text); }
 .wf-modal-panel--wish > .wf-modal-cancel-btn { margin-top: 2px; }
 .wf-modal-muted {
   color: var(--wf-muted);
@@ -520,8 +518,8 @@
 .wf-modal-panel--wish .wf-modal-muted {
   margin: 0;
   padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--wf-surface-2);
   line-height: 1.55;
 }

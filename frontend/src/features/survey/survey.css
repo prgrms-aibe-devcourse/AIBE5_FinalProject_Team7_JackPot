@@ -32,11 +32,9 @@
   border-style: solid;
   padding: 28px;
   margin-top: 20px;
-  border-color: rgba(255, 255, 255, 0.085);
+  border-color: var(--wf-border);
   border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
-    var(--wf-surface);
+  background: var(--wf-surface);
   box-shadow: var(--wf-shadow-sm);
   animation: wf-survey-in 0.28s ease;
   scroll-margin-top: 24px;
@@ -75,9 +73,7 @@
   padding: 16px;
   border: 1px solid rgba(213, 173, 69, 0.18);
   border-radius: 14px;
-  background:
-    linear-gradient(135deg, rgba(213, 173, 69, 0.11), rgba(255, 255, 255, 0.03)),
-    var(--wf-surface);
+  background: var(--wf-surface);
 }
 
 .app-root .wf-survey-progress__label {
@@ -100,7 +96,7 @@
   margin-top: 12px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.075);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-survey-progress__track span {
@@ -133,7 +129,7 @@
   padding: 15px 17px;
   border-radius: 12px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
   color: var(--wf-text);
   font: inherit;
   font-size: 14px;
@@ -144,13 +140,13 @@
 .app-root .wf-opt:hover {
   transform: translateY(-1px);
   border-color: rgba(213, 173, 69, 0.45);
-  background: rgba(255, 255, 255, 0.055);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .app-root .wf-opt--on {
   border-color: var(--wf-accent);
-  background: linear-gradient(135deg, rgba(213, 173, 69, 0.16), rgba(213, 173, 69, 0.06));
+  background: var(--wf-accent-dim);
   color: var(--wf-accent);
   box-shadow: 0 4px 14px rgba(213, 173, 69, 0.15);
 }
@@ -195,7 +191,7 @@
   padding: 20px 24px;
   border: 1px solid var(--wf-border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
   text-align: left;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
@@ -225,9 +221,9 @@
   flex-shrink: 0;
   width: 132px;
   padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.085);
+  border: 1px solid var(--wf-border);
   border-radius: 16px;
-  background: rgba(23, 21, 27, 0.86);
+  background: var(--wf-surface);
   box-shadow: var(--wf-shadow-sm);
   backdrop-filter: blur(12px);
 }

@@ -6,12 +6,10 @@
   gap: 28px;
   align-items: stretch;
   padding: 34px 38px;
-  border: 1px solid rgba(213, 173, 69, 0.28);
+  border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(213, 173, 69, 0.16), rgba(143, 52, 76, 0.08) 42%, rgba(255, 255, 255, 0.025)),
-    rgba(23, 21, 27, 0.86);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
   overflow: hidden;
 }
 
@@ -20,7 +18,7 @@
   position: absolute;
   inset: auto 32px 0 32px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(240, 202, 104, 0.54), transparent);
+  background: var(--wf-border);
   opacity: 0.72;
 }
 
@@ -72,9 +70,9 @@
 .wf-lounge-stat {
   min-height: 120px;
   padding: 20px;
-  border: 1px solid rgba(213, 173, 69, 0.24);
+  border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+  background: var(--wf-surface-2);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -124,7 +122,7 @@
   flex-direction: column;
   gap: 12px;
   padding-left: 28px;
-  border-left: 1px solid rgba(213, 173, 69, 0.22);
+  border-left: 1px solid var(--wf-border);
 }
 
 .wf-lounge-hero__today-label {
@@ -195,7 +193,7 @@
   padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font-size: 13px;
   font-weight: 700;
@@ -234,9 +232,8 @@
   margin-bottom: 14px;
   border-radius: 8px;
   cursor: pointer;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.014)),
-    rgba(23, 21, 27, 0.9);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
   overflow: hidden;
 }
@@ -246,18 +243,16 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 3px;
-  background: linear-gradient(180deg, rgba(240, 202, 104, 0.78), rgba(143, 52, 76, 0.12));
+  background: var(--wf-accent);
   opacity: 0;
   transition: opacity 0.16s ease;
 }
 
 .wf-feed-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(213, 173, 69, 0.38);
-  background:
-    linear-gradient(145deg, rgba(213, 173, 69, 0.08), rgba(143, 52, 76, 0.04)),
-    rgba(23, 21, 27, 0.94);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.32);
+  border-color: var(--wf-accent);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-feed-card:hover::before {
@@ -284,8 +279,8 @@
   flex-shrink: 0;
   padding: 3px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font-size: 11px;
   font-weight: 700;
@@ -321,7 +316,7 @@
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
-  border: 1px solid rgba(213, 173, 69, 0.38);
+  border: 1px solid var(--wf-border);
   background: var(--wf-surface-2);
 }
 
@@ -351,9 +346,9 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
-  border: 1px solid rgba(213, 173, 69, 0.28);
+  border: 1px solid var(--wf-accent);
   color: var(--wf-accent);
-  background: rgba(213, 173, 69, 0.08);
+  background: var(--wf-accent-dim);
   flex-shrink: 0;
 }
 
@@ -389,7 +384,7 @@
   flex-shrink: 0;
   border-radius: 8px;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--wf-border);
   background: var(--wf-surface-2);
 }
 
@@ -449,10 +444,10 @@
   max-width: 220px;
   min-height: 30px;
   padding: 0 11px;
-  border: 1px solid rgba(213, 173, 69, 0.22);
+  border: 1px solid var(--wf-accent-dim);
   border-radius: 999px;
-  background: rgba(213, 173, 69, 0.07);
-  color: var(--wf-accent-light);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -461,8 +456,8 @@
 }
 
 .wf-feed-card__tag--type {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.035);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
   color: var(--wf-text);
 }
 
@@ -507,9 +502,8 @@
 .wf-feed-promo--today {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(145deg, rgba(213, 173, 69, 0.2), rgba(143, 52, 76, 0.1)),
-    rgba(23, 21, 27, 0.9);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
 }
 
 /* 텍스트 + 병 썸네일을 한 줄(세로 중앙 정렬)로 묶어 자연스럽게 */
@@ -532,13 +526,13 @@
   object-fit: cover;
   object-position: center;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--wf-border);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-feed-promo--match {
-  background: linear-gradient(145deg, rgba(143, 52, 76, 0.14), rgba(213, 173, 69, 0.08));
-  border-color: rgba(213, 173, 69, 0.28);
+  background: var(--wf-surface);
+  border-color: var(--wf-border);
 }
 
 .wf-feed-promo .wf-btn {
@@ -559,9 +553,8 @@
 .wf-lounge-authors,
 .wf-lounge-discovery {
   padding: 20px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(23, 21, 27, 0.86);
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
 }
 
 .wf-lounge-quick .wf-text-label,
@@ -605,7 +598,7 @@
   align-items: center;
   min-height: 38px;
   padding: 9px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--wf-border-subtle);
   color: inherit;
   text-decoration: none;
 }
@@ -643,7 +636,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--wf-border-subtle);
   color: inherit;
   text-decoration: none;
 }
@@ -705,7 +698,7 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border: 1px solid rgba(213, 173, 69, 0.38);
+  border: 1px solid var(--wf-border);
   background: var(--wf-surface-2);
 }
 
@@ -794,7 +787,7 @@
     padding-left: 0;
     padding-top: 20px;
     border-left: none;
-    border-top: 1px solid rgba(213, 173, 69, 0.22);
+    border-top: 1px solid var(--wf-border);
   }
 
   .wf-lounge-rail {
