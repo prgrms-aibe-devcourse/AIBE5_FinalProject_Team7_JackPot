@@ -83,9 +83,10 @@
   padding: 12px;
 }
 
+/* 흰 배경 + 솔리드 골드 테두리로 또렷한 액션 버튼화 (필터 흰박스 사이에서 골드로 구분) */
 .wf-search-register-link {
-  background: var(--wf-accent-subtle);
-  border: 1px solid var(--wf-accent-dim);
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-accent);
   border-radius: 12px;
   padding: 12px 14px;
   color: var(--wf-accent-dark);
@@ -94,14 +95,16 @@
   font-weight: 700;
   cursor: pointer;
   text-align: left;
-  transition: transform 0.15s, border-color 0.15s, background 0.15s, color 0.15s;
+  box-shadow: var(--wf-shadow-sm);
+  transition: transform 0.15s, border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .wf-search-register-link:hover {
-  border-color: var(--wf-accent);
+  border-color: var(--wf-accent-dark);
   background: var(--wf-accent-dim);
   color: var(--wf-text);
   transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-dual-range__label {
