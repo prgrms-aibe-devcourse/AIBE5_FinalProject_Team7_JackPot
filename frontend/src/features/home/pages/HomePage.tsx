@@ -9,9 +9,19 @@ import { Button } from '@/shared/components/ui/Button';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
 import '../lounge.css';
 
-function stripHtml(html: string) {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+function stripContentPreview(content: string) {
+  const doc = new DOMParser().parseFromString(content, 'text/html');
+  const text = doc.body.textContent || content;
+
+  return text
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[>\-*+]\s+/gm, '')
+    .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
+    .replace(/[*_~]{1,3}([^*_~]+)[*_~]{1,3}/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // 라운지 피드에는 썸네일 필드가 없어 본문(HTML/마크다운)에서 첫 이미지를 추출한다.
@@ -29,7 +39,7 @@ function extractFirstImage(content: string): string | null {
 function FeedCard({ post }: { post: LoungePost }) {
   const [thumbError, setThumbError] = useState(false);
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
-  const contentPreview = stripHtml(post.context);
+  const contentPreview = stripContentPreview(post.context);
   const authorName = post.authorNickname || `사용자 #${post.authorId}`;
   const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
   const thumbnail = resolveMediaUrl(extractFirstImage(post.context));
