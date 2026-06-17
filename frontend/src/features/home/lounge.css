@@ -470,13 +470,9 @@
   color: var(--wf-muted);
 }
 
-.wf-feed-card__foot {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  padding-top: 13px;
+/* 카드 마지막 블록(반응/태그)의 하단 여백 제거 — '자세히 보기' 푸터 삭제 후 균형 */
+.wf-feed-card > :last-child {
+  margin-bottom: 0;
 }
 
 .wf-feed-card__skeleton-signal-row {
@@ -490,17 +486,6 @@
   color: var(--wf-muted);
 }
 
-.wf-feed-card__more {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--wf-accent);
-  text-decoration: none;
-  transition: color 0.16s ease;
-}
-
-.wf-feed-card__more:hover {
-  color: var(--wf-accent-light);
-}
 
 .wf-feed-promo,
 .wf-lounge-quick,

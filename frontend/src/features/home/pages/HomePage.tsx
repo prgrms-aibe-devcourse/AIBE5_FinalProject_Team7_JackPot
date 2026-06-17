@@ -124,12 +124,6 @@ function FeedCard({ post }: { post: LoungePost }) {
           )}
         </div>
       )}
-
-      <footer className="wf-feed-card__foot">
-        <Link to={detailPath} className="wf-feed-card__more">
-          자세히 보기
-        </Link>
-      </footer>
     </article>
   );
 }
