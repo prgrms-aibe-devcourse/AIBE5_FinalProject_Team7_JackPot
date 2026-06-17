@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost, type LoungeTrendingWhiskey } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab } from '@/features/home/api/homeApi';
 import { fetchTopPosts } from '@/features/community/api/communityApi';
 import type { PostSummaryResponse } from '@/features/community/types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
@@ -331,14 +331,36 @@ function LoungeTrendingWhiskeys({ whiskeys }: { whiskeys: LoungeTrendingWhiskey[
 }
 
 /** svg/pages/06-home.svg — 라운지 타임라인 */
+const FEED_TABS: { key: LoungeFeedTab; label: string }[] = [
+  { key: 'following', label: '팔로잉' },
+  { key: 'popular', label: '인기' },
+  { key: 'latest', label: '최신' },
+];
+
+const TAB_META: Record<LoungeFeedTab, { eyebrow: string; title: string }> = {
+  following: { eyebrow: 'TIMELINE', title: '팔로잉 피드' },
+  popular: { eyebrow: 'POPULAR', title: '인기 게시글' },
+  latest: { eyebrow: 'LATEST', title: '최신 게시글' },
+};
+
+const TAB_EMPTY: Record<LoungeFeedTab, { title: string; desc: string }> = {
+  following: {
+    title: '팔로잉 글이 없습니다',
+    desc: '유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.',
+  },
+  popular: { title: '아직 인기 게시글이 없습니다', desc: '글이 쌓이면 조회수 높은 글이 여기에 표시됩니다.' },
+  latest: { title: '아직 게시글이 없습니다', desc: '커뮤니티에 글이 올라오면 최신순으로 표시됩니다.' },
+};
+
 export default function HomePage() {
+  const [tab, setTab] = useState<LoungeFeedTab>('following');
   const {
     data: feed = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['lounge', 'feed', 0, 20],
-    queryFn: () => homeApi.getLoungeFeed(0, 20),
+    queryKey: ['lounge', 'feed', tab, 0, 20],
+    queryFn: () => homeApi.getFeedByTab(tab, 0, 20),
   });
   const { data: topPosts = [] } = useQuery({
     queryKey: ['lounge', 'top-posts', 4],
@@ -355,15 +377,29 @@ export default function HomePage() {
       <LoungeHero feedCount={feed.length} authorCount={authorCount} />
       <div className="wf-lounge-shell">
         <main className="wf-lounge-feed">
+          <div className="wf-lounge-tabs" role="tablist" aria-label="라운지 피드 탭">
+            {FEED_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={tab === t.key}
+                className={`wf-lounge-tab${tab === t.key ? ' wf-lounge-tab--on' : ''}`}
+                onClick={() => setTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
           <div className="wf-lounge-section-head">
             <div>
-              <p className="wf-text-label">TIMELINE</p>
-              <h2 className="wf-section-title">팔로잉 피드</h2>
+              <p className="wf-text-label">{TAB_META[tab].eyebrow}</p>
+              <h2 className="wf-section-title">{TAB_META[tab].title}</h2>
             </div>
             <span className="wf-lounge-section-count">{feed.length}건</span>
           </div>
           {isLoading ? (
-            <div aria-label="팔로잉 피드를 불러오는 중">
+            <div aria-label="피드를 불러오는 중">
               {Array.from({ length: 3 }).map((_, index) => (
                 <FeedCardSkeleton key={index} />
               ))}
@@ -377,8 +413,8 @@ export default function HomePage() {
             feed.map((post) => <FeedCard key={post.postId} post={post} />)
           ) : (
             <section className="wf-box wf-box--solid wf-lounge-empty">
-              <h2 className="wf-section-title">팔로잉 글이 없습니다</h2>
-              <p className="wf-text-sm">유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.</p>
+              <h2 className="wf-section-title">{TAB_EMPTY[tab].title}</h2>
+              <p className="wf-text-sm">{TAB_EMPTY[tab].desc}</p>
             </section>
           )}
         </main>

@@ -44,10 +44,34 @@ public class LoungeService {
         }
         // 팔로우한 사용자들의 게시글 조회 (페이징)
         List<Post> posts = postRepository.findByAuthorIdInAndIsDeletedFalse(followingIds, pageRequest);
+        return buildResponses(posts);
+    }
+
+    /** 인기 피드 — 조회수 높은 순 (팔로잉과 무관, 라운지 발견 탭) */
+    @Transactional(readOnly = true)
+    public List<LoungePostResponse> getPopularFeed(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return buildResponses(postRepository.findByIsDeletedFalseOrderByViewCountDesc(pageRequest));
+    }
+
+    /** 최신 피드 — 최근 작성 순 (팔로잉과 무관, 라운지 발견 탭) */
+    @Transactional(readOnly = true)
+    public List<LoungePostResponse> getLatestFeed(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return buildResponses(
+                postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageRequest).getContent());
+    }
+
+    /** 게시글 목록 → LoungePostResponse 목록 변환 (작성자/댓글수/위스키명 일괄 조회). */
+    private List<LoungePostResponse> buildResponses(List<Post> posts) {
+        if (posts.isEmpty()) {
+            return List.of();
+        }
         List<Long> postIds = posts.stream().map(Post::getId).toList();
+        List<Long> authorIds = posts.stream().map(Post::getAuthorId).distinct().toList();
 
         // 게시글 작성자 ID -> 사용자 정보 매핑 조회
-        Map<Long, Users> userMap = usersRepository.findAllById(followingIds)
+        Map<Long, Users> userMap = usersRepository.findAllById(authorIds)
                 .stream()
                 .collect(Collectors.toMap(Users::getId, u -> u));
         Map<Long, Integer> commentCountMap = resolveCommentCounts(postIds);

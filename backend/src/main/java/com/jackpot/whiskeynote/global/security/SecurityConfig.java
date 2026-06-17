@@ -54,6 +54,8 @@ public class SecurityConfig {
                                 "/api/v1/followers/list",
                                 "/api/v1/followings/list",
                                 "/api/v1/lounge/feed",
+                                "/api/v1/lounge/popular",
+                                "/api/v1/lounge/latest",
                                 "/api/v1/lounge/trending-whiskeys"
                         ).authenticated()
                         .requestMatchers(

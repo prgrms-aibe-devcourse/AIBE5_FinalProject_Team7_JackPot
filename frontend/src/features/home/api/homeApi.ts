@@ -22,9 +22,23 @@ export interface LoungeTrendingWhiskey {
   mentionCount: number;
 }
 
+export type LoungeFeedTab = 'following' | 'popular' | 'latest';
+
+const FEED_PATH: Record<LoungeFeedTab, string> = {
+  following: '/lounge/feed',
+  popular: '/lounge/popular',
+  latest: '/lounge/latest',
+};
+
 export const homeApi = {
   getLoungeFeed: async (page = 0, size = 20): Promise<LoungePost[]> => {
     const res = await apiClient.get<LoungePost[]>('/lounge/feed', {
+      params: { page, size },
+    });
+    return res.data;
+  },
+  getFeedByTab: async (tab: LoungeFeedTab, page = 0, size = 20): Promise<LoungePost[]> => {
+    const res = await apiClient.get<LoungePost[]>(FEED_PATH[tab], {
       params: { page, size },
     });
     return res.data;
