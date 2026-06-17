@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeToday } from '@/features/home/api/homeApi';
 import { fetchTopPosts } from '@/features/community/api/communityApi';
 import type { PostSummaryResponse } from '@/features/community/types';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
@@ -190,6 +190,47 @@ function PromoTasteMatch() {
       <Button to={PATHS.TASTE_MATCH} variant="ghost">
         보러가기
       </Button>
+    </section>
+  );
+}
+
+function LoungeTodaySection({ today }: { today?: LoungeToday }) {
+  if (!today) return null;
+  const hasActivity = today.newPostCount > 0 || Boolean(today.topPost) || Boolean(today.topWhiskeyName);
+
+  return (
+    <section className="wf-lounge-today wf-box wf-box--solid">
+      <div className="wf-lounge-today__head">
+        <p className="wf-text-label">TODAY</p>
+        <h2 className="wf-section-title">오늘의 라운지</h2>
+      </div>
+      {hasActivity ? (
+        <div className="wf-lounge-today__grid">
+          <div className="wf-lounge-today__item">
+            <span className="wf-lounge-today__value">{today.newPostCount}</span>
+            <span className="wf-lounge-today__label">오늘 새 글</span>
+          </div>
+          <div className="wf-lounge-today__item">
+            <span className="wf-lounge-today__label">오늘의 인기 글</span>
+            {today.topPost ? (
+              <Link
+                to={PATHS.COMMUNITY_POST.replace(':postId', String(today.topPost.postId))}
+                className="wf-lounge-today__link"
+              >
+                {today.topPost.title}
+              </Link>
+            ) : (
+              <span className="wf-lounge-today__muted">아직 없음</span>
+            )}
+          </div>
+          <div className="wf-lounge-today__item">
+            <span className="wf-lounge-today__label">오늘 화제의 위스키</span>
+            <span className="wf-lounge-today__highlight">{today.topWhiskeyName ?? '아직 없음'}</span>
+          </div>
+        </div>
+      ) : (
+        <p className="wf-text-sm">아직 오늘 올라온 글이 없어요. 첫 글의 주인공이 되어보세요!</p>
+      )}
     </section>
   );
 }
@@ -435,11 +476,16 @@ export default function HomePage() {
     queryKey: ['lounge', 'suggested-users', 5],
     queryFn: () => homeApi.getSuggestedUsers(5),
   });
+  const { data: today } = useQuery({
+    queryKey: ['lounge', 'today'],
+    queryFn: () => homeApi.getToday(),
+  });
   const authorCount = new Set(feed.map((post) => post.authorId)).size;
 
   return (
     <WireframePage scroll>
       <LoungeHero feedCount={feed.length} authorCount={authorCount} />
+      <LoungeTodaySection today={today} />
       <div className="wf-lounge-shell">
         <main className="wf-lounge-feed">
           <div className="wf-lounge-tabs" role="tablist" aria-label="라운지 피드 탭">

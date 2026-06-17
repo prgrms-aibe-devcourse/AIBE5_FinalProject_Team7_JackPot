@@ -7,6 +7,7 @@ import com.jackpot.whiskeynote.domain.community.post.repository.PostRepository;
 import com.jackpot.whiskeynote.domain.community.post.repository.PostWhiskeyRepository;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeSuggestedUserResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTodayResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.follow.repository.FollowsRepository;
@@ -19,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class LoungeService {
+
+    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     private final FollowsRepository followsRepository;
     private final PostRepository postRepository;
@@ -90,6 +96,26 @@ public class LoungeService {
                     return LoungePostResponse.from(post, nickname, profileImageUrl, commentCount, whiskeyNames);
                 })
                 .toList();
+    }
+
+    /** 오늘의 라운지 스냅샷 — 오늘 새 글 수 / 오늘 인기 글 / 오늘 화제의 위스키. */
+    @Transactional(readOnly = true)
+    public LoungeTodayResponse getTodaySnapshot() {
+        LocalDateTime since = LocalDate.now(SEOUL).atStartOfDay();
+
+        long newPostCount = postRepository.countByIsDeletedFalseAndCreatedAtGreaterThanEqual(since);
+
+        List<Post> topPosts = postRepository
+                .findByIsDeletedFalseAndCreatedAtGreaterThanEqualOrderByViewCountDesc(
+                        since, PageRequest.of(0, 1));
+        LoungePostResponse topPost = buildResponses(topPosts).stream().findFirst().orElse(null);
+
+        String topWhiskeyName = postWhiskeyRepository.findTrendingWhiskeysSince(since, 1).stream()
+                .findFirst()
+                .map(PostWhiskeyRepository.TrendingWhiskeyProjection::getWhiskeyName)
+                .orElse(null);
+
+        return new LoungeTodayResponse(newPostCount, topPost, topWhiskeyName);
     }
 
     /** 팔로우 추천 — 활동 많은 작성자 중 본인/이미 팔로우한 유저를 제외해 추천. */

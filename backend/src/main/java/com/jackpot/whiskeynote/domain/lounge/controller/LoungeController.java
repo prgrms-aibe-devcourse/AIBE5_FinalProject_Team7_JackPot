@@ -2,6 +2,7 @@ package com.jackpot.whiskeynote.domain.lounge.controller;
 
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeSuggestedUserResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTodayResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.lounge.service.LoungeService;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
@@ -51,6 +52,12 @@ public class LoungeController {
             @RequestParam(defaultValue = "5") int limit
     ) {
         return loungeService.getTrendingWhiskeys(limit);
+    }
+
+    // 오늘의 라운지 — 오늘 새 글 수 / 인기 글 / 화제의 위스키
+    @GetMapping("/api/v1/lounge/today")
+    public LoungeTodayResponse getToday() {
+        return loungeService.getTodaySnapshot();
     }
 
     // 팔로우 추천 — 본인/이미 팔로우한 유저 제외, 활동 많은 작성자 추천

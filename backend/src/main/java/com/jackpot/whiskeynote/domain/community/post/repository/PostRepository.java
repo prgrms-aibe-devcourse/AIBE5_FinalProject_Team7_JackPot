@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -38,4 +39,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p.authorId FROM Post p WHERE p.isDeleted = false " +
            "GROUP BY p.authorId ORDER BY COUNT(p.id) DESC")
     List<Long> findActiveAuthorIds(Pageable pageable);
+
+    /** 특정 시각 이후 작성된(=오늘 등) 비삭제 게시글 수 */
+    int countByIsDeletedFalseAndCreatedAtGreaterThanEqual(LocalDateTime since);
+
+    /** 특정 시각 이후 작성된 비삭제 게시글을 조회수 높은 순으로 조회 (오늘의 인기 글) */
+    List<Post> findByIsDeletedFalseAndCreatedAtGreaterThanEqualOrderByViewCountDesc(
+            LocalDateTime since, Pageable pageable);
 }
