@@ -537,10 +537,10 @@
 }
 
 .wf-feed-promo__bottle {
-  width: 96px;
-  height: 132px;
+  width: 116px;
+  height: 116px;
   flex-shrink: 0;
-  margin-right: 28px;
+  margin-right: 24px;
   object-fit: cover;
   object-position: center;
   border-radius: 8px;
