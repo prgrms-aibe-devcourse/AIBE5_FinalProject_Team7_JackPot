@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.lounge.controller;
 
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungePostResponse;
+import com.jackpot.whiskeynote.domain.lounge.dto.LoungeSuggestedUserResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.lounge.service.LoungeService;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
@@ -50,5 +51,14 @@ public class LoungeController {
             @RequestParam(defaultValue = "5") int limit
     ) {
         return loungeService.getTrendingWhiskeys(limit);
+    }
+
+    // 팔로우 추천 — 본인/이미 팔로우한 유저 제외, 활동 많은 작성자 추천
+    @GetMapping("/api/v1/lounge/suggested-users")
+    public List<LoungeSuggestedUserResponse> getSuggestedUsers(
+            @AuthenticationPrincipal JwtUserPrincipal principal,
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        return loungeService.getSuggestedUsers(principal.userId(), limit);
     }
 }

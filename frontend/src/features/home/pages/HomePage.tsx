@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
 import { fetchTopPosts } from '@/features/community/api/communityApi';
 import type { PostSummaryResponse } from '@/features/community/types';
+import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
+import { toast } from '@/shared/components/ui/Toast';
 import '../lounge.css';
 
 function stripContentPreview(content: string) {
@@ -304,6 +306,65 @@ function LoungePopularPosts({ posts }: { posts: PostSummaryResponse[] }) {
   );
 }
 
+function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
+  // 팔로우/처리 중인 유저는 목록에서 즉시 제거(낙관적), 실패 시 토스트
+  const [hidden, setHidden] = useState<Set<number>>(new Set());
+  const [pending, setPending] = useState<Set<number>>(new Set());
+
+  const visible = users.filter((u) => !hidden.has(u.userId));
+  if (!visible.length) return null;
+
+  const handleFollow = async (userId: number) => {
+    if (pending.has(userId)) return;
+    setPending((prev) => new Set(prev).add(userId));
+    try {
+      await cabinetApi.followUser(userId);
+      setHidden((prev) => new Set(prev).add(userId));
+      toast('팔로우했습니다.', 'success');
+    } catch {
+      toast('팔로우에 실패했습니다.', 'error');
+    } finally {
+      setPending((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
+  };
+
+  return (
+    <section className="wf-lounge-suggest wf-box wf-box--solid">
+      <p className="wf-text-label">팔로우 추천</p>
+      <div className="wf-lounge-suggest__list">
+        {visible.map((user) => {
+          const name = user.nickname || `사용자 #${user.userId}`;
+          const image = resolveMediaUrl(user.profileImageUrl);
+          return (
+            <div key={user.userId} className="wf-lounge-suggest__item">
+              <Link to={PATHS.USER_PROFILE.replace(':userId', String(user.userId))} className="wf-lounge-suggest__user">
+                {image ? (
+                  <img src={image} alt={name} className="wf-lounge-suggest__avatar" />
+                ) : (
+                  <span className="wf-lounge-suggest__avatar wf-lounge-suggest__avatar--initial">{name.charAt(0)}</span>
+                )}
+                <strong className="wf-lounge-suggest__name">{name}</strong>
+              </Link>
+              <button
+                type="button"
+                className="wf-lounge-suggest__follow"
+                onClick={() => handleFollow(user.userId)}
+                disabled={pending.has(user.userId)}
+              >
+                {pending.has(user.userId) ? '처리 중' : '팔로우'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function LoungeTrendingWhiskeys({ whiskeys }: { whiskeys: LoungeTrendingWhiskey[] }) {
   if (!whiskeys.length) return null;
 
@@ -370,6 +431,10 @@ export default function HomePage() {
     queryKey: ['lounge', 'trending-whiskeys', 5],
     queryFn: () => homeApi.getTrendingWhiskeys(5),
   });
+  const { data: suggestedUsers = [] } = useQuery({
+    queryKey: ['lounge', 'suggested-users', 5],
+    queryFn: () => homeApi.getSuggestedUsers(5),
+  });
   const authorCount = new Set(feed.map((post) => post.authorId)).size;
 
   return (
@@ -421,6 +486,7 @@ export default function HomePage() {
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
           <PromoToday />
           <LoungePopularPosts posts={topPosts} />
+          <LoungeSuggestedUsers users={suggestedUsers} />
           <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
           <LoungeAuthors posts={feed} />
