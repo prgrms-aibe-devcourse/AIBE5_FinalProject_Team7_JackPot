@@ -14,6 +14,7 @@ public class WhiskeySearchMapper {
                 .id(whiskey.getId())
                 .name(whiskey.getName())
                 .aliases(aliases)
+                .searchText(buildSearchText(whiskey.getName(), aliases))
                 .type(whiskey.getType())
                 .region(whiskey.getRegion())
                 .country(whiskey.getCountry())
@@ -32,5 +33,12 @@ public class WhiskeySearchMapper {
                 document.getImageUrl(),
                 document.getAbv()
         );
+    }
+    private static String buildSearchText(String name, List<String> aliases) {
+        String aliasText = aliases == null ? "" : String.join(" ", aliases);
+
+        return (name + " " + aliasText)
+                .trim()
+                .replaceAll("\\s+", " ");
     }
 }

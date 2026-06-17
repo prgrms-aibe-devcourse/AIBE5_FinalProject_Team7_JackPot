@@ -22,6 +22,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,10 +137,43 @@ public class WhiskeySearchService {
     @Transactional(readOnly = true)
     public void reindexAll(){
         List<Whiskey> whiskeys = whiskeyRepository.findAll();
+        List<WhiskeyDocument> whiskeyDocuments = buildWhiskeyDocuments(whiskeys);
 
+        // 기본 reindex:
+        // WhiskeyDocument의 @Document(indexName = "...")에 설정된 인덱스로 저장한다.
+        // 예: indexName이 "whiskeys_current"라면 현재 alias가 바라보는 인덱스에 저장된다.
+        whiskeySearchRepository.saveAll(whiskeyDocuments);
+
+        // 자동완성 키워드는 위스키 검색 인덱스와 별도 인덱스(whiskey_search_keywords)를 사용한다.
+        // 따라서 버전 인덱스(whiskeys_v2 등)와 무관하게 기존 keyword repository로 갱신한다.
+        whiskeySearchKeywordRepository.saveAll(buildKeywordDocuments(whiskeys));
+    }
+
+    @Transactional(readOnly = true)
+    public void reindexAllTo(String indexName) {
+        if (indexName == null || indexName.isBlank()) {
+            throw new IllegalArgumentException("색인할 Elasticsearch 인덱스 이름이 필요합니다.");
+        }
+
+        List<Whiskey> whiskeys = whiskeyRepository.findAll();
+        List<WhiskeyDocument> whiskeyDocuments = buildWhiskeyDocuments(whiskeys);
+
+        // 버전 인덱스 reindex:
+        // 운영에서 whiskeys_v2 같은 새 인덱스를 미리 만든 뒤, 그 인덱스로 직접 저장할 때 사용한다.
+        // @Document(indexName = "...") 설정을 따르지 않고 indexName 파라미터에 지정한 인덱스에 저장한다.
+        // 저장 완료 후 ES alias(예: whiskeys_current)를 새 인덱스로 전환하면 무중단에 가깝게 교체할 수 있다.
+        IndexCoordinates targetIndex = IndexCoordinates.of(indexName.trim());
+        elasticsearchOperations.save(whiskeyDocuments, targetIndex);
+
+        // 자동완성 키워드 인덱스는 현재 버전 관리 대상이 아니므로 기존 방식으로 갱신한다.
+        whiskeySearchKeywordRepository.saveAll(buildKeywordDocuments(whiskeys));
+    }
+
+    private List<WhiskeyDocument> buildWhiskeyDocuments(List<Whiskey> whiskeys) {
         List<Long> whiskeyIds = whiskeys.stream()
                 .map(Whiskey::getId)
                 .toList();
+
         Map<Long, List<String>> aliasMap = whiskeyAliasRepository.findByWhiskeyIdIn(whiskeyIds)
                 .stream()
                 .collect(Collectors.groupingBy(
@@ -147,15 +181,12 @@ public class WhiskeySearchService {
                         Collectors.mapping(WhiskeyAlias::getAlias, Collectors.toList())
                 ));
 
-        List<WhiskeyDocument> whiskeyDocuments = whiskeys.stream()
+        return whiskeys.stream()
                 .map(whiskey-> WhiskeySearchMapper.fromEntity(
                         whiskey,
                         aliasMap.getOrDefault(whiskey.getId(), List.of())
                 ))
                 .toList();
-
-        whiskeySearchRepository.saveAll(whiskeyDocuments);
-        whiskeySearchKeywordRepository.saveAll(buildKeywordDocuments(whiskeys));
     }
     @Transactional(readOnly = true)
     public WhiskeyKeywordCorrectionResponse correctKeyword(String q){
