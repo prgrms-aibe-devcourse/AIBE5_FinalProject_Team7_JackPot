@@ -141,8 +141,7 @@ export default function PostDetailPage() {
           )}
           <h1 className="wf-title wf-post-title">{post.title}</h1>
           <p className="wf-text-xs wf-post-meta">
-            작성자{' '}
-            <UserProfileLink userId={post.authorId}>#{post.authorId}</UserProfileLink>
+            <UserProfileLink userId={post.authorId}>{post.authorNickname}</UserProfileLink>
             {' · '}
             {formatDate(post.createdAt)}
           </p>

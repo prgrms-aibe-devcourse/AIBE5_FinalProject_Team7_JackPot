@@ -1,10 +1,74 @@
 -- 애호가 설문(ENTHUSIAST) 지원을 위한 user_taste_profiles 컬럼 추가
-ALTER TABLE user_taste_profiles
-    ADD COLUMN survey_type       VARCHAR(20)   NOT NULL DEFAULT 'BEGINNER' COMMENT 'BEGINNER | ENTHUSIAST',
-    ADD COLUMN style_tags        VARCHAR(1000) NULL     COMMENT '선호 스타일 (쉼표 구분: single_malt,bourbon,...)',
-    ADD COLUMN nose_tag_weights  VARCHAR(2000) NULL     COMMENT '노즈 태그 강도 (tagId=intensity,... 형식)',
-    ADD COLUMN taste_tag_weights VARCHAR(2000) NULL     COMMENT '테이스트 태그 강도 (tagId=intensity,... 형식)',
-    ADD COLUMN exploration_level INT           NULL     COMMENT '1=보수형 2=균형형 3=탐험형';
+-- 운영 DB별 컬럼 존재 상태가 다를 수 있어, 없는 컬럼만 추가한다.
+SELECT IF(
+    NOT EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'survey_type'
+    ),
+    'ALTER TABLE user_taste_profiles ADD COLUMN survey_type VARCHAR(20) NOT NULL DEFAULT ''BEGINNER'' COMMENT ''BEGINNER | ENTHUSIAST''',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    NOT EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'style_tags'
+    ),
+    'ALTER TABLE user_taste_profiles ADD COLUMN style_tags VARCHAR(1000) NULL COMMENT ''선호 스타일 (쉼표 구분: single_malt,bourbon,...)''',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    NOT EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'nose_tag_weights'
+    ),
+    'ALTER TABLE user_taste_profiles ADD COLUMN nose_tag_weights VARCHAR(2000) NULL COMMENT ''노즈 태그 강도 (tagId=intensity,... 형식)''',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    NOT EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'taste_tag_weights'
+    ),
+    'ALTER TABLE user_taste_profiles ADD COLUMN taste_tag_weights VARCHAR(2000) NULL COMMENT ''테이스트 태그 강도 (tagId=intensity,... 형식)''',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT IF(
+    NOT EXISTS (
+        SELECT 1 FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'user_taste_profiles'
+          AND COLUMN_NAME = 'exploration_level'
+    ),
+    'ALTER TABLE user_taste_profiles ADD COLUMN exploration_level INT NULL COMMENT ''1=보수형 2=균형형 3=탐험형''',
+    'SELECT 1'
+) INTO @stmt;
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- 애호가 설문 전용 nose 태그 (ID 200~212)
 INSERT IGNORE INTO tags (id, category, name, display_order, image_url) VALUES

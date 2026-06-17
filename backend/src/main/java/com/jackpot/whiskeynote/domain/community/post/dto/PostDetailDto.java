@@ -21,6 +21,7 @@ import java.util.List;
 public record PostDetailDto(
         Long id,
         Long authorId,
+        String authorNickname,
         PostType postType,
         PostCategory category,
         String title,
@@ -34,11 +35,12 @@ public record PostDetailDto(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static PostDetailDto from(Post post, boolean isLiked, boolean isOwner,
+    public static PostDetailDto from(Post post, String authorNickname, boolean isLiked, boolean isOwner,
                                      List<Long> whiskeyIds, int commentCount) {
         return new PostDetailDto(
                 post.getId(),
                 post.getAuthorId(),
+                authorNickname,
                 post.getPostType(),
                 post.getCategory(),
                 post.getTitle(),
