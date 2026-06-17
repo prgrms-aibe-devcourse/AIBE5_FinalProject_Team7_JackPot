@@ -27,6 +27,24 @@ public class LoungeController {
         return loungeService.getLoungeFeed(principal.userId(), page, size);
     }
 
+    // 인기 게시물(조회수 순) — 팔로잉과 무관한 발견 탭
+    @GetMapping("/api/v1/lounge/popular")
+    public List<LoungePostResponse> getPopular(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return loungeService.getPopularFeed(page, size);
+    }
+
+    // 최신 게시물(작성 순) — 팔로잉과 무관한 발견 탭
+    @GetMapping("/api/v1/lounge/latest")
+    public List<LoungePostResponse> getLatest(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return loungeService.getLatestFeed(page, size);
+    }
+
     @GetMapping("/api/v1/lounge/trending-whiskeys")
     public List<LoungeTrendingWhiskeyResponse> getTrendingWhiskeys(
             @RequestParam(defaultValue = "5") int limit
