@@ -538,6 +538,13 @@
   color: var(--wf-text);
 }
 
+.wf-feed-promo__meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--wf-accent-light);
+  font-weight: 700;
+}
+
 
 .wf-lounge-quick,
 .wf-lounge-authors,
