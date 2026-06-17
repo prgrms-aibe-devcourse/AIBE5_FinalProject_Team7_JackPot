@@ -4,6 +4,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeToday } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -156,15 +157,19 @@ function FeedCardSkeleton() {
   );
 }
 
-function PromoToday() {
+function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
+  const image = whiskey ? resolveMediaUrl(whiskey.imageUrl) : null;
   return (
     <section className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
       <div>
         <p className="wf-text-label">TODAY</p>
         <h2 className="wf-feed-promo__title">오늘의 추천</h2>
-        <p className="wf-text-sm">글렌피딕 12 · 가벼운 과일향</p>
+        <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
       </div>
-      <Button to="/whiskey/1" variant="ghost">
+      {image ? (
+        <img src={image} alt={whiskey?.name ?? ''} className="wf-feed-promo__thumb" loading="lazy" />
+      ) : null}
+      <Button to={whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH} variant="ghost">
         보러가기
       </Button>
     </section>
@@ -432,6 +437,16 @@ export default function HomePage() {
     queryKey: ['lounge', 'trending-whiskeys', 5],
     queryFn: () => homeApi.getTrendingWhiskeys(5),
   });
+  // 오늘의 추천: 화제의 위스키(trending 1위)를 우선, 없으면 카탈로그 첫 위스키로 폴백
+  const featuredWhiskeyId = trendingWhiskeys[0]?.whiskeyId;
+  const { data: featuredWhiskey } = useQuery({
+    queryKey: ['lounge', 'today-pick', featuredWhiskeyId ?? 'fallback'],
+    queryFn: async () => {
+      if (featuredWhiskeyId) return fetchWhiskeyById(featuredWhiskeyId);
+      const page = await fetchWhiskeys({ size: 1 });
+      return page.content[0] ?? null;
+    },
+  });
   const { data: suggestedUsers = [] } = useQuery({
     queryKey: ['lounge', 'suggested-users', 5],
     queryFn: () => homeApi.getSuggestedUsers(5),
@@ -496,7 +511,7 @@ export default function HomePage() {
           )}
         </main>
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
-          <PromoToday />
+          <PromoToday whiskey={featuredWhiskey} />
           <LoungeSuggestedUsers users={suggestedUsers} />
           <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
