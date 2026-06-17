@@ -115,83 +115,70 @@
 }
 
 /* 오늘의 라운지 섹션 */
-.wf-lounge-today {
-  padding: 20px 22px;
-  border-radius: 8px;
-  margin-bottom: 18px;
-}
-
-.wf-lounge-today__head {
-  margin-bottom: 14px;
-}
-
-.wf-lounge-today__head .wf-section-title {
-  margin: 2px 0 0;
-  font-size: 18px;
-}
-
-.wf-lounge-today__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.wf-lounge-today__item {
+/* 히어로 우측 '오늘의 라운지' 패널 (히어로에 통합) */
+.wf-lounge-hero__today {
+  position: relative;
+  z-index: 1;
+  align-self: center;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  padding: 14px 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid rgba(213, 173, 69, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
 }
 
-.wf-lounge-today__value {
-  font-size: 26px;
+.wf-lounge-hero__today-label {
+  margin: 0 0 2px;
+  font-size: 11px;
   font-weight: 800;
+  letter-spacing: 0.06em;
   color: var(--wf-accent);
-  line-height: 1;
 }
 
-.wf-lounge-today__label {
+.wf-lounge-hero__today-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.wf-lounge-hero__today-key {
+  flex-shrink: 0;
   font-size: 12px;
+  font-weight: 700;
   color: var(--wf-muted);
 }
 
-.wf-lounge-today__link {
-  font-size: 14px;
+.wf-lounge-hero__today-num {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--wf-accent-light, var(--wf-accent));
+}
+
+.wf-lounge-hero__today-link,
+.wf-lounge-hero__today-val {
+  min-width: 0;
+  text-align: right;
+  font-size: 13px;
   font-weight: 700;
   color: var(--wf-text);
   text-decoration: none;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.wf-lounge-today__link:hover {
-  color: var(--wf-accent);
-}
-
-.wf-lounge-today__highlight {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--wf-accent-light, var(--wf-accent));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.wf-lounge-today__muted {
-  font-size: 13px;
-  color: var(--wf-muted);
+.wf-lounge-hero__today-link:hover {
+  color: var(--wf-accent);
 }
 
-@media (max-width: 720px) {
-  .wf-lounge-today__grid {
-    grid-template-columns: 1fr;
-  }
+.wf-lounge-hero__today-muted {
+  font-size: 13px;
+  color: var(--wf-muted);
 }
 
 .wf-lounge-tabs {
