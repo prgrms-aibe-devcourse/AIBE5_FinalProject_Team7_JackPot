@@ -517,10 +517,8 @@
 
 .wf-feed-promo--today {
   flex-direction: row;
-  align-items: stretch;
-  gap: 0;
-  padding: 0;
-  overflow: hidden;
+  align-items: flex-start;
+  gap: 14px;
   background:
     linear-gradient(145deg, rgba(213, 173, 69, 0.2), rgba(143, 52, 76, 0.1)),
     rgba(23, 21, 27, 0.9);
@@ -529,11 +527,9 @@
 .wf-feed-promo__main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 14px;
   flex: 1;
   min-width: 0;
-  padding: 22px;
 }
 
 .wf-feed-promo--match {
@@ -554,11 +550,12 @@
 }
 
 .wf-feed-promo__thumb {
-  width: 96px;
+  width: 64px;
+  height: 96px;
   flex-shrink: 0;
-  align-self: stretch;
   object-fit: cover;
   object-position: center;
+  border-radius: 8px;
   background: rgba(0, 0, 0, 0.16);
 }
 
