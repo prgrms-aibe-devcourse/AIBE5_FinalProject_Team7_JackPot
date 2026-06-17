@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeToday } from '@/features/home/api/homeApi';
-import { fetchTopPosts } from '@/features/community/api/communityApi';
-import type { PostSummaryResponse } from '@/features/community/types';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -286,34 +284,6 @@ function LoungeAuthors({ posts }: { posts: LoungePost[] }) {
   );
 }
 
-function LoungePopularPosts({ posts }: { posts: PostSummaryResponse[] }) {
-  if (!posts.length) return null;
-
-  return (
-    <section className="wf-lounge-discovery wf-box wf-box--solid">
-      <div className="wf-lounge-discovery__head">
-        <p className="wf-text-label">인기 게시글</p>
-        <Link to={PATHS.COMMUNITY} className="wf-lounge-discovery__more">전체</Link>
-      </div>
-      <div className="wf-lounge-rank-list">
-        {posts.slice(0, 4).map((post, index) => (
-          <Link
-            key={post.id}
-            to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
-            className="wf-lounge-rank-item"
-          >
-            <span className="wf-lounge-rank-item__rank">{index + 1}</span>
-            <span className="wf-lounge-rank-item__body">
-              <strong>{post.title}</strong>
-              <span>조회 {formatCount(post.viewCount)} · 댓글 {formatCount(post.commentCount)}</span>
-            </span>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
   // 팔로우/처리 중인 유저는 목록에서 즉시 제거(낙관적), 실패 시 토스트
   const [hidden, setHidden] = useState<Set<number>>(new Set());
@@ -431,10 +401,6 @@ export default function HomePage() {
     queryKey: ['lounge', 'feed', tab, 0, 20],
     queryFn: () => homeApi.getFeedByTab(tab, 0, 20),
   });
-  const { data: topPosts = [] } = useQuery({
-    queryKey: ['lounge', 'top-posts', 4],
-    queryFn: () => fetchTopPosts(4),
-  });
   const { data: trendingWhiskeys = [] } = useQuery({
     queryKey: ['lounge', 'trending-whiskeys', 5],
     queryFn: () => homeApi.getTrendingWhiskeys(5),
@@ -496,7 +462,6 @@ export default function HomePage() {
         </main>
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
           <PromoToday />
-          <LoungePopularPosts posts={topPosts} />
           <LoungeSuggestedUsers users={suggestedUsers} />
           <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
