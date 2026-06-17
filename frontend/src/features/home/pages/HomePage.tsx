@@ -194,48 +194,7 @@ function PromoTasteMatch() {
   );
 }
 
-function LoungeTodaySection({ today }: { today?: LoungeToday }) {
-  if (!today) return null;
-  const hasActivity = today.newPostCount > 0 || Boolean(today.topPost) || Boolean(today.topWhiskeyName);
-
-  return (
-    <section className="wf-lounge-today wf-box wf-box--solid">
-      <div className="wf-lounge-today__head">
-        <p className="wf-text-label">TODAY</p>
-        <h2 className="wf-section-title">오늘의 라운지</h2>
-      </div>
-      {hasActivity ? (
-        <div className="wf-lounge-today__grid">
-          <div className="wf-lounge-today__item">
-            <span className="wf-lounge-today__value">{today.newPostCount}</span>
-            <span className="wf-lounge-today__label">오늘 새 글</span>
-          </div>
-          <div className="wf-lounge-today__item">
-            <span className="wf-lounge-today__label">오늘의 인기 글</span>
-            {today.topPost ? (
-              <Link
-                to={PATHS.COMMUNITY_POST.replace(':postId', String(today.topPost.postId))}
-                className="wf-lounge-today__link"
-              >
-                {today.topPost.title}
-              </Link>
-            ) : (
-              <span className="wf-lounge-today__muted">아직 없음</span>
-            )}
-          </div>
-          <div className="wf-lounge-today__item">
-            <span className="wf-lounge-today__label">오늘 화제의 위스키</span>
-            <span className="wf-lounge-today__highlight">{today.topWhiskeyName ?? '아직 없음'}</span>
-          </div>
-        </div>
-      ) : (
-        <p className="wf-text-sm">아직 오늘 올라온 글이 없어요. 첫 글의 주인공이 되어보세요!</p>
-      )}
-    </section>
-  );
-}
-
-function LoungeHero({ feedCount, authorCount }: { feedCount: number; authorCount: number }) {
+function LoungeHero({ today }: { today?: LoungeToday }) {
   return (
     <section className="wf-lounge-hero">
       <div className="wf-lounge-hero__copy">
@@ -249,14 +208,28 @@ function LoungeHero({ feedCount, authorCount }: { feedCount: number; authorCount
           <Button to={PATHS.SEARCH} variant="ghost">위스키 검색</Button>
         </div>
       </div>
-      <div className="wf-lounge-hero__stats" aria-label="라운지 요약">
-        <div className="wf-lounge-stat">
-          <span className="wf-lounge-stat__value">{feedCount}</span>
-          <span className="wf-lounge-stat__label">새 피드</span>
+      <div className="wf-lounge-hero__today" aria-label="오늘의 라운지">
+        <p className="wf-lounge-hero__today-label">TODAY · 오늘의 라운지</p>
+        <div className="wf-lounge-hero__today-row">
+          <span className="wf-lounge-hero__today-key">새 글</span>
+          <span className="wf-lounge-hero__today-num">{today?.newPostCount ?? 0}</span>
         </div>
-        <div className="wf-lounge-stat">
-          <span className="wf-lounge-stat__value">{authorCount}</span>
-          <span className="wf-lounge-stat__label">작성자</span>
+        <div className="wf-lounge-hero__today-row">
+          <span className="wf-lounge-hero__today-key">인기 글</span>
+          {today?.topPost ? (
+            <Link
+              to={PATHS.COMMUNITY_POST.replace(':postId', String(today.topPost.postId))}
+              className="wf-lounge-hero__today-link"
+            >
+              {today.topPost.title}
+            </Link>
+          ) : (
+            <span className="wf-lounge-hero__today-muted">아직 없음</span>
+          )}
+        </div>
+        <div className="wf-lounge-hero__today-row">
+          <span className="wf-lounge-hero__today-key">화제 위스키</span>
+          <span className="wf-lounge-hero__today-val">{today?.topWhiskeyName ?? '아직 없음'}</span>
         </div>
       </div>
     </section>
@@ -480,12 +453,10 @@ export default function HomePage() {
     queryKey: ['lounge', 'today'],
     queryFn: () => homeApi.getToday(),
   });
-  const authorCount = new Set(feed.map((post) => post.authorId)).size;
 
   return (
     <WireframePage scroll>
-      <LoungeHero feedCount={feed.length} authorCount={authorCount} />
-      <LoungeTodaySection today={today} />
+      <LoungeHero today={today} />
       <div className="wf-lounge-shell">
         <main className="wf-lounge-feed">
           <div className="wf-lounge-tabs" role="tablist" aria-label="라운지 피드 탭">
