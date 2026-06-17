@@ -516,9 +516,35 @@
 }
 
 .wf-feed-promo--today {
+  position: relative;
+  overflow: hidden;
   background:
     linear-gradient(145deg, rgba(213, 173, 69, 0.2), rgba(143, 52, 76, 0.1)),
     rgba(23, 21, 27, 0.9);
+}
+
+/* 텍스트 + 병 썸네일을 한 줄(세로 중앙 정렬)로 묶어 자연스럽게 */
+.wf-feed-promo__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.wf-feed-promo__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-feed-promo__bottle {
+  width: 116px;
+  height: 116px;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 .wf-feed-promo--match {
@@ -537,6 +563,8 @@
   margin: 5px 0 6px;
   color: var(--wf-text);
 }
+
+
 
 .wf-lounge-quick,
 .wf-lounge-authors,
