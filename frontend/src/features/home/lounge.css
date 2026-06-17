@@ -523,23 +523,26 @@
     rgba(23, 21, 27, 0.9);
 }
 
-/* 우측 상단에 깔끔하게 들어가는 병 썸네일 (세로 비율, 중앙 크롭) */
-.wf-feed-promo__bottle {
-  position: absolute;
-  top: 22px;
-  right: 22px;
-  width: 70px;
-  height: 104px;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 8px;
-  pointer-events: none;
+/* 텍스트 + 병 썸네일을 한 줄(세로 중앙 정렬)로 묶어 자연스럽게 */
+.wf-feed-promo__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
 }
 
 .wf-feed-promo__copy {
-  position: relative;
-  z-index: 1;
-  max-width: calc(100% - 104px);
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-feed-promo__bottle {
+  width: 72px;
+  height: 104px;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
 }
 
 .wf-feed-promo--match {
