@@ -482,7 +482,6 @@ export default function HomePage() {
               <p className="wf-text-label">{TAB_META[tab].eyebrow}</p>
               <h2 className="wf-section-title">{TAB_META[tab].title}</h2>
             </div>
-            <span className="wf-lounge-section-count">{feed.length}건</span>
           </div>
           {isLoading ? (
             <div aria-label="피드를 불러오는 중">
