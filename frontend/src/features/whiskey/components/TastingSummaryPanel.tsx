@@ -11,6 +11,8 @@ interface TastingSummaryPanelProps {
   axes: TastingAxisView[];
   source: TastingSummarySource;
   hasOfficial: boolean;
+  /** 공식 시음 노트 (항목명→설명). 오피셜 탭에서 표시 */
+  officialNote?: Record<string, string> | null;
   onSourceChange: (source: TastingSummarySource) => void;
   reviewPath: string;
 }
@@ -46,9 +48,13 @@ export function TastingSummaryPanel({
   axes,
   source,
   hasOfficial,
+  officialNote,
   onSourceChange,
   reviewPath,
 }: TastingSummaryPanelProps) {
+  const officialNoteEntries = Object.entries(officialNote ?? {});
+  const showOfficialNote = source === 'official' && officialNoteEntries.length > 0;
+
   return (
     <section className="wf-detail-tasting wf-detail-panel" aria-label="시음 요약">
       <div className="wf-detail-section-head">
@@ -77,7 +83,7 @@ export function TastingSummaryPanel({
         </div>
       </div>
 
-      {axes.length === 0 ? (
+      {source === 'official' ? null : axes.length === 0 ? (
         <div className="wf-detail-state">
           <p className="wf-card__title">시음 데이터가 아직 없습니다.</p>
           <p className="wf-card__meta">첫 리뷰와 노트를 남기면 이 위스키의 맛 지도가 채워집니다.</p>
@@ -145,6 +151,23 @@ export function TastingSummaryPanel({
             })}
           </svg>
         </div>
+      )}
+
+      {source === 'official' && (
+        showOfficialNote ? (
+          <div className="wf-detail-official-note">
+            {officialNoteEntries.map(([label, text]) => (
+              <div key={label} className="wf-detail-official-note__row">
+                <p className="wf-text-label">{label}</p>
+                <p className="wf-text-sm">{text}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="wf-detail-state">
+            <p className="wf-card__title">오피셜 노트가 아직 없습니다.</p>
+          </div>
+        )
       )}
 
       <Link to={reviewPath} className="wf-detail-tasting__reviews-link wf-text-sm">

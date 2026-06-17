@@ -1,9 +1,14 @@
 package com.jackpot.whiskeynote.domain.whiskey.entity;
 
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyDescriptionDto;
+import com.jackpot.whiskeynote.domain.whiskey.dto.WhiskeyOfficialNote;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -21,7 +26,7 @@ public class Whiskey {
     @Enumerated(EnumType.STRING)
     private WhiskeyType type;
 
-    private String etcDetail;
+    private String brand;
 
     private String imageUrl;
 
@@ -32,11 +37,27 @@ public class Whiskey {
     @Enumerated(EnumType.STRING)
     private WhiskeyStatus status;
 
-    private String region;
-
     private String country;
 
     private String cask;
+
+    private Integer volume;
+
+    private String nameEng;
+
+    private Integer price;
+
+    private String costUrl;
+
+    private String costUrlSource;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private WhiskeyDescriptionDto description = new WhiskeyDescriptionDto();
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private WhiskeyOfficialNote note = new WhiskeyOfficialNote();
 
     private LocalDateTime createdAt;
 

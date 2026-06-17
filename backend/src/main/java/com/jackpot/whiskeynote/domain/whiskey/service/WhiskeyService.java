@@ -82,13 +82,20 @@ public class WhiskeyService {
         return new WhiskeyDetailResponse(
                 whiskey.getId(),
                 whiskey.getName(),
+                whiskey.getNameEng(),
                 whiskey.getType(),
+                whiskey.getBrand(),
                 whiskey.getImageUrl(),
                 whiskey.getAbv(),
                 whiskey.getAgeYears(),
-                whiskey.getRegion(),
                 whiskey.getCountry(),
                 whiskey.getCask(),
+                whiskey.getVolume(),
+                whiskey.getPrice(),
+                whiskey.getCostUrl(),
+                whiskey.getCostUrlSource(),
+                whiskey.getDescription(),
+                whiskey.getNote(),
                 noteSummary,
                 tastingTags
         );

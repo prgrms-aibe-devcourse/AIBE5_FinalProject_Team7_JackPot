@@ -15,6 +15,6 @@ export function buildTastingAxes(detail: WhiskeyDetail): TastingAxisView[] {
   }));
 }
 
-export function hasOfficialNote(_detail: WhiskeyDetail): boolean {
-  return false;
+export function hasOfficialNote(detail: WhiskeyDetail): boolean {
+  return Object.keys(detail.note?.note ?? {}).length > 0;
 }

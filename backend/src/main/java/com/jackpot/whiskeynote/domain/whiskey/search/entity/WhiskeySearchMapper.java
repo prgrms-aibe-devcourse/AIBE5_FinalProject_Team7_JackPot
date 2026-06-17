@@ -15,7 +15,6 @@ public class WhiskeySearchMapper {
                 .name(whiskey.getName())
                 .aliases(aliases)
                 .type(whiskey.getType())
-                .region(whiskey.getRegion())
                 .country(whiskey.getCountry())
                 .cask(whiskey.getCask())
                 .abv(whiskey.getAbv())
