@@ -161,17 +161,19 @@ function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
   const image = whiskey ? resolveMediaUrl(whiskey.imageUrl) : null;
   return (
     <section className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
-      <div>
-        <p className="wf-text-label">TODAY</p>
-        <h2 className="wf-feed-promo__title">오늘의 추천</h2>
-        <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
+      <div className="wf-feed-promo__main">
+        <div>
+          <p className="wf-text-label">TODAY</p>
+          <h2 className="wf-feed-promo__title">오늘의 추천</h2>
+          <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
+        </div>
+        <Button to={whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH} variant="ghost">
+          보러가기
+        </Button>
       </div>
       {image ? (
         <img src={image} alt={whiskey?.name ?? ''} className="wf-feed-promo__thumb" loading="lazy" />
       ) : null}
-      <Button to={whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH} variant="ghost">
-        보러가기
-      </Button>
     </section>
   );
 }
