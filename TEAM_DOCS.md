@@ -5,7 +5,7 @@
 | GitHub ID | 주요 역할 |
 |-----------|-----------|
 | **skyun-ui** | 프론트 UI/UX 전체, 캐비넷, CI/CD 인프라 |
-| **GyuSikYoon** | 커뮤니티 백+프론트 연동, 설문 API 연동, 검색 버그픽스, 크롤러 피드 |
+| **GyuSikYoon** | 커뮤니티 백+프론트 연동, 설문 API 연동, 애호가 설문 기능, 검색 버그픽스, 크롤러 피드 |
 | **Mi-no-Kim** | 위스키 추천 알고리즘, 설문 백엔드, 추천 페이지 |
 | **minguk0825 / 김민국** | 위스키 검색(ES), 상세 API, 리뷰 기능, 테이스팅 노트 |
 | **최준열** | 회원인증, 위시리스트, 위스키 등록 요청, 초기 설정 |
@@ -99,9 +99,35 @@ public Page<WhiskeyCardResponse> searchByKeyword(String keyword, int page, int s
 
 **핵심 API**
 ```
-POST /api/v1/taste/survey         # 설문 계산 (비저장, 결과만 반환)
-POST /api/v1/taste/survey/save    # 설문 계산 + 취향 프로필 저장 (JWT 필요)
-GET  /api/v1/taste/survey/me      # 저장된 내 취향 프로필 + 추천 재계산
+POST /api/v1/taste/survey                # 입문자 설문 계산 (비저장, 로그인 불필요)
+POST /api/v1/taste/survey/save           # 입문자 설문 계산 + 취향 프로필 저장 (JWT 필요)
+POST /api/v1/taste/survey/enthusiast     # 애호가 설문 계산 (비저장, 로그인 불필요)
+POST /api/v1/taste/survey/enthusiast/save# 애호가 설문 계산 + 취향 프로필 저장 (JWT 필요)
+GET  /api/v1/taste/survey/me             # 저장된 내 취향 프로필 + 추천 재계산 (JWT 필요)
+```
+
+**통합 요청 DTO (SurveyRequest)**
+```java
+// 입문자/애호가 공통 — 단일 record로 통합 (EnthusiastSurveyRequest 삭제됨)
+public record SurveyRequest(
+    @Min(1) @Max(5) int sweetChoice,    // Q1: 단맛
+    @Min(1) @Max(5) int bodyChoice,     // Q2: 바디감
+    @Min(1) @Max(5) int smokyChoice,    // Q3: 스모키
+    @Min(1) @Max(5) int spicyChoice,    // Q4: 스파이시
+    @Min(1) @Max(5) int finishChoice,   // Q5: 피니시
+
+    // 입문자 전용 — 태그 ID 목록
+    List<Long> noseTags,
+    List<Long> tasteTags,
+
+    // 애호가 추가 — 태그 ID → 강도(1=좋아함, 2=매우 좋아함)
+    Map<Long, Integer> noseTagWeights,
+    Map<Long, Integer> tasteTagWeights,
+
+    // 애호가 추가 — 스타일 / 탐험 성향
+    List<String> styleTags,
+    @Min(1) @Max(3) Integer explorationLevel  // 1=보수형 2=균형형 3=탐험형
+) {}
 ```
 
 **핵심 알고리즘**
@@ -142,6 +168,9 @@ else                          → ⚖️ 균형잡힌 미각파
 - 추천 결과는 DB에 저장하지 않음 — 점수+태그 IDs만 저장 후 조회마다 재계산
 - 따라서 위스키 데이터가 추가되면 동일 프로필로도 다른 위스키가 추천될 수 있음
 - `getMyProfile()` 호출 시 매번 전체 whiskeys_note_cache 스캔 후 재추천
+- **[알려진 한계]** `WhiskeyRecommendationService`의 `recommendByWhiskeyLog()`는 `whiskey_view_log` 테이블만 읽으며 `user_taste_profiles`를 전혀 참조하지 않음. 즉, "내 추천 알고리즘에 반영하기" 버튼이 프로필을 DB에 저장하지만, 라운지 추천은 해당 프로필을 사용하지 않음 → 향후 연동 필요
+- `surveyType` 컬럼 값: `"BEGINNER"` / `"ENTHUSIAST"` (VARCHAR, 코드로 저장)
+- `userType` 분류 문자열(예: "🔥 피트 탐험가")은 서비스 레이어에서 직접 생성하여 응답에만 포함; DB에는 저장하지 않음 (V18 마이그레이션으로 `user_type` 컬럼 제거됨)
 
 ---
 
@@ -346,7 +375,71 @@ PENDING → APPROVED
 
 ---
 
-### 9. 위스키 칼럼 (담당: GyuSikYoon)
+### 9. 애호가 설문 기능 (담당: GyuSikYoon)
+
+**기능:** 위스키 경험이 있는 사용자를 위한 심화 설문 (9문항). 기존 입문자 설문(7문항)과 같은 추천 결과 페이지 공유.
+
+**DB 마이그레이션**
+
+- **V18** (`user_taste_profile_tags` 테이블 신설, 1NF 정규화):
+  - `user_taste_profiles`에서 `nose_tag_ids`, `taste_tag_ids`, `user_type`, `nose_tag_weights`, `taste_tag_weights` 컬럼 제거 (쉼표 구분 문자열 → 별도 테이블)
+  - `user_taste_profile_tags(id, profile_id, tag_id, category)` 생성 (category: `nose` | `taste`)
+- **V19** (`user_taste_profiles` 애호가 컬럼 추가):
+  - `survey_type VARCHAR(20) DEFAULT 'BEGINNER'`
+  - `style_tags VARCHAR(1000)` — 쉼표 구분 스타일 문자열 (1NF 미완 — 향후 정규화 예정)
+  - `exploration_level INT` — 탐험 성향 (1=보수형, 2=균형형, 3=탐험형)
+  - 애호가 전용 태그 20개 추가 (ID 200~219, nose/taste)
+
+**프론트엔드 구조**
+
+```
+온보딩(OnboardingPage)
+  └─ 경험 수준 선택 (입문자 / 애호가)
+       ├─ 입문자 선택 → /survey?type=beginner  → SurveyPage (7문항)
+       └─ 애호가 선택 → /survey/enthusiast     → EnthusiastSurveyPage (9문항)
+
+설문 완료 → navigate(PATHS.RECOMMEND, { state: { result, payload, surveyType } })
+         └─ RecommendationPage (결과 페이지 공통 사용)
+```
+
+**SurveyPage 타입 선택 스텝** — `/survey` 직접 진입 시 첫 화면에서 입문자/애호가 선택:
+- 입문자: `typeChosen = true`로 설정, Q1부터 진행
+- 애호가: `navigate(PATHS.SURVEY_ENTHUSIAST)`로 즉시 이동
+
+**EnthusiastSurveyPage 문항 (9개)**
+1. Q1~Q5: 기존과 동일 (단맛/바디/스모키/스파이시/피니시 슬라이더)
+2. Q6: nose 태그 선택 + 강도(일반/매우 좋아함) (ID 200~212 범위 태그)
+3. Q7: taste 태그 선택 + 강도 (ID 213~219 범위 태그)
+4. Q8: 위스키 스타일 선택 (`styleTags: string[]`)
+5. Q9: 탐험 성향 (`explorationLevel: 1 | 2 | 3`)
+
+**페이로드 차이**
+```typescript
+// 입문자
+{ sweetChoice, bodyChoice, smokyChoice, spicyChoice, finishChoice,
+  noseTags: number[], tasteTags: number[] }
+
+// 애호가
+{ sweetChoice, bodyChoice, smokyChoice, spicyChoice, finishChoice,
+  noseTagWeights: Record<number, 1|2>, tasteTagWeights: Record<number, 1|2>,
+  styleTags: string[], explorationLevel: 1|2|3 }
+```
+
+**RecommendationPage `surveyType` 분기**
+```typescript
+// location.state에 surveyType 포함
+const surveyType = state?.surveyType ?? 'beginner';
+
+// "내 추천 알고리즘에 반영하기" 버튼
+if (surveyType === 'enthusiast') await enthusiastSurveyApi.save(payload);
+else await surveyApi.save(payload);
+```
+
+**태그 강도 UI (`wf-chip--strong`)** — 애호가 설문에서 태그 클릭 2회 시 강도=2 표시 (amber filled chip)
+
+---
+
+### 10. 위스키 칼럼 (담당: GyuSikYoon)
 
 **기능:** AI가 작성한 한국어 위스키 칼럼을 커뮤니티 칼럼 게시판에 노출. 외부 URL 이동 없이 내부 마크다운 렌더링 상세 페이지 제공.
 
@@ -410,7 +503,7 @@ function injectImageIntoMarkdown(markdown, imageUrl) {
 
 ---
 
-### 10. CI/CD & 인프라 (담당: skyun-ui)
+### 11. CI/CD & 인프라 (담당: skyun-ui)
 
 **구성**
 ```
@@ -432,10 +525,11 @@ RDS(MySQL) + S3(이미지 저장) + Elasticsearch (Docker)
 ### 기술 스택
 
 ```
-React 18 + TypeScript + Vite
-React Router v6 (Feature-based routing)
-TanStack Query (서버 상태 관리)
+React 19 + TypeScript + Vite
+React Router v7 (Feature-based routing)
+TanStack Query v5 (서버 상태 관리)
 Axios (API 클라이언트, JWT 인터셉터)
+Tiptap (리치 텍스트 에디터 — 게시글 작성)
 html2canvas (추천 결과 이미지 저장)
 ```
 
@@ -474,8 +568,9 @@ src/
 /register                        # 회원가입
 /oauth/:provider/callback        # 소셜로그인 콜백
 /onboarding                      # 온보딩 (신규 가입자)
-/survey                          # 취향 설문
-/recommend                       # 추천 결과
+/survey                          # 취향 설문 (입문자, 진입 시 타입 선택 스텝 포함)
+/survey/enthusiast               # 애호가 설문 (9문항)
+/recommend                       # 추천 결과 (입문자/애호가 공통)
 /lounge                          # 라운지 (홈)
 /search                          # 위스키 검색
 /whiskey/:whiskeyId              # 위스키 상세
@@ -553,6 +648,10 @@ const [wishModalOpen, setWishModalOpen] = useState(false);
 #### 취향 설문 (SurveyPage) — 담당: GyuSikYoon + Mi-no-Kim
 
 ```tsx
+// 진입 시 타입 선택 스텝 (typeChosen state)
+// - 입문자 선택 → typeChosen=true, Q1 진행
+// - 애호가 선택 → navigate(PATHS.SURVEY_ENTHUSIAST)
+
 // 5개 슬라이더 (선택지 1~5)
 // 코 태그 17개 + 미각 태그 12개 — 실제 DB ID로 매핑
 // 코: 시트러스(1), 베리류(2), 꽃(3), 허브(4), 곡물(5) ... 피트(17), 흙(18), 가죽(16)
@@ -564,28 +663,36 @@ const payload: SurveyApiRequest = {
   tasteTags,  // number[] — DB tag ID
 };
 const result = await surveyApi.submit(payload);
-navigate(PATHS.RECOMMEND, { state: { result, payload } });
+navigate(PATHS.RECOMMEND, { state: { result, payload, surveyType: 'beginner' } });
 ```
 
 #### 추천 결과 (RecommendationPage) — 담당: Mi-no-Kim + GyuSikYoon
 
 ```tsx
-// navigation state에서 결과 수신
-const { result, payload } = location.state as {
-  result: SurveyResult, payload: SurveyApiRequest
-};
+// navigation state에서 결과 수신 (입문자/애호가 공통)
+interface LocationState {
+  result: SurveyResult;
+  payload: SurveyApiRequest;
+  surveyType?: 'beginner' | 'enthusiast';
+}
+const { result, payload, surveyType } = location.state as LocationState;
 
 // 유저 타입 + 플레이버 점수 바 표시 (0~100%)
-// 추천 위스키 3개 카드 (rank, whiskeyName, score, reason)
+// 추천 위스키 3개 카드 (rank, whiskeyName, score, avgRating, reason)
 
-// 취향 반영하기 버튼 — JWT 필요
+// 취향 반영하기 버튼 — JWT 필요, surveyType으로 분기
 const handleApply = async () => {
-  if (!isLoggedIn()) { navigate(PATHS.LOGIN); return; }
-  await surveyApi.save(payload); // POST /taste/survey/save
+  if (!isLoggedIn()) { navigate(PATHS.LOGIN, { state: { from: PATHS.RECOMMEND } }); return; }
+  if (surveyType === 'enthusiast') await enthusiastSurveyApi.save(payload);
+  else await surveyApi.save(payload);
 };
 
 // 결과 이미지 저장 (html2canvas)
 await saveResultImage(result);
+
+// state 없이 직접 진입 시 빈 상태 — 두 설문 링크 모두 제공
+<Button to={PATHS.SURVEY}>입문자 설문</Button>
+<Button to={PATHS.SURVEY_ENTHUSIAST}>애호가 설문</Button>
 ```
 
 #### 캐비넷 (CabinetPage) — 담당: 최준열 + skyun-ui
@@ -686,6 +793,28 @@ export function getUserCabinetPath(userId: number): string
 | `my_picks` | My Pick 목록 |
 | `wish_list_folders` | 위시리스트 폴더 |
 | `wish_list_items` | 위시리스트 아이템 |
-| `user_taste_profiles` | 취향 설문 저장 (점수 5개 + 태그 IDs 콤마 구분 문자열) |
+| `user_taste_profiles` | 취향 설문 저장 (점수 5개 + surveyType + style_tags + exploration_level) |
+| `user_taste_profile_tags` | 취향 태그 정규화 테이블 (profile_id, tag_id, category: nose\|taste) — V18 신설 |
 | `whiskey_requests` | 위스키 등록 요청 (PENDING/APPROVED/REJECTED) |
 | `whiskey_columns` | AI 작성 한국어 위스키 칼럼 (마크다운 본문, Unsplash 썸네일) |
+
+**`user_taste_profiles` 컬럼 변경 이력**
+```
+V18 제거: nose_tag_ids, taste_tag_ids, user_type, nose_tag_weights, taste_tag_weights
+          (쉼표/key=value 직렬화 → 1NF 위반이었으므로 별도 테이블로 분리)
+V19 추가: survey_type VARCHAR(20), style_tags VARCHAR(1000),
+          exploration_level INT
+          (style_tags는 여전히 쉼표 구분 문자열 — 추후 정규화 예정)
+```
+
+---
+
+## ⚠️ 기술 부채 및 알려진 한계
+
+| 항목 | 내용 | 관련 파일 |
+|------|------|-----------|
+| **추천 알고리즘-프로필 단절** | "내 추천 알고리즘에 반영하기" 버튼이 `user_taste_profiles` DB에 저장하지만, 라운지 추천(`WhiskeyRecommendationService.recommendByWhiskeyLog`)은 해당 프로필을 읽지 않고 `whiskey_view_log`만 사용 | `WhiskeyRecommendationService.java`, `TasteSurveyController.java` |
+| **style_tags 1NF 미완** | `user_taste_profiles.style_tags`가 `"single_malt,bourbon"` 형태의 쉼표 구분 문자열로 저장됨. `user_taste_profile_tags`처럼 별도 테이블로 분리 필요 | `V19__enthusiast_survey.sql`, `UserTasteProfile.java` |
+| **애호가 태그 이미지 없음** | V19에서 추가한 태그(ID 200~219)의 `image_url`이 모두 NULL | `V19__enthusiast_survey.sql` |
+| **ES 인덱스 수동 재생성** | 위스키 데이터 변경 시 `POST /api/v1/admin/whiskeys/search/reindex` 수동 호출 필요 | `WhiskeySearchController.java` |
+| **취향 프로필 재계산 비용** | `GET /taste/survey/me` 호출마다 전체 `whiskeys_note_cache` 스캔 후 재추천 — 위스키 수 증가 시 성능 저하 가능 | `TasteSurveyService.getMyProfile()` |
