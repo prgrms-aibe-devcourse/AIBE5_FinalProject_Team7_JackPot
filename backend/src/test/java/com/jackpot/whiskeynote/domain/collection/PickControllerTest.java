@@ -78,7 +78,6 @@ class PickControllerTest {
                 .abv(40.0)
                 .ageYears(12)
                 .country("Scotland")
-                .region("Speyside")
                 .status(WhiskeyStatus.active)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

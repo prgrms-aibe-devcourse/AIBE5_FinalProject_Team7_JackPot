@@ -188,7 +188,6 @@ class WhiskeyControllerTest {
                 .ageYears(ageYears)
                 .status(WhiskeyStatus.active)
                 .country("Scotland")
-                .region("Speyside")
                 .cask("Bourbon")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
