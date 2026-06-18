@@ -3,6 +3,23 @@
   text-decoration: none;
   color: inherit;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-root .wf-topnav__logo-img {
+  height: 38px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.app-root .wf-topnav__logo-text {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--wf-accent);
+  white-space: nowrap;
 }
 
 /* ── 네비게이션 링크 ─────────────────────────── */
