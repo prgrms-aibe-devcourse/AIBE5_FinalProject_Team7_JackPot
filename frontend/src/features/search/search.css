@@ -271,7 +271,8 @@
   overflow: hidden;
   color: var(--wf-text);
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
