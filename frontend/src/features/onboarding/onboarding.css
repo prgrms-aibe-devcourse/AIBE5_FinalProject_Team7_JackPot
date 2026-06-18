@@ -243,6 +243,7 @@
   font-size: 13px;
   font-style: normal;
   line-height: 1.55;
+  white-space: pre-line;
 }
 
 .wf-onboarding-cta {

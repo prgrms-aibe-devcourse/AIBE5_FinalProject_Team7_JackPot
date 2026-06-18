@@ -8,12 +8,12 @@ const EXPERIENCE_OPTIONS = [
   {
     id: 'beginner',
     title: '입문자',
-    description: '향과 맛을 쉽게 고르는 짧은 설문으로 시작할게요.',
+    description: '향과 맛을 쉽게 고르는 짧은 설문으로\n시작할게요.',
   },
   {
     id: 'enthusiast',
     title: '애호가',
-    description: '캐스크, 피트, 피니시처럼 더 섬세한 취향까지 반영해요.',
+    description: '캐스크, 피트, 피니시처럼 더 섬세한 취향까지\n반영해요.',
   },
 ] as const;
 
