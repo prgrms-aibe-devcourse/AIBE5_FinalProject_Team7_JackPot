@@ -315,7 +315,7 @@ export default function SearchPage() {
       : null,
   ].filter(Boolean) as string[];
 
-  // 위시 버튼 클릭 — 항상 모달 열기 (B방법)
+  // 위시 버튼 클릭 — 미담김이면 폴더 모달 열기, 담긴 상태면 모든 폴더에서 제거(토글)
   const handleWishClick = async (e: React.MouseEvent, whiskeyId: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -327,7 +327,29 @@ export default function SearchPage() {
       return;
     }
 
-    // 등록 여부 상관없이 항상 모달 열기
+    // 이미 담긴 상태 → 등록된 모든 폴더에서 제거
+    if (wishedMap[whiskeyId] !== undefined) {
+      try {
+        const folderRes = await cabinetApi.getWishedFolderIds(whiskeyId);
+        const folderIds: number[] = folderRes.data.data ?? [];
+        for (const folderId of folderIds) {
+          const itemRes = await cabinetApi.getWishItems(folderId);
+          const items = (itemRes.data.data ?? []) as { whiskey: { id: number }; itemId: number }[];
+          const target = items.find((it) => it.whiskey.id === whiskeyId);
+          if (target) await cabinetApi.removeWish(target.itemId, folderId);
+        }
+      } catch {
+        // 제거 실패는 무시 (상태만 동기화)
+      }
+      setWishedMap((prev) => {
+        const next = { ...prev };
+        delete next[whiskeyId];
+        return next;
+      });
+      return;
+    }
+
+    // 미담김 → 폴더 선택 모달 열기
     setWishTargetId(whiskeyId);
   };
 
@@ -702,7 +724,7 @@ export default function SearchPage() {
                     className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
                     onClick={(e) => handleWishClick(e, whiskey.id)}
                   >
-                    위시
+                    {isWished ? '담김' : '위시'}
                   </Button>
                 </div>
               </Link>
