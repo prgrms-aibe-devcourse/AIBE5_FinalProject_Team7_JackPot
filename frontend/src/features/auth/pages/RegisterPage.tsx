@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { toast } from '@/shared/components/ui/Toast';
+import { Button } from '@/shared/components/ui/Button';
 import { authApi } from '../api/authApi';
 import '../auth.css';
 
@@ -153,7 +154,6 @@ export default function RegisterPage() {
 
           {/* 헤더 */}
           <div className="wf-register-header">
-            <div className="wf-register-emoji">🥃</div>
             <h2 className="wf-title wf-auth-title wf-register-title">회원가입</h2>
             <p className="wf-subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
           </div>
@@ -239,7 +239,7 @@ export default function RegisterPage() {
               <label className="wf-register-label">
                 생년월일 <span className="wf-register-required">*</span>
               </label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
                 {/* 직접 입력 (숫자 8자리) */}
                 <input
                   className="wf-register-field"
@@ -252,7 +252,7 @@ export default function RegisterPage() {
                   disabled={loading}
                 />
                 {/* 3번: 캘린더 버튼 — showPicker()로 date input 직접 열기 */}
-                <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{ position: 'relative', flexShrink: 0, display: 'flex' }}>
                   {/* 숨긴 date input — ref로 참조 */}
                   <input
                     ref={calendarRef}
@@ -275,17 +275,21 @@ export default function RegisterPage() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '8px 12px',
-                      background: '#2e2e38',
-                      border: '1px solid #3e3e48',
+                      padding: '0 12px',
+                      alignSelf: 'stretch',
+                      background: 'var(--wf-surface)',
+                      border: '1px solid var(--wf-border)',
                       borderRadius: 8,
-                      color: '#c9a227',
-                      fontSize: 16,
+                      color: 'var(--wf-muted)',
                       cursor: 'pointer',
                     }}
                     title="캘린더에서 날짜 선택"
+                    aria-label="캘린더에서 날짜 선택"
                   >
-                    📅
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <rect x="3" y="4" width="18" height="18" rx="2" />
+                      <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -296,18 +300,14 @@ export default function RegisterPage() {
                 </p>
               )}
               <p style={{ color: '#8b8b96', fontSize: 11, margin: '4px 0 0' }}>
-                8자리 직접 입력 또는 📅 버튼으로 날짜를 선택하세요.
+                8자리 직접 입력 또는 달력 버튼으로 날짜를 선택하세요.
               </p>
             </div>
 
-            {/* 회원가입 버튼 */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="wf-register-submit"
-            >
+            {/* 회원가입 버튼 — 로그인 버튼과 동일 스타일 */}
+            <Button type="submit" block disabled={loading} className="wf-auth-submit">
               {loading ? '가입 중...' : '회원가입'}
-            </button>
+            </Button>
           </form>
 
           {/* 로그인 링크 */}

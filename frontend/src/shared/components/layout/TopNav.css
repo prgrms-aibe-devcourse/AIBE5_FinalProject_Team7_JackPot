@@ -157,13 +157,14 @@
 
 .app-root .wf-topnav__login {
   height: 34px;
-  padding: 0 18px;
+  padding: 0 8px;
+  margin-right: -16px;
   border-radius: 8px;
-  border: 1px solid var(--wf-accent);
-  background: var(--wf-accent-dim);
-  color: var(--wf-accent-dark);
-  font-size: 13px;
-  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: var(--wf-muted);
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -173,9 +174,8 @@
 }
 
 .app-root .wf-topnav__login:hover {
-  background: var(--wf-accent-subtle);
-  border-color: var(--wf-accent-dark);
-  transform: translateY(-1px);
+  background: var(--wf-surface-2);
+  color: var(--wf-text);
 }
 
 /* ── 반응형 ──────────────────────────────────── */
