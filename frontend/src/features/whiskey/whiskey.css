@@ -1379,6 +1379,80 @@
   font-style: italic;
 }
 
+/* ─── 제품 소개·핵심 특징 (introduction / feature) ─── */
+.wf-detail-desc {
+  display: grid;
+  gap: 20px;
+}
+.wf-detail-desc__group {
+  display: grid;
+  gap: 10px;
+}
+.wf-detail-desc__group-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+.wf-detail-desc__row .wf-text-label {
+  margin-bottom: 4px;
+}
+.wf-detail-desc__row .wf-text-sm {
+  line-height: 1.6;
+}
+
+/* ─── 가격 · 출처 ─── */
+.wf-detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.wf-detail-price__value {
+  font-weight: 600;
+}
+.wf-detail-price__source {
+  color: var(--wf-muted);
+  font-weight: 400;
+}
+.wf-detail-price__source a {
+  color: var(--wf-accent);
+  text-decoration: none;
+}
+.wf-detail-price__source a:hover {
+  text-decoration: underline;
+}
+
+.wf-detail-hero__name-eng {
+  color: var(--wf-muted);
+  margin-top: 2px;
+}
+
+.wf-detail-cost-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--wf-accent);
+  text-decoration: none;
+}
+.wf-detail-cost-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── 공식 시음 노트 (시음 요약 · 오피셜) ─── */
+.wf-detail-official-note {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wf-border, #2e2e38);
+}
+.wf-detail-official-note__row .wf-text-label {
+  margin-bottom: 4px;
+}
+.wf-detail-official-note__row .wf-text-sm {
+  line-height: 1.6;
+}
+
 /* ─── Phase 7: WhiskeyReviewsPage ─── */
 .wf-review-card { padding: 16px; }
 .wf-review-card__header { display: flex; justify-content: space-between; gap: 16px; }

@@ -439,7 +439,7 @@ export default function WhiskeyDetailPage() {
     formatType(detail.type),
     detail.country,
     `${detail.abv}%`,
-    '700ml',
+    detail.volume ? `${detail.volume}ml` : null,
   ].filter(Boolean).join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
@@ -447,7 +447,6 @@ export default function WhiskeyDetailPage() {
   const heroChips = [
     formatType(detail.type),
     detail.country,
-    detail.region,
     ageLabel,
     `${detail.abv}% ABV`,
   ].filter(Boolean);
@@ -463,8 +462,11 @@ export default function WhiskeyDetailPage() {
       )}
       <header className="wf-detail-hero">
         <div className="wf-detail-hero__copy">
-          <p className="wf-detail-hero__eyebrow">{detail.distillery ?? detail.country}</p>
+          <p className="wf-detail-hero__eyebrow">{detail.brand ?? detail.distillery ?? detail.country}</p>
           <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
+          {detail.nameEng && (
+            <p className="wf-detail-hero__name-eng wf-text-sm">{detail.nameEng}</p>
+          )}
           <p className="wf-detail-hero__meta">{metaLine}</p>
           <div className="wf-detail-hero__chips" aria-label="위스키 주요 정보">
             {heroChips.map((chip, index) => (
@@ -551,17 +553,36 @@ export default function WhiskeyDetailPage() {
           </div>
           <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
           <div className="wf-grid2">
-            {[
+            {([
               ['숙성', ageLabel],
               ['도수', `${detail.abv}%`],
-              ['지역', detail.region],
-            ].map(([k, v]) => (
+              detail.cask ? ['캐스크', detail.cask] : null,
+              detail.volume ? ['용량', `${detail.volume}ml`] : null,
+            ].filter(Boolean) as [string, string][]).map(([k, v]) => (
               <div key={k} className="wf-box wf-grid2__item">
                 <div className="wf-text-xs">{k}</div>
                 <div>{v}</div>
               </div>
             ))}
           </div>
+          {detail.price != null && (
+            <div className="wf-box wf-detail-price">
+              <span className="wf-text-xs">가격</span>
+              <span className="wf-detail-price__value">
+                {detail.price.toLocaleString()}원
+                {detail.costUrl ? (
+                  <span className="wf-detail-price__source">
+                    {' - '}
+                    <a href={detail.costUrl} target="_blank" rel="noopener noreferrer">
+                      {detail.costUrlSource || '바로가기'}
+                    </a>
+                  </span>
+                ) : detail.costUrlSource ? (
+                  <span className="wf-detail-price__source"> - {detail.costUrlSource}</span>
+                ) : null}
+              </span>
+            </div>
+          )}
           <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
 
@@ -573,17 +594,41 @@ export default function WhiskeyDetailPage() {
                   <h2 className="wf-section-title">제품 정보</h2>
                   <span className="wf-detail-section-head__count">리뷰 {reviewCount}개</span>
                 </div>
-                {detail.description ? (
-                  <p className="wf-text-sm">{detail.description}</p>
-                ) : (
-                  <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
-                )}
+                {(() => {
+                  const intro = Object.entries(detail.description?.introduction ?? {});
+                  const feature = Object.entries(detail.description?.feature ?? {});
+                  if (intro.length === 0 && feature.length === 0) {
+                    return (
+                      <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
+                    );
+                  }
+                  const groups: { title: string; rows: [string, string][] }[] = [
+                    { title: '제품 소개', rows: intro },
+                    { title: '핵심 특징', rows: feature },
+                  ].filter((g) => g.rows.length > 0);
+                  return (
+                    <div className="wf-detail-desc">
+                      {groups.map((g) => (
+                        <div key={g.title} className="wf-detail-desc__group">
+                          <h3 className="wf-detail-desc__group-title">{g.title}</h3>
+                          {g.rows.map(([label, text]) => (
+                            <div key={label} className="wf-detail-desc__row">
+                              <p className="wf-text-label">{label}</p>
+                              <p className="wf-text-sm">{text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </section>
 
               <TastingSummaryPanel
                 axes={tastingAxes}
                 source={effectiveSource}
                 hasOfficial={hasOfficialNote(detail)}
+                officialNote={detail.note?.note ?? null}
                 onSourceChange={setSummarySource}
                 reviewPath={reviewPath}
               />

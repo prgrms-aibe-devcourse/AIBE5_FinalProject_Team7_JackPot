@@ -8,7 +8,6 @@ public record WhiskeyRecommendationResponse(
     String type,
     String imageUrl,
     Double adv,
-    String region,
     String country,
     Integer ageYears,
     Double avgRating,
@@ -22,7 +21,6 @@ public record WhiskeyRecommendationResponse(
             cache.getWhiskey().getType().name(),
             cache.getWhiskey().getImageUrl(),
             cache.getWhiskey().getAbv(),
-            cache.getWhiskey().getRegion(),
             cache.getWhiskey().getCountry(),
             cache.getWhiskey().getAgeYears(),
             0.0,
@@ -33,7 +31,7 @@ public record WhiskeyRecommendationResponse(
 
     public WhiskeyRecommendationResponse withAvgRating(Double avgRating) {
         return new WhiskeyRecommendationResponse(
-            id, name, type, imageUrl, adv, region, country, ageYears,
+            id, name, type, imageUrl, adv, country, ageYears,
             avgRating, score, reason
         );
     }

@@ -76,7 +76,7 @@ class WishControllerTest {
                 .name("글렌피딕 12년")
                 .type(WhiskeyType.single_malt)
                 .abv(40.0).ageYears(12)
-                .country("Scotland").region("Speyside")
+                .country("Scotland")
                 .status(WhiskeyStatus.active)
                 .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
                 .build()).getId();
@@ -85,7 +85,7 @@ class WishControllerTest {
                 .name("라프로익 10년")
                 .type(WhiskeyType.single_malt)
                 .abv(40.0).ageYears(10)
-                .country("Scotland").region("Islay")
+                .country("Scotland")
                 .status(WhiskeyStatus.active)
                 .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
                 .build()).getId();

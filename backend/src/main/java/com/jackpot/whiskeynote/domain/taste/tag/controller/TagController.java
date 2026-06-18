@@ -1,5 +1,7 @@
 package com.jackpot.whiskeynote.domain.taste.tag.controller;
 
+import com.jackpot.whiskeynote.domain.taste.tag.TagService;
+import com.jackpot.whiskeynote.domain.taste.tag.dto.TagResponse;
 import com.jackpot.whiskeynote.domain.taste.tag.entity.Tag;
 import com.jackpot.whiskeynote.domain.taste.tag.entity.TagCategory;
 import com.jackpot.whiskeynote.domain.taste.tag.repository.TagRepository;
@@ -13,15 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagController {
 
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @GetMapping
-    public List<Tag> getTags(@RequestParam(required = false) TagCategory category) {
-        if (category != null) {
-            return tagRepository.findAll().stream()
-                    .filter(t -> t.getCategory() == category)
-                    .toList();
-        }
-        return tagRepository.findAll();
+    public List<TagResponse> getTags(@RequestParam(required = false) TagCategory category) {
+        return tagService.getTags(category);
     }
 }

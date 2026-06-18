@@ -19,7 +19,17 @@ public class Tag {
 
     private String name;
 
+    private String nameEng;
+
+    private String description;
+
+    private String example;
+
     private Integer displayOrder;
 
     private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paired_id")
+    private Tag pairedTag;
 }

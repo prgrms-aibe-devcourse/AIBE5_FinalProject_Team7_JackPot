@@ -8,12 +8,20 @@ export const MOCK_WHISKEY_DETAIL: WhiskeyDetail = {
   imageUrl: null,
   abv: 40,
   ageYears: 12,
-  region: 'Speyside',
   country: 'Scotland',
   cask: 'Ex-Bourbon',
+  volume: 700,
+  price: 75000,
   avgRating: 66.9,
   reviewCount: 128,
-  description: '가벼운 배·사과 향, 바닐라·오크 마무리.',
+  description: {
+    introduction: { '한 줄 소개': '스페이사이드를 대표하는 입문용 싱글몰트.' },
+    feature: { '향': '가벼운 배·사과 향', '피니시': '바닐라·오크 마무리' },
+  },
+  note: {
+    note: { '향': '신선한 과일과 배', '맛': '부드러운 오크와 바닐라', '피니시': '길고 부드러움' },
+  },
+  brand: 'Glenfiddich',
   distillery: 'Glenfiddich',
   noteSummary: {
     noteCount: 128,

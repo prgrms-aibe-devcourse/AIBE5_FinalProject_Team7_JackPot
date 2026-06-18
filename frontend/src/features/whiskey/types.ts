@@ -25,6 +25,23 @@ export interface WhiskeyNoteSummary {
   tasteItems: TasteItem[];
 }
 
+/**
+ * 제품 소개·핵심 특징 — 백엔드 WhiskeyDescriptionDto (JSON 컬럼)
+ * 각 맵은 라벨→설명문 순서쌍 (LinkedHashMap → JSON 객체 순서 보존)
+ */
+export interface WhiskeyDescription {
+  introduction: Record<string, string>;
+  feature: Record<string, string>;
+}
+
+/**
+ * 공식 시음 노트 — 백엔드 WhiskeyOfficialNote (JSON 컬럼)
+ * 항목명→설명 순서쌍 (LinkedHashMap → JSON 객체 순서 보존)
+ */
+export interface WhiskeyOfficialNote {
+  note: Record<string, string>;
+}
+
 export interface WhiskeyMyState {
   isPick: boolean;
   isWishlist: boolean;
@@ -35,16 +52,22 @@ export interface WhiskeyMyState {
 export interface WhiskeyDetail {
   id: number;
   name: string;
+  nameEng?: string | null;
   type: string;
+  brand?: string | null;
   imageUrl?: string | null;
   abv: number;
   ageYears: number;
-  region: string;
   country: string;
   cask?: string | null;
+  volume?: number | null;
+  price?: number | null;
+  costUrl?: string | null;
+  costUrlSource?: string | null;
   avgRating?: number;
   reviewCount?: number;
-  description?: string | null;
+  description?: WhiskeyDescription | null;
+  note?: WhiskeyOfficialNote | null;
   distillery?: string | null;
   noteSummary: WhiskeyNoteSummary | null;
   tastingTags: WhiskeyTagStat[];

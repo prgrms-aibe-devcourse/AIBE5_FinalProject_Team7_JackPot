@@ -291,7 +291,6 @@ class ReviewControllerTest {
                 .ageYears(18)
                 .status(WhiskeyStatus.active)
                 .country("Scotland")
-                .region("Speyside")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
