@@ -457,12 +457,23 @@
   min-height: 164px;
 }
 
-/* '오늘의 추천' 카드 — 흰 배경 제품 이미지가 자연스럽게 얹히도록 화이트 (TODAY 라벨만 골드 포인트) */
+/* '오늘의 추천' 카드 — 카드 전체가 클릭 타겟(애플 스토어식), 텍스트+이미지 세로 중앙 */
 .wf-feed-promo--today {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface);
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-feed-promo--today:hover {
+  transform: translateY(-2px);
+  border-color: var(--wf-accent);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-feed-promo--today .wf-text-label {
