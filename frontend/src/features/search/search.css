@@ -357,12 +357,14 @@
 }
 
 .wf-search-card__wish--on {
-  background: #e85d5d !important;
-  color: #fff !important;
+  background: var(--wf-accent-subtle) !important;
+  border: 1px solid var(--wf-accent-dim) !important;
+  color: var(--wf-accent-dark) !important;
 }
 
 .wf-search-card__wish--on:hover {
-  background: #d94c4c !important;
+  background: var(--wf-accent-dim) !important;
+  box-shadow: none !important;
 }
 
 .wf-search-state-box {
