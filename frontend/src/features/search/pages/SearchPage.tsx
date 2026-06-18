@@ -208,7 +208,6 @@ export default function SearchPage() {
     data,
     error,
     isError,
-    isFetching,
     isLoading,
     refetch,
     fetchNextPage,
@@ -448,7 +447,16 @@ export default function SearchPage() {
         <aside className="wf-sidebar wf-search-sidebar">
           <div className="wf-search-filter-header">
             <p className="wf-text-label">필터</p>
-            <button type="button" className="wf-link" onClick={resetFilters}>
+            <button
+              type="button"
+              className="wf-link"
+              onClick={() => {
+                setInputValue('');
+                setKeyword('');
+                setIsSuggestionOpen(false);
+                resetFilters();
+              }}
+            >
               초기화
             </button>
           </div>
@@ -569,22 +577,6 @@ export default function SearchPage() {
                 </div>
               ) : null}
             </div>
-            <Button type="submit" className="wf-search-form__btn" disabled={isFetching}>
-              검색
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="wf-search-form__reset"
-              onClick={() => {
-                setInputValue('');
-                setKeyword('');
-                setIsSuggestionOpen(false);
-                resetFilters();
-              }}
-            >
-              전체 목록
-            </Button>
           </form>
 
           <div className="wf-search-result-status">
@@ -683,18 +675,6 @@ export default function SearchPage() {
                 >
                   위스키 등록 요청하기
                 </button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setInputValue('');
-                    setKeyword('');
-                    resetFilters();
-                  }}
-                >
-                  전체 목록 보기
-                </Button>
               </div>
             </div>
           ) : null}
