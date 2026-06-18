@@ -281,20 +281,6 @@
   min-width: 0;
 }
 
-.wf-feed-card__badge {
-  display: inline-flex;
-  align-items: center;
-  height: 23px;
-  padding: 0 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  border: 1px solid var(--wf-accent);
-  color: var(--wf-accent);
-  background: var(--wf-accent-dim);
-  flex-shrink: 0;
-}
-
 .wf-feed-card__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 132px;

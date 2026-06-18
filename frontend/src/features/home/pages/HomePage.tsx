@@ -80,7 +80,6 @@ function FeedCard({ post }: { post: LoungePost }) {
         <div className="wf-feed-card__author">
           <div className="wf-feed-card__author-row">
             <strong className="wf-feed-card__author-name">{authorName}</strong>
-            <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
           </div>
           <span className="wf-feed-card__date">{post.createdAt.slice(0, 10)}</span>
         </div>
