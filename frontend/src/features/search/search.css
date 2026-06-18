@@ -367,6 +367,13 @@
   box-shadow: none !important;
 }
 
+.wf-search-loadmore {
+  margin: 20px 0 4px;
+  text-align: center;
+  color: var(--wf-muted);
+  font-size: 13px;
+}
+
 .wf-search-state-box {
   position: relative;
   overflow: hidden;

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -11,7 +11,6 @@ import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestM
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { PATHS } from '@/app/router/paths';
-import { SearchPagination } from '../components/SearchPagination';
 import {
   autocompleteWhiskeys,
   correctWhiskeyKeyword,
@@ -186,8 +185,7 @@ export default function SearchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
   const [wishTargetId, setWishTargetId] = useState<number | null>(null);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const pageSize = DEFAULT_PAGE_SIZE;
   const suggestionKeyword = inputValue.trim();
   // 키 입력마다 자동완성 API가 호출되지 않도록 입력이 잠시 멈춘 뒤에만 요청
   const [debouncedSuggestion, setDebouncedSuggestion] = useState(suggestionKeyword);
@@ -202,15 +200,21 @@ export default function SearchPage() {
   );
 
   useEffect(() => {
-    setPage(0);
-  }, [keyword, selectedTypes, selectedNoseTags, selectedTasteTags, minAbv, maxAbv, minAge, maxAge]);
-
-  useEffect(() => {
     const timer = setTimeout(() => setDebouncedSuggestion(suggestionKeyword), 250);
     return () => clearTimeout(timer);
   }, [suggestionKeyword]);
 
-  const { data, error, isError, isFetching, isLoading, refetch } = useQuery({
+  const {
+    data,
+    error,
+    isError,
+    isFetching,
+    isLoading,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: [
       'whiskeys',
       'search',
@@ -222,10 +226,9 @@ export default function SearchPage() {
       maxAbv,
       minAge,
       maxAge,
-      page,
       pageSize,
     ],
-    queryFn: () => {
+    queryFn: ({ pageParam }) => {
       if (isFilterActive) {
         return filterWhiskeys({
           keyword: keyword || undefined,
@@ -236,17 +239,21 @@ export default function SearchPage() {
           maxAbv: Math.max(minAbv, maxAbv),
           minAge: Math.min(minAge, maxAge),
           maxAge: Math.max(minAge, maxAge),
-          page,
+          page: pageParam,
           size: pageSize,
         });
       }
 
       if (keyword) {
-        return searchWhiskeys({ q: keyword, page, size: pageSize });
+        return searchWhiskeys({ q: keyword, page: pageParam, size: pageSize });
       }
 
-      return fetchWhiskeys({ page, size: pageSize });
+      return fetchWhiskeys({ page: pageParam, size: pageSize });
     },
+    initialPageParam: 0,
+    // 받아온 페이지 수가 전체 페이지 수보다 적으면 다음 페이지 존재
+    getNextPageParam: (lastPage, allPages) =>
+      allPages.length < (lastPage.totalPages ?? 0) ? allPages.length : undefined,
     placeholderData: (previousData) => previousData,
   });
 
@@ -257,10 +264,26 @@ export default function SearchPage() {
     retry: false,
   });
 
-  const results = data?.content ?? [];
-  const totalCount = data?.totalElements ?? 0;
-  const totalPages = data?.totalPages ?? 0;
+  const results = data?.pages.flatMap((p) => p.content ?? []) ?? [];
+  const totalCount = data?.pages[0]?.totalElements ?? 0;
   const isInitialLoading = isLoading && results.length === 0;
+
+  // 스크롤 하단 감지용 sentinel — 보이면 다음 페이지 로드
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const searchErrorMessage =
     error instanceof Error && error.message !== '요청에 실패했습니다.'
       ? error.message
@@ -356,18 +379,7 @@ export default function SearchPage() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSuggestionOpen(false);
-    setPage(0);
     setKeyword(inputValue.trim());
-  };
-
-  const handlePageChange = (nextPage: number) => {
-    setPage(nextPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handlePageSizeChange = (nextSize: number) => {
-    setPageSize(nextSize);
-    setPage(0);
   };
 
   const selectSuggestion = (suggestion: string) => {
@@ -567,7 +579,6 @@ export default function SearchPage() {
               onClick={() => {
                 setInputValue('');
                 setKeyword('');
-                setPage(0);
                 setIsSuggestionOpen(false);
                 resetFilters();
               }}
@@ -620,7 +631,6 @@ export default function SearchPage() {
                   onClick={() => {
                     setInputValue('');
                     setKeyword('');
-                    setPage(0);
                     resetFilters();
                   }}
                 >
@@ -680,7 +690,6 @@ export default function SearchPage() {
                   onClick={() => {
                     setInputValue('');
                     setKeyword('');
-                    setPage(0);
                     resetFilters();
                   }}
                 >
@@ -732,17 +741,11 @@ export default function SearchPage() {
           })}
           </div>
 
-          {!isLoading && !isError && totalCount > 0 ? (
-            <SearchPagination
-              page={page}
-              pageSize={pageSize}
-              totalPages={totalPages}
-              totalElements={totalCount}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              disabled={isFetching}
-            />
+          {isFetchingNextPage ? (
+            <p className="wf-search-loadmore">불러오는 중…</p>
           ) : null}
+          {/* 하단 도달 감지 sentinel */}
+          <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
         </div>
       </div>
 
