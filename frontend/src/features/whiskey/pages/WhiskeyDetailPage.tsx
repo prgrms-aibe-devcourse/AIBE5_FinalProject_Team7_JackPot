@@ -249,7 +249,6 @@ export default function WhiskeyDetailPage() {
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [isWished, setIsWished] = useState(false);
   const [wishLoading, setWishLoading] = useState(false);
-  const [wishedItemId, setWishedItemId] = useState<number | null>(null);
   const [imgError, setImgError] = useState(false);
 
   // 위스키가 바뀌면 이미지 에러 상태 초기화
@@ -316,7 +315,6 @@ export default function WhiskeyDetailPage() {
           const found = items.find((item: { whiskey: { id: number }; itemId: number }) => item.whiskey.id === Number(id));
           if (found) {
             setIsWished(true);
-            setWishedItemId(found.itemId);
             return;
           }
         }
@@ -337,12 +335,18 @@ export default function WhiskeyDetailPage() {
 
     setWishLoading(true);
     try {
-      if (isWished && wishedItemId !== null) {
-        // 위시 삭제
+      if (isWished) {
+        // 위시 삭제 — 등록된 모든 폴더에서 제거
         try {
-          await cabinetApi.removeWish(wishedItemId, 0);
+          const folderRes = await cabinetApi.getWishedFolderIds(Number(id));
+          const folderIds: number[] = folderRes.data.data ?? [];
+          for (const folderId of folderIds) {
+            const itemRes = await cabinetApi.getWishItems(folderId);
+            const items = (itemRes.data.data ?? []) as { whiskey: { id: number }; itemId: number }[];
+            const target = items.find((it) => it.whiskey.id === Number(id));
+            if (target) await cabinetApi.removeWish(target.itemId, folderId);
+          }
           setIsWished(false);
-          setWishedItemId(null);
           toast('위시리스트에서 제거되었습니다.', 'info');
         } catch {
           toast('위시 제거에 실패했습니다.', 'error');
@@ -434,7 +438,6 @@ export default function WhiskeyDetailPage() {
     );
   }
 
-  const ageLabel = detail.ageYears > 0 ? `${detail.ageYears}년` : 'NAS';
   const metaLine = [
     formatType(detail.type),
     detail.country,
@@ -444,13 +447,6 @@ export default function WhiskeyDetailPage() {
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
   const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
-  const heroChips = [
-    formatType(detail.type),
-    detail.country,
-    ageLabel,
-    `${detail.abv}% ABV`,
-  ].filter(Boolean);
-
   return (
     <WireframePage scroll>
       {wishModalOpen && (
@@ -462,17 +458,8 @@ export default function WhiskeyDetailPage() {
       )}
       <header className="wf-detail-hero">
         <div className="wf-detail-hero__copy">
-          <p className="wf-detail-hero__eyebrow">{detail.brand ?? detail.distillery ?? detail.country}</p>
           <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
-          {detail.nameEng && (
-            <p className="wf-detail-hero__name-eng wf-text-sm">{detail.nameEng}</p>
-          )}
           <p className="wf-detail-hero__meta">{metaLine}</p>
-          <div className="wf-detail-hero__chips" aria-label="위스키 주요 정보">
-            {heroChips.map((chip, index) => (
-              <span key={`${chip}-${index}`}>{chip}</span>
-            ))}
-          </div>
         </div>
         <div className="wf-detail-hero__stats" aria-label="위스키 요약">
           <div className="wf-detail-hero__stat">
@@ -530,41 +517,6 @@ export default function WhiskeyDetailPage() {
             )}
             <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
-          <div className="wf-detail-sidebar__actions">
-            <div className="wf-detail-sidebar__actions-head">
-              <span>Save to cabinet</span>
-              <strong>내 취향 보관</strong>
-            </div>
-            <Button
-              variant={isWished ? 'primary' : 'ghost'}
-              className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
-              onClick={handleWishToggle}
-              disabled={wishLoading}
-            >
-              {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
-            </Button>
-            <Button
-              className={`wf-detail-action ${isPicked ? 'wf-detail-action--on' : ''}`}
-              onClick={handlePickToggle}
-              disabled={pickLoading}
-            >
-              {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
-            </Button>
-          </div>
-          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
-          <div className="wf-grid2">
-            {([
-              ['숙성', ageLabel],
-              ['도수', `${detail.abv}%`],
-              detail.cask ? ['캐스크', detail.cask] : null,
-              detail.volume ? ['용량', `${detail.volume}ml`] : null,
-            ].filter(Boolean) as [string, string][]).map(([k, v]) => (
-              <div key={k} className="wf-box wf-grid2__item">
-                <div className="wf-text-xs">{k}</div>
-                <div>{v}</div>
-              </div>
-            ))}
-          </div>
           {detail.price != null && (
             <div className="wf-box wf-detail-price">
               <span className="wf-text-xs">가격</span>
@@ -583,6 +535,30 @@ export default function WhiskeyDetailPage() {
               </span>
             </div>
           )}
+          <div className="wf-detail-sidebar__actions">
+            <div className="wf-detail-sidebar__actions-head">
+              <span>Save to cabinet</span>
+              <strong>내 취향 보관</strong>
+            </div>
+            <div className="wf-detail-sidebar__actions-row">
+              <Button
+                variant={isWished ? 'primary' : 'ghost'}
+                className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
+                onClick={handleWishToggle}
+                disabled={wishLoading}
+              >
+                {isWished ? '위시리스트 취소' : '위시리스트'}
+              </Button>
+              <Button
+                className={`wf-detail-action ${isPicked ? 'wf-detail-action--on' : ''}`}
+                onClick={handlePickToggle}
+                disabled={pickLoading}
+              >
+                {pickLoading ? '처리 중...' : isPicked ? 'My Pick 취소' : 'My Pick'}
+              </Button>
+            </div>
+          </div>
+          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
           <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
 

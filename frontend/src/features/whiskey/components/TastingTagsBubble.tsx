@@ -40,12 +40,7 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
 
   return (
     <section className="wf-detail-tags wf-box wf-box--solid" aria-label="Tasting tags">
-      <p className="wf-detail-tags__eyebrow">TASTING TAGS</p>
       <h2 className="wf-section-title">TASTING TAGS</h2>
-      <p className="wf-text-sm wf-detail-tags__hint">맛 태그 빈도 (원=히트맵)</p>
-      <p className="wf-text-xs wf-detail-tags__sub">
-        이 위스키에서 인식한 맛을 클릭해 태그 추가
-      </p>
       <div className="wf-detail-tags__filters" role="group" aria-label="태그 종류 선택">
         {TAG_FILTERS.map((filter) => (
           <button
