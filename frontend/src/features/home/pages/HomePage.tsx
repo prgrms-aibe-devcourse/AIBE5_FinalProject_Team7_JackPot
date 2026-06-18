@@ -255,42 +255,6 @@ function LoungeQuickLinks() {
   );
 }
 
-function LoungeAuthors({ posts }: { posts: LoungePost[] }) {
-  const authors = Array.from(
-    new Map(posts.map((post) => [post.authorId, post])).values(),
-  ).slice(0, 4);
-
-  if (!authors.length) return null;
-
-  return (
-    <section className="wf-lounge-authors wf-box wf-box--solid">
-      <p className="wf-text-label">팔로잉 활동</p>
-      <div className="wf-lounge-authors__list">
-        {authors.map((post) => {
-          const authorName = post.authorNickname || `사용자 #${post.authorId}`;
-          const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
-
-          return (
-            <div key={post.authorId} className="wf-lounge-author">
-              {authorImage ? (
-                <img src={authorImage} alt={authorName} className="wf-lounge-author__avatar" />
-              ) : (
-                <span className="wf-lounge-author__avatar wf-lounge-author__avatar--initial">
-                  {authorName.charAt(0)}
-                </span>
-              )}
-              <div>
-                <strong>{authorName}</strong>
-                <span>{post.createdAt.slice(0, 10)}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
   // 팔로우/처리 중인 유저는 목록에서 즉시 제거(낙관적), 실패 시 토스트
   const [hidden, setHidden] = useState<Set<number>>(new Set());
@@ -516,7 +480,6 @@ export default function HomePage() {
           <LoungeSuggestedUsers users={suggestedUsers} />
           <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
-          <LoungeAuthors posts={feed} />
           <LoungeQuickLinks />
         </aside>
       </div>
