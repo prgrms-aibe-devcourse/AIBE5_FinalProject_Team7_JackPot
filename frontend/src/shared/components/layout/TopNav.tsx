@@ -53,7 +53,7 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
     <nav className="wf-topnav">
       {/* 로고 */}
       <Link to={PATHS.LANDING} className="wf-topnav__logo-link" aria-label="Whiskey Note">
-        <img src="/images/logo.png" alt="" aria-hidden className="wf-topnav__logo-img" />
+        <img src="/images/logo2.png" alt="" aria-hidden className="wf-topnav__logo-img" />
         <span className="wf-topnav__logo-text">Whiskey Note</span>
       </Link>
 
