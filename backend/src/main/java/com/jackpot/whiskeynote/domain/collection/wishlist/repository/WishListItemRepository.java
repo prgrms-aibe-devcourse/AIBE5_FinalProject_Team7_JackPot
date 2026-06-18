@@ -53,6 +53,10 @@ public interface WishListItemRepository extends JpaRepository<WishListItem, Long
     @Query("DELETE FROM WishListItem i WHERE i.folder.id = :folderId")
     void deleteAllByFolderId(@Param("folderId") Long folderId);
 
+    // 유저 매칭용 — 유저의 모든 위시리스트 (위스키 포함)
+    @Query("SELECT i FROM WishListItem i JOIN FETCH i.whiskey WHERE i.user.id = :userId")
+    List<WishListItem> findAllByUserIdWithWhiskey(@Param("userId") Long userId);
+
     //캐비넷 위시 집계용
     Long countByUserId(Long userId);
 }

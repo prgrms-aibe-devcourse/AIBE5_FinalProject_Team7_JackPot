@@ -154,3 +154,20 @@
 /* ─── Phase 7: TasteMatchPage ─── */
 .wf-taste-match-card { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
 .wf-taste-match-profile-btn { height: 36px; }
+.wf-taste-match-card__info { display: flex; align-items: center; gap: 12px; }
+.wf-taste-match-card__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.wf-taste-match-card__avatar--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wf-surface-2);
+  color: var(--wf-accent);
+  font-weight: 700;
+  font-size: 16px;
+}

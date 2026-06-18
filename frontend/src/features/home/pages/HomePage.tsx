@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
+import { tasteMatchApi } from '@/features/discover/api/tasteMatchApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -124,15 +125,31 @@ function PromoToday() {
 }
 
 function PromoTasteMatch() {
+  const {
+    data: match,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['taste-match', 'random'],
+    queryFn: tasteMatchApi.getRandom,
+    retry: false,
+  });
+
   return (
     <section className="wf-feed-promo wf-box wf-feed-promo--match">
       <div>
         <p className="wf-text-label">MATCH</p>
         <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
-        <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
+        {isLoading ? (
+          <Skeleton width="70%" height={13} />
+        ) : isError || !match ? (
+          <p className="wf-text-sm">설문을 완료하면 매칭 결과를 볼 수 있어요.</p>
+        ) : (
+          <p className="wf-text-sm">{match.nickname} · {match.similarity}% 일치</p>
+        )}
       </div>
       <Button to={PATHS.TASTE_MATCH} variant="ghost">
-        보러가기
+        더보기
       </Button>
     </section>
   );

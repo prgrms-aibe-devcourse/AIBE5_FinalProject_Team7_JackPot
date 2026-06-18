@@ -25,6 +25,7 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
     @Query("SELECT nc " +
         "FROM WhiskeysNoteCache nc " +
         "LEFT JOIN FETCH nc.avgWhiskeyTags " +
+        "JOIN FETCH nc.whiskey " +
         "WHERE nc.whiskey.id IN :whiskeyIds")
     List<WhiskeysNoteCache> findAllByWhiskeyIdWithTags(@Param("whiskeyIds") Collection<Long> whiskeyId);
 }

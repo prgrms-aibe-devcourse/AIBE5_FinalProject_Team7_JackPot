@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import './TopNav.css';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
@@ -22,8 +23,9 @@ interface TopNavProps {
 }
 
 export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
-  const navigate = useNavigate();
-  const accessToken = localStorage.getItem('accessToken');
+  const navigate     = useNavigate();
+  const queryClient  = useQueryClient();
+  const accessToken  = localStorage.getItem('accessToken');
   const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
   const [profileImageKey, setProfileImageKey] = useState(() => localStorage.getItem('profileImageUrl') || '');
   const isLoggedIn = !!accessToken;
@@ -45,6 +47,9 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
       // 서버 오류여도 클라이언트는 로그아웃 처리
     } finally {
       clearAuthSession();
+      // 로그아웃 시 React Query 캐시 전체 초기화
+      // → 다음 유저 로그인 시 이전 유저 데이터가 남지 않도록 처리
+      queryClient.clear();
       navigate(PATHS.LOGIN);
     }
   };
