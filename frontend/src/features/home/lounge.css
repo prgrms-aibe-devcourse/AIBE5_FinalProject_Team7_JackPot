@@ -1,14 +1,16 @@
 /* --- Lounge timeline --- */
 .wf-lounge-hero {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 28px;
-  align-items: stretch;
-  padding: 34px 38px;
+  display: block;
+  padding: 40px 38px;
   border: 1px solid var(--wf-border);
   border-radius: var(--wf-radius-card);
-  background: var(--wf-surface);
+  /* 라운지 분위기 사진(좌우반전 lounge2) + 좌측 강한 스크림 → 좌측 텍스트 가독, 우측 잔은 살림 */
+  background:
+    linear-gradient(90deg, rgba(18, 12, 9, 0.93) 0%, rgba(18, 12, 9, 0.74) 36%, rgba(18, 12, 9, 0.32) 64%, rgba(18, 12, 9, 0.12) 100%),
+    url('/images/lounge2.png');
+  background-size: cover;
+  background-position: center;
   box-shadow: var(--wf-shadow-md);
   overflow: hidden;
 }
@@ -18,7 +20,7 @@
   position: absolute;
   inset: auto 32px 0 32px;
   height: 1px;
-  background: var(--wf-border);
+  background: rgba(255, 255, 255, 0.14);
   opacity: 0.72;
 }
 
@@ -29,6 +31,7 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
+  max-width: 560px;
 }
 
 .wf-lounge-hero__title {
@@ -37,13 +40,13 @@
   line-height: 1.16;
   font-weight: 800;
   letter-spacing: 0;
-  color: var(--wf-text);
+  color: #f5efe6;
 }
 
 .wf-lounge-hero__desc {
   width: min(620px, 100%);
   margin: 0;
-  color: var(--wf-muted);
+  color: rgba(245, 239, 230, 0.82);
   font-size: 15px;
   line-height: 1.7;
 }
@@ -56,6 +59,29 @@
 
 .wf-lounge-hero__actions .wf-btn {
   width: 154px;
+}
+
+/* 다크 히어로 위 버튼: 흰색이 튀므로 골드 primary + 글래스 ghost로 밸런스 */
+.wf-lounge-hero .wf-btn--primary {
+  background: var(--wf-accent);
+  border-color: transparent;
+  color: #1c1c1e;
+}
+
+.wf-lounge-hero .wf-btn--primary:hover {
+  background: var(--wf-accent-light);
+  border-color: transparent;
+}
+
+.wf-lounge-hero .wf-btn--ghost {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #f5efe6;
+}
+
+.wf-lounge-hero .wf-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .wf-lounge-hero__stats {
@@ -110,71 +136,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-/* 오늘의 라운지 섹션 */
-/* 히어로 우측 '오늘의 라운지' 패널 (히어로에 통합) */
-.wf-lounge-hero__today {
-  position: relative;
-  z-index: 1;
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-left: 28px;
-  border-left: 1px solid var(--wf-border);
-}
-
-.wf-lounge-hero__today-label {
-  margin: 0 0 2px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--wf-accent);
-}
-
-.wf-lounge-hero__today-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  min-width: 0;
-}
-
-.wf-lounge-hero__today-key {
-  flex-shrink: 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--wf-muted);
-}
-
-.wf-lounge-hero__today-num {
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--wf-accent-light, var(--wf-accent));
-}
-
-.wf-lounge-hero__today-link,
-.wf-lounge-hero__today-val {
-  min-width: 0;
-  text-align: right;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--wf-text);
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wf-lounge-hero__today-link:hover {
-  color: var(--wf-accent);
-}
-
-.wf-lounge-hero__today-muted {
-  font-size: 13px;
-  color: var(--wf-muted);
 }
 
 .wf-lounge-feed-end {
@@ -765,17 +726,8 @@
 }
 
 @media (max-width: 1040px) {
-  .wf-lounge-hero,
   .wf-lounge-shell {
     grid-template-columns: 1fr;
-  }
-
-  /* 스택 시 세로 구분선 → 상단 구분선으로 전환 */
-  .wf-lounge-hero__today {
-    padding-left: 0;
-    padding-top: 20px;
-    border-left: none;
-    border-top: 1px solid var(--wf-border);
   }
 
   .wf-lounge-rail {

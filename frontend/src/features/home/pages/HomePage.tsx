@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeToday } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
@@ -193,7 +193,7 @@ function PromoTasteMatch() {
   );
 }
 
-function LoungeHero({ today }: { today?: LoungeToday }) {
+function LoungeHero() {
   return (
     <section className="wf-lounge-hero">
       <div className="wf-lounge-hero__copy">
@@ -205,30 +205,6 @@ function LoungeHero({ today }: { today?: LoungeToday }) {
         <div className="wf-lounge-hero__actions">
           <Button to={PATHS.COMMUNITY} variant="primary">커뮤니티 보기</Button>
           <Button to={PATHS.SEARCH} variant="ghost">위스키 검색</Button>
-        </div>
-      </div>
-      <div className="wf-lounge-hero__today" aria-label="오늘의 라운지">
-        <p className="wf-lounge-hero__today-label">TODAY · 오늘의 라운지</p>
-        <div className="wf-lounge-hero__today-row">
-          <span className="wf-lounge-hero__today-key">새 글</span>
-          <span className="wf-lounge-hero__today-num">{today?.newPostCount ?? 0}</span>
-        </div>
-        <div className="wf-lounge-hero__today-row">
-          <span className="wf-lounge-hero__today-key">인기 글</span>
-          {today?.topPost ? (
-            <Link
-              to={PATHS.COMMUNITY_POST.replace(':postId', String(today.topPost.postId))}
-              className="wf-lounge-hero__today-link"
-            >
-              {today.topPost.title}
-            </Link>
-          ) : (
-            <span className="wf-lounge-hero__today-muted">아직 없음</span>
-          )}
-        </div>
-        <div className="wf-lounge-hero__today-row">
-          <span className="wf-lounge-hero__today-key">화제 위스키</span>
-          <span className="wf-lounge-hero__today-val">{today?.topWhiskeyName ?? '아직 없음'}</span>
         </div>
       </div>
     </section>
@@ -417,14 +393,10 @@ export default function HomePage() {
     queryKey: ['lounge', 'suggested-users', 5],
     queryFn: () => homeApi.getSuggestedUsers(5),
   });
-  const { data: today } = useQuery({
-    queryKey: ['lounge', 'today'],
-    queryFn: () => homeApi.getToday(),
-  });
 
   return (
     <WireframePage scroll>
-      <LoungeHero today={today} />
+      <LoungeHero />
       <div className="wf-lounge-shell">
         <main className="wf-lounge-feed">
           <div className="wf-lounge-tabs" role="tablist" aria-label="라운지 피드 탭">

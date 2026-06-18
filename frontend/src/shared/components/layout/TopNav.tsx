@@ -52,8 +52,9 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
   return (
     <nav className="wf-topnav">
       {/* 로고 */}
-      <Link to={PATHS.LANDING} className="wf-topnav__logo-link">
-        <div className="wf-topnav__logo">Whiskey Note</div>
+      <Link to={PATHS.LANDING} className="wf-topnav__logo-link" aria-label="Whiskey Note">
+        <img src="/images/logo.png" alt="" aria-hidden className="wf-topnav__logo-img" />
+        <span className="wf-topnav__logo-text">Whiskey Note</span>
       </Link>
 
       {/* 네비게이션 링크 — 검색 입력창 제거, 메뉴만 유지 */}
