@@ -7,8 +7,8 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { Input } from '@/shared/components/ui/Input';
-import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestModal';
+import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { PATHS } from '@/app/router/paths';
 import { SearchPagination } from '../components/SearchPagination';
@@ -181,10 +181,11 @@ export default function SearchPage() {
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
 
   // 위시 상태 — { whiskeyId: itemId } 맵으로 관리
-  const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
-  const [wishTargetId, setWishTargetId] = useState<number | null>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
+  const [wishTargetId, setWishTargetId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const suggestionKeyword = inputValue.trim();
@@ -409,7 +410,7 @@ export default function SearchPage() {
         />
       )}
       <p className="wf-breadcrumb">홈 / <strong>검색</strong></p>
-      <div className="wf-layout-sidebar">
+      <div className={`wf-layout-sidebar${filtersOpen ? '' : ' wf-search-layout--collapsed'}`}>
         <aside className="wf-sidebar wf-search-sidebar">
           <div className="wf-search-filter-header">
             <p className="wf-text-label">필터</p>
@@ -498,6 +499,14 @@ export default function SearchPage() {
         </aside>
         <div className="wf-search-main">
           <form onSubmit={handleSubmit} className="wf-search-form">
+            <button
+              type="button"
+              className="wf-search-filter-toggle"
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              필터 {filtersOpen ? '✕' : '＋'}
+            </button>
             <div className="wf-search-autocomplete">
               <Input
                 aria-label="위스키 검색어"
@@ -546,24 +555,18 @@ export default function SearchPage() {
           </form>
 
           <div className="wf-search-result-status">
-            <div>
-              <p className="wf-text-label">Search result</p>
-              <strong>
-                {isInitialLoading ? '위스키를 찾는 중입니다' : keyword ? `"${keyword}" 검색 결과` : '전체 위스키'}
-              </strong>
-              {activeFilterChips.length > 0 ? (
-                <div className="wf-search-active-filters" aria-label="적용된 필터">
-                  {activeFilterChips.map((chip) => (
-                    <span key={chip}>{chip}</span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <span className="wf-search-result-status__count">
-              {isInitialLoading ? 'Loading' : `${totalCount.toLocaleString()}건`}
-              {isFilterActive ? ' · 필터 적용' : ''}
-              {isFetching && !isInitialLoading ? ' · 갱신 중' : ''}
-            </span>
+            {isInitialLoading || keyword ? (
+              <h2 className="wf-search-result-comment">
+                {isInitialLoading ? '위스키를 찾는 중입니다' : `"${keyword}" 검색 결과`}
+              </h2>
+            ) : null}
+            {activeFilterChips.length > 0 ? (
+              <div className="wf-search-active-filters" aria-label="적용된 필터">
+                {activeFilterChips.map((chip) => (
+                  <span key={chip}>{chip}</span>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           {correctedKeyword ? (
@@ -665,12 +668,17 @@ export default function SearchPage() {
             </div>
           ) : null}
 
+          <div className="wf-search-grid">
           {results.map((whiskey) => {
             const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
-            const isWished = wishedMap[whiskey.id] !== undefined;
             const meta = buildMeta(whiskey);
+            const typeLabel = WHISKEY_TYPE_OPTIONS.find((o) => o.value === whiskey.type)?.label ?? whiskey.type;
+            const isWished = wishedMap[whiskey.id] !== undefined;
             return (
               <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable wf-search-card">
+                <div className="wf-search-card__head">
+                  <div className="wf-search-card__name">{whiskey.name}</div>
+                </div>
                 <div className="wf-search-card__media">
                   {thumbSrc && !imgErrors.has(whiskey.id) ? (
                     <img
@@ -683,28 +691,24 @@ export default function SearchPage() {
                     <div className="wf-placeholder wf-search-card__thumb" />
                   )}
                 </div>
-                <div className="wf-card__body">
-                  <div className="wf-search-card__content">
-                    <div>
-                      <div className="wf-card__title">{whiskey.name}</div>
-                      {meta ? <div className="wf-card__meta">{meta}</div> : null}
-                    </div>
-                    <span className="wf-search-card__type">{whiskey.type || 'Whiskey'}</span>
-                  </div>
-                  <div className="wf-search-card__actions">
-                    <span className="wf-search-card__hint">상세 보기</span>
-                    <Button
-                      variant="ghost"
-                      className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
-                      onClick={(e) => handleWishClick(e, whiskey.id)}
-                    >
-                      ♥ 위시
-                    </Button>
-                  </div>
+                <div className="wf-search-card__footer">
+                  {meta || typeLabel ? (
+                    <span className="wf-search-card__spec">
+                      {[meta, typeLabel].filter(Boolean).join(' · ')}
+                    </span>
+                  ) : null}
+                  <Button
+                    variant="ghost"
+                    className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
+                    onClick={(e) => handleWishClick(e, whiskey.id)}
+                  >
+                    위시
+                  </Button>
                 </div>
               </Link>
             );
           })}
+          </div>
 
           {!isLoading && !isError && totalCount > 0 ? (
             <SearchPagination
