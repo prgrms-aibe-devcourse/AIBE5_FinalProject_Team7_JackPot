@@ -51,19 +51,18 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
 
   return (
     <nav className="wf-topnav">
-      {/* 로고 */}
-      <Link to={PATHS.LANDING} className="wf-topnav__logo-link" aria-label="Whiskey Note">
-        <img src="/images/logo2.png" alt="" aria-hidden className="wf-topnav__logo-img" />
-        <span className="wf-topnav__logo-text">Whiskey Note</span>
-      </Link>
-
-      {/* 네비게이션 링크 — 검색 입력창 제거, 메뉴만 유지 */}
-      <div className="wf-topnav__links">
-        {NAV.map(({ to, label }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'active' : undefined}>
-            {label}
-          </NavLink>
-        ))}
+      {/* 로고 + 네비게이션 (중앙 클러스터, 로고가 첫 번째) */}
+      <div className="wf-topnav__center">
+        <Link to={PATHS.LANDING} className="wf-topnav__logo-link" aria-label="Whiskey Note">
+          <img src="/images/logoNoback.png" alt="Whiskey Note" className="wf-topnav__logo-img" />
+        </Link>
+        <div className="wf-topnav__links">
+          {NAV.map(({ to, label }) => (
+            <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'active' : undefined}>
+              {label}
+            </NavLink>
+          ))}
+        </div>
       </div>
 
       {/* 유저 영역 */}
