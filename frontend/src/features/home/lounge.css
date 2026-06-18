@@ -512,9 +512,36 @@
   box-shadow: var(--wf-shadow-sm);
 }
 
+/* '취향 비슷한 유저' 카드 — 오늘의 추천처럼 카드 전체 클릭형 + 우측 프로필 아바타 */
 .wf-feed-promo--match {
   background: var(--wf-surface);
   border-color: var(--wf-border);
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-feed-promo--match:hover {
+  transform: translateY(-2px);
+  border-color: var(--wf-accent);
+  box-shadow: var(--wf-shadow-md);
+}
+
+.wf-feed-promo__avatar {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  transform: translateX(-14px);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+  font-size: 26px;
+  font-weight: 800;
 }
 
 .wf-feed-promo .wf-btn {

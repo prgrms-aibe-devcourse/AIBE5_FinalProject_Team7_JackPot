@@ -178,16 +178,16 @@ function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
 
 function PromoTasteMatch() {
   return (
-    <section className="wf-feed-promo wf-box wf-feed-promo--match">
-      <div>
-        <p className="wf-text-label">MATCH</p>
-        <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
-        <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
+    <Link to={PATHS.TASTE_MATCH} className="wf-feed-promo wf-feed-promo--match wf-box">
+      <div className="wf-feed-promo__head">
+        <div className="wf-feed-promo__copy">
+          <p className="wf-text-label">MATCH</p>
+          <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
+          <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
+        </div>
+        <span className="wf-feed-promo__avatar" aria-hidden>피</span>
       </div>
-      <Button to={PATHS.TASTE_MATCH} variant="ghost">
-        보러가기
-      </Button>
-    </section>
+    </Link>
   );
 }
 
