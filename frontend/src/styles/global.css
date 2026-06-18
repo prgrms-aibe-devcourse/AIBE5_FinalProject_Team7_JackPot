@@ -1,7 +1,7 @@
 :root {
   color: var(--wf-text);
   background: var(--wf-bg);
-  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'Roboto Flex', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   line-height: 1.5;
 }
 

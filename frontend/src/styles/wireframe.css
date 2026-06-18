@@ -32,7 +32,7 @@
   --wf-frame-h: 844px;
   --wf-radius: 12px;
   --wf-radius-card: 18px; /* 애플 타일 라운드 (카드·패널) */
-  --wf-font: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --wf-font: "Roboto Flex", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 
   --wf-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --wf-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.08);
