@@ -159,8 +159,9 @@ function FeedCardSkeleton() {
 
 function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
   const image = whiskey ? resolveMediaUrl(whiskey.imageUrl) : null;
+  const to = whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH;
   return (
-    <section className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
+    <Link to={to} className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
       <div className="wf-feed-promo__head">
         <div className="wf-feed-promo__copy">
           <p className="wf-text-label">TODAY</p>
@@ -171,10 +172,7 @@ function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
           <img src={image} alt="" aria-hidden className="wf-feed-promo__bottle" loading="lazy" />
         ) : null}
       </div>
-      <Button to={whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH} variant="ghost">
-        보러가기
-      </Button>
-    </section>
+    </Link>
   );
 }
 
