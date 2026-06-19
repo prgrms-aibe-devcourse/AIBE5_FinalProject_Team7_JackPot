@@ -371,8 +371,14 @@
   line-height: 1.25;
 }
 
-.wf-detail-main .wf-detail-desc__group-title {
+/* 행 라벨(제목)을 기존 그룹 타이틀 스타일로 — 그룹 타이틀은 제거됨 */
+.wf-detail-main .wf-detail-desc__row .wf-text-label {
   font-size: 18px;
+  font-weight: 700;
+  color: var(--wf-text);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
 }
 
 .wf-detail-main .wf-detail-desc__row .wf-text-sm {

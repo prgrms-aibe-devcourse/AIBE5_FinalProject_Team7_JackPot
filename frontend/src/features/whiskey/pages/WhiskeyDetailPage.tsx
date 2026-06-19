@@ -586,7 +586,6 @@ export default function WhiskeyDetailPage() {
                     <div className="wf-detail-desc">
                       {groups.map((g) => (
                         <div key={g.title} className="wf-detail-desc__group">
-                          <h3 className="wf-detail-desc__group-title">{g.title}</h3>
                           {g.rows.map(([label, text]) => (
                             <div key={label} className="wf-detail-desc__row">
                               <p className="wf-text-label">{label}</p>
