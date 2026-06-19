@@ -1,11 +1,129 @@
-.app-root .wf-result-note {
+/* Apple 타입 스케일 (설문·라운지와 동일) */
+:where(.wf-reco-page, .wf-reco-wrap) {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-root .wf-reco-page {
+  padding: 34px 24px 120px;
+}
+
+.wf-reco-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.wf-reco-intro {
+  margin-bottom: 22px;
+}
+
+.wf-reco-intro__eyebrow,
+.wf-reco-empty__eyebrow {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-reco-intro__title,
+.wf-reco-empty__title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wf-reco-intro__subtitle,
+.wf-reco-empty__desc {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--wf-muted);
+}
+
+.app-root .wf-reco-profile {
+  padding: 28px;
   border-style: solid;
-  border-color: var(--wf-accent);
-  background: linear-gradient(180deg, var(--wf-accent-dim), var(--wf-surface) 60%);
+  border-color: var(--wf-border);
+  background: var(--wf-surface);
+}
+
+.wf-reco-scores-layout {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.wf-reco-scores-radar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 16px;
+  background: var(--wf-surface-2);
+}
+
+.wf-reco-radar {
+  width: 100%;
+  max-width: 240px;
+}
+
+.wf-reco-radar__grid {
+  fill: none;
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-reco-radar__axis {
+  stroke: var(--wf-border);
+  stroke-width: 1;
+}
+
+.wf-reco-radar__fill {
+  fill: var(--wf-accent-dim);
+  stroke: var(--wf-accent);
+  stroke-width: 2;
+}
+
+.wf-reco-radar__label {
+  fill: var(--wf-text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.wf-reco-scores-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wf-reco-score-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-reco-score-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.wf-reco-score-item:first-child {
+  padding-top: 0;
+}
+
+.wf-reco-score-item .wf-score-bar {
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-result-scores {
-  margin-top: 20px;
+  margin-top: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -21,13 +139,7 @@
 .app-root .wf-score-row__label {
   font-size: 14px;
   font-weight: 600;
-}
-
-.app-root .wf-score-row__en {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--wf-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: -0.01em;
 }
 
 .app-root .wf-score-row__val {
@@ -45,9 +157,9 @@
 
 .app-root .wf-score-bar__fill {
   height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--wf-wine), var(--wf-accent), var(--wf-accent-light));
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: inherit;
+  background: var(--wf-accent);
+  transition: width 0.35s ease;
 }
 
 .app-root .wf-score-row__ends {
@@ -58,99 +170,175 @@
   color: var(--wf-muted);
 }
 
+.wf-reco-tags-section {
+  margin-top: 22px;
+}
+
+.wf-reco-tags-section--taste {
+  margin-top: 16px;
+}
+
+.wf-reco-tags-label {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-reco-tags-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--wf-text);
+}
+
+.wf-reco-list {
+  margin-top: 28px;
+}
+
+.wf-reco-section-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
 .app-root .wf-result-recos {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+  overflow: hidden;
+}
+
+.wf-reco-whiskey-row {
+  display: flex;
   gap: 14px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--wf-border-subtle);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s ease;
 }
 
-.app-root .wf-reco-card {
-  border-style: solid;
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+.wf-reco-whiskey-row:first-child {
+  border-top: 0;
 }
 
-.app-root .wf-reco-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(213, 173, 69, 0.35);
+.wf-reco-whiskey-row:hover {
   background: var(--wf-surface-2);
-  box-shadow: var(--wf-shadow-md);
 }
 
-.app-root .wf-reco-card__thumb {
-  position: relative;
-  width: 92px;
-  height: 124px;
+.wf-reco-whiskey-row__thumb {
+  width: 56px;
+  height: 76px;
   flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--wf-surface-2);
 }
 
-.app-root .wf-reco-card__rank {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--wf-accent-light), var(--wf-accent));
-  color: #15100a;
-  font-size: 13px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(213, 173, 69, 0.4);
+.wf-reco-whiskey-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.app-root .wf-reco-card__body {
+.wf-reco-whiskey-row__body {
   flex: 1;
   min-width: 0;
 }
 
-.app-root .wf-reco-card__body .wf-chip {
-  font-size: 12px;
-  padding: 5px 10px;
+.wf-reco-whiskey-row__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--wf-text);
+}
+
+.wf-reco-whiskey-row__meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
+.wf-reco-whiskey-row__reason {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--wf-muted);
+}
+
+.wf-reco-actions {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wf-reco-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.wf-reco-action-btn {
+  flex: 1;
+}
+
+.app-root .wf-reco-btn--cta.wf-btn--primary {
+  height: 48px;
+  border-radius: 12px;
+  background: var(--wf-accent);
+  border-color: var(--wf-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.app-root .wf-reco-btn--cta.wf-btn--primary:hover:not(:disabled) {
+  background: var(--wf-accent-light);
+  border-color: var(--wf-accent-light);
+  color: #fff;
+  transform: none;
+}
+
+.wf-reco-empty {
+  text-align: center;
+  padding-top: 80px;
+}
+
+.wf-reco-empty__actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 @media (max-width: 560px) {
-  .app-root .wf-reco-card {
+  .wf-reco-scores-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wf-reco-whiskey-row__thumb {
+    width: 48px;
+    height: 64px;
+  }
+
+  .wf-reco-intro__title,
+  .wf-reco-empty__title {
+    font-size: 26px;
+  }
+
+  .wf-reco-actions-row {
     flex-direction: column;
   }
-  .app-root .wf-reco-card__thumb {
-    width: 100%;
-    height: 120px;
-  }
 }
 
-/* ─── Phase 7: RecommendationPage ─── */
-.wf-reco-empty { text-align: center; padding-top: 80px; }
-.wf-reco-empty-btn { margin-top: 20px; }
-.wf-reco-wrap { max-width: 720px; margin: 0 auto; width: 100%; }
-.wf-reco-main-title { margin-top: 4px; }
-.wf-reco-main-subtitle { margin-top: 6px; }
-.wf-reco-type-card {
-  margin-top: 16px;
-  padding: 12px 16px;
-  background: var(--wf-surface-2);
-  border-radius: 8px;
-  border-left: 3px solid var(--wf-accent);
-}
-.wf-reco-type-name { font-weight: 700; font-size: 16px; color: var(--wf-accent); }
-.wf-reco-type-desc { margin-top: 4px; line-height: 1.6; }
-.wf-reco-tags-section { margin-top: 18px; }
-.wf-reco-tags-section--taste { margin-top: 14px; }
-.wf-reco-tags-label { margin-bottom: 8px; }
-.wf-reco-section-title { margin-top: 28px; }
-.wf-reco-card__thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-.wf-reco-card-meta { color: var(--wf-muted); margin-top: 4px; }
-.wf-reco-card-reason { line-height: 1.6; margin-top: 8px; }
-.wf-reco-card-btn { margin-top: 12px; height: 38px; }
-.wf-reco-actions { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
-.wf-reco-actions-row { display: flex; gap: 8px; }
-.wf-reco-action-btn { flex: 1; }
-
-/* ─── Phase 7: TasteMatchPage ─── */
+/* ─── TasteMatchPage ─── */
 .wf-taste-match-card { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
 .wf-taste-match-profile-btn { height: 36px; }

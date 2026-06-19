@@ -182,7 +182,10 @@ export default function MyPage() {
   return (
     <WireframePage scroll>
       <div className="wf-mypage-page">
-        <p className="wf-breadcrumb">홈 / <strong>마이페이지</strong></p>
+        <header className="wf-mypage-intro">
+          <p className="wf-mypage-intro__eyebrow">마이페이지</p>
+          <p className="wf-mypage-intro__subtitle">프로필과 계정 설정을 관리합니다.</p>
+        </header>
 
         <section className="wf-mypage-hero" aria-label="내 계정 요약">
           <div className="wf-mypage-hero__profile">
@@ -223,10 +226,16 @@ export default function MyPage() {
           <section className="wf-mypage-card wf-mypage-card--primary" aria-labelledby="profile-edit-title">
             <div className="wf-mypage-card__header">
               <div>
-                <p className="wf-mypage-kicker">Profile</p>
+                <p className="wf-mypage-kicker">프로필</p>
                 <h2 id="profile-edit-title">프로필 수정</h2>
               </div>
-              <Button variant="primary" size="sm" disabled={saving} onClick={handleSaveProfile}>
+              <Button
+                variant="primary"
+                size="sm"
+                className="wf-mypage-btn--cta"
+                disabled={saving}
+                onClick={handleSaveProfile}
+              >
                 {saving ? '저장 중...' : '저장'}
               </Button>
             </div>
@@ -256,10 +265,7 @@ export default function MyPage() {
 
           <section className="wf-mypage-card wf-mypage-card--actions" aria-labelledby="quick-actions-title">
             <div className="wf-mypage-card__header">
-              <div>
-                <p className="wf-mypage-kicker">Actions</p>
-                <h2 id="quick-actions-title">바로가기</h2>
-              </div>
+              <h2 id="quick-actions-title">바로가기</h2>
             </div>
 
             <button
@@ -276,7 +282,7 @@ export default function MyPage() {
 
             <button
               className="wf-mypage-action-row"
-              onClick={() => navigate('/whiskey-requests')}
+              onClick={() => navigate(PATHS.WHISKEY_REQUEST)}
               type="button"
             >
               <span>
@@ -290,7 +296,7 @@ export default function MyPage() {
           <section className="wf-mypage-card wf-mypage-card--compact" aria-labelledby="password-title">
             <div className="wf-mypage-card__header">
               <div>
-                <p className="wf-mypage-kicker">Security</p>
+                <p className="wf-mypage-kicker">보안</p>
                 <h2 id="password-title">비밀번호 변경</h2>
               </div>
             </div>
@@ -313,7 +319,7 @@ export default function MyPage() {
           <section className="wf-mypage-card wf-mypage-card--danger" aria-labelledby="account-title">
             <div className="wf-mypage-card__header">
               <div>
-                <p className="wf-mypage-kicker">Account</p>
+                <p className="wf-mypage-kicker">계정</p>
                 <h2 id="account-title">회원 관리</h2>
               </div>
             </div>
@@ -347,7 +353,7 @@ export default function MyPage() {
           <section className="wf-mypage-modal__panel">
             <div className="wf-mypage-modal__header">
               <div>
-                <p className="wf-mypage-kicker">Security</p>
+                <p className="wf-mypage-kicker">보안</p>
                 <h2 id="password-modal-title">비밀번호 변경</h2>
               </div>
               <button
@@ -393,7 +399,7 @@ export default function MyPage() {
                 <Button
                   variant="primary"
                   size="sm"
-                  className="wf-mypage-action-button wf-mypage-action-button--security"
+                  className="wf-mypage-action-button wf-mypage-btn--cta"
                   disabled={savingPassword}
                   onClick={handleChangePassword}
                 >

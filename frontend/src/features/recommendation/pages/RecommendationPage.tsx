@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
@@ -9,17 +9,22 @@ import { surveyApi, type SurveyResult, type SurveyApiRequest } from '@/features/
 import { enthusiastSurveyApi } from '@/features/survey/api/enthusiastSurveyApi';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { saveResultImage } from '../utils/exportImage';
+import { ProfileScoreRadar, type ProfileRadarScores } from '../components/ProfileScoreRadar';
 import '../recommendation.css';
 
-const SCORE_META: { key: keyof SurveyResult['profile']; ko: string; en: string; low: string; high: string }[] = [
-  { key: 'sweetScore', ko: '단맛', en: 'Sweet', low: '드라이', high: '달콤' },
-  { key: 'bodyScore', ko: '바디', en: 'Body', low: '가벼움', high: '묵직함' },
-  { key: 'smokyScore', ko: '스모키', en: 'Smoky', low: '없음', high: '강한 피트' },
-  { key: 'spicyScore', ko: '스파이시', en: 'Spicy', low: '순함', high: '알싸함' },
-  { key: 'finishScore', ko: '피니시', en: 'Finish', low: '짧음', high: '긴 여운' },
+const SCORE_META: { key: keyof SurveyResult['profile']; ko: string; low: string; high: string }[] = [
+  { key: 'sweetScore', ko: '단맛', low: '드라이', high: '달콤' },
+  { key: 'bodyScore', ko: '바디', low: '가벼움', high: '묵직함' },
+  { key: 'smokyScore', ko: '스모키', low: '없음', high: '강한 피트' },
+  { key: 'spicyScore', ko: '스파이시', low: '순함', high: '알싸함' },
+  { key: 'finishScore', ko: '피니시', low: '짧음', high: '긴 여운' },
 ];
 
 type ScoreKey = 'sweetScore' | 'bodyScore' | 'smokyScore' | 'spicyScore' | 'finishScore';
+
+function tagLine(tags: Array<{ name: string }>) {
+  return tags.map((t) => t.name).join(' · ');
+}
 
 interface LocationState {
   result: SurveyResult;
@@ -38,6 +43,20 @@ export default function RecommendationPage() {
 
   const [applied, setApplied] = useState(false);
   const [applying, setApplying] = useState(false);
+
+  // 설문 페이지 하단에서 넘어올 때 스크롤 위치가 유지되는 문제 방지
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
+  useEffect(() => {
+    const scrollParent = document.querySelector('.wf-page__inner--scroll');
+    if (scrollParent instanceof HTMLElement) {
+      scrollParent.scrollTop = 0;
+    }
+  }, []);
 
   const handleApply = async () => {
     if (!payload) return;
@@ -72,16 +91,17 @@ export default function RecommendationPage() {
   if (!result) {
     return (
       <>
-        <TopNav searchPlaceholder="Whiskey Note" />
-        <div className="wf-page">
-          <div className="wf-page__inner wf-reco-empty">
-            <p className="wf-subtitle">설문 결과가 없어요.</p>
-            <p className="wf-text-sm" style={{ color: 'var(--wf-muted)', marginBottom: 16 }}>
+        <TopNav />
+        <div className="wf-page wf-reco-page">
+          <div className="wf-reco-wrap wf-reco-empty">
+            <p className="wf-reco-empty__eyebrow">추천 결과</p>
+            <h1 className="wf-reco-empty__title">설문 결과가 없어요</h1>
+            <p className="wf-reco-empty__desc">
               설문을 완료하면 취향에 맞는 위스키를 추천해 드려요.
             </p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button to={PATHS.SURVEY} className="wf-reco-empty-btn">입문자 설문</Button>
-              <Button to={PATHS.SURVEY_ENTHUSIAST} className="wf-reco-empty-btn">애호가 설문</Button>
+            <div className="wf-reco-empty__actions">
+              <Button to={PATHS.SURVEY} className="wf-reco-btn--cta">입문자 설문</Button>
+              <Button to={PATHS.SURVEY_ENTHUSIAST} variant="ghost">애호가 설문</Button>
             </div>
           </div>
         </div>
@@ -91,35 +111,39 @@ export default function RecommendationPage() {
 
   const { profile, userType, userTypeDescription, recommendations } = result;
 
+  const radarScores: ProfileRadarScores = {
+    sweetScore: profile.sweetScore,
+    bodyScore: profile.bodyScore,
+    smokyScore: profile.smokyScore,
+    spicyScore: profile.spicyScore,
+    finishScore: profile.finishScore,
+  };
+
   return (
     <>
-      <TopNav searchPlaceholder="Whiskey Note" />
-      <div className="wf-page">
-        <div className="wf-page__inner wf-page__inner--scroll">
-          <div className="wf-reco-wrap">
-            {/* 취향 분석 노트 */}
-            <div className="wf-box wf-panel wf-result-note">
-              <p className="wf-text-label">Taste Profile</p>
-              <h1 className="wf-title wf-reco-main-title">당신의 취향 분석 결과입니다</h1>
-              <p className="wf-subtitle wf-reco-main-subtitle">
-                설문 응답을 바탕으로 5가지 풍미 축과 선호 노트를 정리했어요.
-              </p>
+      <TopNav />
+      <div className="wf-page wf-reco-page">
+        <div className="wf-reco-wrap">
+          <header className="wf-reco-intro">
+            <p className="wf-reco-intro__eyebrow">추천 결과</p>
+            <h1 className="wf-reco-intro__title">{userType}</h1>
+            {userTypeDescription ? (
+              <p className="wf-reco-intro__subtitle">{userTypeDescription}</p>
+            ) : null}
+          </header>
 
-              {/* 유저 타입 */}
-              <div className="wf-reco-type-card">
-                <p className="wf-reco-type-name">{userType}</p>
-                <p className="wf-text-sm wf-reco-type-desc">{userTypeDescription}</p>
+          <div className="wf-box wf-reco-profile">
+            <div className="wf-reco-scores-layout">
+              <div className="wf-reco-scores-radar">
+                <ProfileScoreRadar scores={radarScores} />
               </div>
-
-              <div className="wf-result-scores">
+              <div className="wf-reco-scores-bars">
                 {SCORE_META.map((m) => {
                   const v = profile[m.key as ScoreKey] as number;
                   return (
-                    <div key={m.key} className="wf-score-row">
+                    <div key={m.key} className="wf-reco-score-item">
                       <div className="wf-score-row__head">
-                        <span className="wf-score-row__label">
-                          {m.ko} <span className="wf-score-row__en">{m.en}</span>
-                        </span>
+                        <span className="wf-score-row__label">{m.ko}</span>
                         <span className="wf-score-row__val">{v}%</span>
                       </div>
                       <div className="wf-score-bar">
@@ -133,67 +157,67 @@ export default function RecommendationPage() {
                   );
                 })}
               </div>
-
-              {profile.noseTags.length > 0 && (
-                <div className="wf-reco-tags-section">
-                  <p className="wf-text-sm wf-reco-tags-label">좋아하는 향 (nose)</p>
-                  <div className="wf-chips">
-                    {profile.noseTags.map((t) => (
-                      <span key={t.id} className="wf-chip wf-chip--on">{t.name}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {profile.tasteTags.length > 0 && (
-                <div className="wf-reco-tags-section wf-reco-tags-section--taste">
-                  <p className="wf-text-sm wf-reco-tags-label">좋아하는 맛 (taste)</p>
-                  <div className="wf-chips">
-                    {profile.tasteTags.map((t) => (
-                      <span key={t.id} className="wf-chip wf-chip--on">{t.name}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* 추천 위스키 */}
-            <p className="wf-section-title wf-reco-section-title">당신에게 어울리는 위스키 3</p>
+            {profile.noseTags.length > 0 && (
+              <div className="wf-reco-tags-section">
+                <p className="wf-reco-tags-label">좋아하는 향</p>
+                <p className="wf-reco-tags-text">{tagLine(profile.noseTags)}</p>
+              </div>
+            )}
+            {profile.tasteTags.length > 0 && (
+              <div className="wf-reco-tags-section wf-reco-tags-section--taste">
+                <p className="wf-reco-tags-label">좋아하는 맛</p>
+                <p className="wf-reco-tags-text">{tagLine(profile.tasteTags)}</p>
+              </div>
+            )}
+          </div>
+
+          <section className="wf-reco-list">
+            <h2 className="wf-reco-section-title">추천 위스키</h2>
             <div className="wf-result-recos">
-              {recommendations.map((w, i) => {
+              {recommendations.map((w) => {
                 const img = resolveMediaUrl(w.imageUrl);
                 return (
-                  <div key={w.id} className="wf-box wf-reco-card">
-                    <div className={`wf-reco-card__thumb${img ? '' : ' wf-placeholder'}`}>
-                      {img && (
-                        <img
-                          src={img}
-                          alt={w.name}
-                        />
-                      )}
-                      <span className="wf-reco-card__rank">{i + 1}</span>
+                  <Link
+                    key={w.id}
+                    to={`/whiskey/${w.id}`}
+                    className="wf-reco-whiskey-row"
+                  >
+                    <div className={`wf-reco-whiskey-row__thumb${img ? '' : ' wf-placeholder'}`}>
+                      {img && <img src={img} alt="" />}
                     </div>
-                    <div className="wf-reco-card__body">
-                      <p className="wf-card__title">{w.name}</p>
-                      <p className="wf-text-xs wf-reco-card-meta">
-                        매칭 점수 {Math.round(w.score * 100)}% · ★ {w.avgRating.toFixed(1)}
+                    <div className="wf-reco-whiskey-row__body">
+                      <p className="wf-reco-whiskey-row__name">{w.name}</p>
+                      <p className="wf-reco-whiskey-row__meta">
+                        평점 {w.avgRating.toFixed(1)}
                       </p>
-                      <p className="wf-text-sm wf-reco-card-reason">{w.reason}</p>
-                      <Button to={`/whiskey/${w.id}`} className="wf-reco-card-btn">상세 보기</Button>
+                      {w.reason ? (
+                        <p className="wf-reco-whiskey-row__reason">{w.reason}</p>
+                      ) : null}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
+          </section>
 
-            <div className="wf-reco-actions">
-              <Button block onClick={handleApply} disabled={applied || applying}>
-                {applied ? '✓ 내 추천에 반영됨' : applying ? '저장 중...' : '내 추천 알고리즘에 반영하기'}
+          <div className="wf-reco-actions">
+            <Button
+              block
+              className="wf-reco-btn--cta"
+              onClick={handleApply}
+              disabled={applied || applying}
+            >
+              {applied ? '취향 저장됨' : applying ? '저장 중...' : '내 취향으로 저장'}
+            </Button>
+            <div className="wf-reco-actions-row">
+              <Button variant="ghost" className="wf-reco-action-btn" onClick={handleSaveImage}>
+                결과 이미지 저장
               </Button>
-              <div className="wf-reco-actions-row">
-                <Button variant="ghost" className="wf-reco-action-btn" onClick={handleSaveImage}>이미지로 저장</Button>
-                <Button variant="ghost" className="wf-reco-action-btn" to={PATHS.SURVEY}>다시 검사하기</Button>
-                <Button className="wf-reco-action-btn" to={PATHS.LOUNGE}>홈으로</Button>
-              </div>
+              <Button variant="ghost" className="wf-reco-action-btn" to={PATHS.SURVEY}>
+                다시 설문하기
+              </Button>
             </div>
           </div>
         </div>

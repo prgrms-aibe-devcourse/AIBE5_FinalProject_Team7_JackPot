@@ -13,6 +13,25 @@
   padding-bottom: 28px;
 }
 
+.wf-mypage-intro {
+  margin-bottom: 16px;
+}
+
+.wf-mypage-intro__eyebrow {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-mypage-intro__subtitle {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--wf-muted);
+}
+
 .wf-mypage-hero {
   display: flex;
   align-items: center;
@@ -22,7 +41,6 @@
   border: 1px solid var(--wf-border);
   border-radius: var(--wf-radius-card);
   background: var(--wf-surface);
-  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-mypage-hero__profile {
@@ -59,7 +77,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-mypage-avatar img {
@@ -89,7 +106,6 @@
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-mypage-identity {
@@ -126,7 +142,6 @@
   border: 1px solid var(--wf-border);
   border-radius: var(--wf-radius-card);
   background: var(--wf-surface);
-  box-shadow: var(--wf-shadow-sm);
   box-sizing: border-box;
 }
 
@@ -217,6 +232,10 @@
   height: 100%;
 }
 
+.wf-mypage-card--actions .wf-mypage-card__header h2 {
+  margin: 0;
+}
+
 .wf-mypage-card--compact,
 .wf-mypage-card--danger {
   align-self: start;
@@ -257,11 +276,11 @@
 
 .wf-mypage-kicker {
   margin: 0;
-  color: var(--wf-accent);
-  font-size: 11px;
+  color: var(--wf-muted);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .wf-mypage-form {
@@ -373,6 +392,20 @@
   min-width: 68px;
 }
 
+.app-root .wf-mypage-btn--cta.wf-btn--primary {
+  background: var(--wf-accent);
+  border-color: var(--wf-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.app-root .wf-mypage-btn--cta.wf-btn--primary:hover:not(:disabled) {
+  background: var(--wf-accent-light);
+  border-color: var(--wf-accent-light);
+  color: #fff;
+  transform: none;
+}
+
 .wf-mypage-modal {
   position: fixed;
   inset: 0;
@@ -396,7 +429,6 @@
   border: 1px solid var(--wf-border);
   border-radius: var(--wf-radius-card);
   background: var(--wf-surface);
-  box-shadow: var(--wf-shadow-lg);
 }
 
 .wf-mypage-modal__header {

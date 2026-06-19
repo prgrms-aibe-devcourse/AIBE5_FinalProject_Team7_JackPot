@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
@@ -16,76 +16,44 @@ import {
   type ReportAction,
   type AdminUser,
 } from '../api/adminApi';
+import '../admin.css';
 
 type AdminTabKey = 'whiskey-requests' | 'reports' | 'users';
 
-// ── 스타일 헬퍼 ─────────────────────────────────
-const tabStyle = (active: boolean) => ({
-  padding: '8px 20px',
-  border: 'none',
-  borderBottom: active ? '2px solid #c9a227' : '2px solid transparent',
-  background: 'none',
-  color: active ? '#c9a227' : '#8b8b96',
-  fontSize: 14,
-  fontWeight: active ? 700 : 400,
-  cursor: 'pointer',
-} as const);
-
-const badgeStyle = (color: string) => ({
-  display: 'inline-block',
-  padding: '2px 8px',
-  borderRadius: 6,
-  fontSize: 11,
-  fontWeight: 600,
-  background: color + '22',
-  color,
-  border: `1px solid ${color}44`,
-  whiteSpace: 'nowrap',
-} as const);
-
-const btnStyle = (variant: 'primary' | 'danger' | 'ghost') => ({
-  padding: '6px 14px',
-  borderRadius: 8,
-  fontSize: 13,
-  fontWeight: 600,
-  cursor: 'pointer',
-  border: variant === 'ghost' ? '1px solid #2e2e38' : 'none',
-  background: variant === 'primary' ? '#c9a227' : variant === 'danger' ? '#f87171' : 'none',
-  color: variant === 'primary' ? '#0c0c0f' : variant === 'danger' ? '#fff' : '#8b8b96',
-  whiteSpace: 'nowrap',
-} as const);
-
-const filterBtnStyle = (active: boolean) => ({
-  padding: '4px 12px',
-  borderRadius: 6,
-  fontSize: 12,
-  border: `1px solid ${active ? '#c9a227' : '#2e2e38'}`,
-  background: active ? 'rgba(201,162,39,0.1)' : 'none',
-  color: active ? '#c9a227' : '#8b8b96',
-  cursor: 'pointer',
-} as const);
-
-// ── 상수 ─────────────────────────────────────────
-const REQUEST_STATUS_COLOR: Record<WhiskeyRequestStatus, string> = {
-  pending: '#c9a227', approved: '#4ade80', rejected: '#f87171',
-};
 const REQUEST_STATUS_LABEL: Record<WhiskeyRequestStatus, string> = {
-  pending: '대기중', approved: '승인됨', rejected: '반려됨',
-};
-const REPORT_STATUS_COLOR: Record<ReportStatus, string> = {
-  PENDING: '#c9a227', HIDDEN: '#f87171', DISMISSED: '#8b8b96', BANNED: '#ff4d4d', RESTORED: '#4ade80',
-};
-const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
-  PENDING: '검토 대기', HIDDEN: '숨김', DISMISSED: '기각', BANNED: '제재 완료', RESTORED: '복구됨',
-};
-const ACTION_LABEL: Record<ReportAction, string> = {
-  HIDE: '숨김', RESTORE: '복구', DISMISS: '기각', DELETE_CONTENT: '콘텐츠 삭제',
-};
-const REASON_LABEL_KO: Record<string, string> = {
-  SPAM: '스팸', OBSCENE: '음란물', ILLEGAL: '불법 정보', ABUSE: '욕설/혐오', OTHER: '기타',
+  pending: '대기중',
+  approved: '승인됨',
+  rejected: '반려됨',
 };
 
-// ── 위스키 등록 요청 탭 ──────────────────────────
+const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
+  PENDING: '검토 대기',
+  HIDDEN: '숨김',
+  DISMISSED: '기각',
+  BANNED: '제재 완료',
+  RESTORED: '복구됨',
+};
+
+const ACTION_LABEL: Record<ReportAction, string> = {
+  HIDE: '숨김',
+  RESTORE: '복구',
+  DISMISS: '기각',
+  DELETE_CONTENT: '콘텐츠 삭제',
+};
+
+const REASON_LABEL_KO: Record<string, string> = {
+  SPAM: '스팸',
+  OBSCENE: '음란물',
+  ILLEGAL: '불법 정보',
+  ABUSE: '욕설/혐오',
+  OTHER: '기타',
+};
+
+function getWhiskeyName(description: Record<string, unknown>) {
+  const name = description.name;
+  return typeof name === 'string' && name.trim() ? name : '위스키명 없음';
+}
+
 function WhiskeyRequestsTab() {
   const [requests, setRequests] = useState<WhiskeyRequest[]>([]);
   const [filter, setFilter] = useState<WhiskeyRequestStatus | 'all'>('pending');
@@ -114,7 +82,11 @@ function WhiskeyRequestsTab() {
 
   const handleReview = async (id: number, action: 'approved' | 'rejected') => {
     const label = action === 'approved' ? '승인' : '반려';
-    const ok = await confirmToast({ message: `이 요청을 ${label}할까요?`, confirmLabel: label, danger: action === 'rejected' });
+    const ok = await confirmToast({
+      message: `이 요청을 ${label}할까요?`,
+      confirmLabel: label,
+      danger: action === 'rejected',
+    });
     if (!ok) return;
     try {
       await adminApi.reviewWhiskeyRequest(id, action);
@@ -127,54 +99,87 @@ function WhiskeyRequestsTab() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div className="wf-admin-filters" role="tablist" aria-label="요청 상태">
         {(['all', 'pending', 'approved', 'rejected'] as const).map((s) => (
-          <button key={s} type="button" style={filterBtnStyle(filter === s)} onClick={() => setFilter(s)}>
+          <button
+            key={s}
+            type="button"
+            role="tab"
+            aria-selected={filter === s}
+            className={`wf-admin-filter${filter === s ? ' wf-admin-filter--active' : ''}`}
+            onClick={() => setFilter(s)}
+          >
             {s === 'all' ? '전체' : REQUEST_STATUS_LABEL[s]}
           </button>
         ))}
       </div>
+
       {loading ? (
-        <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
+        <p className="wf-admin-loading">불러오는 중…</p>
       ) : requests.length === 0 ? (
-        <p style={{ color: '#8b8b96' }}>요청이 없습니다.</p>
-      ) : requests.map((req) => (
-        <div key={req.requestId}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 10, marginBottom: 8 }}>
-            <span style={badgeStyle(REQUEST_STATUS_COLOR[req.status])}>{REQUEST_STATUS_LABEL[req.status]}</span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0, fontWeight: 600 }}>
-                {(req.description as any)?.name ?? '위스키명 없음'}
-              </p>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '2px 0 0' }}>
-                요청자: {req.requesterNickName} · {new Date(req.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <button type="button" style={btnStyle('ghost')} onClick={() => setExpanded(expanded === req.requestId ? null : req.requestId)}>
-              {expanded === req.requestId ? '접기' : '상세'}
-            </button>
-            {req.status === 'pending' && (
-              <>
-                <button type="button" style={btnStyle('primary')} onClick={() => handleReview(req.requestId, 'approved')}>승인</button>
-                <button type="button" style={btnStyle('danger')} onClick={() => handleReview(req.requestId, 'rejected')}>반려</button>
-              </>
-            )}
-          </div>
-          {expanded === req.requestId && (
-            <div style={{ background: '#1e1e26', border: '1px solid #2e2e38', borderRadius: '0 0 10px 10px', padding: 16, marginTop: -8, marginBottom: 8 }}>
-              <pre style={{ color: '#ececf0', fontSize: 12, margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                {JSON.stringify(req.description, null, 2)}
-              </pre>
-            </div>
-          )}
+        <p className="wf-admin-empty">요청이 없습니다.</p>
+      ) : (
+        <div className="wf-admin-list">
+          {requests.map((req) => {
+            const isOpen = expanded === req.requestId;
+            return (
+              <div key={req.requestId}>
+                <div className={`wf-admin-row${isOpen ? ' wf-admin-row--open' : ''}`}>
+                  <span className={`wf-admin-status wf-admin-status--${req.status}`}>
+                    {REQUEST_STATUS_LABEL[req.status]}
+                  </span>
+                  <div className="wf-admin-row__main">
+                    <p className="wf-admin-row__title">{getWhiskeyName(req.description)}</p>
+                    <p className="wf-admin-row__meta">
+                      요청자 {req.requesterNickName} · {new Date(req.createdAt).toLocaleDateString('ko-KR')}
+                    </p>
+                  </div>
+                  <div className="wf-admin-row__actions">
+                    <button
+                      type="button"
+                      className="wf-admin-btn"
+                      onClick={() => setExpanded(isOpen ? null : req.requestId)}
+                    >
+                      {isOpen ? '접기' : '상세'}
+                    </button>
+                    {req.status === 'pending' && (
+                      <>
+                        <button
+                          type="button"
+                          className="wf-admin-btn wf-admin-btn--primary"
+                          onClick={() => handleReview(req.requestId, 'approved')}
+                        >
+                          승인
+                        </button>
+                        <button
+                          type="button"
+                          className="wf-admin-btn wf-admin-btn--danger"
+                          onClick={() => handleReview(req.requestId, 'rejected')}
+                        >
+                          반려
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {isOpen && (
+                  <div className="wf-admin-detail">
+                    <pre className="wf-admin-pre">{JSON.stringify(req.description, null, 2)}</pre>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      ))}
-      <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+      )}
+
+      <div className="wf-admin-pagination">
+        <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+      </div>
     </div>
   );
 }
 
-// ── 신고 탭 ──────────────────────────────────────
 function ReportsTab() {
   const [reports, setReports] = useState<Report[]>([]);
   const [filter, setFilter] = useState<ReportStatus | 'all'>('PENDING');
@@ -253,144 +258,202 @@ function ReportsTab() {
 
   return (
     <div>
-      {/* 필터 */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div className="wf-admin-filters" role="tablist" aria-label="신고 상태">
         {(['all', 'PENDING', 'HIDDEN', 'DISMISSED', 'RESTORED'] as const).map((s) => (
-          <button key={s} type="button" style={filterBtnStyle(filter === s)} onClick={() => setFilter(s as ReportStatus | 'all')}>
+          <button
+            key={s}
+            type="button"
+            role="tab"
+            aria-selected={filter === s}
+            className={`wf-admin-filter${filter === s ? ' wf-admin-filter--active' : ''}`}
+            onClick={() => setFilter(s as ReportStatus | 'all')}
+          >
             {s === 'all' ? '전체' : REPORT_STATUS_LABEL[s as ReportStatus]}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
+        <p className="wf-admin-loading">불러오는 중…</p>
       ) : reports.length === 0 ? (
-        <p style={{ color: '#8b8b96' }}>신고가 없습니다.</p>
-      ) : reports.map((report) => {
-        const isOpen = selectedId === report.reportId;
-        const targetLink = getTargetLink(report);
-        return (
-          <div key={report.reportId} style={{ marginBottom: 8 }}>
-            <div
-              onClick={() => handleSelectReport(report)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
-                background: isOpen ? 'rgba(201,162,39,0.06)' : '#16161c',
-                border: `1px solid ${isOpen ? '#c9a227' : '#2e2e38'}`,
-                borderRadius: isOpen ? '10px 10px 0 0' : 10,
-                cursor: 'pointer', transition: 'border-color 0.15s',
-              }}
-            >
-              <span style={badgeStyle(REPORT_STATUS_COLOR[report.status])}>{REPORT_STATUS_LABEL[report.status]}</span>
-              <span style={badgeStyle('#8b8b96')}>{report.targetType}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ color: '#ececf0', fontSize: 13, fontWeight: 600, margin: 0 }}>
-                  {REASON_LABEL_KO[report.reason] ?? report.reason} 신고
-                </p>
-                {report.detail && (
-                  <p style={{ color: '#8b8b96', fontSize: 12, margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {report.detail}
-                  </p>
-                )}
-                <p style={{ color: '#666', fontSize: 11, margin: '2px 0 0' }}>
-                  신고자 {report.reporterNickname} · {new Date(report.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              {targetLink && (
-                <a href={targetLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-                  style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #2e2e38', color: '#8b8b96', fontSize: 11, textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                  원문 보기 ↗
-                </a>
-              )}
-              <span style={{ color: isOpen ? '#c9a227' : '#8b8b96', fontSize: 12, flexShrink: 0 }}>
-                {isOpen ? '▲ 접기' : '▼ 상세'}
-              </span>
-            </div>
+        <p className="wf-admin-empty">신고가 없습니다.</p>
+      ) : (
+        <div className="wf-admin-list">
+          {reports.map((report) => {
+            const isOpen = selectedId === report.reportId;
+            const targetLink = getTargetLink(report);
+            return (
+              <div key={report.reportId}>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className={`wf-admin-row wf-admin-row--clickable${isOpen ? ' wf-admin-row--open' : ''}`}
+                  onClick={() => handleSelectReport(report)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelectReport(report); }}
+                >
+                  <span className={`wf-admin-status wf-admin-status--${report.status}`}>
+                    {REPORT_STATUS_LABEL[report.status]}
+                  </span>
+                  <span className="wf-admin-status wf-admin-status--muted">{report.targetType}</span>
+                  <div className="wf-admin-row__main">
+                    <p className="wf-admin-row__title">
+                      {REASON_LABEL_KO[report.reason] ?? report.reason} 신고
+                    </p>
+                    {report.detail && (
+                      <p className="wf-admin-row__meta wf-admin-row__meta--truncate">{report.detail}</p>
+                    )}
+                    <p className="wf-admin-row__meta">
+                      신고자 {report.reporterNickname} · {new Date(report.createdAt).toLocaleDateString('ko-KR')}
+                    </p>
+                  </div>
+                  {targetLink && (
+                    <Link
+                      to={targetLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="wf-admin-link"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      원문 보기
+                    </Link>
+                  )}
+                  <span className="wf-admin-chevron">{isOpen ? '접기' : '상세'}</span>
+                </div>
 
-            {isOpen && (
-              <div style={{ background: '#1a1a22', border: '1px solid #c9a227', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: 16 }}>
-                {detailLoading ? (
-                  <p style={{ color: '#8b8b96', fontSize: 13 }}>불러오는 중...</p>
-                ) : selectedReport ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 4px' }}>신고 사유</p>
-                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0, fontWeight: 600 }}>{REASON_LABEL_KO[selectedReport.reason]}</p>
-                        {selectedReport.detail && <p style={{ color: '#8b8b96', fontSize: 12, margin: '4px 0 0', lineHeight: 1.5 }}>{selectedReport.detail}</p>}
-                      </div>
-                      <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 4px' }}>신고 일시</p>
-                        <p style={{ color: '#ececf0', fontSize: 13, margin: 0 }}>{new Date(selectedReport.createdAt).toLocaleString()}</p>
-                        {selectedReport.targetType === 'COMMENT' && (
-                          <div style={{ marginTop: 8 }}>
-                            <span style={{ color: '#8b8b96', fontSize: 11 }}>댓글 ID #{selectedReport.targetId}</span>
-                            {selectedReport.postId ? (
-                              <a href={`/community/posts/${selectedReport.postId}`} target="_blank" rel="noreferrer"
-                                style={{ display: 'block', marginTop: 4, color: '#c9a227', fontSize: 12 }}>원본 게시글 보기 ↗</a>
-                            ) : (
-                              <span style={{ display: 'block', marginTop: 4, color: '#666', fontSize: 11 }}>(게시글 삭제됨)</span>
+                {isOpen && (
+                  <div className="wf-admin-detail">
+                    {detailLoading ? (
+                      <p className="wf-admin-loading">불러오는 중…</p>
+                    ) : selectedReport ? (
+                      <div className="wf-admin-detail__stack">
+                        <div className="wf-admin-detail__grid">
+                          <div>
+                            <p className="wf-admin-field__label">신고 사유</p>
+                            <p className="wf-admin-field__value wf-admin-field__value--strong">
+                              {REASON_LABEL_KO[selectedReport.reason]}
+                            </p>
+                            {selectedReport.detail && (
+                              <p className="wf-admin-field__value wf-admin-field__value--muted wf-admin-field__value--mt">
+                                {selectedReport.detail}
+                              </p>
                             )}
                           </div>
-                        )}
-                        {selectedReport.targetType === 'POST' && (
-                          <a href={`/community/posts/${selectedReport.targetId}`} target="_blank" rel="noreferrer"
-                            style={{ display: 'block', marginTop: 8, color: '#c9a227', fontSize: 12 }}>게시글 보기 ↗</a>
-                        )}
-                      </div>
-                    </div>
-
-                    {selectedReport.actions?.length > 0 && (
-                      <div>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리 이력</p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {selectedReport.actions.map((a) => (
-                            <div key={a.actionId} style={{ padding: '8px 12px', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                              <div>
-                                <span style={{ color: '#c9a227', fontWeight: 600 }}>{ACTION_LABEL[a.action as ReportAction] ?? a.action}</span>
-                                {a.note && <span style={{ color: '#8b8b96', marginLeft: 8 }}>{a.note}</span>}
+                          <div>
+                            <p className="wf-admin-field__label">신고 일시</p>
+                            <p className="wf-admin-field__value">
+                              {new Date(selectedReport.createdAt).toLocaleString('ko-KR')}
+                            </p>
+                            {selectedReport.targetType === 'COMMENT' && (
+                              <div className="wf-admin-mt-lg">
+                                <span className="wf-admin-field__value wf-admin-field__value--muted wf-admin-field__value--sm">
+                                  댓글 #{selectedReport.targetId}
+                                </span>
+                                {selectedReport.postId ? (
+                                  <Link
+                                    to={`/community/posts/${selectedReport.postId}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="wf-admin-link wf-admin-link--spaced"
+                                  >
+                                    원본 게시글
+                                  </Link>
+                                ) : (
+                                  <span className="wf-admin-field__value wf-admin-field__value--muted wf-admin-field__value--xs wf-admin-field__value--mt">
+                                    게시글 삭제됨
+                                  </span>
+                                )}
                               </div>
-                              <span style={{ color: '#666', flexShrink: 0 }}>{new Date(a.createdAt).toLocaleString()}</span>
+                            )}
+                            {selectedReport.targetType === 'POST' && (
+                              <Link
+                                to={`/community/posts/${selectedReport.targetId}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="wf-admin-link wf-admin-link--spaced-lg"
+                              >
+                                게시글 보기
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+
+                        {selectedReport.actions?.length > 0 && (
+                          <div>
+                            <p className="wf-admin-field__label">처리 이력</p>
+                            <div className="wf-admin-history">
+                              {selectedReport.actions.map((a) => (
+                                <div key={a.actionId} className="wf-admin-history__item">
+                                  <div>
+                                    <span className="wf-admin-history__action">
+                                      {ACTION_LABEL[a.action as ReportAction] ?? a.action}
+                                    </span>
+                                    {a.note && <span className="wf-admin-history__note">{a.note}</span>}
+                                  </div>
+                                  <span className="wf-admin-history__date">
+                                    {new Date(a.createdAt).toLocaleString('ko-KR')}
+                                  </span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                          </div>
+                        )}
 
-                    {selectedReport.status === 'PENDING' && (
-                      <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
-                        <textarea placeholder="처리 메모 (선택)" value={actionNote} onChange={(e) => setActionNote(e.target.value)} rows={2}
-                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }} />
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          <button type="button" disabled={processing} style={btnStyle('ghost')} onClick={() => handleAction('DISMISS')}>✓ 기각</button>
-                          <button type="button" disabled={processing} style={{ ...btnStyle('ghost'), borderColor: '#f87171', color: '#f87171' }} onClick={() => handleAction('HIDE')}>🙈 숨김</button>
-                          <button type="button" disabled={processing} style={btnStyle('danger')} onClick={() => handleAction('DELETE_CONTENT')}>🗑 삭제</button>
-                        </div>
-                      </div>
-                    )}
+                        {selectedReport.status === 'PENDING' && (
+                          <div className="wf-admin-panel-divider">
+                            <p className="wf-admin-field__label">처리하기</p>
+                            <textarea
+                              className="wf-admin-textarea"
+                              placeholder="처리 메모 (선택)"
+                              value={actionNote}
+                              onChange={(e) => setActionNote(e.target.value)}
+                              rows={2}
+                            />
+                            <div className="wf-admin-action-row">
+                              <button type="button" disabled={processing} className="wf-admin-btn" onClick={() => handleAction('DISMISS')}>
+                                기각
+                              </button>
+                              <button type="button" disabled={processing} className="wf-admin-btn wf-admin-btn--warn" onClick={() => handleAction('HIDE')}>
+                                숨김
+                              </button>
+                              <button type="button" disabled={processing} className="wf-admin-btn wf-admin-btn--danger" onClick={() => handleAction('DELETE_CONTENT')}>
+                                삭제
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
-                    {selectedReport.status === 'HIDDEN' && (
-                      <div style={{ borderTop: '1px solid #2e2e38', paddingTop: 14 }}>
-                        <p style={{ color: '#8b8b96', fontSize: 11, margin: '0 0 8px' }}>처리하기</p>
-                        <textarea placeholder="처리 메모 (선택)" value={actionNote} onChange={(e) => setActionNote(e.target.value)} rows={2}
-                          style={{ width: '100%', background: '#16161c', border: '1px solid #2e2e38', borderRadius: 8, padding: '8px 12px', color: '#ececf0', fontSize: 13, resize: 'none', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }} />
-                        <button type="button" disabled={processing} style={btnStyle('primary')} onClick={() => handleAction('RESTORE')}>↩ 복구</button>
+                        {selectedReport.status === 'HIDDEN' && (
+                          <div className="wf-admin-panel-divider">
+                            <p className="wf-admin-field__label">처리하기</p>
+                            <textarea
+                              className="wf-admin-textarea"
+                              placeholder="처리 메모 (선택)"
+                              value={actionNote}
+                              onChange={(e) => setActionNote(e.target.value)}
+                              rows={2}
+                            />
+                            <button type="button" disabled={processing} className="wf-admin-btn wf-admin-btn--primary" onClick={() => handleAction('RESTORE')}>
+                              복구
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    ) : null}
                   </div>
-                ) : null}
+                )}
               </div>
-            )}
-          </div>
-        );
-      })}
-      <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+            );
+          })}
+        </div>
+      )}
+
+      <div className="wf-admin-pagination">
+        <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+      </div>
     </div>
   );
 }
 
-// ── 회원 관리 탭 ─────────────────────────────────
 function UsersTab() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -439,8 +502,8 @@ function UsersTab() {
 
   const handleBan = async (user: AdminUser) => {
     const ok = await confirmToast({
-      message: `${user.nickname} 계정을 이용 제한(밴)할까요?`,
-      confirmLabel: '밴',
+      message: `${user.nickname} 계정을 이용 제한할까요?`,
+      confirmLabel: '제한',
       danger: true,
     });
     if (!ok) return;
@@ -448,8 +511,8 @@ function UsersTab() {
       await adminApi.banUser(user.id);
       toast('이용 제한 처리되었습니다.', 'success');
       load(keyword, filter, page);
-    } catch (err: any) {
-      toast(err?.message ?? '밴 처리에 실패했습니다.', 'error');
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : '밴 처리에 실패했습니다.', 'error');
     }
   };
 
@@ -464,188 +527,154 @@ function UsersTab() {
       await adminApi.unbanUser(user.id);
       toast('이용 제한이 해제되었습니다.', 'success');
       load(keyword, filter, page);
-    } catch (err: any) {
-      toast(err?.message ?? '밴 해제에 실패했습니다.', 'error');
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : '밴 해제에 실패했습니다.', 'error');
     }
   };
 
   const formatLastLogin = (dt: string | null) => {
     if (!dt) return '없음';
-    const d = new Date(dt);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    return new Date(dt).toLocaleString('ko-KR');
   };
 
-  const ROLE_COLOR: Record<string, string> = { USER: '#8b8b96', ADMIN: '#c9a227', PRO: '#4ade80' };
+  const roleStatusClass = (role: string) => {
+    const key = role?.toUpperCase();
+    if (key === 'ADMIN') return 'wf-admin-status--role-admin';
+    if (key === 'PRO') return 'wf-admin-status--role-pro';
+    return 'wf-admin-status--role-user';
+  };
 
   return (
     <div>
-      {/* 검색 + 필터 */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ display: 'flex', flex: 1, minWidth: 220 }}>
+      <div className="wf-admin-search-bar">
+        <div className="wf-admin-search">
           <input
             type="text"
+            className="wf-admin-search__input"
             placeholder="이메일 또는 닉네임 검색"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={handleKeyDown}
-            style={{
-              flex: 1, background: '#16161c', border: '1px solid #2e2e38',
-              borderRight: 'none', borderRadius: '8px 0 0 8px',
-              padding: '7px 14px', color: '#ececf0', fontSize: 14, outline: 'none',
-            }}
           />
-          <button type="button" onClick={handleSearch} style={{
-            padding: '7px 16px', background: '#c9a227', border: 'none',
-            borderRadius: '0 8px 8px 0', color: '#0c0c0f', fontWeight: 700, fontSize: 14, cursor: 'pointer',
-          }}>
+          <button type="button" className="wf-admin-search__btn" onClick={handleSearch}>
             검색
           </button>
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div className="wf-admin-filters wf-admin-filters--compact">
           {([
-            { value: 'all',     label: '전체' },
-            { value: 'banned',  label: '🚫 밴' },
-            { value: 'deleted', label: '🗑 탈퇴' },
+            { value: 'all', label: '전체' },
+            { value: 'banned', label: '이용 제한' },
+            { value: 'deleted', label: '탈퇴' },
           ] as const).map(({ value, label }) => (
-            <button key={value} type="button" style={filterBtnStyle(filter === value)} onClick={() => setFilter(value)}>
+            <button
+              key={value}
+              type="button"
+              className={`wf-admin-filter${filter === value ? ' wf-admin-filter--active' : ''}`}
+              onClick={() => setFilter(value)}
+            >
               {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* 목록 */}
       {loading ? (
-        <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
+        <p className="wf-admin-loading">불러오는 중…</p>
       ) : users.length === 0 ? (
-        <p style={{ color: '#8b8b96' }}>회원이 없습니다.</p>
+        <p className="wf-admin-empty">회원이 없습니다.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="wf-admin-list">
           {users.map((user) => (
-            <div key={user.id} style={{
-              background: '#16161c',
-              border: `1px solid ${user.isBanned ? '#f8717144' : '#2e2e38'}`,
-              borderRadius: 10, padding: '16px 18px',
-            }}>
-              {/* 1행 — 닉네임 + 뱃지 + 버튼 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-
-                {/* 닉네임 */}
-                <p style={{ color: '#ececf0', fontSize: 16, fontWeight: 700, margin: 0, marginRight: 4 }}>
+            <article
+              key={user.id}
+              className={`wf-admin-user-card${user.isBanned ? ' wf-admin-user-card--banned' : ''}`}
+            >
+              <div className="wf-admin-user-card__head">
+                <p className="wf-admin-user-card__name">
                   {user.nickname}
                   {user.name && (
-                    <span style={{ color: '#8b8b96', fontWeight: 400, marginLeft: 6, fontSize: 13 }}>
-                      ({user.name})
-                    </span>
+                    <span className="wf-admin-user-card__realname"> ({user.name})</span>
                   )}
                 </p>
-
-                {/* 온보딩 미완료 뱃지 — 권한 앞 */}
                 {user.isNewUser && (
-                  <span style={badgeStyle('#a78bfa')}>온보딩 미완료</span>
+                  <span className="wf-admin-status wf-admin-status--onboarding">온보딩 미완료</span>
                 )}
+                <span className={`wf-admin-status ${roleStatusClass(user.role)}`}>{user.role}</span>
+                {user.isBanned && <span className="wf-admin-status wf-admin-status--rejected">이용 제한</span>}
+                {user.isDeleted && <span className="wf-admin-status wf-admin-status--deleted">탈퇴</span>}
 
-                {/* 권한 뱃지 */}
-                <span style={badgeStyle(ROLE_COLOR[user.role?.toUpperCase()] ?? '#8b8b96')}>
-                  {user.role}
-                </span>
-
-                {/* 밴 뱃지 */}
-                {user.isBanned && <span style={badgeStyle('#f87171')}>이용 제한</span>}
-
-                {/* 탈퇴 뱃지 */}
-                {user.isDeleted && <span style={badgeStyle('#555')}>탈퇴</span>}
-
-                {/* 액션 버튼 영역 */}
                 {!user.isDeleted && (
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-
-                    {/* 권한 토글 — PRO 제외 */}
+                  <div className="wf-admin-user-card__actions">
                     {user.role !== 'PRO' && (
                       <div
+                        className="wf-admin-role-toggle"
                         onClick={() => handleRoleChange(user)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleRoleChange(user); }}
+                        role="button"
+                        tabIndex={0}
                         title={`${user.role === 'ADMIN' ? 'USER' : 'ADMIN'}으로 변경`}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 0,
-                          background: '#0c0c14', border: '1px solid #2e2e38',
-                          borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
-                        }}
                       >
-                        {/* USER 쪽 */}
-                        <span style={{
-                          padding: '5px 12px', fontSize: 12, fontWeight: 700,
-                          background: user.role === 'USER' ? '#8b8b9633' : 'transparent',
-                          color: user.role === 'USER' ? '#ececf0' : '#555',
-                          borderRight: '1px solid #2e2e38',
-                          transition: 'all 0.15s',
-                        }}>USER</span>
-                        {/* ADMIN 쪽 */}
-                        <span style={{
-                          padding: '5px 12px', fontSize: 12, fontWeight: 700,
-                          background: user.role === 'ADMIN' ? '#c9a22733' : 'transparent',
-                          color: user.role === 'ADMIN' ? '#c9a227' : '#555',
-                          transition: 'all 0.15s',
-                        }}>ADMIN</span>
+                        <span className={`wf-admin-role-toggle__opt${user.role === 'USER' ? ' wf-admin-role-toggle__opt--on-user' : ''}`}>
+                          USER
+                        </span>
+                        <span className={`wf-admin-role-toggle__opt${user.role === 'ADMIN' ? ' wf-admin-role-toggle__opt--on' : ''}`}>
+                          ADMIN
+                        </span>
                       </div>
                     )}
-
-                    {/* 밴 / 밴 해제 버튼 */}
                     {user.isBanned ? (
-                      <button type="button" onClick={() => handleUnban(user)} style={{
-                        padding: '5px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                        cursor: 'pointer', border: '1px solid #4ade8044',
-                        background: '#4ade8011', color: '#4ade80',
-                      }}>밴 해제</button>
+                      <button type="button" className="wf-admin-btn wf-admin-btn--success" onClick={() => handleUnban(user)}>
+                        제한 해제
+                      </button>
                     ) : (
-                      <button type="button" onClick={() => handleBan(user)} style={{
-                        padding: '5px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                        cursor: 'pointer', border: '1px solid #f8717144',
-                        background: '#f8717111', color: '#f87171',
-                      }}>이용 제한</button>
+                      <button type="button" className="wf-admin-btn wf-admin-btn--danger" onClick={() => handleBan(user)}>
+                        이용 제한
+                      </button>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* 2행 — 상세 정보 */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px 20px' }}>
+              <div className="wf-admin-user-meta">
                 <div>
-                  <span style={{ color: '#8b8b96', fontSize: 12 }}>이메일 </span>
-                  <span style={{ color: '#ececf0', fontSize: 13 }}>{user.email ?? '-'}</span>
+                  <span className="wf-admin-user-meta__label">이메일 </span>
+                  <span className="wf-admin-user-meta__value">{user.email ?? '-'}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#8b8b96', fontSize: 12 }}>생년월일 </span>
-                  <span style={{ color: '#ececf0', fontSize: 13 }}>{user.birthday ?? '-'}</span>
+                  <span className="wf-admin-user-meta__label">생년월일 </span>
+                  <span className="wf-admin-user-meta__value">{user.birthday ?? '-'}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#8b8b96', fontSize: 12 }}>마지막 로그인 </span>
-                  <span style={{ color: '#ececf0', fontSize: 13 }}>{formatLastLogin(user.lastLoginAt)}</span>
+                  <span className="wf-admin-user-meta__label">마지막 로그인 </span>
+                  <span className="wf-admin-user-meta__value">{formatLastLogin(user.lastLoginAt)}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#8b8b96', fontSize: 12 }}>가입일 </span>
-                  <span style={{ color: '#ececf0', fontSize: 13 }}>{new Date(user.createdAt).toLocaleDateString()}</span>
+                  <span className="wf-admin-user-meta__label">가입일 </span>
+                  <span className="wf-admin-user-meta__value">
+                    {new Date(user.createdAt).toLocaleDateString('ko-KR')}
+                  </span>
                 </div>
                 {user.isBanned && user.bannedAt && (
                   <div>
-                    <span style={{ color: '#f87171', fontSize: 12 }}>제한 일시 </span>
-                    <span style={{ color: '#f87171', fontSize: 13 }}>{new Date(user.bannedAt).toLocaleString()}</span>
+                    <span className="wf-admin-user-meta__label wf-admin-field__value--danger">제한 일시 </span>
+                    <span className="wf-admin-field__value--danger">
+                      {new Date(user.bannedAt).toLocaleString('ko-KR')}
+                    </span>
                   </div>
                 )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
 
-      <div style={{ marginTop: 16 }}>
+      <div className="wf-admin-pagination">
         <Pagination page={page} totalPages={totalPages} onPage={setPage} />
       </div>
     </div>
   );
 }
 
-// ── 메인 AdminPage ───────────────────────────────
 export default function AdminPage() {
   const [tab, setTab] = useState<AdminTabKey>('whiskey-requests');
   const navigate = useNavigate();
@@ -666,27 +695,37 @@ export default function AdminPage() {
   }, [navigate]);
 
   const TAB_LIST: Array<{ key: AdminTabKey; label: string }> = [
-    { key: 'whiskey-requests', label: '📋 위스키 등록 요청' },
-    { key: 'reports',          label: '🚨 신고 관리' },
-    { key: 'users',            label: '👤 회원 관리' },
+    { key: 'whiskey-requests', label: '위스키 등록 요청' },
+    { key: 'reports', label: '신고 관리' },
+    { key: 'users', label: '회원 관리' },
   ];
 
   return (
     <WireframePage scroll>
-      <div style={{ marginBottom: 24 }}>
-        <h1 className="wf-title" style={{ marginBottom: 4 }}>관리자</h1>
-        <p style={{ color: '#8b8b96', fontSize: 13, margin: 0 }}>운영 · 신고 처리 · 위스키 등록 승인</p>
+      <div className="wf-admin-page">
+        <header className="wf-admin-intro">
+          <p className="wf-admin-intro__eyebrow">운영</p>
+          <h1 className="wf-admin-intro__title">관리자</h1>
+          <p className="wf-admin-intro__subtitle">등록 요청 승인, 신고 처리, 회원 관리</p>
+        </header>
+
+        <nav className="wf-admin-tabs" aria-label="관리자 메뉴">
+          {TAB_LIST.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              className={`wf-admin-tab${tab === key ? ' wf-admin-tab--active' : ''}`}
+              onClick={() => setTab(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {tab === 'whiskey-requests' && <WhiskeyRequestsTab />}
+        {tab === 'reports' && <ReportsTab />}
+        {tab === 'users' && <UsersTab />}
       </div>
-      <div style={{ display: 'flex', borderBottom: '1px solid #2e2e38', marginBottom: 24 }}>
-        {TAB_LIST.map(({ key, label }) => (
-          <button key={key} type="button" style={tabStyle(tab === key)} onClick={() => setTab(key)}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {tab === 'whiskey-requests' && <WhiskeyRequestsTab />}
-      {tab === 'reports'          && <ReportsTab />}
-      {tab === 'users'            && <UsersTab />}
     </WireframePage>
   );
 }
