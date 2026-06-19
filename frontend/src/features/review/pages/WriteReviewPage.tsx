@@ -190,7 +190,7 @@ export default function WriteReviewPage() {
             <section className="wf-write-review-block wf-review-note-attach">
               <div className="wf-review-note-attach__head">
                 <div>
-                  <h2 className="wf-section-title">My Note 첨부</h2>
+                  <h2 className="wf-section-title">노트 첨부</h2>
                   <p className="wf-text-sm wf-write-review-note-hint">
                     이 위스키에 작성한 시음 노트를 리뷰에 함께 표시할 수 있습니다.
                   </p>

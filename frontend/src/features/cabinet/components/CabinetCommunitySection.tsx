@@ -103,7 +103,7 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
               <p className="wf-cabinet-feed__meta">{postMeta(post)}</p>
               <div className="wf-cabinet-feed__actions">
                 <span className="wf-cabinet-feed__meta wf-cabinet-feed__meta--inline">
-                  ♡ {post.likeCount} · 댓글 {post.commentCount} · {formatPostDate(post.createdAt)}
+                  좋아요 {post.likeCount} · 댓글 {post.commentCount} · {formatPostDate(post.createdAt)}
                 </span>
                 <Link
                   to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}

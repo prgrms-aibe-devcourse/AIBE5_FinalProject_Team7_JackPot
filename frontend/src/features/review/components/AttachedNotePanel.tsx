@@ -158,11 +158,11 @@ export function AttachedNotePanel({ noteId, embedded = false }: AttachedNotePane
   return (
     <section
       className={`wf-attached-note${embedded ? ' wf-attached-note--embedded' : ' wf-box'}`}
-      aria-label={embedded ? '첨부 노트' : '첨부된 My Note'}
+      aria-label={embedded ? '첨부 노트' : '첨부된 노트'}
     >
       {!embedded ? (
         <div>
-          <p className="wf-text-label">첨부된 My Note</p>
+          <p className="wf-text-label">첨부된 노트</p>
           <h3 className="wf-attached-note__title">{note.whiskeyName}</h3>
         </div>
       ) : null}

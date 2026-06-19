@@ -211,7 +211,7 @@ export function TastingSummaryPanel({
             <p className="wf-card__meta">향, 맛, 피니시를 기록해두면 다음 선택이 더 쉬워집니다.</p>
             {notePath ? (
               <Link to={notePath} className="wf-detail-tasting__cta">
-                My Note 작성하기 →
+                노트 작성하기 →
               </Link>
             ) : null}
           </div>
@@ -221,7 +221,7 @@ export function TastingSummaryPanel({
             {notePath ? (
               <div className="wf-detail-tasting__mynote-actions">
                 <Link to={notePath} className="wf-detail-tasting__cta">
-                  My Note 수정 →
+                  노트 수정 →
                 </Link>
               </div>
             ) : null}
