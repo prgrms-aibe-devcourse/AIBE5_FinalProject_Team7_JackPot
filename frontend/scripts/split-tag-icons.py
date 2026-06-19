@@ -37,6 +37,11 @@ TAGS = [
 ]
 COL_WIDTHS = [251, 251, 251, 251, 250]
 ROW_HEIGHT = 209
+# Some circles (notably the right-hand columns) sit left within their cell and
+# their arc spills past the nominal cell edge into the neighbour's gutter. We
+# crop a wider window so the full circle is captured, then trim real neighbour
+# bleed via the gutter detection in _seam_clean.
+EXPAND_X = 26
 
 SEAM_MARGIN = 6        # ignore bleed within this many px of the left/right seam
 LABEL_Y = 180          # components whose centre is below this are label text
@@ -202,13 +207,14 @@ def export_icon(cell: Image.Image) -> Image.Image:
 def main() -> None:
     sprite = Image.open(SPRITE)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    sw = sprite.size[0]
     for index, slug in enumerate(TAGS):
         col, row = index % 5, index // 5
         cell = sprite.crop(
             (
-                col_x(col),
+                max(0, col_x(col) - EXPAND_X),
                 row * ROW_HEIGHT,
-                col_x(col) + COL_WIDTHS[col],
+                min(sw, col_x(col) + COL_WIDTHS[col] + EXPAND_X),
                 (row + 1) * ROW_HEIGHT,
             )
         )
