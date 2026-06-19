@@ -29,7 +29,7 @@ export default function NoticePage() {
         <span className="wf-chip wf-chip--on">공지·FAQ</span>
       </nav>
       <h1 className="wf-title">공지·FAQ</h1>
-      <PostList posts={data?.content ?? []} isLoading={isLoading} />
+      <PostList posts={data?.content ?? []} isLoading={isLoading} showCategory={false} />
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>
   );

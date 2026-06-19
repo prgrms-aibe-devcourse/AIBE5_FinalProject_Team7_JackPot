@@ -39,13 +39,6 @@ function extractFirstImage(content: string): string | null {
   return mdImg ? mdImg[1] : null;
 }
 
-const POST_TYPE_LABEL: Record<LoungePost['postType'], string> = {
-  NOTICE: '공지',
-  COLUMN: '칼럼',
-  QA: '질문',
-  FREE: '자유',
-  FEED: '피드',
-};
 
 function formatCount(value: number) {
   if (value >= 10000) return `${(value / 10000).toFixed(1).replace('.0', '')}만`;
@@ -83,7 +76,6 @@ function FeedCard({ post }: { post: LoungePost }) {
           </div>
           <span className="wf-feed-card__date">{post.createdAt.slice(0, 10)}</span>
         </div>
-        <span className="wf-feed-card__type">{POST_TYPE_LABEL[post.postType]}</span>
       </div>
 
       <Link to={detailPath} className="wf-feed-card__body">
