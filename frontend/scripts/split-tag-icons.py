@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
-"""Split frontend/public/images/tags.png into individual tag icons."""
+"""Split frontend/public/images/tags.png into individual tag icons.
+
+The sprite is a regular 5x6 grid. Every cell holds a circular emblem with a
+text label underneath. Measuring all 28 cells shows the circle is consistently
+placed: it spans roughly y[20..189] and is horizontally centred, while the
+label always begins at y>=188. We therefore crop a fixed window around the
+circle (centred horizontally, just above the label), which guarantees the full
+circle is captured without clipping and without pulling in the label text or
+bleed from neighbouring cells at the seams.
+"""
 from __future__ import annotations
 
 from pathlib import Path
-from collections import deque
+
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,121 +30,39 @@ TAGS = [
 ]
 COL_WIDTHS = [251, 251, 251, 251, 250]
 ROW_HEIGHT = 209
-TOP_CUT_Y = 20
-LABEL_CUT_Y = 166
-EDGE_MARGIN_X = 6
-BBOX_PAD = 10
-EXTRA_MARGIN = 18
+
+# Fixed circle window measured across all cells.
+CIRCLE_TOP = 16          # a touch above the ring top (~20)
+CIRCLE_BOTTOM = 186      # at the ring bottom (~186 median); stays above the label band (>=188)
+CIRCLE_HALF_WIDTH = 92   # half width of the crop; covers ring + right flourish
 TARGET = 256
+CANVAS_MARGIN = 12       # transparent breathing room around the circle
 
 
 def col_x(col: int) -> int:
     return sum(COL_WIDTHS[:col])
 
 
-def _is_icon_pixel(r: int, g: int, b: int, a: int) -> bool:
-    if a < 12:
-        return False
-    if r > 238 and g > 238 and b > 238:
-        return False
-    # Label text/bleed is mostly near-black. Keep dark gray icons.
-    if max(r, g, b) < 60:
-        return False
-    return True
-
-
-def _icon_bbox(icon_area: Image.Image) -> tuple[int, int, int, int] | None:
-    rgba = icon_area.convert("RGBA")
-    px = rgba.load()
-    w, h = rgba.size
-    mask: list[list[bool]] = [[False] * w for _ in range(h)]
-    points: list[tuple[int, int]] = []
-    for y in range(h):
-        for x in range(EDGE_MARGIN_X, w - EDGE_MARGIN_X):
-            if _is_icon_pixel(*px[x, y]):
-                mask[y][x] = True
-                points.append((x, y))
-
-    if not points:
-        return None
-
-    visited: set[tuple[int, int]] = set()
-    components: list[dict[str, float]] = []
-    for sx, sy in points:
-        if (sx, sy) in visited:
-            continue
-        q: deque[tuple[int, int]] = deque([(sx, sy)])
-        visited.add((sx, sy))
-        min_x, min_y, max_x, max_y = sx, sy, sx, sy
-        count = 0
-        sum_x = 0.0
-        sum_y = 0.0
-        while q:
-            x, y = q.popleft()
-            count += 1
-            sum_x += x
-            sum_y += y
-            min_x = min(min_x, x)
-            min_y = min(min_y, y)
-            max_x = max(max_x, x)
-            max_y = max(max_y, y)
-            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
-                if 0 <= nx < w and 0 <= ny < h and mask[ny][nx] and (nx, ny) not in visited:
-                    visited.add((nx, ny))
-                    q.append((nx, ny))
-        components.append(
-            {
-                "count": float(count),
-                "min_x": float(min_x),
-                "min_y": float(min_y),
-                "max_x": float(max_x),
-                "max_y": float(max_y),
-                "cx": sum_x / count,
-                "cy": sum_y / count,
-            }
-        )
-
-    cx, cy = w / 2.0, h / 2.0
-    center_radius2 = 110.0 * 110.0
-    kept = [
-        c
-        for c in components
-        if c["count"] >= 20.0
-        and (c["cx"] - cx) ** 2 + (c["cy"] - cy) ** 2 <= center_radius2
-    ]
-    if not kept:
-        kept = [max(components, key=lambda c: c["count"])]
-
-    min_x = int(min(c["min_x"] for c in kept))
-    min_y = int(min(c["min_y"] for c in kept))
-    max_x = int(max(c["max_x"] for c in kept))
-    max_y = int(max(c["max_y"] for c in kept))
-
-    return (
-        max(0, min_x - BBOX_PAD),
-        max(0, min_y - BBOX_PAD),
-        min(w, max_x + BBOX_PAD + 1),
-        min(h, max_y + BBOX_PAD + 1),
-    )
-
-
 def export_icon(cell: Image.Image) -> Image.Image:
-    icon_area = cell.crop((0, TOP_CUT_Y, cell.size[0], LABEL_CUT_Y))
-    bbox = _icon_bbox(icon_area)
-    rgba = icon_area.crop(bbox) if bbox else icon_area
-    rgba = rgba.convert("RGBA")
-    px = rgba.load()
-    w, h = rgba.size
-    for y in range(h):
-        for x in range(w):
+    w, h = cell.size
+    cx = w / 2.0
+    left = max(0, int(round(cx - CIRCLE_HALF_WIDTH)))
+    right = min(w, int(round(cx + CIRCLE_HALF_WIDTH)))
+    top = max(0, CIRCLE_TOP)
+    bottom = min(h, CIRCLE_BOTTOM)
+
+    icon = cell.crop((left, top, right, bottom)).convert("RGBA")
+    px = icon.load()
+    iw, ih = icon.size
+    for y in range(ih):
+        for x in range(iw):
             r, g, b, a = px[x, y]
-            if r > 235 and g > 235 and b > 235:
+            if r > 234 and g > 234 and b > 234:
                 px[x, y] = (255, 255, 255, 0)
 
-    tw, th = rgba.size
-    side = max(tw, th) + EXTRA_MARGIN * 2
+    side = max(iw, ih) + CANVAS_MARGIN * 2
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
-    canvas.paste(rgba, ((side - tw) // 2, (side - th) // 2))
+    canvas.paste(icon, ((side - iw) // 2, (side - ih) // 2))
     return canvas.resize((TARGET, TARGET), Image.Resampling.LANCZOS)
 
 
