@@ -73,25 +73,27 @@ def _seam_clean(cell: Image.Image) -> Image.Image:
 
     cols = [ink_col(x) for x in range(w)]
 
-    # left valley within the seam band
-    band = 50
+    # A neighbour's arc only counts as bleed when it is separated from our
+    # circle by a near-empty "gutter" column (a real white gap). The gradual
+    # ink decline at our own circle's left/right arc never reaches the gutter
+    # level, so it is preserved. This is the key: do NOT mistake our own arc
+    # for bleed.
+    gutter = 4          # ink rows at/under this is a white gap
+    bleed = 15          # a neighbour blob has at least this much ink
+    band = 60
+
     left_cut = 0
-    seg = cols[5:band]
-    if seg:
-        vmin = min(seg)
-        vidx = 5 + seg.index(vmin)
-        # only cut if there is a clear bleed bump to the left of the valley
-        if max(cols[0:vidx], default=0) > vmin + 8:
-            left_cut = vidx
+    for x in range(3, min(band, w)):
+        if cols[x] <= gutter and max(cols[0:x], default=0) > bleed:
+            left_cut = x + 1  # keep scanning: take the gutter nearest the circle
 
     right_cut = w
-    seg = cols[w - band:w - 5]
-    if seg:
-        vmin = min(seg)
-        vidx = (w - band) + seg.index(vmin)
-        if max(cols[vidx + 1:w], default=0) > vmin + 8:
-            right_cut = vidx + 1
+    for x in range(w - 4, max(w - band, 0) - 1, -1):
+        if cols[x] <= gutter and max(cols[x + 1:w], default=0) > bleed:
+            right_cut = x      # nearest gutter to the circle on the right
 
+    if left_cut == 0 and right_cut == w:
+        return rgba
     for y in range(h):
         for x in range(w):
             if x < left_cut or x >= right_cut:
@@ -188,6 +190,8 @@ def export_icon(cell: Image.Image) -> Image.Image:
     bottom = min(h, max_y + BBOX_PAD + 1)
     icon = rgba.crop((left, top, right, bottom))
 
+    # Centre the full circle (its bounding box) on a square canvas so the ring
+    # is framed with equal margin on every side and is never clipped.
     iw, ih = icon.size
     side = max(iw, ih) + CANVAS_MARGIN * 2
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
