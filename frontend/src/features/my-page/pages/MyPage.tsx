@@ -33,6 +33,7 @@ export default function MyPage() {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
 
   // USER-01: 프로필 조회
@@ -151,6 +152,7 @@ export default function MyPage() {
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordConfirm('');
+      setPasswordModalOpen(false);
       toast('비밀번호가 변경되었습니다.', 'success');
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : '비밀번호 변경에 실패했습니다.', 'error');
@@ -163,116 +165,222 @@ export default function MyPage() {
 
   return (
     <WireframePage scroll>
-      <p className="wf-breadcrumb">홈 / <strong>마이페이지</strong></p>
-      <div className="wf-box wf-panel wf-mypage-profile-panel">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage}
-          className="wf-mypage-avatar-btn"
-          aria-label="프로필 사진 변경"
-        >
-          <div className="wf-mypage-avatar">
-            {avatarSrc ? (
-              <img src={avatarSrc} alt={me?.nickname ?? ''} />
-            ) : (
-              <span className="wf-mypage-avatar__emoji">🥃</span>
-            )}
+      <div className="wf-mypage-page">
+        <p className="wf-breadcrumb">홈 / <strong>마이페이지</strong></p>
+
+        <section className="wf-mypage-hero" aria-label="내 계정 요약">
+          <div className="wf-mypage-hero__profile">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingImage}
+              className="wf-mypage-avatar-btn"
+              aria-label="프로필 사진 변경"
+            >
+              <div className="wf-mypage-avatar">
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt={me?.nickname ?? ''} />
+                ) : (
+                  <span className="wf-mypage-avatar__initial">{(me?.nickname ?? 'W').slice(0, 1)}</span>
+                )}
+              </div>
+              <span className="wf-mypage-avatar__overlay">
+                {uploadingImage ? '업로드 중' : '사진 변경'}
+              </span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPT_IMAGE}
+              hidden
+              onChange={handleProfileImageChange}
+            />
+
+            <div className="wf-mypage-identity">
+              <h1 className="wf-mypage-name">{me?.nickname ?? '프로필'}</h1>
+              <p className="wf-mypage-email">{me?.email ?? '로그인 후 프로필을 불러옵니다.'}</p>
+            </div>
           </div>
-          <span className="wf-mypage-avatar__overlay">
-            {uploadingImage ? '업로드…' : '변경'}
-          </span>
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={ACCEPT_IMAGE}
-          hidden
-          onChange={handleProfileImageChange}
-        />
-        <div>
-          <h1 className="wf-title wf-mypage-name">{me?.nickname ?? '—'}</h1>
-          <p className="wf-text-sm">{me?.email ?? '로그인 후 프로필을 불러옵니다.'}</p>
-        </div>
-      </div>
-      <p className="wf-section-title">설정</p>
-      <div className="wf-box wf-mypage-settings-box">
-        <p className="wf-text-sm wf-mypage-settings-box__label">프로필 수정</p>
-        <div className="wf-mypage-form">
-          <Input
-            label="닉네임"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="닉네임을 입력하세요"
-            disabled={saving}
-          />
-          <Button variant="primary" block disabled={saving} onClick={handleSave}>
-            {saving ? '저장 중...' : '닉네임 저장'}
+
+          <Button variant="ghost" to={PATHS.CABINET} className="wf-mypage-hero__link">
+            내 캐비넷 보기
           </Button>
+        </section>
+
+        <div className="wf-mypage-grid">
+          <section className="wf-mypage-card wf-mypage-card--primary" aria-labelledby="profile-edit-title">
+            <div className="wf-mypage-card__header">
+              <div>
+                <p className="wf-mypage-kicker">Profile</p>
+                <h2 id="profile-edit-title">프로필 수정</h2>
+              </div>
+            </div>
+            <div className="wf-mypage-form">
+              <div className="wf-mypage-inline-field">
+                <Input
+                  label="닉네임"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  placeholder="닉네임을 입력하세요"
+                  disabled={saving}
+                />
+                <Button variant="primary" size="sm" disabled={saving} onClick={handleSave}>
+                  {saving ? '저장 중...' : '닉네임 저장'}
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          <section className="wf-mypage-card wf-mypage-card--actions" aria-labelledby="quick-actions-title">
+            <div className="wf-mypage-card__header">
+              <div>
+                <p className="wf-mypage-kicker">Actions</p>
+                <h2 id="quick-actions-title">바로가기</h2>
+              </div>
+            </div>
+
+            <button
+              className="wf-mypage-action-row"
+              onClick={() => navigate(PATHS.SURVEY)}
+              type="button"
+            >
+              <span>
+                <strong>취향 설문 다시하기</strong>
+                <small>추천 결과를 새 취향에 맞게 갱신합니다.</small>
+              </span>
+              <span aria-hidden="true">›</span>
+            </button>
+
+            <button
+              className="wf-mypage-action-row"
+              onClick={() => navigate('/whiskey-requests')}
+              type="button"
+            >
+              <span>
+                <strong>위스키 등록 요청</strong>
+                <small>찾을 수 없는 위스키를 운영팀에 제안합니다.</small>
+              </span>
+              <span aria-hidden="true">›</span>
+            </button>
+          </section>
+
+          <section className="wf-mypage-card wf-mypage-card--compact" aria-labelledby="password-title">
+            <div className="wf-mypage-card__header">
+              <div>
+                <p className="wf-mypage-kicker">Security</p>
+                <h2 id="password-title">비밀번호 변경</h2>
+              </div>
+            </div>
+            <div className="wf-mypage-compact-row">
+              <div>
+                <strong>로그인 비밀번호</strong>
+                <p>현재 비밀번호 확인 후 새 비밀번호로 변경합니다.</p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                className="wf-mypage-action-button wf-mypage-action-button--security"
+                onClick={() => setPasswordModalOpen(true)}
+              >
+                변경
+              </Button>
+            </div>
+          </section>
+
+          <section className="wf-mypage-card wf-mypage-card--danger" aria-labelledby="account-title">
+            <div className="wf-mypage-card__header">
+              <div>
+                <p className="wf-mypage-kicker">Account</p>
+                <h2 id="account-title">회원 관리</h2>
+              </div>
+            </div>
+            <div className="wf-mypage-danger-row">
+              <div>
+                <strong>회원 탈퇴</strong>
+                <p>탈퇴하면 계정 복구가 어렵습니다.</p>
+              </div>
+              <Button
+                variant="danger"
+                size="sm"
+                className="wf-mypage-action-button wf-mypage-action-button--danger"
+                disabled={withdrawing}
+                onClick={handleWithdraw}
+              >
+                {withdrawing ? '처리 중' : '탈퇴'}
+              </Button>
+            </div>
+          </section>
         </div>
       </div>
-      <div
-        className="wf-box wf-mypage-nav-item"
-        onClick={() => navigate(PATHS.SURVEY)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && navigate(PATHS.SURVEY)}
-      >
-        <div className="wf-mypage-nav-item__row">
-          <p className="wf-mypage-nav-item__label">취향 설문 다시하기</p>
-          <span className="wf-mypage-nav-item__arrow">›</span>
+
+      {passwordModalOpen ? (
+        <div
+          className="wf-mypage-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="password-modal-title"
+        >
+          <div className="wf-mypage-modal__backdrop" onClick={() => setPasswordModalOpen(false)} />
+          <section className="wf-mypage-modal__panel">
+            <div className="wf-mypage-modal__header">
+              <div>
+                <p className="wf-mypage-kicker">Security</p>
+                <h2 id="password-modal-title">비밀번호 변경</h2>
+              </div>
+              <button
+                type="button"
+                className="wf-mypage-modal__close"
+                onClick={() => setPasswordModalOpen(false)}
+                aria-label="비밀번호 변경 닫기"
+              >
+                ×
+              </button>
+            </div>
+            <div className="wf-mypage-form">
+              <Input
+                label="현재 비밀번호"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="현재 비밀번호"
+              />
+              <Input
+                label="새 비밀번호"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="새 비밀번호 (8자 이상)"
+              />
+              <Input
+                label="새 비밀번호 확인"
+                type="password"
+                value={newPasswordConfirm}
+                onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                placeholder="새 비밀번호 확인"
+              />
+              <div className="wf-mypage-modal__actions">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPasswordModalOpen(false)}
+                  disabled={savingPassword}
+                >
+                  취소
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="wf-mypage-action-button wf-mypage-action-button--security"
+                  disabled={savingPassword}
+                  onClick={handleChangePassword}
+                >
+                  {savingPassword ? '변경 중...' : '변경하기'}
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>
-      <div
-        className="wf-box wf-mypage-nav-item"
-        onClick={() => navigate('/whiskey-requests')}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && navigate('/whiskey-requests')}
-      >
-        <div className="wf-mypage-nav-item__row">
-          <p className="wf-mypage-nav-item__label">위스키 등록 요청</p>
-          <span className="wf-mypage-nav-item__arrow">›</span>
-        </div>
-      </div>
-      <div className="wf-box wf-mypage-settings-box">
-        <p className="wf-text-sm wf-mypage-settings-box__label">비밀번호 변경</p>
-        <div className="wf-mypage-form">
-          <Input
-            label="현재 비밀번호"
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            placeholder="현재 비밀번호"
-          />
-          <Input
-            label="새 비밀번호"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="새 비밀번호 (8자 이상)"
-          />
-          <Input
-            label="새 비밀번호 확인"
-            type="password"
-            value={newPasswordConfirm}
-            onChange={(e) => setNewPasswordConfirm(e.target.value)}
-            placeholder="새 비밀번호 확인"
-          />
-          <Button variant="primary" block disabled={savingPassword} onClick={handleChangePassword}>
-            {savingPassword ? '변경 중...' : '비밀번호 변경'}
-          </Button>
-        </div>
-      </div>
-      <div className="wf-box wf-mypage-settings-box">
-        <p className="wf-text-sm wf-mypage-settings-box__label">회원</p>
-        <Button variant="danger" block disabled={withdrawing} onClick={handleWithdraw}>
-          {withdrawing ? '탈퇴 중...' : '회원 탈퇴'}
-        </Button>
-      </div>
-      <Button variant="ghost" to={PATHS.CABINET} className="wf-mypage-cabinet-link">
-        캐비넷으로 이동
-      </Button>
+      ) : null}
     </WireframePage>
   );
 }
