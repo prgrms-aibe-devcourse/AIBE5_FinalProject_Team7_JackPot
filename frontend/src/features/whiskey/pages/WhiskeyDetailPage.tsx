@@ -446,7 +446,6 @@ export default function WhiskeyDetailPage() {
   ].filter(Boolean).join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
-  const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
   return (
     <WireframePage scroll>
       {wishModalOpen && (
@@ -562,7 +561,6 @@ export default function WhiskeyDetailPage() {
               <section className="wf-detail-info wf-detail-panel">
                 <div className="wf-detail-section-head">
                   <h2 className="wf-section-title">제품 정보</h2>
-                  <span className="wf-detail-section-head__count">리뷰 {reviewCount}개</span>
                 </div>
                 {(() => {
                   const intro = Object.entries(detail.description?.introduction ?? {});
@@ -608,7 +606,6 @@ export default function WhiskeyDetailPage() {
                 hasOfficial={hasOfficialNote(detail)}
                 officialNote={detail.note?.note ?? null}
                 onSourceChange={setSummarySource}
-                reviewPath={reviewPath}
               />
 
               <RelatedWhiskeys items={similarWhiskeys} isLoading={similarLoading} />
