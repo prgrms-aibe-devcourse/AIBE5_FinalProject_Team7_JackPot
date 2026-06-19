@@ -121,7 +121,7 @@ export interface TastingAxisView {
   tagLabels: string[];
 }
 
-export type TastingSummarySource = 'official' | 'userAvg';
+export type TastingSummarySource = 'official' | 'userAvg' | 'myNote';
 
 /**
  * WH-03 비슷한 위스키 추천 — 백엔드 → 프론트 응답 양식

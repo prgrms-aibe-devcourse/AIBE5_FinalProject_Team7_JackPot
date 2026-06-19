@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { getTagTooltip } from '../constants/tagDescriptions';
 import type { WhiskeyTagStat } from '../types';
 
-const MIN_RADIUS = 46;
-const MAX_RADIUS = 62;
+const MIN_RADIUS = 42;
+const MAX_RADIUS = 78;
 const TAG_FILTERS = [
   { value: 'all', label: '전체' },
   { value: 'nose', label: '향' },
@@ -109,7 +109,10 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
                     </div>
                   ) : null}
                 </div>
-                <span className="wf-detail-tags__name">{tag.name}</span>
+                <span className="wf-detail-tags__name">
+                  {tag.name}
+                  <span className="wf-detail-tags__name-count">({tag.count})</span>
+                </span>
               </li>
             );
           })}

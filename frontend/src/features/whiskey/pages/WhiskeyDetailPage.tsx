@@ -25,13 +25,13 @@ import {
   useWhiskeyReviews,
   useWhiskeyReviewStats,
 } from '../hooks/useWhiskeyDetail';
-import type { TastingSummarySource, WhiskeyReview } from '../types';
+import type { TastingAxisKey, TastingAxisView, TastingSummarySource, WhiskeyReview } from '../types';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 import '../whiskey.css';
 
-type DetailTab = 'info' | 'reviews' | 'note';
+type DetailTab = 'info' | 'reviews';
 
 function formatType(type: string): string {
   const map: Record<string, string> = {
@@ -130,93 +130,19 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
   );
 }
 
-function PersonalNotePanel({
-  note,
-  isLoading,
-  notePath,
-  currentUserId,
-}: {
-  note: MyTastingNote | null | undefined;
-  isLoading: boolean;
-  notePath: string;
-  currentUserId: number | null;
-}) {
-  if (currentUserId == null) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-        </div>
-        <p className="wf-text-sm">로그인 후 이 위스키에 대한 개인 시음 노트를 남길 수 있습니다.</p>
-        <Button to={PATHS.LOGIN} className="wf-detail-personal-note__cta">로그인하기</Button>
-      </section>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-        </div>
-        <div className="wf-skeleton-line" style={{ width: '45%', height: 14 }} />
-        <div className="wf-skeleton-line" style={{ width: '88%', height: 14, marginTop: 12 }} />
-      </section>
-    );
-  }
-
-  if (!note) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-          <span className="wf-detail-section-head__count">미작성</span>
-        </div>
-        <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다. 향, 맛, 피니시를 기록해두면 다음 선택이 더 쉬워집니다.</p>
-        <Button to={notePath} className="wf-detail-personal-note__cta">My Note 작성</Button>
-      </section>
-    );
-  }
-
-  const scoreItems = [
-    ['바디', note.bodyScore],
-    ['피니시', note.finishScore],
-    ['스모키', note.smokyScore],
-    ['스파이시', note.spicyScore],
-    ['단맛', note.sweetScore],
+/** 내 시음 노트 점수를 레이더 축 데이터로 변환 */
+function buildMyNoteAxes(note: MyTastingNote | null | undefined): TastingAxisView[] {
+  if (!note) return [];
+  const items: [TastingAxisKey, string, number | null | undefined][] = [
+    ['body', '바디', note.bodyScore],
+    ['finish', '피니시', note.finishScore],
+    ['smoky', '스모키', note.smokyScore],
+    ['spicy', '스파이시', note.spicyScore],
+    ['sweet', '단맛', note.sweetScore],
   ];
-
-  return (
-    <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-      <div className="wf-detail-section-head">
-        <h2 className="wf-section-title">개인 노트</h2>
-        <span className="wf-detail-section-head__count">
-          {note.isDraft ?? note.draft ? '임시저장' : '작성 완료'}
-        </span>
-      </div>
-      <div className="wf-detail-personal-note__scores">
-        {scoreItems.map(([label, score]) => (
-          <span key={label}>
-            <strong>{label}</strong>
-            {formatTenPointScore(typeof score === 'number' ? score : undefined)}
-          </span>
-        ))}
-      </div>
-      <p className="wf-text-sm wf-detail-personal-note__memo">
-        {note.memo || '작성된 메모가 없습니다.'}
-      </p>
-      {note.tags?.length ? (
-        <div className="wf-detail-personal-note__tags">
-          {note.tags.slice(0, 8).map((tag) => (
-            <span key={tag.id}>{tag.name}</span>
-          ))}
-        </div>
-      ) : null}
-      <Button to={`${notePath}?noteId=${note.id}`} className="wf-detail-personal-note__cta">
-        My Note 수정
-      </Button>
-    </section>
-  );
+  return items
+    .filter(([, , score]) => typeof score === 'number')
+    .map(([key, label, score]) => ({ key, label, score: score as number, tagLabels: [] }));
 }
 
 export default function WhiskeyDetailPage() {
@@ -410,6 +336,8 @@ export default function WhiskeyDetailPage() {
     () => (detail ? buildTastingAxes(detail) : []),
     [detail],
   );
+  const myNoteAxes = useMemo(() => buildMyNoteAxes(myNote), [myNote]);
+  const summaryAxes = effectiveSource === 'myNote' ? myNoteAxes : tastingAxes;
 
   if (isLoading) {
     return (
@@ -460,45 +388,44 @@ export default function WhiskeyDetailPage() {
           <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
           <p className="wf-detail-hero__meta">{metaLine}</p>
         </div>
-        <div className="wf-detail-hero__stats" aria-label="위스키 요약">
-          <div className="wf-detail-hero__stat">
-            <span>시음 점수</span>
-            <strong>{formatTenPointScore(detail.noteSummary?.bodyScore)}</strong>
+        <div className="wf-detail-hero__aside">
+          <div className="wf-tabs" data-active={activeTab} role="tablist">
+            <span className="wf-tabs__pill" aria-hidden="true" />
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'info'}
+              className={`wf-tab-item${activeTab === 'info' ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setActiveTab('info')}
+            >
+              정보
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'reviews'}
+              className={`wf-tab-item${activeTab === 'reviews' ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              리뷰
+            </button>
           </div>
-          <div className="wf-detail-hero__stat">
-            <span>리뷰 평점</span>
-            <strong>{formatFivePointScore(displayRating)}</strong>
-          </div>
-          <div className="wf-detail-hero__stat">
-            <span>노트</span>
-            <strong>{detail.noteSummary?.noteCount ?? 0}</strong>
+          <div className="wf-detail-hero__stats" aria-label="위스키 요약">
+            <div className="wf-detail-hero__stat">
+              <span>시음 점수</span>
+              <strong>{formatTenPointScore(detail.noteSummary?.bodyScore)}</strong>
+            </div>
+            <div className="wf-detail-hero__stat">
+              <span>리뷰 평점</span>
+              <strong>{formatFivePointScore(displayRating)}</strong>
+            </div>
+            <div className="wf-detail-hero__stat">
+              <span>노트</span>
+              <strong>{detail.noteSummary?.noteCount ?? 0}</strong>
+            </div>
           </div>
         </div>
       </header>
-
-      <div className="wf-tabs">
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'info' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('info')}
-        >
-          정보
-        </button>
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'reviews' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('reviews')}
-        >
-          리뷰
-        </button>
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'note' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('note')}
-        >
-          개인 노트
-        </button>
-      </div>
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
@@ -601,11 +528,16 @@ export default function WhiskeyDetailPage() {
               </section>
 
               <TastingSummaryPanel
-                axes={tastingAxes}
+                axes={summaryAxes}
                 source={effectiveSource}
                 hasOfficial={hasOfficialNote(detail)}
                 officialNote={detail.note?.note ?? null}
                 onSourceChange={setSummarySource}
+                isLoggedIn={currentUserId != null}
+                myNoteLoading={myNoteLoading}
+                hasMyNote={Boolean(myNote)}
+                notePath={myNote ? `${notePath}?noteId=${myNote.id}` : notePath}
+                loginPath={PATHS.LOGIN}
               />
 
               <RelatedWhiskeys items={similarWhiskeys} isLoading={similarLoading} />
@@ -664,15 +596,6 @@ export default function WhiskeyDetailPage() {
                 </div>
               )}
             </section>
-          ) : null}
-
-          {activeTab === 'note' ? (
-            <PersonalNotePanel
-              note={myNote}
-              isLoading={myNoteLoading}
-              notePath={notePath}
-              currentUserId={currentUserId}
-            />
           ) : null}
         </main>
 
