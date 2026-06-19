@@ -10,6 +10,7 @@ frontend/.env.local
 
 # Docker / 배포
 .env
+.env.rds
 
 # Local Docker Compose
 docker-compose.local.yml
