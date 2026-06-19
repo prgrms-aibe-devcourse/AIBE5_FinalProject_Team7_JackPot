@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import type { CabinetTab } from '@/app/router/paths';
 
 const TABS: { key: CabinetTab; label: string }[] = [
-  { key: 'pick', label: '★ Pick' },
-  { key: 'wish', label: '♡ 위시' },
-  { key: 'reviews', label: '💬 리뷰' },
-  { key: 'note', label: '📝 Note' },
+  { key: 'pick',    label: 'Pick' },
+  { key: 'wish',   label: '위시' },
+  { key: 'reviews', label: '리뷰' },
+  { key: 'note',   label: 'Note' },
 ];
 
 interface CabinetSubTabsProps {

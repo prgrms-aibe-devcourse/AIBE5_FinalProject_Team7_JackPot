@@ -82,11 +82,13 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.POST,
                                 "/api/v1/taste/survey"
                         ).permitAll()
-                        // 타인 캐비넷·픽 목록 조회 — 비로그인 허용 (/users/** 보다 위에 둘 것)
+                        // 타인 캐비넷·픽 목록·공개 프로필·공개 노트 조회 — 비로그인 허용 (/users/** 보다 위에 둘 것)
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
                                 "/api/v1/users/*/picks",
-                                "/api/v1/users/*/cabinet/stats"
+                                "/api/v1/users/*/cabinet/stats",
+                                "/api/v1/users/*/profile",
+                                "/api/v1/users/*/tasting-notes"
                         ).permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/uploads/**").authenticated()

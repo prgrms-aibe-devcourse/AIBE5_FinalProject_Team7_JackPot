@@ -16,44 +16,45 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
   const thumbSrc = resolveMediaUrl(imageUrl);
   const [imgError, setImgError] = useState(false);
   const detailPath = `/whiskey/${id}`;
+  const [type, abv] = meta.split(' · ');
 
   return (
-    <article className={`wf-cabinet-pick wf-box${highlighted ? ' wf-box--accent' : ''}`}>
+    <article className={`wf-cabinet-pick-card${highlighted ? ' wf-cabinet-pick-card--accent' : ''}`}>
 
-      {/* 이미지 — 클릭 시 상세 이동 */}
-      <Link to={detailPath} className="wf-cabinet-pick__thumb-link">
+      {/* 이미지 */}
+      <Link to={detailPath} className="wf-cabinet-pick-card__thumb-link">
         {thumbSrc && !imgError ? (
           <img
             src={thumbSrc}
             alt={name}
-            className="wf-cabinet-pick__thumb"
+            className="wf-cabinet-pick-card__thumb"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="wf-cabinet-pick__thumb wf-placeholder" />
+          <div className="wf-cabinet-pick-card__thumb wf-placeholder" />
         )}
       </Link>
 
       {/* 텍스트 영역 */}
-      <div className="wf-cabinet-pick__body">
-        <Link to={detailPath} className="wf-cabinet-pick__title">
+      <div className="wf-cabinet-pick-card__body">
+        <Link to={detailPath} className="wf-cabinet-pick-card__title">
           {name}
         </Link>
-        <p className="wf-text-sm">{meta}</p>
+        <div className="wf-cabinet-pick-card__badges">
+          {type && <span className="wf-cabinet-pick-card__badge wf-cabinet-pick-card__badge--type">{type}</span>}
+          {abv  && <span className="wf-cabinet-pick-card__badge wf-cabinet-pick-card__badge--abv">🌡 {abv}</span>}
+        </div>
       </div>
 
-      {/* 우측 액션 영역 */}
-      <div className="wf-cabinet-pick__actions">
-        {/* 상세보기 버튼 */}
-        <Link to={detailPath} className="wf-cabinet-pick__detail-btn">
+      {/* 액션 */}
+      <div className="wf-cabinet-pick-card__footer">
+        <Link to={detailPath} className="wf-cabinet-pick-card__detail-btn">
           상세보기
         </Link>
-
-        {/* 제거 버튼 (본인만) */}
         {!readonly && onRemove && (
           <button
             type="button"
-            className="wf-cabinet-pick__remove-btn"
+            className="wf-cabinet-pick-card__remove-btn"
             onClick={onRemove}
           >
             제거

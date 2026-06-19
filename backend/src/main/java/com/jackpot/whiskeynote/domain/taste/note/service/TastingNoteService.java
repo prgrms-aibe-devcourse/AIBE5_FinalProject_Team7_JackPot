@@ -231,6 +231,26 @@ public class TastingNoteService {
         return TastingNoteResponse.from(note, tagResponses);
     }
 
+    // 타인 공개 노트 목록 조회
+    @Transactional(readOnly = true)
+    public Page<TastingNoteResponse> getUserPublicTastingNotes(Long targetUserId, int page, int size) {
+        if (!usersRepository.existsById(targetUserId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+        }
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "updatedAt")
+        );
+        return tastingNoteRepository.findByUserIdAndIsDraftFalseOrderByUpdatedAtDesc(targetUserId, pageRequest)
+                .map(note -> {
+                    List<TastingNoteTagResponse> tagResponses = note.getNoteTags().stream()
+                            .map(noteTag -> TastingNoteTagResponse.from(noteTag.getTag()))
+                            .toList();
+                    return TastingNoteResponse.from(note, tagResponses);
+                });
+    }
+
     private void validateOwner(TastingNote note, Long userId, String message) {
         if (!note.getUser().getId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
