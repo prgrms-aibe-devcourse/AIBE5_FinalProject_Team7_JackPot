@@ -1274,8 +1274,8 @@
 }
 
 .wf-detail-tags__image {
-  width: 118%;
-  height: 118%;
+  width: 128%;
+  height: 128%;
   object-fit: contain;
   pointer-events: none;
 }
@@ -1283,10 +1283,12 @@
 /* Apple "Liquid Glass" 툴팁 — 라이트 페이지에 어울리는 프로스티드 글래스 */
 .wf-detail-tags__tooltip {
   position: absolute;
-  z-index: 30;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px) scale(0.96);
+  z-index: 40;
+  /* 태그는 좌측 사이드바에 있어 위/왼쪽으로 열면 잘린다 → 여백이 넉넉한 오른쪽으로 펼침 */
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px) scale(0.96);
+  transform-origin: left center;
   width: min(286px, 74vw);
   padding: 14px 16px;
   border-radius: 20px;
@@ -1331,7 +1333,24 @@
 .wf-detail-tags__item-wrap:focus-within .wf-detail-tags__tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+/* 모바일: 사이드바가 전체 폭이 되어 오른쪽으로 열면 넘친다 → 버블 위 중앙 정렬로 폴백 */
+@media (max-width: 768px) {
+  .wf-detail-tags__tooltip {
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + 12px);
+    transform: translateX(-50%) translateY(6px) scale(0.96);
+    transform-origin: center bottom;
+    width: min(286px, 80vw);
+  }
+
+  .wf-detail-tags__item-wrap:hover .wf-detail-tags__tooltip,
+  .wf-detail-tags__item-wrap:focus-within .wf-detail-tags__tooltip {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 .wf-detail-tags__tooltip-title {

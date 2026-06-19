@@ -97,10 +97,9 @@ body {
 }
 
 .app-root .wf-detail-tags__image {
-  width: 22px;
-  height: 22px;
+  width: 128%;
+  height: 128%;
   object-fit: contain;
-  margin-bottom: 2px;
   pointer-events: none;
 }
 
