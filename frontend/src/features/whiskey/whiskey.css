@@ -1454,10 +1454,17 @@
   padding-top: 16px;
   border-top: 1px solid var(--wf-border, #2e2e38);
 }
+/* 향/맛 등 제목-본문을 핵심 특징 하위 요소와 동일 스타일로 */
 .wf-detail-official-note__row .wf-text-label {
-  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--wf-text);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
 }
 .wf-detail-official-note__row .wf-text-sm {
+  font-size: 16px;
   line-height: 1.6;
 }
 
