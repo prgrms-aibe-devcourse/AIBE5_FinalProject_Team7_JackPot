@@ -421,6 +421,28 @@
   flex-direction: column;
 }
 .wf-modal-panel--report { width: min(420px, 100%); gap: 14px; }
+.wf-modal-panel--whiskey-request { width: min(440px, 100%); gap: 14px; }
+.wf-modal-panel--whiskey-request .wf-modal-submit-btn {
+  background: var(--wf-accent);
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.wf-modal-panel--whiskey-request .wf-modal-submit-btn:hover:not(:disabled) {
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
+}
+.wf-modal-label {
+  color: var(--wf-muted);
+  font-size: 12px;
+  margin-bottom: 4px;
+  display: block;
+}
+.wf-modal-label-required { color: var(--wf-danger); }
+.wf-modal-field-row { display: flex; gap: 10px; }
+.wf-modal-field-row > * { flex: 1; min-width: 0; }
 .wf-modal-panel--wish {
   width: min(440px, 100%);
   gap: 14px;

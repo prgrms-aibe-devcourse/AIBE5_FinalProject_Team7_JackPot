@@ -64,5 +64,12 @@ if [[ "$RESET_BEFORE" == "1" ]]; then
 fi
 
 mysql_exec < "$SEED_FILE"
+
+PATCH_SQL="$SCRIPT_DIR/patch-user-introduction.sql"
+if [[ -f "$PATCH_SQL" ]]; then
+  echo "Applying schema patch ($PATCH_SQL) ..."
+  mysql_exec < "$PATCH_SQL"
+fi
+
 echo "Seed load OK."
 echo "backend 재시작 후 http://localhost:5173 에서 확인하세요."

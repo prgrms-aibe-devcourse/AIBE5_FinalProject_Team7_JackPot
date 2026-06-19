@@ -6,46 +6,51 @@ interface CabinetStatsBarProps {
   wish?: number;
   reviews: number;
   notes: number;
-  /** 타인 캐비넷: 위시 숨김 */
   hideWish?: boolean;
-  /** 현재 선택된 탭 — 전달하면 통계 항목이 탭 역할을 겸함 */
   active?: CabinetTab;
-  /** 탭 이동 기준 경로 (예: `${PATHS.CABINET}?section=bar`) — active와 함께 전달 */
   basePath?: string;
 }
+
+const TAB_LABEL: Record<CabinetTab, string> = {
+  pick: 'Pick',
+  wish: '위시',
+  reviews: '리뷰',
+  note: 'Note',
+};
 
 export function CabinetStatsBar({ pick, wish, reviews, notes, hideWish, active, basePath }: CabinetStatsBarProps) {
   const clickable = active != null && basePath != null;
   const separator = basePath?.includes('?') ? '&' : '?';
 
-  const items: { key: CabinetTab; label: string; value: number; modifier?: string }[] = [
-    { key: 'pick', label: 'Pick', value: pick, modifier: 'pick' },
-    ...(!hideWish && wish !== undefined ? [{ key: 'wish' as const, label: '위시', value: wish, modifier: 'wish' }] : []),
-    { key: 'reviews', label: '리뷰', value: reviews },
-    { key: 'note', label: 'Note', value: notes },
+  const items: { key: CabinetTab; value: number }[] = [
+    { key: 'pick', value: pick },
+    ...(!hideWish && wish !== undefined ? [{ key: 'wish' as const, value: wish }] : []),
+    { key: 'reviews', value: reviews },
+    { key: 'note', value: notes },
   ];
 
   return (
-    <div className="wf-cabinet-stats wf-box wf-box--solid">
-      {items.map(({ key, label, value, modifier }) => {
-        const itemClass = `wf-cabinet-stats__item${modifier ? ` wf-cabinet-stats__item--${modifier}` : ''}${clickable ? ' wf-cabinet-stats__item--clickable' : ''}${active === key ? ' wf-cabinet-stats__item--on' : ''}`;
-        const content = (
-          <>
-            <span className="wf-cabinet-stats__num">{value}</span>
-            <span className="wf-cabinet-stats__label">{label}</span>
-          </>
-        );
+    <nav className="wf-ig-tabs" aria-label="Bar 탭">
+      {items.map(({ key, value }) => {
+        const isOn = active === key;
+        const className = `wf-ig-tabs__item${isOn ? ' wf-ig-tabs__item--on' : ''}`;
+        const label = `${TAB_LABEL[key]} ${value}`;
 
         return clickable ? (
-          <Link key={key} to={`${basePath}${separator}tab=${key}`} className={itemClass}>
-            {content}
+          <Link
+            key={key}
+            to={`${basePath}${separator}tab=${key}`}
+            className={className}
+            aria-current={isOn ? 'page' : undefined}
+          >
+            {label}
           </Link>
         ) : (
-          <div key={key} className={itemClass}>
-            {content}
-          </div>
+          <span key={key} className={className}>
+            {label}
+          </span>
         );
       })}
-    </div>
+    </nav>
   );
 }

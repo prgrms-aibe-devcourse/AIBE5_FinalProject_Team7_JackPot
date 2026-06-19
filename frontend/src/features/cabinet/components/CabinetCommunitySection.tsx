@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { fetchAuthorPosts } from '@/features/community/api/communityApi';
 import { POST_CATEGORY_LABEL, type PostSummaryResponse } from '@/features/community/types';
-import { Button } from '@/shared/components/ui/Button';
+import { CabinetCommunityTabs, type CommunityTab } from '@/features/cabinet/components/CabinetCommunityTabs';
+import { CabinetFeedEmpty, CabinetFeedLoading, CabinetFeedToolbar } from '@/features/cabinet/components/CabinetFeedParts';
 
 function formatPostDate(iso: string): string {
   return iso.slice(0, 10);
@@ -11,7 +12,7 @@ function formatPostDate(iso: string): string {
 
 function postMeta(post: PostSummaryResponse): string {
   const category = POST_CATEGORY_LABEL[post.category] ?? post.category;
-  return `#${category} · ${post.postType === 'COLUMN' ? '칼럼' : post.postType === 'QA' ? 'QnA' : '게시글'}`;
+  return `#${category}`;
 }
 
 interface CabinetCommunitySectionProps {
@@ -23,6 +24,7 @@ interface CabinetCommunitySectionProps {
 export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCommunitySectionProps) {
   const [posts, setPosts] = useState<PostSummaryResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<CommunityTab>('column');
 
   useEffect(() => {
     if (authorId == null) return;
@@ -34,59 +36,81 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
       .finally(() => setLoading(false));
   }, [authorId]);
 
-  if (authorId == null) {
-    return <p className="wf-text-sm">사용자 정보를 찾을 수 없습니다.</p>;
-  }
+  const columnPosts = useMemo(
+    () => posts.filter((post) => post.postType === 'COLUMN'),
+    [posts],
+  );
+  const freePosts = useMemo(
+    () => posts.filter((post) => post.postType === 'FREE'),
+    [posts],
+  );
+  const visiblePosts = activeTab === 'column' ? columnPosts : freePosts;
 
-  const totalLikes = posts.reduce((sum, post) => sum + post.likeCount, 0);
-  const totalComments = posts.reduce((sum, post) => sum + post.commentCount, 0);
+  if (authorId == null) {
+    return <CabinetFeedEmpty title="사용자 정보를 찾을 수 없습니다." />;
+  }
 
   return (
     <>
-      <div className="wf-cabinet-stats wf-box wf-box--solid">
-        <div className="wf-cabinet-stats__item">
-          <span className="wf-cabinet-stats__num">{posts.length}</span>
-          <span className="wf-cabinet-stats__label">게시글</span>
-        </div>
-        <div className="wf-cabinet-stats__item">
-          <span className="wf-cabinet-stats__num">{totalLikes}</span>
-          <span className="wf-cabinet-stats__label">좋아요</span>
-        </div>
-        <div className="wf-cabinet-stats__item">
-          <span className="wf-cabinet-stats__num">{totalComments}</span>
-          <span className="wf-cabinet-stats__label">댓글</span>
-        </div>
-      </div>
+      <CabinetCommunityTabs
+        column={columnPosts.length}
+        free={freePosts.length}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
 
       {showWriteButton ? (
-        <div className="wf-cabinet-subtabs-row wf-cabinet-subtabs-row--write-only">
-          <Link to={PATHS.COMMUNITY_POST_NEW} className="wf-community-write-link">
-            <Button className="wf-community-write-btn">+ 글 작성</Button>
+        <CabinetFeedToolbar>
+          <Link to={PATHS.COMMUNITY_POST_NEW} className="wf-cabinet-feed-toolbar__link">
+            + 글 작성
           </Link>
-        </div>
+        </CabinetFeedToolbar>
       ) : null}
+
       {loading ? (
-        <p className="wf-text-sm">게시글을 불러오는 중입니다...</p>
-      ) : posts.length === 0 ? (
-        <p className="wf-text-sm">아직 작성한 글이 없습니다.</p>
+        <CabinetFeedLoading message="게시글을 불러오는 중입니다." />
+      ) : visiblePosts.length === 0 ? (
+        <CabinetFeedEmpty
+          title={
+            activeTab === 'column'
+              ? '아직 작성한 칼럼이 없습니다.'
+              : '아직 작성한 자유 게시글이 없습니다.'
+          }
+          meta={
+            activeTab === 'column'
+              ? '칼럼 게시판에 작성한 글이 여기에 표시됩니다.'
+              : '자유 게시판에 작성한 글이 여기에 표시됩니다.'
+          }
+          actionLabel={showWriteButton ? '+ 글 작성' : undefined}
+          actionTo={showWriteButton ? PATHS.COMMUNITY_POST_NEW : undefined}
+        />
       ) : (
-        posts.map((post) => (
-          <article key={post.id} className="wf-cabinet-post wf-box">
-            <h3 className="wf-cabinet-post__title">{post.title}</h3>
-            <p className="wf-text-sm">{postMeta(post)}</p>
-            <footer className="wf-cabinet-post__foot">
-              <span className="wf-text-sm">
-                ♡ {post.likeCount} · 댓글 {post.commentCount} · {formatPostDate(post.createdAt)}
-              </span>
-              <Link
-                to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
-                className="wf-cabinet-action-btn wf-cabinet-action-btn--detail"
-              >
-                글 상세
-              </Link>
-            </footer>
-          </article>
-        ))
+        <ul className="wf-cabinet-feed">
+          {visiblePosts.map((post) => (
+            <li key={post.id} className="wf-cabinet-feed__item">
+              <div className="wf-cabinet-feed__head">
+                <Link
+                  to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
+                  className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
+                >
+                  {post.title}
+                </Link>
+              </div>
+              <p className="wf-cabinet-feed__meta">{postMeta(post)}</p>
+              <div className="wf-cabinet-feed__actions">
+                <span className="wf-cabinet-feed__meta wf-cabinet-feed__meta--inline">
+                  ♡ {post.likeCount} · 댓글 {post.commentCount} · {formatPostDate(post.createdAt)}
+                </span>
+                <Link
+                  to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
+                  className="wf-cabinet-feed__action wf-cabinet-feed__action--primary"
+                >
+                  글 상세
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </>
   );

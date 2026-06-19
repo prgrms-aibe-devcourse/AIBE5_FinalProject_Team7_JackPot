@@ -27,6 +27,7 @@ export interface PublicUserProfile {
   userId: number;
   nickname: string;
   profileImageUrl: string | null;
+  introduction: string | null;
 }
 
 // 위시 폴더 응답 타입

@@ -1,16 +1,14 @@
-import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { PATHS } from '@/app/router/paths';
-
-function getCurrentUserId(): number | null {
-  const value = localStorage.getItem('userId');
-  const n = Number(value);
-  return Number.isFinite(n) && n > 0 ? n : null;
-}
+import { PATHS, type CabinetSection } from '@/app/router/paths';
 import { cabinetApi, type FollowUser } from '@/features/cabinet/api/cabinetApi';
 import { CabinetPagination } from '@/features/cabinet/components/CabinetPagination';
+import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
+import { CabinetFeedEmpty, CabinetFeedLoading } from '@/features/cabinet/components/CabinetFeedParts';
+import { userApi } from '@/features/my-page/api/userApi';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import '@/features/cabinet/cabinet.css';
 
@@ -22,35 +20,94 @@ function parseTab(value: string | null): FollowTab {
   return value === 'followings' ? 'followings' : 'followers';
 }
 
-function FollowUserRow({ user, label }: { user: FollowUser; label: string }) {
+function getCurrentUserId(): number | null {
+  const value = localStorage.getItem('userId');
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function getCurrentNickname(): string {
+  return localStorage.getItem('nickname') || '';
+}
+
+function getCurrentProfileImageUrl(): string | null {
+  const value = localStorage.getItem('profileImageUrl') || '';
+  return value.trim() ? value : null;
+}
+
+function getCurrentIntroduction(): string {
+  return localStorage.getItem('profileIntroduction') || '';
+}
+
+function FollowUserRow({ user }: { user: FollowUser }) {
   const avatarSrc = resolveMediaUrl(user.profileImageUrl);
   const currentUserId = getCurrentUserId();
   const isSelf = currentUserId != null && currentUserId === user.userId;
   const href = isSelf ? PATHS.CABINET : PATHS.USER_PROFILE.replace(':userId', String(user.userId));
 
   return (
-    <Link
-      to={href}
-      className="wf-follow-user-card"
-    >
-      <div className="wf-follow-user-card__avatar wf-placeholder">
-        {avatarSrc ? <img src={avatarSrc} alt={user.nickname} /> : null}
-      </div>
-      <div className="wf-follow-user-card__info">
-        <strong className="wf-follow-user-card__name">{user.nickname}</strong>
-        <span className="wf-follow-user-card__label">{label}</span>
-      </div>
-      <span className="wf-follow-user-card__arrow">›</span>
-    </Link>
+    <li>
+      <Link to={href} className="wf-cabinet-follow-row">
+        <div className="wf-cabinet-follow-row__avatar wf-placeholder">
+          {avatarSrc ? <img src={avatarSrc} alt="" /> : null}
+        </div>
+        <span className="wf-cabinet-follow-row__name">{user.nickname}</span>
+        <span className="wf-cabinet-follow-row__chevron" aria-hidden>
+          ›
+        </span>
+      </Link>
+    </li>
   );
 }
 
 /** svg/pages/12-cabinet-follow.svg */
 export default function CabinetFollowPage() {
-  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const tab = parseTab(params.get('tab'));
   const [page, setPage] = useState(0);
+  const currentUserId = getCurrentUserId();
+  const currentNickname = getCurrentNickname();
+  const currentProfileImageUrl = getCurrentProfileImageUrl();
+  const [currentIntroduction, setCurrentIntroduction] = useState(getCurrentIntroduction);
+
+  const section: CabinetSection = 'bar';
+  const barHref = `${PATHS.CABINET}?section=bar&tab=pick`;
+  const communityHref = `${PATHS.CABINET}?section=community`;
+
+  useEffect(() => {
+    const refreshProfile = () => setCurrentIntroduction(getCurrentIntroduction());
+    window.addEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
+  }, []);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    userApi
+      .getMe()
+      .then((data) => {
+        if (data.introduction !== undefined) {
+          const intro = data.introduction ?? '';
+          localStorage.setItem('profileIntroduction', intro);
+          setCurrentIntroduction(intro);
+        }
+      })
+      .catch(() => {});
+  }, [currentUserId]);
+
+  const { data: followerCount } = useQuery({
+    queryKey: ['follows', 'followers', currentUserId],
+    queryFn: () => cabinetApi.getFollowerCount(),
+    enabled: currentUserId != null,
+    staleTime: 30_000,
+  });
+
+  const { data: followingCount } = useQuery({
+    queryKey: ['follows', 'followings', currentUserId],
+    queryFn: () => cabinetApi.getFollowingCount(),
+    enabled: currentUserId != null,
+    staleTime: 30_000,
+  });
 
   const followersQuery = useQuery({
     queryKey: ['follows', 'followers', 'list'],
@@ -67,6 +124,8 @@ export default function CabinetFollowPage() {
   const allUsers = tab === 'followers' ? followersQuery.data : followingsQuery.data;
   const isLoading = tab === 'followers' ? followersQuery.isLoading : followingsQuery.isLoading;
   const isError = tab === 'followers' ? followersQuery.isError : followingsQuery.isError;
+  const followerTotal = followersQuery.data?.length ?? followerCount?.count ?? 0;
+  const followingTotal = followingsQuery.data?.length ?? followingCount?.count ?? 0;
 
   const totalPages = Math.max(1, Math.ceil((allUsers?.length ?? 0) / FOLLOW_PAGE_SIZE));
   const pagedUsers = allUsers?.slice(page * FOLLOW_PAGE_SIZE, (page + 1) * FOLLOW_PAGE_SIZE) ?? [];
@@ -78,74 +137,76 @@ export default function CabinetFollowPage() {
 
   return (
     <WireframePage scroll>
-      {/* 헤더 */}
-      <div className="wf-follow-page-header">
-        <button
-          type="button"
-          className="wf-follow-back-btn"
-          onClick={() => navigate(-1)}
-          aria-label="뒤로가기"
-        >
-          ← 뒤로
-        </button>
-        <h1 className="wf-follow-page-title">팔로우</h1>
-      </div>
+      <div className="wf-cabinet-page">
+        <CabinetProfileHeader
+          name={currentNickname || '내 캐비넷'}
+          subtitle={currentNickname ? '내 캐비넷' : undefined}
+          profileImageUrl={currentProfileImageUrl}
+          introduction={currentIntroduction}
+          followers={followerCount?.count ?? 0}
+          following={followingCount?.count ?? 0}
+          followersHref={`${PATHS.CABINET_FOLLOW}?tab=followers`}
+          followingHref={`${PATHS.CABINET_FOLLOW}?tab=followings`}
+          isOwner
+          section={section}
+          barHref={barHref}
+          communityHref={communityHref}
+        />
 
-      {/* 탭 */}
-      <div className="wf-follow-tabs" role="tablist" aria-label="팔로우 목록">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'followers'}
-          className={`wf-follow-tab${tab === 'followers' ? ' wf-follow-tab--on' : ''}`}
-          onClick={() => setTab('followers')}
-        >
-          팔로워
-          {followersQuery.data && (
-            <span className="wf-follow-tab__count">{followersQuery.data.length}</span>
-          )}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'followings'}
-          className={`wf-follow-tab${tab === 'followings' ? ' wf-follow-tab--on' : ''}`}
-          onClick={() => setTab('followings')}
-        >
-          팔로잉
-          {followingsQuery.data && (
-            <span className="wf-follow-tab__count">{followingsQuery.data.length}</span>
-          )}
-        </button>
-      </div>
+        <div className="wf-cabinet-body">
+          <nav className="wf-ig-tabs" role="tablist" aria-label="팔로우 목록">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'followers'}
+              className={`wf-ig-tabs__item${tab === 'followers' ? ' wf-ig-tabs__item--on' : ''}`}
+              onClick={() => setTab('followers')}
+            >
+              팔로워 {followerTotal}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'followings'}
+              className={`wf-ig-tabs__item${tab === 'followings' ? ' wf-ig-tabs__item--on' : ''}`}
+              onClick={() => setTab('followings')}
+            >
+              팔로우 {followingTotal}
+            </button>
+          </nav>
 
-      {/* 리스트 */}
-      <div className="wf-follow-list">
-        {isLoading ? (
-          <p className="wf-text-sm" style={{ padding: '20px 0' }}>목록을 불러오는 중입니다.</p>
-        ) : isError ? (
-          <p className="wf-text-sm" style={{ padding: '20px 0' }}>목록을 불러오지 못했습니다.</p>
-        ) : pagedUsers.length ? (
-          pagedUsers.map((user) => (
-            <FollowUserRow
-              key={user.userId}
-              user={user}
-              label={tab === 'followers' ? '나를 팔로우합니다' : '내가 팔로우합니다'}
+          <section className="wf-cabinet-panel wf-cabinet-panel--feed">
+            {isLoading ? (
+              <CabinetFeedLoading message="목록을 불러오는 중입니다." />
+            ) : isError ? (
+              <CabinetFeedEmpty title="목록을 불러오지 못했습니다." />
+            ) : pagedUsers.length ? (
+              <ul className="wf-cabinet-follow-list">
+                {pagedUsers.map((user) => (
+                  <FollowUserRow key={user.userId} user={user} />
+                ))}
+              </ul>
+            ) : (
+              <CabinetFeedEmpty
+                title={tab === 'followers' ? '아직 팔로워가 없습니다.' : '아직 팔로우한 사용자가 없습니다.'}
+                meta="위스키를 즐기는 다른 사용자를 찾아보세요."
+                actionLabel="라운지 가기"
+                actionTo={PATHS.LOUNGE}
+              />
+            )}
+
+            <CabinetPagination
+              page={page}
+              totalPages={totalPages}
+              onPage={(p) => {
+                setPage(p);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              disabled={isLoading}
             />
-          ))
-        ) : (
-          <p className="wf-text-sm" style={{ padding: '20px 0' }}>
-            {tab === 'followers' ? '아직 팔로워가 없습니다.' : '아직 팔로잉한 사용자가 없습니다.'}
-          </p>
-        )}
+          </section>
+        </div>
       </div>
-
-      <CabinetPagination
-        page={page}
-        totalPages={totalPages}
-        onPage={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        disabled={isLoading}
-      />
     </WireframePage>
   );
 }
