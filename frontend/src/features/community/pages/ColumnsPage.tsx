@@ -21,25 +21,21 @@ function ColumnCard({ post }: { post: PostSummaryResponse }) {
       className="wf-column-card-link"
     >
       <div className="wf-box wf-column-card">
-        {/* 썸네일 — 없으면 회색 placeholder */}
-        <div className="wf-column-card__thumb">
-          {post.thumbnailUrl ? (
-            <img
-              src={post.thumbnailUrl}
-              alt={post.title}
-              onError={e => { (e.target as HTMLImageElement).parentElement!.style.background = 'var(--wf-surface-2)'; (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          ) : (
-            <div className="wf-column-card__thumb-empty">📄</div>
-          )}
-        </div>
-
         <div className="wf-column-card__body">
           <strong className="wf-column-card__title">{post.title}</strong>
           <p className="wf-text-xs wf-column-card__meta">
             ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
           </p>
         </div>
+        {post.thumbnailUrl && (
+          <div className="wf-column-card__thumb">
+            <img
+              src={post.thumbnailUrl}
+              alt={post.title}
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          </div>
+        )}
       </div>
     </Link>
   );
