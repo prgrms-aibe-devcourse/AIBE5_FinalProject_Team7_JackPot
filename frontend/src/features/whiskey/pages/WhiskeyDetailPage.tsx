@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { toast } from '@/shared/components/ui/Toast';
-import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
@@ -23,7 +22,7 @@ import {
   useRelatedColumns,
   useSimilarWhiskeys,
   useWhiskeyDetail,
-  useWhiskeyReviews,
+  useWhiskeyReviewsInfinite,
   useWhiskeyReviewStats,
 } from '../hooks/useWhiskeyDetail';
 import type { TastingAxisKey, TastingAxisView, TastingSummarySource, WhiskeyReview } from '../types';
@@ -74,11 +73,23 @@ function getCurrentUserId(): number | null {
   return Number.isFinite(userId) ? userId : null;
 }
 
-function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
-  const [showNote, setShowNote] = useState(false);
+const KEEP_NOTES_OPEN_KEY = 'wf-keep-review-notes-open';
+
+function ReviewPreviewCard({
+  review,
+  defaultNoteOpen,
+}: {
+  review: WhiskeyReview;
+  defaultNoteOpen: boolean;
+}) {
+  const [showNote, setShowNote] = useState(defaultNoteOpen);
   const currentUserId = getCurrentUserId();
   const likeMutation = useToggleReviewLike(currentUserId);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setShowNote(defaultNoteOpen);
+  }, [defaultNoteOpen, review.id]);
 
   const handleLikeClick = () => {
     if (currentUserId == null) {
@@ -94,39 +105,50 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
   };
 
   return (
-    <li className="wf-detail-reviews__item wf-box">
+    <li className="wf-detail-reviews__item">
       <div className="wf-detail-reviews__header">
-        <div>
+        <div className="wf-detail-reviews__author">
           <UserProfileLink userId={review.userId}>
             <strong>{review.nickname}</strong>
           </UserProfileLink>
-          <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
+          <span className="wf-detail-reviews__date">{formatReviewDate(review.createdAt)}</span>
         </div>
-        <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>
+        <span className="wf-detail-reviews__rating" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
+          <span className="wf-stars" aria-hidden>★</span>
+          {Number(review.rating).toFixed(1)}
+        </span>
       </div>
-      <p className="wf-text-sm wf-detail-reviews__text">
+      <p className="wf-detail-reviews__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
-      <button
-        type="button"
-        className={`wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
-        onClick={handleLikeClick}
-        disabled={likeMutation.isPending}
-      >
-        {review.likedByMe ? '♥' : '♡'} {review.likeCount ?? 0}
-      </button>
-      {review.hasAttachedNote && review.attachedNoteId && (
-        <>
+      <div className="wf-detail-reviews__footer">
+        <button
+          type="button"
+          className={`wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
+          onClick={handleLikeClick}
+          disabled={likeMutation.isPending}
+        >
+          <span className="wf-review-like__icon" aria-hidden>👍</span>
+          {review.likeCount ?? 0}
+        </button>
+        {review.hasAttachedNote && review.attachedNoteId ? (
           <button
             type="button"
-            className="wf-detail-reviews__note-button"
+            className={`wf-detail-reviews__note-button${showNote ? ' wf-detail-reviews__note-button--open' : ''}`}
             onClick={() => setShowNote((prev) => !prev)}
+            aria-expanded={showNote}
+            aria-label={showNote ? '첨부 My Note 접기' : '첨부 My Note 보기'}
+            title={showNote ? 'My Note 접기' : 'My Note 보기'}
           >
-            {showNote ? 'My Note 접기' : 'My Note 자세히'}
+            <span className="wf-detail-reviews__note-icon" aria-hidden>
+              {showNote ? '📖' : '📕'}
+            </span>
           </button>
-          {showNote && <AttachedNotePanel noteId={review.attachedNoteId} />}
-        </>
-      )}
+        ) : null}
+      </div>
+      {review.hasAttachedNote && review.attachedNoteId && showNote ? (
+        <AttachedNotePanel noteId={review.attachedNoteId} />
+      ) : null}
     </li>
   );
 }
@@ -150,14 +172,20 @@ export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
   const navigate = useNavigate();
   const id = whiskeyId ?? '1';
-  const reviewPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
   const notePath = PATHS.TASTING_NOTE.replace(':whiskeyId', id);
   const currentUserId = getCurrentUserId();
+  const reviewSentinelRef = useRef<HTMLDivElement | null>(null);
 
   const { data: detail, isLoading, isError } = useWhiskeyDetail(id);
   const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
   const { data: similarWhiskeys = [], isLoading: similarLoading } = useSimilarWhiskeys(id);
-  const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
+  const {
+    data: reviewPages,
+    isLoading: reviewsLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useWhiskeyReviewsInfinite(id, 10);
   const { data: reviewStats } = useWhiskeyReviewStats(id);
   const { data: myNote, isLoading: myNoteLoading } = useQuery({
     queryKey: ['tasting-note', 'my', currentUserId, id],
@@ -167,6 +195,35 @@ export default function WhiskeyDetailPage() {
 
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
+  const [keepNotesOpen, setKeepNotesOpen] = useState(
+    () => localStorage.getItem(KEEP_NOTES_OPEN_KEY) === '1',
+  );
+
+  const reviewList = useMemo(
+    () => reviewPages?.pages.flatMap((page) => page.content ?? []) ?? [],
+    [reviewPages],
+  );
+
+  useEffect(() => {
+    localStorage.setItem(KEEP_NOTES_OPEN_KEY, keepNotesOpen ? '1' : '0');
+  }, [keepNotesOpen]);
+
+  useEffect(() => {
+    if (activeTab !== 'reviews') return;
+    const el = reviewSentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '240px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [activeTab, hasNextPage, isFetchingNextPage, fetchNextPage, reviewList.length]);
 
   // Pick 상태
   const [isPicked, setIsPicked] = useState(false);
@@ -551,9 +608,14 @@ export default function WhiskeyDetailPage() {
                   )}
                 </h2>
                 <div className="wf-detail-reviews__actions">
-                  <Link to={reviewPath} className="wf-detail-reviews__more">
-                    전체 보기 →
-                  </Link>
+                  <label className="wf-detail-reviews__note-pref">
+                    <input
+                      type="checkbox"
+                      checked={keepNotesOpen}
+                      onChange={(event) => setKeepNotesOpen(event.target.checked)}
+                    />
+                    <span>노트 열어두기</span>
+                  </label>
                   <Button to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)} size="sm">
                     리뷰 작성
                   </Button>
@@ -571,12 +633,22 @@ export default function WhiskeyDetailPage() {
                     </li>
                   ))}
                 </ul>
-              ) : reviews?.content.length ? (
-                <ul className="wf-detail-reviews__list">
-                  {reviews.content.map((review) => (
-                    <ReviewPreviewCard key={review.id} review={review} />
-                  ))}
-                </ul>
+              ) : reviewList.length ? (
+                <>
+                  <ul className="wf-detail-reviews__list">
+                    {reviewList.map((review) => (
+                      <ReviewPreviewCard
+                        key={review.id}
+                        review={review}
+                        defaultNoteOpen={keepNotesOpen}
+                      />
+                    ))}
+                  </ul>
+                  {isFetchingNextPage ? (
+                    <p className="wf-detail-reviews__loadmore">리뷰 불러오는 중…</p>
+                  ) : null}
+                  <div ref={reviewSentinelRef} className="wf-detail-reviews__sentinel" aria-hidden />
+                </>
               ) : (
                 <div className="wf-detail-reviews__empty">
                   <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>

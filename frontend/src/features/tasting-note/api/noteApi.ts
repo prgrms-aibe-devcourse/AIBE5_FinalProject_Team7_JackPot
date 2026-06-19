@@ -73,7 +73,9 @@ export async function fetchUserTastingNotes(userId: number, page = 0, size = 10)
 }
 
 export async function fetchTastingNote(noteId: number): Promise<MyTastingNote> {
-  const { data } = await apiClient.get<MyTastingNote>(`/tasting-notes/${noteId}`);
+  const { data } = await apiClient.get<MyTastingNote>(`/tasting-notes/${noteId}`, {
+    skipGlobalErrorRedirect: true,
+  });
   return data;
 }
 
