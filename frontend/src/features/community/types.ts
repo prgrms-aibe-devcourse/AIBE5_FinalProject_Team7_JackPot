@@ -4,14 +4,15 @@
 // WhiskeyColumnResponse와 별도 도메인으로 분리한 이유는 두 데이터의 출처와 생명주기가 다르기 때문이다.
 // 게시글은 유저가 직접 작성하고, 칼럼은 외부 크롤러가 수집한다.
 export type PostType = 'NOTICE' | 'COLUMN' | 'QA' | 'FREE' | 'FEED';
-export type PostCategory = 'F' | 'R' | 'L' | 'Q' | 'B';
+export type PostCategory = 'F' | 'R' | 'L' | 'Q' | 'G' | 'B';
 
 export const POST_CATEGORY_LABEL: Record<PostCategory, string> = {
   F: '자유',
   R: '리뷰',
   L: '추천',
   Q: '질문',
-  B: '정보',
+  G: '정보',
+  B: '입문',
 };
 
 export interface PostSummaryResponse {
