@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from collections import deque
 
 from PIL import Image
 
@@ -46,17 +47,93 @@ def _icon_bbox(icon_area: Image.Image) -> tuple[int, int, int, int] | None:
     rgba = icon_area.convert("RGBA")
     px = rgba.load()
     w, h = rgba.size
-    min_x, min_y, max_x, max_y = w, h, -1, -1
+    mask: list[list[bool]] = [[False] * w for _ in range(h)]
+    icon_pixels: list[tuple[int, int]] = []
+
     for y in range(h):
         for x in range(w):
             if _is_icon_pixel(*px[x, y]):
-                min_x = min(min_x, x)
-                min_y = min(min_y, y)
-                max_x = max(max_x, x)
-                max_y = max(max_y, y)
+                mask[y][x] = True
+                icon_pixels.append((x, y))
 
-    if max_x < 0:
+    if not icon_pixels:
         return None
+
+    visited: set[tuple[int, int]] = set()
+    components: list[dict[str, float]] = []
+
+    for sx, sy in icon_pixels:
+        if (sx, sy) in visited:
+            continue
+
+        q: deque[tuple[int, int]] = deque([(sx, sy)])
+        visited.add((sx, sy))
+        min_x, min_y, max_x, max_y = sx, sy, sx, sy
+        count = 0
+        sum_x, sum_y = 0.0, 0.0
+
+        while q:
+            x, y = q.popleft()
+            count += 1
+            sum_x += x
+            sum_y += y
+            min_x = min(min_x, x)
+            min_y = min(min_y, y)
+            max_x = max(max_x, x)
+            max_y = max(max_y, y)
+
+            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                if 0 <= nx < w and 0 <= ny < h and mask[ny][nx] and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    q.append((nx, ny))
+
+        components.append(
+            {
+                "count": float(count),
+                "min_x": float(min_x),
+                "min_y": float(min_y),
+                "max_x": float(max_x),
+                "max_y": float(max_y),
+                "cx": sum_x / count,
+                "cy": sum_y / count,
+            }
+        )
+
+    if not components:
+        return None
+
+    largest = max(components, key=lambda c: c["count"])
+    cx, cy = w / 2.0, h / 2.0
+    min_anchor_count = max(10.0, largest["count"] * 0.05)
+    center_candidates = [c for c in components if c["count"] >= min_anchor_count]
+    anchor = min(
+        center_candidates or components,
+        key=lambda c: (c["cx"] - cx) ** 2 + (c["cy"] - cy) ** 2,
+    )
+
+    expand = 80.0
+    ax0 = anchor["min_x"] - expand
+    ay0 = anchor["min_y"] - expand
+    ax1 = anchor["max_x"] + expand
+    ay1 = anchor["max_y"] + expand
+
+    def intersects_anchor(c: dict[str, float]) -> bool:
+        return not (
+            c["max_x"] < ax0
+            or c["min_x"] > ax1
+            or c["max_y"] < ay0
+            or c["min_y"] > ay1
+        )
+
+    kept = [c for c in components if c["count"] >= 15.0 and intersects_anchor(c)]
+
+    if not kept:
+        kept = [anchor]
+
+    min_x = int(min(c["min_x"] for c in kept))
+    min_y = int(min(c["min_y"] for c in kept))
+    max_x = int(max(c["max_x"] for c in kept))
+    max_y = int(max(c["max_y"] for c in kept))
 
     return (
         max(0, min_x - BBOX_PAD),
