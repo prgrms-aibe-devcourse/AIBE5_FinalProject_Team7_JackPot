@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
+import { toast } from '@/shared/components/ui/Toast';
 import { enthusiastSurveyApi } from '../api/enthusiastSurveyApi';
 import type { SurveyApiRequest } from '../api/surveyApi';
 import { useTags } from '../hooks/useTags';
+import { SurveySidebar } from '../components/SurveySidebar';
 import '../survey.css';
 
 /* ───────── Q1~Q5 점수형 문항 정의 ───────── */
@@ -13,7 +15,6 @@ import '../survey.css';
 interface ScoreOption { text: string }
 interface ScoreQuestion {
   key: 'bodyScore' | 'finishScore' | 'smokyScore' | 'spicyScore' | 'sweetScore';
-  short: string;
   title: string;
   options: ScoreOption[];
 }
@@ -21,7 +22,6 @@ interface ScoreQuestion {
 const SCORE_QUESTIONS: ScoreQuestion[] = [
   {
     key: 'bodyScore',
-    short: 'Body',
     title: 'Q1. 선호하는 바디감은 어느 쪽에 가까우신가요?',
     options: [
       { text: '라이트 바디 (섬세하고 드라이한 스타일)' },
@@ -33,7 +33,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'finishScore',
-    short: 'Finish',
     title: 'Q2. 피니시는 어떤 스타일을 선호하시나요?',
     options: [
       { text: '숏 피니시 (깔끔한 마무리)' },
@@ -45,7 +44,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'smokyScore',
-    short: 'Smoky',
     title: 'Q3. 피트(스모키) 캐릭터는 어느 정도를 선호하시나요?',
     options: [
       { text: '언피티드만 선호' },
@@ -57,7 +55,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'spicyScore',
-    short: 'Spicy',
     title: 'Q4. 스파이시한 캐릭터는 어떤 편이 좋으신가요?',
     options: [
       { text: '거의 없는 편' },
@@ -69,7 +66,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'sweetScore',
-    short: 'Sweet',
     title: 'Q5. 달콤함과 드라이함 중 어디에 더 끌리시나요?',
     options: [
       { text: '매우 드라이' },
@@ -120,9 +116,9 @@ const STYLE_GROUPS: StyleGroup[] = [
 /* ───────── Q9 탐험 성향 ───────── */
 
 const EXPLORATION_OPTIONS = [
-  { level: 1 as const, label: '아니요, 평소 좋아하는 취향 위주로 추천해주세요.', sub: '보수형 · λ=0.9' },
-  { level: 2 as const, label: '비슷한 스타일이면 좋아요.',                        sub: '균형형 · λ=0.7' },
-  { level: 3 as const, label: '네, 평소 취향과 다른 위스키도 추천받고 싶어요.',   sub: '탐험형 · λ=0.5' },
+  { level: 1 as const, label: '아니요, 평소 좋아하는 취향 위주로 추천해주세요.', sub: '익숙한 스타일 위주' },
+  { level: 2 as const, label: '비슷한 스타일이면 좋아요.', sub: '비슷한 취향 추천' },
+  { level: 3 as const, label: '네, 평소 취향과 다른 위스키도 추천받고 싶어요.', sub: '새로운 스타일도 환영' },
 ];
 
 /* ───────── Nav 스텝 ───────── */
@@ -233,7 +229,7 @@ export default function EnthusiastSurveyPage() {
       const result = await enthusiastSurveyApi.submit(payload);
       navigate(PATHS.RECOMMEND, { state: { result, payload, surveyType: 'enthusiast' } });
     } catch {
-      alert('결과를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+      toast('결과를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -241,28 +237,17 @@ export default function EnthusiastSurveyPage() {
 
   return (
     <>
-      <TopNav searchPlaceholder="Whiskey Note" />
+      <TopNav />
 
       <div className="wf-page wf-survey-scroll">
         <div className="wf-survey-layout">
           <main className="wf-survey-main">
             <header className="wf-survey-intro">
-              <div>
-                <p className="wf-text-label">애호가 설문</p>
-                <h1 className="wf-title wf-survey-intro__title">위스키 애호가 취향 분석</h1>
-                <p className="wf-subtitle wf-survey-intro__subtitle">
-                  총 9문항 / 2~3분 소요 · 정교한 취향 기반 추천을 받아보세요.
-                </p>
-              </div>
-              <div className="wf-survey-progress" aria-label={`설문 진행률 ${progressPercent}%`}>
-                <div className="wf-survey-progress__label">
-                  <span>진행률</span>
-                  <strong>{completedCount}/{TOTAL_STEPS}</strong>
-                </div>
-                <div className="wf-survey-progress__track">
-                  <span style={{ width: `${progressPercent}%` }} />
-                </div>
-              </div>
+              <p className="wf-survey-intro__eyebrow">애호가 설문</p>
+              <h1 className="wf-title wf-survey-intro__title">위스키 애호가 취향 분석</h1>
+              <p className="wf-subtitle wf-survey-intro__subtitle">
+                총 9문항 / 2~3분 소요 · 정교한 취향 기반 추천을 받아보세요.
+              </p>
             </header>
 
             {/* Q1~Q5 점수형 단일 선택 */}
@@ -276,10 +261,7 @@ export default function EnthusiastSurveyPage() {
                   ref={(el) => { blockRefs.current[`q-${q.key}`] = el; }}
                   className="wf-box wf-survey-q"
                 >
-                  <div className="wf-survey-q__head">
-                    <span className="wf-survey-q__step">{q.short}</span>
-                    <h2 className="wf-title">{q.title}</h2>
-                  </div>
+                  <h2 className="wf-title wf-survey-q__title">{q.title}</h2>
                   <div className="wf-survey-opts">
                     {q.options.map((opt, oi) => {
                       const choice = oi + 1;
@@ -291,8 +273,7 @@ export default function EnthusiastSurveyPage() {
                           className={`wf-opt${on ? ' wf-opt--on' : ''}`}
                           onClick={() => setScore(q.key, choice)}
                         >
-                          <span className="wf-opt__ordinal">{choice}</span>
-                          <span>{opt.text}</span>
+                          {opt.text}
                         </button>
                       );
                     })}
@@ -308,8 +289,7 @@ export default function EnthusiastSurveyPage() {
                 ref={(el) => { blockRefs.current['q-style'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">style_tags · 복수 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q6. 평소 선호하는 위스키 스타일을 선택해주세요.</h2>
+                <h2 className="wf-title wf-survey-q__title">Q6. 평소 선호하는 위스키 스타일을 선택해주세요.</h2>
                 {STYLE_GROUPS.map((g) => (
                   <div key={g.group} className="wf-survey-tag-group">
                     <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
@@ -337,8 +317,7 @@ export default function EnthusiastSurveyPage() {
                 ref={(el) => { blockRefs.current['q-nose'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">nose_tags · 복수 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q7. Nose에서 선호하는 노트를 선택해주세요.</h2>
+                <h2 className="wf-title wf-survey-q__title">Q7. 좋아하는 향을 골라주세요</h2>
                 {noseLoading ? (
                   <p className="wf-text-sm">향 목록을 불러오는 중…</p>
                 ) : (
@@ -365,8 +344,7 @@ export default function EnthusiastSurveyPage() {
                 ref={(el) => { blockRefs.current['q-taste'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">taste_tags · 복수 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q8. Palate에서 선호하는 노트를 선택해주세요.</h2>
+                <h2 className="wf-title wf-survey-q__title">Q8. 좋아하는 맛을 골라주세요</h2>
                 {tasteLoading ? (
                   <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
                 ) : (
@@ -393,8 +371,7 @@ export default function EnthusiastSurveyPage() {
                 ref={(el) => { blockRefs.current['q-exploration'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">exploration_level · 단일 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q9. 새로운 스타일을 탐험해보고 싶으신가요?</h2>
+                <h2 className="wf-title wf-survey-q__title">Q9. 새로운 스타일을 탐험해보고 싶으신가요?</h2>
                 <div className="wf-survey-opts">
                   {EXPLORATION_OPTIONS.map((opt) => (
                     <button
@@ -403,12 +380,9 @@ export default function EnthusiastSurveyPage() {
                       className={`wf-opt${exploration === opt.level ? ' wf-opt--on' : ''}`}
                       onClick={() => setExploration(opt.level)}
                     >
-                      <span className="wf-opt__ordinal">{opt.level}</span>
                       <span>
                         {opt.label}
-                        <small style={{ display: 'block', opacity: 0.6, fontSize: '0.8em', marginTop: 2 }}>
-                          {opt.sub}
-                        </small>
+                        <small className="wf-survey-opt__sub">{opt.sub}</small>
                       </span>
                     </button>
                   ))}
@@ -417,41 +391,22 @@ export default function EnthusiastSurveyPage() {
             )}
 
             {canSubmit && (
-              <Button block className="wf-survey-submit" onClick={handleSubmit} disabled={submitting}>
+              <Button block className="wf-survey-submit wf-survey-submit--cta" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? '분석 중...' : '결과 확인하기'}
               </Button>
             )}
           </main>
 
-          {/* 우측 sticky 네비 */}
-          <nav className="wf-survey-nav" aria-label="설문 문항 이동">
-            <p className="wf-survey-nav__title">문항</p>
-            <ul className="wf-survey-nav__list">
-              {NAV_STEPS.map((step) => {
-                const reachable = availIds.has(step.id);
-                const done      = doneIds.has(step.id);
-                const active    = activeId === step.id;
-                const cls = [
-                  'wf-survey-nav__item',
-                  done   ? 'wf-survey-nav__item--done'   : '',
-                  active ? 'wf-survey-nav__item--active' : '',
-                  reachable ? '' : 'wf-survey-nav__item--locked',
-                ].filter(Boolean).join(' ');
-                return (
-                  <li key={step.id}>
-                    <button
-                      type="button"
-                      className={cls}
-                      disabled={!reachable}
-                      onClick={() => goTo(step.id)}
-                    >
-                      {step.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+          <SurveySidebar
+            progressPercent={progressPercent}
+            completedCount={completedCount}
+            totalSteps={TOTAL_STEPS}
+            steps={NAV_STEPS}
+            availIds={availIds}
+            doneIds={doneIds}
+            activeId={activeId}
+            onGoTo={goTo}
+          />
         </div>
       </div>
     </>
