@@ -634,6 +634,7 @@ export default function CabinetPage() {
 
   return (
     <WireframePage scroll>
+      <div className="wf-cabinet-page">
       <CabinetProfileHeader
         name={currentNickname ? `${currentNickname} (my)` : '내 캐비넷'}
         profileImageUrl={currentProfileImageUrl}
@@ -886,6 +887,7 @@ export default function CabinetPage() {
       ) : (
         <CabinetCommunitySection authorId={currentUserId} showWriteButton />
       )}
+      </div>
     </WireframePage>
   );
 }

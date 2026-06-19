@@ -26,7 +26,7 @@ export function CabinetStatsBar({ pick, wish, reviews, notes, hideWish, active, 
   ];
 
   return (
-    <div className="wf-cabinet-stats wf-box wf-box--solid">
+    <div className="wf-cabinet-stats">
       {items.map(({ key, label, value, modifier }) => {
         const itemClass = `wf-cabinet-stats__item${modifier ? ` wf-cabinet-stats__item--${modifier}` : ''}${clickable ? ' wf-cabinet-stats__item--clickable' : ''}${active === key ? ' wf-cabinet-stats__item--on' : ''}`;
         const content = (

@@ -279,7 +279,7 @@ export default function MyPage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="wf-mypage-action-button wf-mypage-action-button--security"
+                className="wf-mypage-action-button"
                 onClick={() => setPasswordModalOpen(true)}
               >
                 변경

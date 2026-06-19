@@ -1,3 +1,15 @@
+/* --- Cabinet / My Bar (Search·Lounge·Whiskey detail과 동일 타입 스케일) --- */
+:where(.wf-cabinet-page, .wf-mypage-page) {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wf-cabinet-page {
+  width: 100%;
+}
+
 /* ─── Pick·위시 카드 그리드 ─── */
 .wf-cabinet-pick-grid {
   display: grid;
@@ -24,14 +36,15 @@
   flex-direction: column;
   border: 1px solid var(--wf-border);
   border-radius: var(--wf-radius-card);
-  background: var(--wf-surface-2);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
   overflow: hidden;
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-pick-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(213, 173, 69, 0.35);
+  border-color: rgba(198, 146, 43, 0.35);
   box-shadow: var(--wf-shadow-md);
 }
 
@@ -75,7 +88,7 @@
   overflow: hidden;
   color: var(--wf-text);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.4;
   text-decoration: none;
 }
@@ -181,11 +194,16 @@
   width: 238px;
   min-width: 238px;
   flex-shrink: 0;
-  padding: 14px;
+  padding: 18px 16px;
   align-self: flex-start;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--wf-radius-card);
-  background: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.52);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+  backdrop-filter: blur(22px) saturate(185%);
+  box-shadow:
+    0 10px 36px rgba(31, 28, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .wf-cabinet-wish-folders__header {
@@ -204,11 +222,11 @@
 .wf-cabinet-wish-folder-input {
   flex: 1;
   min-width: 0;
-  background: #fff;
-  border: 1px solid #cbd5e1;
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
   border-radius: 8px;
   padding: 6px 10px;
-  color: #1e293b;
+  color: var(--wf-text);
   font: inherit;
   font-size: 13px;
   outline: none;
@@ -220,24 +238,24 @@
 }
 
 .wf-cabinet-wish-folder-add-btn {
-  background: #f0ca68;
+  background: var(--wf-accent);
   border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  color: #1a1303;
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: #fff;
   font: inherit;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
-  transition: background 0.15s, box-shadow 0.15s;
-  box-shadow: 0 1px 4px rgba(240, 202, 104, 0.35);
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .wf-cabinet-wish-folder-add-btn:hover {
-  background: #f7d989;
-  box-shadow: 0 2px 6px rgba(240, 202, 104, 0.45);
+  background: var(--wf-accent-dark);
+  box-shadow: var(--wf-shadow-accent);
+  transform: translateY(-1px);
 }
 
 .wf-cabinet-wish-folder-item {
@@ -253,17 +271,17 @@
 }
 
 .wf-cabinet-wish-folder-item:hover {
-  border-color: #e2e8f0;
-  background: #fff;
+  border-color: var(--wf-border);
+  background: var(--wf-surface);
 }
 
 .wf-cabinet-wish-folder-item--drag-over {
-  background: rgba(213, 173, 69, 0.08);
+  background: var(--wf-accent-subtle);
   border-color: var(--wf-accent);
 }
 
 .wf-cabinet-wish-folder-handle {
-  color: #94a3b8;
+  color: var(--wf-muted);
   font-size: 12px;
   margin-right: 4px;
   cursor: grab;
@@ -273,7 +291,7 @@
 .wf-cabinet-wish-folder-btn {
   background: none;
   border: none;
-  color: #334155;
+  color: var(--wf-muted);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
@@ -288,7 +306,7 @@
 }
 
 .wf-cabinet-wish-folder-btn:hover {
-  color: #0f172a;
+  color: var(--wf-text);
 }
 
 .wf-cabinet-wish-content {
@@ -300,18 +318,19 @@
   display: grid;
   gap: 8px;
   padding: 14px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed var(--wf-border);
   border-radius: var(--wf-radius-card);
-  background: #f8fafc;
+  background: var(--wf-surface);
 }
 
 .wf-cabinet-wish-folder-empty strong {
-  color: #334155;
+  color: var(--wf-text);
   font-size: 13px;
+  font-weight: 600;
 }
 
 .wf-cabinet-wish-folder-empty span {
-  color: #64748b;
+  color: var(--wf-muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -319,19 +338,19 @@
 .wf-cabinet-wish-folder-empty button {
   width: 100%;
   margin-top: 4px;
-  border: 1px solid rgba(213, 173, 69, 0.5);
-  border-radius: 10px;
-  background: rgba(213, 173, 69, 0.1);
-  color: #92600a;
+  border: 1px solid var(--wf-accent);
+  border-radius: 999px;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   padding: 8px 10px;
 }
 
 .wf-cabinet-wish-folder-empty button:hover {
-  background: rgba(213, 173, 69, 0.2);
+  background: var(--wf-accent-subtle);
 }
 
 .wf-cabinet-wish-empty {
@@ -342,23 +361,25 @@
   gap: 10px;
   min-height: 200px;
   padding: 32px 24px;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  background: #f8fafc;
-  color: #64748b;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
   font-size: 15px;
   text-align: center;
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-wish-empty__title {
-  color: #1e293b;
+  color: var(--wf-text);
   font-size: 18px;
+  font-weight: 700;
   line-height: 1.35;
 }
 
 .wf-cabinet-wish-empty__text {
   max-width: 360px;
-  color: #64748b;
+  color: var(--wf-muted);
   font-size: 14px;
   line-height: 1.65;
 }
@@ -370,17 +391,20 @@
   min-height: 40px;
   margin-top: 4px;
   padding: 0 18px;
-  border: 1px solid rgba(213, 173, 69, 0.6);
+  border: none;
   border-radius: 999px;
-  background: rgba(213, 173, 69, 0.1);
-  color: #92600a;
+  background: var(--wf-accent);
+  color: #fff;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .wf-cabinet-wish-empty__link:hover {
-  background: rgba(213, 173, 69, 0.2);
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
 }
 
 .wf-cabinet-wish-empty--loading {
@@ -406,7 +430,7 @@
   transition: box-shadow 0.2s ease, transform 0.18s ease;
 }
 
-/* 왼쪽 액센트 바 — 선명한 앰버·오렌지 */
+/* 왼쪽 액센트 바 — 골드 토큰 */
 .wf-review-card-v2::before {
   content: '';
   position: absolute;
@@ -414,7 +438,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #fbbf24 0%, #f97316 100%);
+  background: linear-gradient(180deg, var(--wf-accent-light) 0%, var(--wf-accent) 100%);
   border-radius: inherit 0 0 inherit;
 }
 
@@ -456,17 +480,17 @@
 .wf-review-card-v2__stars {
   font-size: 18px;
   letter-spacing: 2px;
-  color: #f59e0b;
+  color: var(--wf-accent);
   line-height: 1;
 }
 
 .wf-review-card-v2__rating {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   color: #fff;
-  background: #f97316;
+  background: var(--wf-accent);
   padding: 3px 9px;
-  border-radius: 7px;
+  border-radius: 999px;
   line-height: 1.4;
 }
 
@@ -490,7 +514,7 @@
   border-left: 3px solid var(--wf-accent);
   border-radius: 0 8px 8px 0;
   background: var(--wf-accent-subtle);
-  color: #444;
+  color: var(--wf-text);
   font-size: 14px;
   line-height: 1.78;
   white-space: pre-wrap;
@@ -515,12 +539,12 @@
   transition: box-shadow 0.2s ease, transform 0.18s ease;
 }
 
-/* 상단 밝은 노란색 바 */
+/* 상단 골드 바 */
 .wf-note-card-v2::before {
   content: '';
   display: block;
   height: 4px;
-  background: linear-gradient(90deg, #fde047 0%, #f59e0b 100%);
+  background: linear-gradient(90deg, var(--wf-accent-light) 0%, var(--wf-accent) 100%);
   flex-shrink: 0;
 }
 
@@ -594,7 +618,7 @@
 .wf-note-card-v2__body {
   margin: 0;
   padding: 14px 18px;
-  color: #444;
+  color: var(--wf-text);
   font-size: 14px;
   line-height: 1.78;
   white-space: pre-wrap;
@@ -772,47 +796,48 @@
   align-items: center;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(240, 202, 104, 0.18);
+  border: 1px solid var(--wf-border);
   border-radius: 999px;
-  background: rgba(240, 202, 104, 0.055);
-  color: var(--wf-accent-light);
-  font-weight: 800;
+  background: var(--wf-surface-2);
+  color: var(--wf-accent-dark);
+  font-weight: 600;
 }
 
 .wf-cabinet-primary {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .wf-cabinet-primary__tab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 116px;
-  min-height: 46px;
-  padding: 0 20px;
-  border-radius: 14px;
+  min-height: auto;
+  min-width: auto;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 800;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-primary__tab:hover {
-  border-color: rgba(240, 202, 104, 0.3);
+  border-color: var(--wf-muted);
   color: var(--wf-text);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .wf-cabinet-primary__tab--on {
   border-color: var(--wf-accent);
-  background: var(--wf-accent-subtle);
-  color: var(--wf-accent-dark);
-  box-shadow: var(--wf-shadow-sm);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
+  box-shadow: none;
 }
 
 .wf-cabinet-hint {
@@ -823,79 +848,84 @@
 
 .wf-cabinet-stats {
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
-  gap: 0;
+  gap: 8px;
   padding: 0;
   margin-bottom: 16px;
-  border: 1px solid var(--wf-border);
-  border-radius: 14px;
-  background: var(--wf-surface);
-  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
 }
 
 .wf-cabinet-stats__item {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 14px 8px;
+  gap: 2px;
+  min-width: 72px;
+  padding: 10px 16px;
   position: relative;
-  transition: background 0.15s;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 
 .wf-cabinet-stats__item + .wf-cabinet-stats__item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 20%;
-  height: 60%;
-  width: 1px;
-  background: var(--wf-border);
+  display: none;
 }
 
 .wf-cabinet-stats__item:hover {
-  background: var(--wf-surface-2);
+  background: var(--wf-surface);
+  border-color: var(--wf-muted);
 }
 
 .wf-cabinet-stats__item--clickable {
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
 }
 
 .wf-cabinet-stats__item--clickable:hover {
-  background: var(--wf-accent-subtle);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
 }
 
 .wf-cabinet-stats__item--on {
-  background: var(--wf-accent-subtle);
-  box-shadow: inset 0 -3px 0 var(--wf-accent);
+  background: var(--wf-accent-dim);
+  border-color: var(--wf-accent);
+  box-shadow: none;
 }
 
 .wf-cabinet-stats__item--on .wf-cabinet-stats__num,
 .wf-cabinet-stats__item--on .wf-cabinet-stats__label {
-  color: var(--wf-accent-dark);
+  color: var(--wf-accent);
 }
 
 .wf-cabinet-stats__num {
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1;
   color: var(--wf-text);
 }
 
 .wf-cabinet-stats__label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--wf-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .wf-cabinet-stats__item--pick .wf-cabinet-stats__num { color: var(--wf-accent); }
-.wf-cabinet-stats__item--wish .wf-cabinet-stats__num { color: #e85d5d; }
+.wf-cabinet-stats__item--wish .wf-cabinet-stats__num { color: var(--wf-wine); }
+.wf-cabinet-stats__item--on.wf-cabinet-stats__item--pick .wf-cabinet-stats__num,
+.wf-cabinet-stats__item--on.wf-cabinet-stats__item--wish .wf-cabinet-stats__num {
+  color: var(--wf-accent);
+}
 
 .wf-cabinet-sub {
   display: flex;
@@ -908,29 +938,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 84px;
-  min-height: 42px;
-  padding: 0 15px;
-  border-radius: 12px;
+  min-width: auto;
+  min-height: auto;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 800;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-sub__tab:hover {
-  border-color: rgba(240, 202, 104, 0.28);
+  border-color: var(--wf-muted);
   color: var(--wf-text);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .wf-cabinet-sub__tab--on {
   border-color: var(--wf-accent);
-  background: var(--wf-accent-subtle);
-  color: var(--wf-accent-dark);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
 }
 
 .wf-cabinet-pick {
@@ -965,7 +995,7 @@
   overflow: hidden;
   color: var(--wf-text);
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
   text-decoration: none;
@@ -976,11 +1006,18 @@
   height: 46px;
   width: 86px;
   border-radius: 10px;
-  border: 1px solid #e85d5d;
-  background: transparent;
-  color: #e85d5d;
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
   cursor: pointer;
   font: inherit;
+  font-weight: 600;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.wf-cabinet-pick__remove:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
 }
 
 .wf-cabinet-pick__readonly {
@@ -991,18 +1028,19 @@
 .wf-cabinet-post {
   display: grid;
   gap: 12px;
-  padding: 18px 20px;
+  padding: 22px;
   margin-top: 10px;
-  border-color: var(--wf-border);
-  background: var(--wf-surface-2);
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-post:hover {
-  transform: translateY(-1px);
-  border-color: rgba(213, 173, 69, 0.3);
-  background: var(--wf-surface-2);
-  box-shadow: var(--wf-shadow-sm);
+  transform: translateY(-2px);
+  border-color: rgba(198, 146, 43, 0.28);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-cabinet-post__title {
@@ -1091,10 +1129,10 @@
   color: var(--wf-accent);
 }
 
-/* 수정 — 블루 hover (상세/삭제와 구분) */
+/* 수정 — accent hover */
 .wf-cabinet-action-btn--edit:hover {
-  border-color: #4f8ef0;
-  color: #4f8ef0;
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
 }
 
 /* 삭제 — danger(레드) hover */
@@ -1119,9 +1157,10 @@
   margin: 10px 0 0;
   padding: 22px 24px;
   border: 1px solid var(--wf-border);
-  border-radius: 18px;
-  background: var(--wf-surface-2);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
   color: var(--wf-muted);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-follow {
@@ -1238,7 +1277,7 @@
   border-color: var(--wf-accent);
   background: var(--wf-accent-subtle);
   color: var(--wf-accent-dark);
-  font-weight: 900;
+  font-weight: 700;
   cursor: default;
 }
 
@@ -1260,7 +1299,7 @@
 
 /* ─── Phase 7: CabinetProfileHeader ─── */
 .wf-cabinet-profile__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.wf-cabinet-profile__name { font-size: 28px; margin: 0; line-height: 1.2; }
+.wf-cabinet-profile__name { font-size: 28px; margin: 0; line-height: 1.2; font-weight: 700; }
 .wf-cabinet-follow-btn { margin-top: 8px; height: 40px; width: 96px; }
 
 /* 팔로워·팔로잉 분리 통계 */
@@ -1276,22 +1315,22 @@
   align-items: center;
   min-width: 64px;
   padding: 10px 14px;
-  border: 1px solid rgba(240, 202, 104, 0.18);
-  border-radius: 14px;
-  background: rgba(240, 202, 104, 0.055);
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
   text-decoration: none;
   transition: border-color 0.15s, background 0.15s;
 }
 
 .wf-cabinet-follow-stat:hover {
-  border-color: rgba(240, 202, 104, 0.45);
-  background: rgba(240, 202, 104, 0.1);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
 }
 
 .wf-cabinet-follow-stat__num {
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--wf-accent-light);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--wf-accent);
   line-height: 1.1;
 }
 
@@ -1377,7 +1416,7 @@
 
 .wf-cabinet-pick__abv-label {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--wf-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1420,46 +1459,50 @@
 .wf-follow-page-title {
   margin: 0;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--wf-text);
 }
 
 .wf-follow-tabs {
   display: flex;
-  gap: 0;
-  margin-bottom: 12px;
-  border: 1px solid var(--wf-border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--wf-surface-2);
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
 }
 
 .wf-follow-tab {
-  flex: 1;
+  flex: 0 1 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 16px;
-  border: none;
-  background: transparent;
+  padding: 8px 18px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 
 .wf-follow-tab:hover {
+  border-color: var(--wf-muted);
   background: var(--wf-surface);
   color: var(--wf-text);
 }
 
 .wf-follow-tab--on {
-  background: var(--wf-accent-subtle);
-  color: var(--wf-accent-dark);
-  box-shadow: inset 0 -2px 0 var(--wf-accent);
+  background: var(--wf-accent-dim);
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+  box-shadow: none;
 }
 
 .wf-follow-tab__count {
@@ -1473,7 +1516,7 @@
   background: var(--wf-border);
   color: var(--wf-muted);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .wf-follow-tab--on .wf-follow-tab__count {
@@ -1533,7 +1576,7 @@
 
 .wf-follow-user-card__name {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--wf-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1586,7 +1629,7 @@
   min-width: 0;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .wf-wish-folder-icon {
   width: 28px;
@@ -1596,7 +1639,7 @@
   border-radius: 9px;
   background: var(--wf-accent-dim);
 }
-.wf-wish-folder-status--on { color: var(--wf-accent-light); font-size: 12px; font-weight: 800; white-space: nowrap; }
+.wf-wish-folder-status--on { color: var(--wf-accent); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .wf-wish-folder-status--off { color: var(--wf-muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
 .wf-wish-create-btn {
   background: rgba(240, 202, 104, 0.055);
@@ -1605,7 +1648,7 @@
   padding: 13px 16px;
   color: var(--wf-accent-light);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   width: 100%;
   text-align: center;
@@ -1660,7 +1703,7 @@
   background: var(--wf-accent);
   color: #0c0c0f;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -1687,7 +1730,27 @@
 
 /* ─── Phase 8: CabinetCommunitySection ─── */
 .wf-community-write-link { text-decoration: none; display: inline-block; }
-.wf-community-write-btn { width: 192px; height: 46px; margin-top: 8px; }
+.wf-community-write-btn {
+  width: auto;
+  min-width: 132px;
+  height: auto;
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wf-accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: none;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.wf-community-write-btn:hover {
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
+}
 
 /* ─── Phase 8: CabinetPage folder buttons ─── */
 .wf-cabinet-wish-folder-btn--active { color: var(--wf-accent) !important; font-weight: 700; }
