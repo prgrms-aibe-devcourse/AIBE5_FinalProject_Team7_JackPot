@@ -2,7 +2,7 @@
 
 // PostType: 유저가 작성하는 커뮤니티 게시글 유형.
 // WhiskeyColumnResponse와 별도 도메인으로 분리한 이유는 두 데이터의 출처와 생명주기가 다르기 때문이다.
-// 게시글은 유저가 직접 작성하고, 칼럼은 외부 크롤러가 수집한다.
+// 게시글은 주로 유저가 자유롭게 작성하지만, 칼럼은 관리자가 크롤링한데이터나, 출저가 분명한 글들을 위주로 다루기 때문이다.
 export type PostType = 'NOTICE' | 'COLUMN' | 'QA' | 'FREE' | 'FEED';
 export type PostCategory = 'F' | 'R' | 'L' | 'Q' | 'G' | 'B';
 
