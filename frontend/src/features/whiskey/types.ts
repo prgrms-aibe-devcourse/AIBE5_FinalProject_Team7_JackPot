@@ -92,6 +92,7 @@ export interface WhiskeyReview {
   userId: number;
   whiskeyId?: number;
   whiskeyName?: string;
+  whiskeyImageUrl?: string | null;
   nickname: string;
   profileImageUrl: string | null;
   rating: number;

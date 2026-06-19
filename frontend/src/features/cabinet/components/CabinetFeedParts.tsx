@@ -1,5 +1,45 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { PATHS } from '@/app/router/paths';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+
+export function CabinetReviewFeedThumb({
+  whiskeyId,
+  whiskeyName,
+  imageUrl,
+}: {
+  whiskeyId?: number;
+  whiskeyName: string;
+  imageUrl?: string | null;
+}) {
+  const [imgError, setImgError] = useState(false);
+  const thumbSrc = resolveMediaUrl(imageUrl);
+
+  const media = thumbSrc && !imgError ? (
+    <img
+      src={thumbSrc}
+      alt=""
+      className="wf-cabinet-feed__thumb"
+      onError={() => setImgError(true)}
+    />
+  ) : (
+    <div className="wf-cabinet-feed__thumb wf-placeholder" aria-hidden />
+  );
+
+  if (whiskeyId) {
+    return (
+      <Link
+        to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(whiskeyId))}
+        className="wf-cabinet-feed__thumb-wrap"
+        aria-label={`${whiskeyName} 상세 보기`}
+      >
+        {media}
+      </Link>
+    );
+  }
+
+  return <div className="wf-cabinet-feed__thumb-wrap">{media}</div>;
+}
 
 export function CabinetFeedToolbar({ children }: { children: ReactNode }) {
   return <div className="wf-cabinet-feed-toolbar">{children}</div>;

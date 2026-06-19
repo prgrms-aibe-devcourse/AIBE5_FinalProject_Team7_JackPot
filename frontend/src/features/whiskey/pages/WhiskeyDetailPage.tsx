@@ -8,7 +8,7 @@ import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
-import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
+import { ReviewAttachedNote } from '@/features/review/components/ReviewAttachedNote';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import { fetchMyTastingNoteForWhiskey, type MyTastingNote } from '@/features/tasting-note/api/noteApi';
 import { whiskeyApi } from '../api/whiskeyApi';
@@ -26,7 +26,7 @@ import {
   useWhiskeyReviewStats,
 } from '../hooks/useWhiskeyDetail';
 import type { TastingAxisKey, TastingAxisView, TastingSummarySource, WhiskeyReview } from '../types';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 import '../whiskey.css';
@@ -82,14 +82,11 @@ function ReviewPreviewCard({
   review: WhiskeyReview;
   defaultNoteOpen: boolean;
 }) {
-  const [showNote, setShowNote] = useState(defaultNoteOpen);
   const currentUserId = getCurrentUserId();
   const likeMutation = useToggleReviewLike(currentUserId);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setShowNote(defaultNoteOpen);
-  }, [defaultNoteOpen, review.id]);
+  const avatarSrc = resolveProfileImageUrl(review.profileImageUrl, review.userId);
+  const [avatarError, setAvatarError] = useState(false);
 
   const handleLikeClick = () => {
     if (currentUserId == null) {
@@ -107,47 +104,49 @@ function ReviewPreviewCard({
   return (
     <li className="wf-detail-reviews__item">
       <div className="wf-detail-reviews__header">
-        <div className="wf-detail-reviews__author">
-          <UserProfileLink userId={review.userId}>
-            <strong>{review.nickname}</strong>
-          </UserProfileLink>
-          <span className="wf-detail-reviews__date">{formatReviewDate(review.createdAt)}</span>
-        </div>
-        <span className="wf-detail-reviews__rating" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
-          <span className="wf-stars" aria-hidden>★</span>
-          {Number(review.rating).toFixed(1)}
-        </span>
+        <UserProfileLink userId={review.userId} className="wf-detail-reviews__author-link">
+          <span className="wf-detail-reviews__avatar-wrap">
+            {!avatarError ? (
+              <img
+                src={avatarSrc}
+                alt=""
+                className="wf-detail-reviews__avatar"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <span className="wf-detail-reviews__avatar wf-detail-reviews__avatar--fallback" aria-hidden />
+            )}
+          </span>
+          <span className="wf-detail-reviews__meta-line">
+            <strong className="wf-detail-reviews__nickname">{review.nickname}</strong>
+            <span className="wf-detail-reviews__meta-sep" aria-hidden>·</span>
+            <span className="wf-detail-reviews__date">{formatReviewDate(review.createdAt)}</span>
+            <span className="wf-detail-reviews__meta-sep" aria-hidden>·</span>
+            <span className="wf-detail-reviews__rating-inline" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
+              <span className="wf-stars" aria-hidden>★</span>
+              {Number(review.rating).toFixed(1)}
+            </span>
+          </span>
+        </UserProfileLink>
       </div>
+
       <p className="wf-detail-reviews__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
+
       <div className="wf-detail-reviews__footer">
         <button
           type="button"
-          className={`wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
+          className={`wf-detail-reviews__action wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
           onClick={handleLikeClick}
           disabled={likeMutation.isPending}
         >
-          <span className="wf-review-like__icon" aria-hidden>👍</span>
-          {review.likeCount ?? 0}
+          좋아요 {review.likeCount ?? 0}
         </button>
-        {review.hasAttachedNote && review.attachedNoteId ? (
-          <button
-            type="button"
-            className={`wf-detail-reviews__note-button${showNote ? ' wf-detail-reviews__note-button--open' : ''}`}
-            onClick={() => setShowNote((prev) => !prev)}
-            aria-expanded={showNote}
-            aria-label={showNote ? '첨부 My Note 접기' : '첨부 My Note 보기'}
-            title={showNote ? 'My Note 접기' : 'My Note 보기'}
-          >
-            <span className="wf-detail-reviews__note-icon" aria-hidden>
-              {showNote ? '📖' : '📕'}
-            </span>
-          </button>
-        ) : null}
       </div>
-      {review.hasAttachedNote && review.attachedNoteId && showNote ? (
-        <AttachedNotePanel noteId={review.attachedNoteId} />
+
+      {review.hasAttachedNote && review.attachedNoteId ? (
+        <ReviewAttachedNote noteId={review.attachedNoteId} defaultOpen={defaultNoteOpen} />
       ) : null}
     </li>
   );
@@ -625,7 +624,7 @@ export default function WhiskeyDetailPage() {
               {reviewsLoading ? (
                 <ul className="wf-detail-reviews__list" aria-hidden>
                   {[0, 1, 2].map((i) => (
-                    <li key={i} className="wf-detail-reviews__item wf-box">
+                    <li key={i} className="wf-detail-reviews__item">
                       <div className="wf-skeleton-line" style={{ width: '42%', height: 13 }} />
                       <div className="wf-skeleton-line" style={{ width: '100%', marginTop: 12, height: 13 }} />
                       <div className="wf-skeleton-line" style={{ width: '68%', marginTop: 6, height: 13 }} />

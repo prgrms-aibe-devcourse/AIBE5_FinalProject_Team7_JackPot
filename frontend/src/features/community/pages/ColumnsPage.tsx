@@ -1,6 +1,7 @@
 // 사용자 작성 칼럼 게시판 목록 페이지
 // useColumns → GET /community/columns (PostType.COLUMN 기반 posts 테이블)
 // useWhiskeyColumns(GET /columns, 크롤링 외부 콘텐츠)와 다른 API임에 주의
+import { useState } from 'react';
 import '../community.css';
 import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
@@ -15,6 +16,9 @@ function formatDate(iso: string) {
 }
 
 function ColumnCard({ post }: { post: PostSummaryResponse }) {
+  const [imgError, setImgError] = useState(false);
+  const showThumb = Boolean(post.thumbnailUrl) && !imgError;
+
   return (
     <Link
       to={PATHS.COMMUNITY_POST.replace(':postId', String(post.id))}
@@ -27,15 +31,17 @@ function ColumnCard({ post }: { post: PostSummaryResponse }) {
             ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
           </p>
         </div>
-        {post.thumbnailUrl && (
-          <div className="wf-column-card__thumb">
+        <div className="wf-column-card__thumb" aria-hidden={!showThumb}>
+          {showThumb ? (
             <img
-              src={post.thumbnailUrl}
-              alt={post.title}
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              src={post.thumbnailUrl!}
+              alt=""
+              onError={() => setImgError(true)}
             />
-          </div>
-        )}
+          ) : (
+            <span className="wf-column-card__thumb-placeholder" />
+          )}
+        </div>
       </div>
     </Link>
   );

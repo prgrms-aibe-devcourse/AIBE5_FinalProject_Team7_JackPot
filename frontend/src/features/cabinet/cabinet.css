@@ -189,15 +189,27 @@
 
 .wf-ig-profile__avatar-wrap {
   flex-shrink: 0;
-}
-
-.wf-ig-profile__avatar {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  background: var(--wf-surface-2);
+  background: #f5f0e8;
+}
+
+.wf-ig-profile__avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: center center;
+  border: none;
+  background: transparent;
+}
+
+.wf-ig-profile__avatar[src*='/images/default-avatars/'] {
+  transform: scale(1.28);
 }
 
 .wf-ig-profile__info {
@@ -517,13 +529,18 @@
   overflow: hidden;
   flex-shrink: 0;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  background: var(--wf-surface-2);
+  background: #f5f0e8;
 }
 
 .wf-cabinet-follow-row__avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
+}
+
+.wf-cabinet-follow-row__avatar img[src*='/images/default-avatars/'] {
+  transform: scale(1.32);
 }
 
 .wf-cabinet-follow-row__name {
@@ -670,6 +687,60 @@
 
 .wf-cabinet-feed__item:last-child {
   border-bottom: none;
+}
+
+.wf-cabinet-feed__item--review {
+  padding: 14px 4px;
+}
+
+.wf-cabinet-feed__item--note {
+  padding: 14px 4px;
+}
+
+.wf-cabinet-feed__row {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.wf-cabinet-feed__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-cabinet-feed__thumb-wrap {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--wf-border-subtle);
+  border-radius: 10px;
+  background: var(--wf-surface-2);
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wf-cabinet-feed__thumb-wrap:hover {
+  border-color: var(--wf-accent-dim);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-cabinet-feed__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border: 0;
+  background: transparent;
+}
+
+.wf-cabinet-feed__thumb.wf-placeholder {
+  min-height: 0;
 }
 
 .wf-cabinet-feed__item--open {
@@ -2094,9 +2165,13 @@
     text-align: center;
   }
 
-  .wf-ig-profile__avatar {
+  .wf-ig-profile__avatar-wrap {
     width: 86px;
     height: 86px;
+  }
+
+  .wf-ig-profile__avatar[src*='/images/default-avatars/'] {
+    transform: scale(1.3);
   }
 
   .wf-ig-profile__info {

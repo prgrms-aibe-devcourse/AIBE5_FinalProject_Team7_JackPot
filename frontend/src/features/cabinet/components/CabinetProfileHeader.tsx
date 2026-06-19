@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { PATHS, type CabinetSection } from '@/app/router/paths';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 
 interface CabinetProfileHeaderProps {
   name: string;
   profileImageUrl?: string | null;
+  avatarSeed?: string | number | null;
   introduction?: string | null;
   followers: number;
   following: number;
@@ -25,6 +26,7 @@ interface CabinetProfileHeaderProps {
 export function CabinetProfileHeader({
   name,
   profileImageUrl,
+  avatarSeed,
   introduction,
   followers,
   following,
@@ -44,7 +46,7 @@ export function CabinetProfileHeader({
   const fallbackLink = followHref ?? PATHS.CABINET_FOLLOW;
   const followersLink = followersHref ?? fallbackLink;
   const followingLink = followingHref ?? fallbackLink;
-  const avatarSrc = resolveMediaUrl(profileImageUrl);
+  const avatarSrc = resolveProfileImageUrl(profileImageUrl, avatarSeed ?? name);
   const showSectionTabs = section != null && barHref != null && communityHref != null;
   const bio = introduction?.trim();
 
@@ -52,11 +54,7 @@ export function CabinetProfileHeader({
     <header className="wf-ig-profile">
       <div className="wf-ig-profile__main">
         <div className="wf-ig-profile__avatar-wrap">
-          {avatarSrc ? (
-            <img src={avatarSrc} alt="" className="wf-ig-profile__avatar" />
-          ) : (
-            <div className="wf-ig-profile__avatar wf-placeholder" aria-hidden />
-          )}
+          <img src={avatarSrc} alt="" className="wf-ig-profile__avatar" />
         </div>
 
         <div className="wf-ig-profile__info">
@@ -66,9 +64,17 @@ export function CabinetProfileHeader({
               <Link to={PATHS.MY_PAGE} className="wf-ig-profile__settings" aria-label="프로필 편집">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path
-                    d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Zm8.94-2.88a1 1 0 0 0-.24-1.09l-1.2-1.2a8.03 8.03 0 0 0 .18-1.75v-.16a8.03 8.03 0 0 0-.18-1.75l1.2-1.2a1 1 0 0 0 .24-1.09 1 1 0 0 0-.86-.51h-1.7a8.03 8.03 0 0 0-1.75-.18h-.16a8.03 8.03 0 0 0-1.75.18h-1.7a1 1 0 0 0-.86.51 1 1 0 0 0-.24 1.09l1.2 1.2a8.03 8.03 0 0 0-.18 1.75v.16c0 .6.06 1.18.18 1.75l-1.2 1.2a1 1 0 0 0-.24 1.09 1 1 0 0 0 .86.51h1.7c.55.07 1.14.13 1.75.18h.16c.6-.05 1.18-.11 1.75-.18h1.7a1 1 0 0 0 .86-.51 1 1 0 0 0 .24-1.09l-1.2-1.2c.12-.57.18-1.15.18-1.75v-.16c0-.6-.06-1.18-.18-1.75l1.2-1.2a1 1 0 0 0 .24-1.09Z"
+                    d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
                     stroke="currentColor"
                     strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>

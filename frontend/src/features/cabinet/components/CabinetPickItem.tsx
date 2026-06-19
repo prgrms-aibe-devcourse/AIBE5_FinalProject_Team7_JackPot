@@ -16,8 +16,6 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
   const thumbSrc = resolveMediaUrl(imageUrl);
   const [imgError, setImgError] = useState(false);
   const detailPath = `/whiskey/${id}`;
-  const [type, abv] = meta.split(' · ');
-  const spec = [type, abv ? `${abv}%` : ''].filter(Boolean).join(' · ');
 
   return (
     <article className={`wf-ig-grid-item${highlighted ? ' wf-ig-grid-item--accent' : ''}`}>
@@ -34,7 +32,7 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
         )}
         <div className="wf-ig-grid-item__overlay">
           <strong className="wf-ig-grid-item__name">{name}</strong>
-          {spec ? <span className="wf-ig-grid-item__meta">{spec}</span> : null}
+          {meta ? <span className="wf-ig-grid-item__meta">{meta}</span> : null}
         </div>
       </Link>
       {!readonly && onRemove ? (
