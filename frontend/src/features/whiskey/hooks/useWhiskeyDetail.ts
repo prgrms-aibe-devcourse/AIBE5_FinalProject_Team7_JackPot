@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   fetchRelatedColumns,
   fetchSimilarWhiskeys,
@@ -73,6 +73,19 @@ export function useWhiskeyReviews(whiskeyId: string | undefined, page = 0, size 
   return useQuery({
     queryKey: whiskeyReviewsQueryKey(whiskeyId ?? '', page, size),
     queryFn: () => fetchWhiskeyReviews(whiskeyId!, page, size, userId),
+    enabled: Boolean(whiskeyId),
+  });
+}
+
+export function useWhiskeyReviewsInfinite(whiskeyId: string | undefined, size = 10) {
+  const userId = getCurrentUserId();
+
+  return useInfiniteQuery({
+    queryKey: ['whiskey', 'reviews', 'infinite', whiskeyId ?? '', size, userId] as const,
+    queryFn: ({ pageParam }) => fetchWhiskeyReviews(whiskeyId!, pageParam, size, userId),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      allPages.length < (lastPage.totalPages ?? 0) ? allPages.length : undefined,
     enabled: Boolean(whiskeyId),
   });
 }

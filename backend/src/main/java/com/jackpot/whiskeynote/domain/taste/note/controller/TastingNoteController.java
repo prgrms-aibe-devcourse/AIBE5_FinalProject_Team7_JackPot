@@ -60,7 +60,8 @@ public class TastingNoteController {
             @PathVariable Long noteId,
             @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        return tastingNoteService.getMyTastingNote(principal.userId(), noteId);
+        Long userId = principal != null ? principal.userId() : null;
+        return tastingNoteService.getTastingNoteForView(userId, noteId);
     }
     // AI 테이스팅 노트 분석
     @PostMapping("/api/v1/tasting-notes/analyze")
