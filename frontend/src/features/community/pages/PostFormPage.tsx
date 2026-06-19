@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { uploadImage } from '@/shared/api/mediaApi';
-import { fetchWhiskeys, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
+import { fetchAllWhiskeyCards, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { PATHS } from '@/app/router/paths';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import { toast } from '@/shared/components/ui/Toast';
@@ -46,12 +46,11 @@ export default function PostFormPage() {
 
   // 위스키 검색은 칼럼 유형에서만 사용 — 자유게시판에서는 불필요한 상태
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
+  const [allWhiskeys, setAllWhiskeys] = useState<WhiskeyCard[]>([]);
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
   const [whiskeyDropdownOpen, setWhiskeyDropdownOpen] = useState(false);
   const [selectedWhiskeys, setSelectedWhiskeys] = useState<WhiskeyCard[]>([]);
-  const [searching, setSearching] = useState(false);
-  // 검색어 변경마다 API를 즉시 호출하면 요청이 폭증하므로 debounce 타이머로 제어
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [whiskeysLoading, setWhiskeysLoading] = useState(false);
 
   // 이미지 첨부는 자유게시판 전용 — 칼럼은 RichEditor 내부에서 이미지 삽입 처리
   const [attachedImages, setAttachedImages] = useState<Array<{ name: string; url: string }>>([]);
@@ -60,33 +59,31 @@ export default function PostFormPage() {
 
   useEffect(() => {
     if (postType !== 'COLUMN') return;
-    if (searchTimer.current) clearTimeout(searchTimer.current);
 
-    if (!whiskeyQuery.trim()) {
-      // 검색어가 없을 때는 전체 목록을 빠르게(100ms) 보여줘 UX 개선
-      searchTimer.current = setTimeout(async () => {
-        setSearching(true);
-        try {
-          const result = await fetchWhiskeys({ size: 20 });
-          setWhiskeyResults(result.content);
-        } finally {
-          setSearching(false);
-        }
-      }, 100);
-      return;
-    }
+    let cancelled = false;
+    setWhiskeysLoading(true);
+    fetchAllWhiskeyCards()
+      .then((whiskeys) => {
+        if (!cancelled) setAllWhiskeys(whiskeys);
+      })
+      .finally(() => {
+        if (!cancelled) setWhiskeysLoading(false);
+      });
 
-    // 검색어 입력 300ms 후에 API 호출 — 타이핑 중 불필요한 요청 억제
-    searchTimer.current = setTimeout(async () => {
-      setSearching(true);
-      try {
-        const result = await searchWhiskeys({ q: whiskeyQuery.trim(), size: 20 });
-        setWhiskeyResults(result.content);
-      } finally {
-        setSearching(false);
-      }
-    }, 300);
-  }, [whiskeyQuery, postType]);
+    return () => {
+      cancelled = true;
+    };
+  }, [postType]);
+
+  useEffect(() => {
+    if (postType !== 'COLUMN') return;
+
+    const q = whiskeyQuery.trim().toLowerCase();
+    const filtered = q
+      ? allWhiskeys.filter((w) => w.name.toLowerCase().includes(q))
+      : allWhiskeys;
+    setWhiskeyResults(filtered);
+  }, [whiskeyQuery, allWhiskeys, postType]);
 
   function selectWhiskey(whiskey: WhiskeyCard) {
     // 동일 위스키를 중복 추가하지 않도록 ID 기준으로 중복 확인
@@ -190,13 +187,13 @@ export default function PostFormPage() {
               />
               {whiskeyDropdownOpen && (
                 <ul className="wf-post-whiskey-dropdown">
-                  {searching && (
-                    <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">검색 중…</li>
+                  {whiskeysLoading && (
+                    <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">불러오는 중…</li>
                   )}
-                  {!searching && whiskeyResults.length === 0 && (
+                  {!whiskeysLoading && whiskeyResults.length === 0 && (
                     <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">검색 결과가 없습니다.</li>
                   )}
-                  {!searching && whiskeyResults.map((w) => (
+                  {!whiskeysLoading && whiskeyResults.map((w) => (
                     // onMouseDown을 사용하는 이유: onClick은 onBlur 이후 실행되어 드롭다운이 먼저 닫힘
                     <li key={w.id} className="wf-post-whiskey-dropdown-item" onMouseDown={() => selectWhiskey(w)}>
                       <span>{w.name}</span>

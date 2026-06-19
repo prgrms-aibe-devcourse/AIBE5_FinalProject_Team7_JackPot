@@ -7,7 +7,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { toast } from '@/shared/components/ui/Toast';
 import { uploadImage } from '@/shared/api/mediaApi';
-import { fetchWhiskeys, fetchWhiskeyById, searchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
+import { fetchAllWhiskeyCards, fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { updatePost } from '../api/communityApi';
 import { RichEditor } from '../components/RichEditor';
 import { communityKeys, usePost } from '../hooks/useCommunity';
@@ -55,11 +55,11 @@ export default function PostEditPage() {
 
   // 위스키 검색은 칼럼 유형에서만 활성화
   const [whiskeyQuery, setWhiskeyQuery] = useState('');
+  const [allWhiskeys, setAllWhiskeys] = useState<WhiskeyCard[]>([]);
   const [whiskeyResults, setWhiskeyResults] = useState<WhiskeyCard[]>([]);
   const [whiskeyDropdownOpen, setWhiskeyDropdownOpen] = useState(false);
   const [selectedWhiskeys, setSelectedWhiskeys] = useState<WhiskeyCard[]>([]);
-  const [searching, setSearching] = useState(false);
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [whiskeysLoading, setWhiskeysLoading] = useState(false);
 
   // post 로드 후 폼 초기화 — FREE 타입은 HTML을 파싱해 텍스트/이미지를 분리 복원
   useEffect(() => {
@@ -83,34 +83,33 @@ export default function PostEditPage() {
       .catch(() => {});
   }, [post?.whiskeyIds]);
 
-  // 위스키 검색 debounce — PostFormPage와 동일한 패턴
   useEffect(() => {
     if (post?.postType !== 'COLUMN') return;
-    if (searchTimer.current) clearTimeout(searchTimer.current);
 
-    if (!whiskeyQuery.trim()) {
-      searchTimer.current = setTimeout(async () => {
-        setSearching(true);
-        try {
-          const result = await fetchWhiskeys({ size: 20 });
-          setWhiskeyResults(result.content);
-        } finally {
-          setSearching(false);
-        }
-      }, 100);
-      return;
-    }
+    let cancelled = false;
+    setWhiskeysLoading(true);
+    fetchAllWhiskeyCards()
+      .then((whiskeys) => {
+        if (!cancelled) setAllWhiskeys(whiskeys);
+      })
+      .finally(() => {
+        if (!cancelled) setWhiskeysLoading(false);
+      });
 
-    searchTimer.current = setTimeout(async () => {
-      setSearching(true);
-      try {
-        const result = await searchWhiskeys({ q: whiskeyQuery.trim(), size: 20 });
-        setWhiskeyResults(result.content);
-      } finally {
-        setSearching(false);
-      }
-    }, 300);
-  }, [whiskeyQuery, post?.postType]);
+    return () => {
+      cancelled = true;
+    };
+  }, [post?.postType]);
+
+  useEffect(() => {
+    if (post?.postType !== 'COLUMN') return;
+
+    const q = whiskeyQuery.trim().toLowerCase();
+    const filtered = q
+      ? allWhiskeys.filter((w) => w.name.toLowerCase().includes(q))
+      : allWhiskeys;
+    setWhiskeyResults(filtered);
+  }, [whiskeyQuery, allWhiskeys, post?.postType]);
 
   function selectWhiskey(whiskey: WhiskeyCard) {
     if (selectedWhiskeys.some((w) => w.id === whiskey.id)) return;
@@ -211,13 +210,13 @@ export default function PostEditPage() {
               />
               {whiskeyDropdownOpen && (
                 <ul className="wf-post-whiskey-dropdown">
-                  {searching && (
-                    <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">검색 중…</li>
+                  {whiskeysLoading && (
+                    <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">불러오는 중…</li>
                   )}
-                  {!searching && whiskeyResults.length === 0 && (
+                  {!whiskeysLoading && whiskeyResults.length === 0 && (
                     <li className="wf-post-whiskey-dropdown-item wf-post-whiskey-dropdown-item--muted">검색 결과가 없습니다.</li>
                   )}
-                  {!searching && whiskeyResults.map((w) => (
+                  {!whiskeysLoading && whiskeyResults.map((w) => (
                     // onMouseDown: blur보다 먼저 실행되어 선택이 정상 동작
                     <li key={w.id} className="wf-post-whiskey-dropdown-item" onMouseDown={() => selectWhiskey(w)}>
                       <span>{w.name}</span>
