@@ -8,22 +8,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public record CacheVector(
+public record NoteVector(
     double[] scoreVec,
     Map<Long, Double> tagVector
 ) {
-    public static CacheVector from(double[] scoreVec, Map<Long, Double> tagVector) {
-        return new CacheVector(scoreVec, tagVector);
+
+    public static NoteVector from(double[] scoreVec, Map<Long, Double> tagVector) {
+        return new NoteVector(scoreVec, tagVector);
     }
 
-    public static CacheVector fromCache(WhiskeysNoteCache cache) {
-        return new CacheVector(
+
+    public static NoteVector fromCache(WhiskeysNoteCache cache) {
+        return new NoteVector(
             normalizeScore(cache),
             buildTagVector(cache)
         );
     }
 
-    public static CacheVector fromSurvey(WhiskeyScoreVo scoreVo, Set<Long> tagIdSet) {
+    public static NoteVector fromSurvey(WhiskeyScoreVo scoreVo, Set<Long> tagIdSet) {
         double[] scoreVec = {
             (scoreVo.bodyScore() - 1) * 8.0 / 100,
             (scoreVo.finishScore() - 1) * 8.0 / 100,
@@ -35,7 +37,7 @@ public record CacheVector(
         for (Long tagId : tagIdSet) {
             tagVector.put(tagId, 1.0);
         }
-        return new CacheVector(scoreVec, tagVector);
+        return new NoteVector(scoreVec, tagVector);
     }
 
     private static double[] normalizeScore(WhiskeysNoteCache cache) {
