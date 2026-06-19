@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
+import { getTagTooltip } from '../constants/tagDescriptions';
 import type { WhiskeyTagStat } from '../types';
 
-const MIN_RADIUS = 36;
-const MAX_RADIUS = 66;
+const MIN_RADIUS = 46;
+const MAX_RADIUS = 62;
 const TAG_FILTERS = [
   { value: 'all', label: '전체' },
   { value: 'nose', label: '향' },
@@ -37,6 +38,7 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
       .sort((a, b) => b.count - a.count);
   }, [selectedFilter, tags]);
   const maxCount = sorted[0]?.count ?? 1;
+  const hasIcons = sorted.some((tag) => Boolean(tag.imageUrl));
 
   return (
     <section className="wf-detail-tags wf-box wf-box--solid" aria-label="Tasting tags">
@@ -59,29 +61,54 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
       {sorted.length === 0 ? (
         <p className="wf-text-sm wf-detail-tags__empty">아직 등록된 My Note 태그가 없습니다.</p>
       ) : (
-        <ul className="wf-detail-tags__grid">
+        <ul className={`wf-detail-tags__grid${hasIcons ? ' wf-detail-tags__grid--icons' : ''}`}>
           {sorted.map((tag) => {
             const ratio = tag.count / maxCount;
             const radius = bubbleSize(tag.count, maxCount);
+            const tooltip = getTagTooltip(tag.name);
+
             return (
-              <li key={tag.tagId}>
-                <button
-                  type="button"
-                  className={`wf-detail-tags__bubble${tag.imageUrl ? ' wf-detail-tags__bubble--icon' : ''}`}
-                  style={
-                    tag.imageUrl
-                      ? { width: radius * 2, height: radius * 2 }
-                      : { width: radius * 2, height: radius * 2, backgroundColor: heatColor(ratio) }
-                  }
-                  onClick={() => onTagClick?.(tag)}
-                  title={`${tag.name} (${tag.count})`}
-                >
-                  {tag.imageUrl ? (
-                    <img src={tag.imageUrl} alt={tag.name} className="wf-detail-tags__image" />
-                  ) : (
-                    <span className="wf-detail-tags__count">{tag.count}</span>
-                  )}
-                </button>
+              <li key={tag.tagId} className="wf-detail-tags__item">
+                <div className="wf-detail-tags__item-wrap">
+                  <button
+                    type="button"
+                    className={`wf-detail-tags__bubble${tag.imageUrl ? ' wf-detail-tags__bubble--icon' : ''}`}
+                    style={
+                      tag.imageUrl
+                        ? { width: radius * 2, height: radius * 2 }
+                        : {
+                            width: radius * 2,
+                            height: radius * 2,
+                            backgroundColor: heatColor(ratio),
+                          }
+                    }
+                    onClick={() => onTagClick?.(tag)}
+                    aria-describedby={tooltip ? `tag-tooltip-${tag.tagId}` : undefined}
+                  >
+                    {tag.imageUrl ? (
+                      <img src={tag.imageUrl} alt={tag.name} className="wf-detail-tags__image" />
+                    ) : (
+                      <span className="wf-detail-tags__count">{tag.count}</span>
+                    )}
+                  </button>
+
+                  {tooltip ? (
+                    <div
+                      id={`tag-tooltip-${tag.tagId}`}
+                      className="wf-detail-tags__tooltip"
+                      role="tooltip"
+                    >
+                      <p className="wf-detail-tags__tooltip-title">
+                        {tooltip.englishName} / {tag.name}
+                      </p>
+                      <p className="wf-detail-tags__tooltip-desc">{tooltip.description}</p>
+                      <p className="wf-detail-tags__tooltip-examples">
+                        <span className="wf-detail-tags__tooltip-label">예시</span>
+                        {tooltip.examples}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
                 <span className="wf-detail-tags__name">{tag.name}</span>
               </li>
             );
