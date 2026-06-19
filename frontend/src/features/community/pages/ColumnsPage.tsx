@@ -6,14 +6,12 @@ import '../community.css';
 import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
+import { CommunityBoardHeader } from '../components/CommunityBoardHeader';
 import { Pagination } from '../components/Pagination';
 import { useColumns } from '../hooks/useCommunity';
 import { isLoggedIn } from '@/shared/lib/authSession';
 import type { PostSummaryResponse } from '../types';
-
-function formatDate(iso: string) {
-  return iso.slice(0, 10);
-}
+import { formatPostFeedMeta } from '../utils/postFeedMeta';
 
 function ColumnCard({ post }: { post: PostSummaryResponse }) {
   const [imgError, setImgError] = useState(false);
@@ -27,9 +25,7 @@ function ColumnCard({ post }: { post: PostSummaryResponse }) {
       <div className="wf-box wf-column-card">
         <div className="wf-column-card__body">
           <strong className="wf-column-card__title">{post.title}</strong>
-          <p className="wf-text-xs wf-column-card__meta">
-            ♥ {post.likeCount} · 댓글 {post.commentCount} · 조회 {post.viewCount} · {formatDate(post.createdAt)}
-          </p>
+          <p className="wf-post-feed-meta">{formatPostFeedMeta(post)}</p>
         </div>
         <div className="wf-column-card__thumb" aria-hidden={!showThumb}>
           {showThumb ? (
@@ -68,25 +64,20 @@ export default function ColumnsPage() {
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
 
-      <div className="wf-column-header">
-        <h1 className="wf-title wf-community-page-title">칼럼</h1>
-        {isLoggedIn() && (
-          <Link
-            to={`${PATHS.COMMUNITY_POST_NEW}?type=COLUMN`}
-            className="wf-chip wf-community-write-btn"
-          >
-            + 글쓰기
-          </Link>
+      <CommunityBoardHeader
+        title="칼럼"
+        writeTo={isLoggedIn() ? `${PATHS.COMMUNITY_POST_NEW}?type=COLUMN` : undefined}
+      />
+
+      <div className="wf-community-feed">
+        {isLoading ? (
+          <p className="wf-text-sm">불러오는 중…</p>
+        ) : (data?.content ?? []).length === 0 ? (
+          <p className="wf-text-sm">칼럼이 없습니다.</p>
+        ) : (
+          (data?.content ?? []).map(post => <ColumnCard key={post.id} post={post} />)
         )}
       </div>
-
-      {isLoading ? (
-        <p className="wf-text-sm">불러오는 중…</p>
-      ) : (data?.content ?? []).length === 0 ? (
-        <p className="wf-text-sm">칼럼이 없습니다.</p>
-      ) : (
-        (data?.content ?? []).map(post => <ColumnCard key={post.id} post={post} />)
-      )}
 
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>

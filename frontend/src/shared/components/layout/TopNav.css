@@ -124,10 +124,6 @@
   object-position: center center;
 }
 
-.app-root .wf-topnav__avatar img[src*='/images/default-avatars/'] {
-  transform: scale(1.32);
-}
-
 .app-root .wf-topnav__avatar span {
   font-size: 15px;
 }

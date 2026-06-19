@@ -81,6 +81,22 @@ export async function fetchWhiskeys(params: WhiskeyListParams = {}): Promise<Pag
   return data;
 }
 
+/** 전체 위스키 목록 — 페이지를 순회해 모두 수집 (칼럼 작성 등 선택 UI용) */
+export async function fetchAllWhiskeyCards(pageSize = 100): Promise<WhiskeyCard[]> {
+  const first = await fetchWhiskeys({ page: 0, size: pageSize });
+  const all = [...first.content];
+
+  if (first.totalPages <= 1) return all;
+
+  const rest = await Promise.all(
+    Array.from({ length: first.totalPages - 1 }, (_, i) =>
+      fetchWhiskeys({ page: i + 1, size: pageSize }),
+    ),
+  );
+  rest.forEach((page) => all.push(...page.content));
+  return all;
+}
+
 /** FN-028 GET /api/v1/whiskeys/search - 검색어로 위스키 목록 검색 */
 export async function searchWhiskeys(params: WhiskeySearchParams): Promise<PageResponse<WhiskeyCard>> {
   const { data } = await apiClient.get<PageResponse<WhiskeyCard>>('/whiskeys/search', {
@@ -132,6 +148,7 @@ export async function filterWhiskeys(params: WhiskeyFilterParams): Promise<PageR
 export const whiskeyApi = {
   client: apiClient,
   fetchWhiskeys,
+  fetchAllWhiskeyCards,
   searchWhiskeys,
   autocompleteWhiskeys,
   correctWhiskeyKeyword,

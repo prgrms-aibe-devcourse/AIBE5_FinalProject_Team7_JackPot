@@ -9,6 +9,7 @@ import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { PATHS } from '@/app/router/paths';
 import { isLoggedIn, getStoredUserId } from '@/shared/lib/authSession';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { fetchWhiskeyById, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
@@ -23,7 +24,7 @@ import {
   useLikePost,
   usePost,
 } from '../hooks/useCommunity';
-import { POST_CATEGORY_LABEL } from '../types';
+import { getPostDetailTopicLabel } from '../utils/postCategoryDisplay';
 
 // ISO 8601 문자열에서 분 단위까지만 잘라 'YYYY-MM-DD HH:mm' 형태로 표시
 function formatDate(iso: string): string {
@@ -47,13 +48,18 @@ export default function PostDetailPage() {
   const updateCommentMutation = useUpdateComment(numericId!);
 
   const [commentText, setCommentText] = useState('');
-  // null이면 최상위 댓글, 숫자면 해당 댓글에 대한 대댓글 작성 중
   const [replyToId, setReplyToId] = useState<number | null>(null);
+  const [replyToNickname, setReplyToNickname] = useState<string | null>(null);
   const [linkedWhiskeys, setLinkedWhiskeys] = useState<WhiskeyCard[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [authorAvatarError, setAuthorAvatarError] = useState(false);
 
   // 게시글에 연결된 위스키 ID 배열을 상세 정보로 병렬 변환
   // 빈 배열이거나 undefined이면 API 호출을 아예 건너뜀
+  useEffect(() => {
+    setAuthorAvatarError(false);
+  }, [post?.authorId, post?.id]);
+
   useEffect(() => {
     if (!post?.whiskeyIds?.length) return;
     Promise.all(post.whiskeyIds.map((id) => fetchWhiskeyById(id)))
@@ -110,7 +116,10 @@ export default function PostDetailPage() {
     });
     setCommentText('');
     setReplyToId(null);
+    setReplyToNickname(null);
   }
+
+  const topicLabel = getPostDetailTopicLabel(post.postType, post.category);
 
   return (
     <WireframePage scroll>
@@ -130,56 +139,67 @@ export default function PostDetailPage() {
 
       <article>
         <header className="wf-post-header">
-          {/* COLUMN 타입은 카테고리·postType 태그가 무의미하므로 표시 생략 */}
-          {post.postType !== 'COLUMN' && (
-            <div className="wf-post-tags">
-              <span className="wf-chip wf-chip--sm">
-                {POST_CATEGORY_LABEL[post.category] ?? post.category}
-              </span>
-              <span className="wf-chip wf-chip--sm">{post.postType}</span>
-            </div>
-          )}
+          {topicLabel ? (
+            <p className="wf-post-header__topic">{topicLabel}</p>
+          ) : null}
           <h1 className="wf-title wf-post-title">{post.title}</h1>
-          <p className="wf-text-xs wf-post-meta">
-            <UserProfileLink userId={post.authorId}>{post.authorNickname}</UserProfileLink>
-            {' · '}
-            {formatDate(post.createdAt)}
-          </p>
-          <div className="wf-post-actions">
-            {/* isLiked 상태를 toggling API에 인자로 넘겨 현재 상태 기반으로 요청 방향을 결정 */}
+          <div className="wf-post-header__author">
+            <span className="wf-post-header__avatar-wrap">
+              {!authorAvatarError ? (
+                <img
+                  src={resolveProfileImageUrl(null, post.authorId)}
+                  alt=""
+                  className="wf-post-header__avatar"
+                  onError={() => setAuthorAvatarError(true)}
+                />
+              ) : (
+                <span className="wf-post-header__avatar wf-comment-feed__avatar--fallback" aria-hidden />
+              )}
+            </span>
+            <p className="wf-post-header__meta-line">
+              <UserProfileLink userId={post.authorId} className="wf-post-header__author-link">
+                <strong className="wf-post-header__nickname">{post.authorNickname}</strong>
+              </UserProfileLink>
+              <span className="wf-post-header__meta-sep" aria-hidden>·</span>
+              <span className="wf-post-header__date">{formatDate(post.createdAt)}</span>
+            </p>
+          </div>
+          <div className="wf-post-header__footer">
             <button
-              className="wf-chip wf-community-filter-btn"
+              type="button"
+              className={`wf-post-header__action${post.isLiked ? ' wf-post-header__action--on' : ''}`}
               onClick={() => requireLogin(() => likeMutation.mutate(post.isLiked))}
               disabled={likeMutation.isPending}
             >
-              {post.isLiked ? '♥' : '♡'} {post.likeCount}
+              좋아요 {post.likeCount}
             </button>
-            <span className="wf-text-xs wf-post-stat">댓글 {post.commentCount}</span>
-            <span className="wf-text-xs wf-post-stat">조회 {post.viewCount}</span>
-            {/* isOwner는 서버가 현재 사용자 기준으로 반환하므로 프론트에서 별도 ID 비교 불필요 */}
+            <span className="wf-post-header__stat">댓글 {post.commentCount}</span>
+            <span className="wf-post-header__stat">조회 {post.viewCount}</span>
             {post.isOwner && (
               <>
                 <button
-                  className="wf-chip wf-community-filter-btn"
+                  type="button"
+                  className="wf-post-header__action"
                   onClick={() => navigate(`/community/posts/${post.id}/edit`)}
                 >
                   수정
                 </button>
                 <button
-                  className="wf-chip wf-community-filter-btn wf-post-delete-btn"
+                  type="button"
+                  className="wf-post-header__action wf-post-header__action--danger"
                   onClick={handleDelete}
                 >
                   삭제
                 </button>
               </>
             )}
-            {/* 본인 게시글이 아닐 때만 신고 버튼 표시 */}
             {!post.isOwner && isLoggedIn() && (
               <button
-                className="wf-chip wf-community-filter-btn wf-post-report-btn"
+                type="button"
+                className="wf-post-header__action"
                 onClick={() => setShowReportModal(true)}
               >
-                🚨 신고
+                신고
               </button>
             )}
           </div>
@@ -260,52 +280,56 @@ export default function PostDetailPage() {
         )}
       </article>
 
-      <section>
+      <section className="wf-comment-section">
         <h2 className="wf-section-title">댓글 {post.commentCount}</h2>
         {commentsLoading ? (
           <p className="wf-text-sm">댓글 불러오는 중…</p>
         ) : (
           <CommentThread
             comments={comments}
-            onReply={(parentId) => requireLogin(() => setReplyToId(parentId))}
+            onReply={(parentId, nickname) => requireLogin(() => {
+              setReplyToId(parentId);
+              setReplyToNickname(nickname);
+            })}
             onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
             onEdit={(commentId, content) => updateCommentMutation.mutateAsync({ commentId, content })}
-            // getStoredUserId()가 null이면 undefined로 변환해 CommentItem 내부 isOwner 판단에 영향 없음
             currentUserId={getStoredUserId() ?? undefined}
           />
         )}
 
-        <form onSubmit={handleSubmitComment} className="wf-comment-form">
-          {/* 대댓글 모드 진입 시 어떤 댓글에 답글 중인지 안내 배너 표시 */}
+        <form onSubmit={handleSubmitComment} className="wf-comment-compose">
           {replyToId != null && (
-            <div className="wf-comment-reply-banner">
-              <span className="wf-text-xs wf-post-stat">
-                댓글 #{replyToId}에 답글 작성 중
+            <div className="wf-comment-compose__reply-banner">
+              <span className="wf-comment-compose__reply-label">
+                {replyToNickname ? `${replyToNickname}에게 답글` : '답글 작성 중'}
               </span>
               <button
                 type="button"
-                className="wf-text-xs wf-comment-cancel-btn"
-                onClick={() => setReplyToId(null)}
+                className="wf-comment-compose__reply-cancel"
+                onClick={() => {
+                  setReplyToId(null);
+                  setReplyToNickname(null);
+                }}
               >
                 취소
               </button>
             </div>
           )}
-          <div className="wf-comment-input-row">
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder={isLoggedIn() ? '댓글을 입력하세요…' : '로그인 후 댓글을 작성할 수 있어요'}
-              rows={3}
-              className="wf-comment-textarea"
-              disabled={createCommentMutation.isPending}
-            />
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder={isLoggedIn() ? '댓글을 입력하세요…' : '로그인 후 댓글을 작성할 수 있어요'}
+            rows={3}
+            className="wf-comment-compose__textarea"
+            disabled={createCommentMutation.isPending}
+          />
+          <div className="wf-comment-compose__footer">
             <button
               type="submit"
-              className="wf-chip wf-chip--on wf-comment-submit-btn"
-              disabled={createCommentMutation.isPending}
+              className="wf-comment-compose__submit"
+              disabled={createCommentMutation.isPending || !commentText.trim()}
             >
-              등록
+              {createCommentMutation.isPending ? '등록 중…' : '등록'}
             </button>
           </div>
         </form>

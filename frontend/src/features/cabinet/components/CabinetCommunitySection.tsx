@@ -45,6 +45,10 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
     [posts],
   );
   const visiblePosts = activeTab === 'column' ? columnPosts : freePosts;
+  const writePostPath =
+    activeTab === 'column'
+      ? `${PATHS.COMMUNITY_POST_NEW}?type=COLUMN`
+      : `${PATHS.COMMUNITY_POST_NEW}?type=FREE`;
 
   if (authorId == null) {
     return <CabinetFeedEmpty title="사용자 정보를 찾을 수 없습니다." />;
@@ -61,7 +65,7 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
 
       {showWriteButton ? (
         <CabinetFeedToolbar>
-          <Link to={PATHS.COMMUNITY_POST_NEW} className="wf-cabinet-feed-toolbar__link">
+          <Link to={writePostPath} className="wf-cabinet-feed-toolbar__link">
             + 글 작성
           </Link>
         </CabinetFeedToolbar>
@@ -82,7 +86,7 @@ export function CabinetCommunitySection({ authorId, showWriteButton }: CabinetCo
               : '자유 게시판에 작성한 글이 여기에 표시됩니다.'
           }
           actionLabel={showWriteButton ? '+ 글 작성' : undefined}
-          actionTo={showWriteButton ? PATHS.COMMUNITY_POST_NEW : undefined}
+          actionTo={showWriteButton ? writePostPath : undefined}
         />
       ) : (
         <ul className="wf-cabinet-feed">

@@ -45,7 +45,7 @@
 }
 
 .wf-lounge-hero__title {
-  margin: 6px 0 12px;
+  margin: 0 0 12px;
   font-size: 40px;
   line-height: 1.16;
   font-weight: 700;
@@ -158,7 +158,7 @@
 .wf-lounge-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .wf-lounge-tab {
@@ -184,19 +184,26 @@
   border-color: var(--wf-accent);
 }
 
-.wf-lounge-section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+.wf-lounge-quick .wf-lounge-rail__title {
+  margin: 0 0 14px;
 }
 
-.wf-lounge-section-head .wf-section-title {
-  margin: 4px 0 0;
-  font-size: 22px;
+.wf-lounge-discovery__head .wf-lounge-rail__title {
+  margin: 0;
 }
 
+.wf-lounge-suggest .wf-lounge-rail__title {
+  margin: 0 0 4px;
+}
+
+.wf-lounge-rail__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wf-text);
+  letter-spacing: 0;
+  text-transform: none;
+}
 
 .wf-feed-card {
   position: relative;
@@ -206,13 +213,12 @@
   cursor: pointer;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface);
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+  transition: border-color 0.16s ease, background 0.16s ease;
   overflow: hidden;
 }
 
 .wf-feed-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--wf-shadow-md);
+  border-color: var(--wf-muted);
 }
 
 .wf-feed-card__head {
@@ -265,20 +271,22 @@
   color: var(--wf-muted);
 }
 
-.wf-feed-card__avatar {
+.wf-feed-card__avatar-wrap {
   width: 44px;
   height: 44px;
   border-radius: 50%;
   flex-shrink: 0;
-  object-fit: cover;
-  object-position: center center;
   overflow: hidden;
   border: 1px solid var(--wf-border);
   background: #f5f0e8;
 }
 
-.wf-feed-card__avatar[src*='/images/default-avatars/'] {
-  transform: scale(1.32);
+.wf-feed-card__avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .wf-feed-card__avatar--initial {
@@ -357,73 +365,30 @@
   overflow: hidden;
 }
 
-.wf-feed-card__signals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin: 0 0 12px;
-}
-
-.wf-feed-card__signal {
-  display: inline-flex;
-  align-items: center;
-  color: var(--wf-muted);
+.wf-feed-card__meta {
+  margin: 0;
   font-size: 12px;
-  font-weight: 600;
+  line-height: 1.45;
+  color: var(--wf-muted);
 }
 
-.wf-feed-card__tags {
+.wf-feed-card__whiskeys {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--wf-muted);
+}
+
+.wf-feed-card__foot {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
-  margin: 0 0 14px;
+  margin-top: 4px;
 }
 
-.wf-feed-card__tag {
-  display: inline-flex;
-  align-items: center;
-  max-width: 220px;
-  min-height: 30px;
-  padding: 0 11px;
-  border: 1px solid var(--wf-accent-dim);
-  border-radius: 999px;
-  background: var(--wf-accent-dim);
-  color: var(--wf-accent-dark);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wf-feed-card__tag--type {
-  border-color: var(--wf-border);
-  background: var(--wf-surface-2);
-  color: var(--wf-text);
-}
-
-.wf-feed-card__tag--more {
-  min-width: 34px;
-  justify-content: center;
-  color: var(--wf-muted);
-}
-
-/* 카드 마지막 블록(반응/태그)의 하단 여백 제거 — '자세히 보기' 푸터 삭제 후 균형 */
 .wf-feed-card > :last-child {
   margin-bottom: 0;
 }
-
-.wf-feed-card__skeleton-signal-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.wf-feed-card__meta {
-  font-size: 12px;
-  color: var(--wf-muted);
-}
-
 
 .wf-feed-promo,
 .wf-lounge-quick {
@@ -449,17 +414,11 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  transition: border-color 0.16s ease;
 }
 
 .wf-feed-promo--today:hover {
-  transform: translateY(-2px);
   border-color: var(--wf-accent);
-  box-shadow: var(--wf-shadow-md);
-}
-
-.wf-feed-promo--today .wf-text-label {
-  color: var(--wf-accent);
 }
 
 /* 병 이미지 테두리/그림자 제거 + 레이아웃 영향 없이 키우고 좌측으로 살짝 이동 */
@@ -502,13 +461,11 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  transition: border-color 0.16s ease;
 }
 
 .wf-feed-promo--match:hover {
-  transform: translateY(-2px);
   border-color: var(--wf-accent);
-  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-feed-promo__avatar {
@@ -546,11 +503,6 @@
   padding: 20px;
   border: 1px solid var(--wf-border);
   background: var(--wf-surface);
-}
-
-.wf-lounge-quick .wf-text-label,
-.wf-lounge-discovery .wf-text-label {
-  margin: 0 0 14px;
 }
 
 .wf-lounge-discovery {
@@ -695,10 +647,6 @@
   object-position: center center;
   border: none;
   background: transparent;
-}
-
-.wf-lounge-suggest__avatar[src*='/images/default-avatars/'] {
-  transform: scale(1.38);
 }
 
 .wf-lounge-suggest__avatar--initial {

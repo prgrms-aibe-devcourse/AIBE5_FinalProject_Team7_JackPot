@@ -726,3 +726,9 @@ a.wf-preview-link {
   color: inherit;
   text-decoration: none;
 }
+
+/* 디폴트 프로필 PNG 내 여백 보정 — overflow:hidden 원형 래퍼 안에서 사용 */
+img[src*='/images/default-avatars/'] {
+  transform: scale(1.52);
+  transform-origin: center center;
+}

@@ -56,14 +56,20 @@ function FeedCard({ post }: { post: LoungePost }) {
   const visibleWhiskeys = post.whiskeyNames.slice(0, 2);
   const hiddenWhiskeyCount = Math.max(post.whiskeyNames.length - visibleWhiskeys.length, 0);
 
+  const whiskeyLabel = visibleWhiskeys.length > 0
+    ? visibleWhiskeys.join(' · ') + (hiddenWhiskeyCount > 0 ? ` · 외 ${hiddenWhiskeyCount}개` : '')
+    : null;
+
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
-        <img
-          src={authorImage}
-          alt={authorName}
-          className="wf-feed-card__avatar"
-        />
+        <span className="wf-feed-card__avatar-wrap">
+          <img
+            src={authorImage}
+            alt={authorName}
+            className="wf-feed-card__avatar"
+          />
+        </span>
         <div className="wf-feed-card__author">
           <div className="wf-feed-card__author-row">
             <strong className="wf-feed-card__author-name">{authorName}</strong>
@@ -88,26 +94,13 @@ function FeedCard({ post }: { post: LoungePost }) {
         ) : null}
       </Link>
 
-      <div className="wf-feed-card__signals" aria-label="게시글 반응 정보">
-        <span className="wf-feed-card__signal">♥ {formatCount(post.likeCount)}</span>
-        <span className="wf-feed-card__signal">댓글 {formatCount(post.commentCount)}</span>
-        <span className="wf-feed-card__signal">조회 {formatCount(post.viewCount)}</span>
-      </div>
+      <p className="wf-feed-card__meta">
+        {`좋아요 ${post.likeCount} · 댓글 ${post.commentCount} · 조회 ${post.viewCount}`}
+      </p>
 
-      {visibleWhiskeys.length > 0 && (
-        <div className="wf-feed-card__tags" aria-label="위스키 태그">
-          {visibleWhiskeys.map((name) => (
-            <span key={name} className="wf-feed-card__tag">
-              {name}
-            </span>
-          ))}
-          {hiddenWhiskeyCount > 0 && (
-            <span className="wf-feed-card__tag wf-feed-card__tag--more">
-              +{hiddenWhiskeyCount}
-            </span>
-          )}
-        </div>
-      )}
+      {whiskeyLabel ? (
+        <p className="wf-feed-card__whiskeys">{whiskeyLabel}</p>
+      ) : null}
     </article>
   );
 }
@@ -116,7 +109,7 @@ function FeedCardSkeleton() {
   return (
     <article className="wf-feed-card wf-box wf-box--solid" aria-hidden>
       <div className="wf-feed-card__head">
-        <Skeleton className="wf-feed-card__avatar" circle />
+        <Skeleton className="wf-feed-card__avatar-wrap" width={44} height={44} circle />
         <div className="wf-feed-card__skeleton-lines">
           <Skeleton width="35%" height={13} />
           <Skeleton width="20%" height={11} />
@@ -131,12 +124,8 @@ function FeedCardSkeleton() {
         <Skeleton className="wf-feed-card__thumb" radius={10} />
       </div>
       <div className="wf-feed-card__foot">
-        <div className="wf-feed-card__skeleton-signal-row">
-          <Skeleton width={74} height={24} radius={999} />
-          <Skeleton width={68} height={24} radius={999} />
-          <Skeleton width={64} height={24} radius={999} />
-        </div>
-        <Skeleton width={96} height={12} radius={4} />
+        <Skeleton width="72%" height={12} radius={4} />
+        <Skeleton width="48%" height={11} radius={4} />
       </div>
     </article>
   );
@@ -149,7 +138,6 @@ function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
     <Link to={to} className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
       <div className="wf-feed-promo__head">
         <div className="wf-feed-promo__copy">
-          <p className="wf-text-label">TODAY</p>
           <h2 className="wf-feed-promo__title">오늘의 추천</h2>
           <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
         </div>
@@ -166,7 +154,6 @@ function PromoTasteMatch() {
     <Link to={PATHS.TASTE_MATCH} className="wf-feed-promo wf-feed-promo--match wf-box">
       <div className="wf-feed-promo__head">
         <div className="wf-feed-promo__copy">
-          <p className="wf-text-label">MATCH</p>
           <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
           <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
         </div>
@@ -180,7 +167,6 @@ function LoungeHero() {
   return (
     <section className="wf-lounge-hero">
       <div className="wf-lounge-hero__copy">
-        <p className="wf-text-label">WHISKEY NOTE LOUNGE</p>
         <h1 className="wf-lounge-hero__title">취향이 오가는 라운지</h1>
         <p className="wf-lounge-hero__desc">
           팔로우한 유저의 글을 모아 보고, 오늘 마실 위스키와 다음 대화 주제를 가볍게 발견해보세요.
@@ -197,18 +183,18 @@ function LoungeHero() {
 function LoungeQuickLinks() {
   return (
     <section className="wf-lounge-quick wf-box wf-box--solid">
-      <p className="wf-text-label">바로가기</p>
+      <h2 className="wf-lounge-rail__title">바로가기</h2>
       <Link to={PATHS.COMMUNITY} className="wf-lounge-quick__item">
-        <span>커뮤니티</span>
-        <strong>새 글 둘러보기</strong>
+        <strong>커뮤니티</strong>
+        <span>게시글</span>
       </Link>
       <Link to={PATHS.SEARCH} className="wf-lounge-quick__item">
-        <span>검색</span>
-        <strong>보틀 찾아보기</strong>
+        <strong>검색</strong>
+        <span>위스키</span>
       </Link>
       <Link to={PATHS.SURVEY} className="wf-lounge-quick__item">
-        <span>설문조사</span>
-        <strong>추천 정교화</strong>
+        <strong>설문조사</strong>
+        <span>취향</span>
       </Link>
     </section>
   );
@@ -242,7 +228,7 @@ function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
 
   return (
     <section className="wf-lounge-suggest wf-box wf-box--solid">
-      <p className="wf-text-label">팔로우 추천</p>
+      <h2 className="wf-lounge-rail__title">팔로우 추천</h2>
       <div className="wf-lounge-suggest__list">
         {visible.map((user) => {
           const name = user.nickname || `사용자 #${user.userId}`;
@@ -277,7 +263,7 @@ function LoungeTrendingWhiskeys({ whiskeys }: { whiskeys: LoungeTrendingWhiskey[
   return (
     <section className="wf-lounge-discovery wf-box wf-box--solid">
       <div className="wf-lounge-discovery__head">
-        <p className="wf-text-label">많이 언급된 위스키</p>
+        <h2 className="wf-lounge-rail__title">많이 언급된 위스키</h2>
         <Link to={PATHS.SEARCH} className="wf-lounge-discovery__more">검색</Link>
       </div>
       <div className="wf-lounge-bottle-list">
@@ -303,12 +289,6 @@ const FEED_TABS: { key: LoungeFeedTab; label: string }[] = [
   { key: 'popular', label: '인기' },
   { key: 'latest', label: '최신' },
 ];
-
-const TAB_META: Record<LoungeFeedTab, { eyebrow: string; title: string }> = {
-  following: { eyebrow: 'TIMELINE', title: '팔로잉 피드' },
-  popular: { eyebrow: 'POPULAR', title: '인기 게시글' },
-  latest: { eyebrow: 'LATEST', title: '최신 게시글' },
-};
 
 const TAB_EMPTY: Record<LoungeFeedTab, { title: string; desc: string }> = {
   following: {
@@ -393,12 +373,6 @@ export default function HomePage() {
                 {t.label}
               </button>
             ))}
-          </div>
-          <div className="wf-lounge-section-head">
-            <div>
-              <p className="wf-text-label">{TAB_META[tab].eyebrow}</p>
-              <h2 className="wf-section-title">{TAB_META[tab].title}</h2>
-            </div>
           </div>
           {isLoading ? (
             <div aria-label="피드를 불러오는 중">

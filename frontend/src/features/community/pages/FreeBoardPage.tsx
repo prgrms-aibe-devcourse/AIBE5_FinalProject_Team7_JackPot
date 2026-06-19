@@ -3,6 +3,7 @@ import '../community.css';
 import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
+import { CommunityBoardHeader } from '../components/CommunityBoardHeader';
 import { Pagination } from '../components/Pagination';
 import { PostList } from '../components/PostList';
 import { useFreePosts } from '../hooks/useCommunity';
@@ -52,23 +53,27 @@ export default function FreeBoardPage() {
         <span className="wf-chip wf-chip--on">자유게시판</span>
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
-      <div className="wf-community-page-header">
-        <h1 className="wf-title wf-community-page-title">자유게시판</h1>
-        {/* 글쓰기 URL에 ?type=FREE를 붙여 PostFormPage가 postType을 구분하도록 함 */}
-        <Link to={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`} className="wf-chip wf-chip--on">글쓰기</Link>
-      </div>
-      <div className="wf-chips wf-community-filter-chips">
-        {CATEGORIES.map((c) => (
+      <CommunityBoardHeader
+        title="자유게시판"
+        writeTo={`${PATHS.COMMUNITY_POST_NEW}?type=FREE`}
+        filters={CATEGORIES.map((c) => (
           <button
             key={c.label}
+            type="button"
             className={`wf-chip wf-community-filter-btn${category === c.value ? ' wf-chip--on' : ''}`}
             onClick={() => handleCategory(c.value)}
           >
             {c.label}
           </button>
         ))}
+      />
+      <div className="wf-community-feed">
+        <PostList
+          posts={data?.content ?? []}
+          isLoading={isLoading}
+          activeCategoryFilter={category}
+        />
       </div>
-      <PostList posts={data?.content ?? []} isLoading={isLoading} />
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>
   );

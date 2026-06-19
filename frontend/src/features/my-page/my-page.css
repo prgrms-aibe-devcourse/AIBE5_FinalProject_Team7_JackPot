@@ -69,10 +69,6 @@
   object-position: center center;
 }
 
-.wf-mypage-avatar img[src*='/images/default-avatars/'] {
-  transform: scale(1.32);
-}
-
 .wf-mypage-avatar__initial {
   color: var(--wf-accent-dark);
   font-size: 32px;
