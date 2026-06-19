@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import type { WhiskeyTagStat } from '../types';
 
-const MIN_RADIUS = 22;
-const MAX_RADIUS = 36;
+const MIN_RADIUS = 36;
+const MAX_RADIUS = 66;
 const TAG_FILTERS = [
   { value: 'all', label: '전체' },
   { value: 'nose', label: '향' },
@@ -67,19 +67,20 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
               <li key={tag.tagId}>
                 <button
                   type="button"
-                  className="wf-detail-tags__bubble"
-                  style={{
-                    width: radius * 2,
-                    height: radius * 2,
-                    backgroundColor: heatColor(ratio),
-                  }}
+                  className={`wf-detail-tags__bubble${tag.imageUrl ? ' wf-detail-tags__bubble--icon' : ''}`}
+                  style={
+                    tag.imageUrl
+                      ? { width: radius * 2, height: radius * 2 }
+                      : { width: radius * 2, height: radius * 2, backgroundColor: heatColor(ratio) }
+                  }
                   onClick={() => onTagClick?.(tag)}
                   title={`${tag.name} (${tag.count})`}
                 >
                   {tag.imageUrl ? (
-                    <img src={tag.imageUrl} alt="" className="wf-detail-tags__image" />
-                  ) : null}
-                  <span className="wf-detail-tags__count">{tag.count}</span>
+                    <img src={tag.imageUrl} alt={tag.name} className="wf-detail-tags__image" />
+                  ) : (
+                    <span className="wf-detail-tags__count">{tag.count}</span>
+                  )}
                 </button>
                 <span className="wf-detail-tags__name">{tag.name}</span>
               </li>
@@ -87,14 +88,6 @@ export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) 
           })}
         </ul>
       )}
-
-      <div className="wf-detail-tags__legend" aria-hidden>
-        <span className="wf-text-xs">적음</span>
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--low" />
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--mid" />
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--high" />
-        <span className="wf-text-xs">많음</span>
-      </div>
     </section>
   );
 }
