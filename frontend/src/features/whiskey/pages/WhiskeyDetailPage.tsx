@@ -572,16 +572,25 @@ export default function WhiskeyDetailPage() {
                       <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
                     );
                   }
-                  const groups: { title: string; rows: [string, string][] }[] = [
+                  const groups = ([
                     { title: '제품 소개', rows: intro },
                     { title: '핵심 특징', rows: feature },
-                  ].filter((g) => g.rows.length > 0);
+                  ] as { title: string; rows: [string, string][] }[])
+                    .filter((g) => g.rows.length > 0)
+                    // 그룹 타이틀이 첫 행 라벨과 중복되면 숨김(예: 제품 소개), 아니면 표시(예: 핵심 특징)
+                    .map((g) => ({ ...g, showTitle: g.rows[0]?.[0] !== g.title }));
                   return (
                     <div className="wf-detail-desc">
                       {groups.map((g) => (
                         <div key={g.title} className="wf-detail-desc__group">
+                          {g.showTitle && (
+                            <h3 className="wf-detail-desc__group-title">{g.title}</h3>
+                          )}
                           {g.rows.map(([label, text]) => (
-                            <div key={label} className="wf-detail-desc__row">
+                            <div
+                              key={label}
+                              className={`wf-detail-desc__row${g.showTitle ? ' wf-detail-desc__row--sub' : ''}`}
+                            >
                               <p className="wf-text-label">{label}</p>
                               <p className="wf-text-sm">{text}</p>
                             </div>

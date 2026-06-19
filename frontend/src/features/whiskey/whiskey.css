@@ -337,7 +337,7 @@
   line-height: 1.25;
 }
 
-/* 행 라벨(제목)을 기존 그룹 타이틀 스타일로 — 그룹 타이틀은 제거됨 */
+/* 행 라벨(제목)을 그룹 타이틀 스타일로 (중복 제거된 제품 소개 그룹) */
 .wf-detail-main .wf-detail-desc__row .wf-text-label {
   font-size: 18px;
   font-weight: 700;
@@ -345,6 +345,17 @@
   text-transform: none;
   letter-spacing: -0.01em;
   margin-bottom: 6px;
+}
+
+/* 표시되는 그룹 타이틀 (예: 핵심 특징) */
+.wf-detail-main .wf-detail-desc__group-title {
+  font-size: 18px;
+}
+
+/* 그룹 타이틀이 있는 그룹의 하위 요소 제목 — 볼드 해제 */
+.wf-detail-main .wf-detail-desc__row--sub .wf-text-label {
+  font-size: 15px;
+  font-weight: 400;
 }
 
 .wf-detail-main .wf-detail-desc__row .wf-text-sm {
