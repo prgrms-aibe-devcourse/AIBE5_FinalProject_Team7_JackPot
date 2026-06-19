@@ -8,7 +8,7 @@ import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPagination } from '@/features/cabinet/components/CabinetPagination';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
-import { CabinetFeedEmpty, CabinetFeedLoading } from '@/features/cabinet/components/CabinetFeedParts';
+import { CabinetFeedEmpty, CabinetFeedLoading, CabinetReviewFeedThumb } from '@/features/cabinet/components/CabinetFeedParts';
 import { CabinetNoteExpandDetail } from '@/features/cabinet/components/CabinetNoteExpandDetail';
 import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
 import { fetchMyReviews } from '@/features/review/api/reviewApi';
@@ -17,7 +17,8 @@ import type { MyTastingNote } from '@/features/tasting-note/api/noteApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { toast } from '@/shared/components/ui/Toast';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
+import { formatWhiskeySpec } from '@/shared/lib/whiskeyLabels';
 import '@/features/cabinet/cabinet.css';
 import '@/features/whiskey/whiskey.css';
 import '@/features/search/search.css';
@@ -52,7 +53,7 @@ function getCurrentUserId(): number | null {
 }
 
 function OtherFollowUserRow({ user }: { user: { userId: number; nickname: string; profileImageUrl: string | null } }) {
-  const avatarSrc = resolveMediaUrl(user.profileImageUrl);
+  const avatarSrc = resolveProfileImageUrl(user.profileImageUrl, user.userId);
   const currentUserId = getCurrentUserId();
   const isSelf = currentUserId != null && currentUserId === user.userId;
   const href = isSelf ? PATHS.CABINET : PATHS.USER_PROFILE.replace(':userId', String(user.userId));
@@ -60,8 +61,8 @@ function OtherFollowUserRow({ user }: { user: { userId: number; nickname: string
   return (
     <li>
       <Link to={href} className="wf-cabinet-follow-row">
-        <div className="wf-cabinet-follow-row__avatar wf-placeholder">
-          {avatarSrc ? <img src={avatarSrc} alt="" /> : null}
+        <div className="wf-cabinet-follow-row__avatar">
+          <img src={avatarSrc} alt="" />
         </div>
         <span className="wf-cabinet-follow-row__name">{user.nickname}</span>
         <span className="wf-cabinet-follow-row__chevron" aria-hidden>
@@ -165,31 +166,40 @@ function OtherReviewItem({ review }: { review: WhiskeyReview }) {
   const whiskeyLabel = review.whiskeyName ?? (review.whiskeyId ? `위스키 #${review.whiskeyId}` : `리뷰 #${review.id}`);
 
   return (
-    <li className="wf-cabinet-feed__item">
-      <div className="wf-cabinet-feed__head">
-        {review.whiskeyId ? (
-          <Link
-            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
-            className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
-          >
-            {whiskeyLabel}
-          </Link>
-        ) : (
-          <strong className="wf-cabinet-feed__title">{whiskeyLabel}</strong>
-        )}
-        <span className="wf-cabinet-feed__rating">★ {Number(review.rating).toFixed(1)}</span>
-      </div>
-      <p className="wf-cabinet-feed__text">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
-      {review.whiskeyId ? (
-        <div className="wf-cabinet-feed__actions">
-          <Link
-            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
-            className="wf-cabinet-feed__action"
-          >
-            위스키 보기
-          </Link>
+    <li className="wf-cabinet-feed__item wf-cabinet-feed__item--review">
+      <div className="wf-cabinet-feed__row">
+        <CabinetReviewFeedThumb
+          whiskeyId={review.whiskeyId}
+          whiskeyName={whiskeyLabel}
+          imageUrl={review.whiskeyImageUrl}
+        />
+        <div className="wf-cabinet-feed__body">
+          <div className="wf-cabinet-feed__head">
+            {review.whiskeyId ? (
+              <Link
+                to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
+                className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
+              >
+                {whiskeyLabel}
+              </Link>
+            ) : (
+              <strong className="wf-cabinet-feed__title">{whiskeyLabel}</strong>
+            )}
+            <span className="wf-cabinet-feed__rating">★ {Number(review.rating).toFixed(1)}</span>
+          </div>
+          <p className="wf-cabinet-feed__text">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
+          {review.whiskeyId ? (
+            <div className="wf-cabinet-feed__actions">
+              <Link
+                to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
+                className="wf-cabinet-feed__action"
+              >
+                위스키 보기
+              </Link>
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </li>
   );
 }
@@ -408,6 +418,7 @@ export default function UserProfilePage() {
             following={followingCount}
             followersHref={`${followHref}&followTab=followers`}
             followingHref={`${followHref}&followTab=followings`}
+            avatarSeed={targetUserId ?? displayName}
             showFollowButton={!isSelf}
             isFollowing={isFollowing}
             followBusy={followBusy}
@@ -433,6 +444,7 @@ export default function UserProfilePage() {
           following={followingCount}
           followersHref={`${followHref}&followTab=followers`}
           followingHref={`${followHref}&followTab=followings`}
+          avatarSeed={targetUserId ?? displayName}
           showFollowButton={!isSelf}
           isFollowing={isFollowing}
           followBusy={followBusy}
@@ -468,7 +480,7 @@ export default function UserProfilePage() {
                           id={String(pick.whiskey?.id ?? '')}
                           name={pick.whiskey?.name ?? '위스키'}
                           imageUrl={pick.whiskey?.imageUrl ?? null}
-                          meta={`${pick.whiskey?.type ?? ''} · ${pick.whiskey?.abv ?? '-'}%`}
+                          meta={formatWhiskeySpec(pick.whiskey?.type, pick.whiskey?.abv)}
                           readonly
                         />
                       ))}

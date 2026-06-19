@@ -5,7 +5,7 @@ import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
@@ -51,7 +51,7 @@ function FeedCard({ post }: { post: LoungePost }) {
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
   const contentPreview = stripContentPreview(post.context);
   const authorName = post.authorNickname || `사용자 #${post.authorId}`;
-  const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
+  const authorImage = resolveProfileImageUrl(post.authorProfileImageUrl, post.authorId);
   const thumbnail = resolveMediaUrl(extractFirstImage(post.context));
   const visibleWhiskeys = post.whiskeyNames.slice(0, 2);
   const hiddenWhiskeyCount = Math.max(post.whiskeyNames.length - visibleWhiskeys.length, 0);
@@ -59,17 +59,11 @@ function FeedCard({ post }: { post: LoungePost }) {
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
-        {authorImage ? (
-          <img
-            src={authorImage}
-            alt={authorName}
-            className="wf-feed-card__avatar"
-          />
-        ) : (
-          <div className="wf-feed-card__avatar wf-feed-card__avatar--initial" aria-hidden>
-            {authorName.charAt(0)}
-          </div>
-        )}
+        <img
+          src={authorImage}
+          alt={authorName}
+          className="wf-feed-card__avatar"
+        />
         <div className="wf-feed-card__author">
           <div className="wf-feed-card__author-row">
             <strong className="wf-feed-card__author-name">{authorName}</strong>
@@ -252,15 +246,13 @@ function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
       <div className="wf-lounge-suggest__list">
         {visible.map((user) => {
           const name = user.nickname || `사용자 #${user.userId}`;
-          const image = resolveMediaUrl(user.profileImageUrl);
+          const image = resolveProfileImageUrl(user.profileImageUrl, user.userId);
           return (
             <div key={user.userId} className="wf-lounge-suggest__item">
               <Link to={PATHS.USER_PROFILE.replace(':userId', String(user.userId))} className="wf-lounge-suggest__user">
-                {image ? (
+                <span className="wf-lounge-suggest__avatar-wrap">
                   <img src={image} alt={name} className="wf-lounge-suggest__avatar" />
-                ) : (
-                  <span className="wf-lounge-suggest__avatar wf-lounge-suggest__avatar--initial">{name.charAt(0)}</span>
-                )}
+                </span>
                 <strong className="wf-lounge-suggest__name">{name}</strong>
               </Link>
               <button

@@ -4,6 +4,7 @@ export interface MyTastingNote {
   id: number;
   whiskeyId: number;
   whiskeyName: string;
+  whiskeyImageUrl?: string | null;
   bodyScore: number | null;
   finishScore: number | null;
   smokyScore: number | null;

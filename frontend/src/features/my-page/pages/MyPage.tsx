@@ -7,7 +7,7 @@ import { Input } from '@/shared/components/ui/Input';
 import { uploadImage } from '@/shared/api/mediaApi';
 import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { clearAuthSession } from '@/shared/lib/authSession';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { userApi, type UserMeDto, type UpdateUserMeRequest } from '../api/userApi';
@@ -177,7 +177,7 @@ export default function MyPage() {
     }
   }
 
-  const avatarSrc = resolveMediaUrl(me?.profileImageUrl ?? null);
+  const avatarSrc = resolveProfileImageUrl(me?.profileImageUrl ?? null, me?.userId ?? me?.nickname);
 
   return (
     <WireframePage scroll>
@@ -194,11 +194,7 @@ export default function MyPage() {
               aria-label="프로필 사진 변경"
             >
               <div className="wf-mypage-avatar">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt={me?.nickname ?? ''} />
-                ) : (
-                  <span className="wf-mypage-avatar__initial">{(me?.nickname ?? 'W').slice(0, 1)}</span>
-                )}
+                <img src={avatarSrc} alt={me?.nickname ?? ''} />
               </div>
               <span className="wf-mypage-avatar__overlay">
                 {uploadingImage ? '업로드 중' : '사진 변경'}

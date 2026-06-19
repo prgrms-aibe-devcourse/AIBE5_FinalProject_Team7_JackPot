@@ -9,17 +9,17 @@ import { CabinetPagination } from '@/features/cabinet/components/CabinetPaginati
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
 import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
-import { CabinetFeedEmpty, CabinetFeedLoading, CabinetFeedToolbar } from '@/features/cabinet/components/CabinetFeedParts';
+import { CabinetFeedEmpty, CabinetFeedLoading, CabinetFeedToolbar, CabinetReviewFeedThumb } from '@/features/cabinet/components/CabinetFeedParts';
 import { CabinetNoteExpandDetail } from '@/features/cabinet/components/CabinetNoteExpandDetail';
 import { CabinetWishFolderList, type WishFolderSummary } from '@/features/cabinet/components/CabinetWishFolderList';
-import { StarRatingInput } from '@/features/review/components/StarRatingInput';
-import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/review/hooks/useReviews';
+import { useDeleteReview, useMyReviews } from '@/features/review/hooks/useReviews';
 import { fetchMyTastingNotes, type MyTastingNote } from '@/features/tasting-note/api/noteApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
+import { formatWhiskeySpec } from '@/shared/lib/whiskeyLabels';
 import type { CabinetStatsResponse, WishlistFolder, WishlistItem } from '@/features/cabinet/api/cabinetApi';
 import '../cabinet.css';
 import '@/features/whiskey/whiskey.css';
@@ -96,106 +96,94 @@ function MyNoteItem({ note }: { note: MyTastingNote }) {
   const tagPreview = note.tags?.slice(0, 4) ?? [];
 
   return (
-    <li className={`wf-cabinet-feed__item${isOpen ? ' wf-cabinet-feed__item--open' : ''}`}>
-      <div className="wf-cabinet-feed__head">
-        <strong className="wf-cabinet-feed__title">{note.whiskeyName}</strong>
-        <span className={`wf-cabinet-feed__badge${isDraft ? ' wf-cabinet-feed__badge--draft' : ''}`}>
-          {isDraft ? '임시저장' : '작성 완료'}
-        </span>
-      </div>
-      <p className="wf-cabinet-feed__meta">{note.updatedAt?.slice(0, 10) ?? '-'}</p>
-      <p className="wf-cabinet-feed__text">{note.memo || '작성된 메모가 없습니다.'}</p>
-
-      {!isOpen && tagPreview.length > 0 ? (
-        <div className="wf-cabinet-feed__tags">
-          {tagPreview.map((tag) => (
-            <span key={tag.id} className="wf-cabinet-feed__tag">{tag.name}</span>
-          ))}
-          {note.tags && note.tags.length > tagPreview.length ? (
-            <span className="wf-cabinet-feed__tag wf-cabinet-feed__tag--more">
-              +{note.tags.length - tagPreview.length}
+    <li className={`wf-cabinet-feed__item wf-cabinet-feed__item--note${isOpen ? ' wf-cabinet-feed__item--open' : ''}`}>
+      <div className="wf-cabinet-feed__row">
+        <CabinetReviewFeedThumb
+          whiskeyId={note.whiskeyId}
+          whiskeyName={note.whiskeyName}
+          imageUrl={note.whiskeyImageUrl}
+        />
+        <div className="wf-cabinet-feed__body">
+          <div className="wf-cabinet-feed__head">
+            <Link
+              to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(note.whiskeyId))}
+              className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
+            >
+              {note.whiskeyName}
+            </Link>
+            <span className={`wf-cabinet-feed__badge${isDraft ? ' wf-cabinet-feed__badge--draft' : ''}`}>
+              {isDraft ? '임시저장' : '작성 완료'}
             </span>
+          </div>
+          <p className="wf-cabinet-feed__meta">{note.updatedAt?.slice(0, 10) ?? '-'}</p>
+          <p className="wf-cabinet-feed__text">{note.memo || '작성된 메모가 없습니다.'}</p>
+
+          {!isOpen && tagPreview.length > 0 ? (
+            <div className="wf-cabinet-feed__tags">
+              {tagPreview.map((tag) => (
+                <span key={tag.id} className="wf-cabinet-feed__tag">{tag.name}</span>
+              ))}
+              {note.tags && note.tags.length > tagPreview.length ? (
+                <span className="wf-cabinet-feed__tag wf-cabinet-feed__tag--more">
+                  +{note.tags.length - tagPreview.length}
+                </span>
+              ) : null}
+            </div>
           ) : null}
+
+          <div className="wf-cabinet-feed__actions">
+            <Link to={editPath} className="wf-cabinet-feed__action">수정</Link>
+            <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsOpen((prev) => !prev)}>
+              {isOpen ? '접기' : '상세 보기'}
+            </button>
+          </div>
+
+          {isOpen ? <CabinetNoteExpandDetail note={note} /> : null}
         </div>
-      ) : null}
-
-      <div className="wf-cabinet-feed__actions">
-        <Link to={editPath} className="wf-cabinet-feed__action">수정</Link>
-        <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsOpen((prev) => !prev)}>
-          {isOpen ? '접기' : '상세 보기'}
-        </button>
       </div>
-
-      {isOpen ? <CabinetNoteExpandDetail note={note} /> : null}
     </li>
   );
 }
 
 function MyReviewItem({
   review,
-  onUpdate,
   onDelete,
   isBusy,
 }: {
   review: WhiskeyReview;
-  onUpdate: (reviewId: number, rating: number, publicText: string) => void;
   onDelete: (reviewId: number) => void;
   isBusy: boolean;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [rating, setRating] = useState(Number(review.rating));
-  const [publicText, setPublicText] = useState(review.publicText ?? '');
   const whiskeyLabel = review.whiskeyName ?? (review.whiskeyId ? `위스키 #${review.whiskeyId}` : `리뷰 #${review.id}`);
-
-  const handleUpdate = () => {
-    if (rating < 0 || rating > 5) {
-      toast('별점은 0점부터 5점 사이로 선택해주세요.', 'warning');
-      return;
-    }
-
-    onUpdate(review.id, rating, publicText.trim());
-    setIsEditing(false);
-  };
+  const editPath = review.whiskeyId
+    ? `${PATHS.WRITE_REVIEW.replace(':whiskeyId', String(review.whiskeyId))}?returnTo=cabinet-reviews`
+    : null;
 
   return (
-    <li className="wf-cabinet-feed__item">
-      <div className="wf-cabinet-feed__head">
-        {review.whiskeyId ? (
-          <Link
-            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
-            className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
-          >
-            {whiskeyLabel}
-          </Link>
-        ) : (
-          <strong className="wf-cabinet-feed__title">{whiskeyLabel}</strong>
-        )}
-        <span className="wf-cabinet-feed__rating" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
-          ★ {Number(review.rating).toFixed(1)}
-        </span>
-      </div>
-
-      {isEditing ? (
-        <div className="wf-cabinet-feed__edit">
-          <StarRatingInput value={rating} onChange={setRating} />
-          <p className="wf-cabinet-feed__meta">{rating}점</p>
-          <textarea
-            className="wf-review-textarea"
-            value={publicText}
-            onChange={(event) => setPublicText(event.target.value)}
-            rows={4}
-          />
-          <div className="wf-cabinet-feed__actions">
-            <button type="button" className="wf-cabinet-feed__action wf-cabinet-feed__action--primary" onClick={handleUpdate} disabled={isBusy}>
-              저장
-            </button>
-            <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsEditing(false)}>
-              취소
-            </button>
+    <li className="wf-cabinet-feed__item wf-cabinet-feed__item--review">
+      <div className="wf-cabinet-feed__row">
+        <CabinetReviewFeedThumb
+          whiskeyId={review.whiskeyId}
+          whiskeyName={whiskeyLabel}
+          imageUrl={review.whiskeyImageUrl}
+        />
+        <div className="wf-cabinet-feed__body">
+          <div className="wf-cabinet-feed__head">
+            {review.whiskeyId ? (
+              <Link
+                to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
+                className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
+              >
+                {whiskeyLabel}
+              </Link>
+            ) : (
+              <strong className="wf-cabinet-feed__title">{whiskeyLabel}</strong>
+            )}
+            <span className="wf-cabinet-feed__rating" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
+              ★ {Number(review.rating).toFixed(1)}
+            </span>
           </div>
-        </div>
-      ) : (
-        <>
+
           <p className="wf-cabinet-feed__text">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
           <div className="wf-cabinet-feed__actions">
             {review.whiskeyId ? (
@@ -206,9 +194,11 @@ function MyReviewItem({
                 위스키 보기
               </Link>
             ) : null}
-            <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsEditing(true)}>
-              수정
-            </button>
+            {editPath ? (
+              <Link to={editPath} className="wf-cabinet-feed__action">
+                수정
+              </Link>
+            ) : null}
             <button
               type="button"
               className="wf-cabinet-feed__action wf-cabinet-feed__action--danger"
@@ -218,8 +208,8 @@ function MyReviewItem({
               삭제
             </button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </li>
   );
 }
@@ -498,22 +488,10 @@ export default function CabinetPage() {
     enabled: currentUserId != null,
     staleTime: 30_000,
   });
-  const updateReviewMutation = useUpdateReview(currentUserId);
   const deleteReviewMutation = useDeleteReview(currentUserId);
 
   const barHref = `${PATHS.CABINET}?section=bar&tab=${tab}`;
   const communityHref = `${PATHS.CABINET}?section=community`;
-
-  const handleUpdateReview = async (reviewId: number, rating: number, publicText: string) => {
-    try {
-      await updateReviewMutation.mutateAsync({
-        reviewId,
-        body: { rating, publicText },
-      });
-    } catch (error) {
-      toast(error instanceof Error ? error.message : '리뷰 수정에 실패했습니다.', 'error');
-    }
-  };
 
   const handleDeleteReview = async (reviewId: number) => {
     const ok = await confirmToast({ message: '리뷰를 삭제할까요?', danger: true });
@@ -534,6 +512,7 @@ export default function CabinetPage() {
         subtitle={currentNickname ? '내 캐비넷' : undefined}
         profileImageUrl={currentProfileImageUrl}
         introduction={currentIntroduction}
+        avatarSeed={currentUserId ?? currentNickname}
         followers={followerCount?.count ?? 0}
         following={followingCount?.count ?? 0}
         followersHref={`${PATHS.CABINET_FOLLOW}?tab=followers`}
@@ -579,9 +558,8 @@ export default function CabinetPage() {
                     <MyReviewItem
                       key={review.id}
                       review={review}
-                      onUpdate={handleUpdateReview}
                       onDelete={handleDeleteReview}
-                      isBusy={updateReviewMutation.isPending || deleteReviewMutation.isPending}
+                      isBusy={deleteReviewMutation.isPending}
                     />
                   ))}
                   </ul>
@@ -621,7 +599,7 @@ export default function CabinetPage() {
                       id={String(pick.whiskey.id)}
                       name={pick.whiskey.name}
                       imageUrl={pick.whiskey.imageUrl}
-                      meta={`${pick.whiskey.type} · ${pick.whiskey.abv ?? '-'}%`}
+                      meta={formatWhiskeySpec(pick.whiskey.type, pick.whiskey.abv)}
                       onRemove={() => handleDeletePick(pick.whiskey.id)}
                     />
                   ))}
@@ -686,7 +664,7 @@ export default function CabinetPage() {
                             id={String(item.whiskey.id)}
                             name={item.whiskey.name}
                             imageUrl={item.whiskey.imageUrl}
-                            meta={`${item.whiskey.type} · ${item.whiskey.abv ?? '-'}%`}
+                            meta={formatWhiskeySpec(item.whiskey.type, item.whiskey.abv)}
                             onRemove={() => handleRemoveWish(item.itemId)}
                           />
                         ))}

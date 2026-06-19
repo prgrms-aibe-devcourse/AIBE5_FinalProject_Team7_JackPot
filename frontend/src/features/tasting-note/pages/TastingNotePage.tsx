@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
+import { useTags } from '@/features/survey/hooks/useTags';
+import { NoteScoreRadar } from '../components/NoteScoreRadar';
+import '@/features/whiskey/whiskey.css';
+import '@/features/review/review.css';
+import '@/features/search/search.css';
 import {
   analyzeNoteByAi,
   createTastingNote,
@@ -26,44 +32,6 @@ const SCORE_FIELDS = [
   { key: 'sweetScore', label: '단맛' },
 ] as const;
 
-const TAG_OPTIONS = [
-  { id: 1, category: '향', name: '시트러스' },
-  { id: 2, category: '향', name: '베리류' },
-  { id: 3, category: '향', name: '꽃향' },
-  { id: 4, category: '향', name: '허브향' },
-  { id: 5, category: '향', name: '곡물향' },
-  { id: 6, category: '향', name: '견과향' },
-  { id: 7, category: '향', name: '꿀향' },
-  { id: 8, category: '향', name: '바닐라향' },
-  { id: 9, category: '향', name: '캐러멜향' },
-  { id: 10, category: '향', name: '초콜릿향' },
-  { id: 11, category: '향', name: '커피향' },
-  { id: 12, category: '향', name: '후추향' },
-  { id: 13, category: '향', name: '계피향' },
-  { id: 14, category: '향', name: '정향' },
-  { id: 15, category: '향', name: '우디(나무, 오크)' },
-  { id: 16, category: '향', name: '가죽향' },
-  { id: 17, category: '향', name: '스모키' },
-  { id: 18, category: '향', name: '피트향' },
-  { id: 19, category: '향', name: '흙내음' },
-  { id: 20, category: '향', name: '약품향' },
-  { id: 101, category: '맛', name: '시트러스' },
-  { id: 102, category: '맛', name: '베리류' },
-  { id: 103, category: '맛', name: '허브맛' },
-  { id: 104, category: '맛', name: '곡물맛' },
-  { id: 105, category: '맛', name: '견과류맛' },
-  { id: 106, category: '맛', name: '꿀맛' },
-  { id: 107, category: '맛', name: '바닐라맛' },
-  { id: 108, category: '맛', name: '캐러멜맛' },
-  { id: 109, category: '맛', name: '초콜릿맛' },
-  { id: 110, category: '맛', name: '커피맛' },
-  { id: 111, category: '맛', name: '우디(나무, 오크)' },
-  { id: 112, category: '맛', name: '스모키' },
-  { id: 113, category: '맛', name: '피트감' },
-  { id: 114, category: '맛', name: '흙맛' },
-  { id: 115, category: '맛', name: '짠맛' },
-];
-
 type TagModalType = 'nose' | 'taste' | null;
 
 type ScoreKey = (typeof SCORE_FIELDS)[number]['key'];
@@ -81,6 +49,16 @@ function toggleId(ids: number[], id: number) {
   return ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id];
 }
 
+function formatType(type: string): string {
+  const map: Record<string, string> = {
+    single_malt: '싱글몰트',
+    blended: '블렌디드',
+    bourbon: '버번',
+    rye: '라이',
+  };
+  return map[type] ?? type;
+}
+
 export default function TastingNotePage() {
   const { whiskeyId } = useParams();
   const [searchParams] = useSearchParams();
@@ -93,6 +71,8 @@ export default function TastingNotePage() {
   const targetNoteId = Number.isFinite(parsedNoteId) && parsedNoteId > 0 ? parsedNoteId : null;
   const returnTo = searchParams.get('returnTo');
   const { data: whiskey } = useWhiskeyDetail(id);
+  const { data: noseTags = [], isLoading: noseTagsLoading } = useTags('nose');
+  const { data: tasteTags = [], isLoading: tasteTagsLoading } = useTags('taste');
   const { data: existingNote, isLoading: noteLoading } = useQuery({
     queryKey: targetNoteId
       ? ['tasting-note', 'detail', currentUserId, targetNoteId]
@@ -118,12 +98,17 @@ export default function TastingNotePage() {
   const [isDraft, setIsDraft] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
-  const [aiError, setAiError] = useState('');  // AI 분석 인라인 에러 메시지
+  const [aiError, setAiError] = useState('');
+  const [imgError, setImgError] = useState(false);
 
   const isEditMode = Boolean(existingNote);
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
   const cabinetNotePath = `${PATHS.CABINET}?section=bar&tab=note`;
   const exitPath = returnTo === 'cabinet-note' ? cabinetNotePath : detailPath;
+
+  useEffect(() => {
+    setImgError(false);
+  }, [id]);
 
   useEffect(() => {
     if (!existingNote) return;
@@ -180,18 +165,18 @@ export default function TastingNotePage() {
     },
   });
 
-  const tagGroups = useMemo(() => {
-    return {
-      nose: TAG_OPTIONS.filter((tag) => tag.category === '향'),
-      taste: TAG_OPTIONS.filter((tag) => tag.category === '맛'),
-    };
-  }, []);
+  const tagGroups = useMemo(
+    () => ({ nose: noseTags, taste: tasteTags }),
+    [noseTags, tasteTags],
+  );
 
-  const selectedTags = TAG_OPTIONS.filter((tag) => selectedTagIds.includes(tag.id));
+  const allTags = useMemo(() => [...noseTags, ...tasteTags], [noseTags, tasteTags]);
+  const selectedTags = allTags.filter((tag) => selectedTagIds.includes(tag.id));
   const selectedNoseCount = tagGroups.nose.filter((tag) => selectedTagIds.includes(tag.id)).length;
   const selectedTasteCount = tagGroups.taste.filter((tag) => selectedTagIds.includes(tag.id)).length;
   const currentTagOptions = tagModalType === 'nose' ? tagGroups.nose : tagGroups.taste;
   const currentSelectedCount = currentTagOptions.filter((tag) => selectedTagIds.includes(tag.id)).length;
+  const currentTagsLoading = tagModalType === 'nose' ? noseTagsLoading : tasteTagsLoading;
   const tagModalTitle = tagModalType === 'nose' ? '향 태그' : '맛 태그';
 
   // AI 분석 버튼 핸들러
@@ -229,7 +214,8 @@ export default function TastingNotePage() {
     }
   };
 
-  const handleScoreChange = (key: ScoreKey, value: string) => {    const score = Number(value);
+  const handleScoreChange = (key: ScoreKey, value: string) => {
+    const score = Number(value);
     setScores((prev) => ({
       ...prev,
       [key]: Number.isFinite(score) ? Math.min(Math.max(score, 0), 10) : 0,
@@ -258,179 +244,207 @@ export default function TastingNotePage() {
     }
   };
 
+  const metaLine = whiskey
+    ? [
+        formatType(whiskey.type),
+        whiskey.country,
+        whiskey.abv != null ? `${whiskey.abv}%` : null,
+        whiskey.volume ? `${whiskey.volume}ml` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : null;
+  const imageSrc = resolveMediaUrl(whiskey?.imageUrl);
+  const pageTitle = noteLoading ? '노트 확인 중' : isEditMode ? '노트 수정' : '노트 작성';
+
   return (
     <WireframePage scroll>
-      <p className="wf-breadcrumb">상세 / <strong>시음 노트</strong></p>
-      <form className="wf-box wf-panel wf-note-editor" onSubmit={handleSubmit}>
-        <div>
-          <h1 className="wf-title">Tasting Note</h1>
-          <p className="wf-text-sm">
-            {whiskey?.name ?? `위스키 #${id}`} · {noteLoading ? '확인 중' : isEditMode ? '수정' : '새 노트'}
-          </p>
-        </div>
+      <p className="wf-breadcrumb">
+        홈 / <Link to={detailPath}>{whiskey?.name ?? '위스키'}</Link> / <strong>{pageTitle}</strong>
+      </p>
 
-        <section className="wf-note-editor__scores">
-          {SCORE_FIELDS.map(({ key, label }) => (
-            <label key={key} className="wf-note-editor__score">
-              <span className="wf-text-label">{label}</span>
-              <div className="wf-note-editor__score-row">
-                <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  step="1"
-                  value={scores[key]}
-                  onChange={(event) => handleScoreChange(key, event.target.value)}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  value={scores[key]}
-                  onChange={(event) => handleScoreChange(key, event.target.value)}
-                />
-              </div>
-            </label>
-          ))}
-        </section>
-
-        <label className="wf-note-editor__memo-label">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span className="wf-text-label">메모</span>
-            {/* AI 분석 버튼 — 메모 입력 후 클릭하면 점수/태그 자동 채움 */}
-            <button
-              type="button"
-              disabled={aiAnalyzing || !memo.trim()}
-              onClick={handleAiAnalyze}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 12px',
-                background: aiAnalyzing || !memo.trim() ? '#2e2e38' : '#c9a227',
-                border: 'none',
-                borderRadius: 8,
-                color: aiAnalyzing || !memo.trim() ? '#8b8b96' : '#0c0c0f',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: aiAnalyzing || !memo.trim() ? 'not-allowed' : 'pointer',
-                transition: 'background 0.15s',
-              }}
-            >
-              {aiAnalyzing ? '⏳ 분석 중...' : '✨ AI 분석'}
-            </button>
-          </div>
-          <textarea
-            className="wf-review-textarea"
-            value={memo}
-            onChange={(event) => {
-              setMemo(event.target.value);
-              if (aiError) setAiError(''); // 메모 수정 시 에러 초기화
-            }}
-            rows={6}
-            placeholder="향, 맛, 피니시, 마신 상황 등을 자유롭게 기록하세요.&#10;&#10;메모 작성 후 ✨ AI 분석 버튼을 누르면 점수와 태그를 자동으로 채워드립니다."
-          />
-          {/* AI 분석 인라인 에러 메시지 — 에러 화면 이동 없이 여기서만 표시 */}
-          {aiError && (
-            <p style={{
-              color: '#f87171',
-              fontSize: 12,
-              margin: '6px 0 0',
-              padding: '8px 12px',
-              background: 'rgba(248,113,113,0.08)',
-              border: '1px solid rgba(248,113,113,0.3)',
-              borderRadius: 8,
-              lineHeight: 1.5,
-            }}>
-              {aiError}
-            </p>
-          )}
-        </label>
-
-        <section className="wf-note-editor__tags">
-          <p className="wf-text-label">태그</p>
-          <div className="wf-note-editor__tag-picker-row">
-            <button
-              type="button"
-              className={`wf-box wf-note-editor__tag-picker${selectedNoseCount > 0 ? ' wf-box--accent' : ''}`}
-              onClick={() => setTagModalType('nose')}
-            >
-              <span>향 태그</span>
-              <strong>{selectedNoseCount > 0 ? `${selectedNoseCount}개 선택됨` : '선택'}</strong>
-            </button>
-            <button
-              type="button"
-              className={`wf-box wf-note-editor__tag-picker${selectedTasteCount > 0 ? ' wf-box--accent' : ''}`}
-              onClick={() => setTagModalType('taste')}
-            >
-              <span>맛 태그</span>
-              <strong>{selectedTasteCount > 0 ? `${selectedTasteCount}개 선택됨` : '선택'}</strong>
-            </button>
-          </div>
-
-          {selectedTags.length > 0 ? (
-            <div className="wf-note-editor__selected-tags" aria-label="선택된 태그">
-              {selectedTags.map((tag) => (
-                <span key={tag.id} className="wf-note-editor__selected-tag">
-                  {tag.name}
-                </span>
-              ))}
+      <div className="wf-layout-detail-v2 wf-write-review-layout">
+        <aside className="wf-detail-sidebar wf-write-review-sidebar">
+          <div className="wf-detail-sidebar__image-frame wf-write-review-image-frame">
+            <div className="wf-write-review-product">
+              <p className="wf-write-review-product__name">{whiskey?.name ?? '위스키 정보를 불러오는 중입니다.'}</p>
+              {metaLine ? <p className="wf-write-review-product__meta">{metaLine}</p> : null}
             </div>
-          ) : (
-            <p className="wf-text-sm wf-note-editor__no-tags">선택된 태그가 없습니다.</p>
-          )}
-        </section>
+            {imageSrc && !imgError ? (
+              <img
+                src={imageSrc}
+                alt={whiskey?.name ?? '위스키'}
+                className="wf-detail-sidebar__image wf-write-review-image-frame__image"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="wf-placeholder wf-detail-sidebar__image wf-write-review-image-frame__image" aria-hidden />
+            )}
+            <span className="wf-detail-sidebar__image-shadow" aria-hidden />
+          </div>
+        </aside>
 
-        <label className="wf-note-editor__draft">
-          <input
-            type="checkbox"
-            checked={isDraft}
-            onChange={(event) => setIsDraft(event.target.checked)}
-          />
-          임시 저장
-        </label>
+        <main className="wf-detail-main wf-write-review-main">
+          <form className="wf-detail-reviews wf-write-review-form wf-note-editor" onSubmit={handleSubmit}>
+            <div className="wf-detail-reviews__title-row wf-write-review-form__intro">
+              <div>
+                <h1 className="wf-section-title">{pageTitle}</h1>
+                {isEditMode ? (
+                  <p className="wf-text-sm wf-write-review-edit-hint">
+                    이미 작성한 노트가 있어 수정 화면으로 열었습니다.
+                  </p>
+                ) : null}
+              </div>
+            </div>
 
-        {errorMessage && (
-          <p className="wf-text-sm wf-note-editor__error">
-            {errorMessage}
-          </p>
-        )}
+            <section className="wf-write-review-block wf-note-editor__scores">
+              <div className="wf-detail-reviews__title-row wf-write-review-block__head">
+                <h2 className="wf-section-title">시음 점수</h2>
+              </div>
+              <div className="wf-note-editor__scores-layout">
+                <div className="wf-note-editor__scores-radar" aria-hidden={false}>
+                  <NoteScoreRadar scores={scores} />
+                </div>
+                <div className="wf-note-editor__scores-controls">
+                  {SCORE_FIELDS.map(({ key, label }) => (
+                    <label key={key} className="wf-note-editor__score">
+                      <span className="wf-text-label">{label}</span>
+                      <div className="wf-note-editor__score-row">
+                        <input
+                          type="range"
+                          min="0"
+                          max="10"
+                          step="1"
+                          value={scores[key]}
+                          onChange={(event) => handleScoreChange(key, event.target.value)}
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          max="10"
+                          value={scores[key]}
+                          onChange={(event) => handleScoreChange(key, event.target.value)}
+                        />
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </section>
 
-        <div className="wf-note-editor__actions">
-          <Button type="submit" disabled={saveMutation.isPending}>
-            {saveMutation.isPending ? '저장 중...' : isEditMode ? '수정 저장' : '새 노트 저장'}
-          </Button>
-          {isEditMode && (
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={deleteMutation.isPending}
-              onClick={async () => {
-                const ok = await confirmToast({ message: '노트를 삭제하시겠습니까?', danger: true });
-                if (ok) {
-                  deleteMutation.mutate();
-                }
-              }}
-            >
-              {deleteMutation.isPending ? '삭제 중...' : '삭제'}
-            </Button>
-          )}
-          <Button type="button" variant="ghost" onClick={() => navigate(exitPath)}>
-            취소
-          </Button>
-        </div>
-      </form>
+            <section className="wf-write-review-block">
+              <label className="wf-note-editor__memo-label">
+                <div className="wf-note-editor__memo-head">
+                  <span className="wf-text-label">메모</span>
+                  <button
+                    type="button"
+                    className="wf-note-editor__ai-btn"
+                    disabled={aiAnalyzing || !memo.trim()}
+                    onClick={handleAiAnalyze}
+                  >
+                    {aiAnalyzing ? '분석 중...' : 'AI 분석'}
+                  </button>
+                </div>
+                <textarea
+                  className="wf-review-textarea"
+                  value={memo}
+                  onChange={(event) => {
+                    setMemo(event.target.value);
+                    if (aiError) setAiError('');
+                  }}
+                  rows={6}
+                  placeholder="향, 맛, 피니시, 마신 상황 등을 자유롭게 기록하세요. 메모 작성 후 AI 분석을 누르면 점수와 태그를 자동으로 채워드립니다."
+                />
+                {aiError ? <p className="wf-note-editor__ai-error">{aiError}</p> : null}
+              </label>
+            </section>
+
+            <section className="wf-write-review-block wf-note-editor__tags">
+              <div className="wf-detail-reviews__title-row wf-write-review-block__head">
+                <h2 className="wf-section-title">태그</h2>
+              </div>
+              <div className="wf-note-editor__tag-picker-row">
+                <button
+                  type="button"
+                  className={`wf-box wf-note-editor__tag-picker${selectedNoseCount > 0 ? ' wf-box--accent' : ''}`}
+                  onClick={() => setTagModalType('nose')}
+                >
+                  <span>향 태그</span>
+                  <strong>{selectedNoseCount > 0 ? `${selectedNoseCount}개 선택됨` : '선택'}</strong>
+                </button>
+                <button
+                  type="button"
+                  className={`wf-box wf-note-editor__tag-picker${selectedTasteCount > 0 ? ' wf-box--accent' : ''}`}
+                  onClick={() => setTagModalType('taste')}
+                >
+                  <span>맛 태그</span>
+                  <strong>{selectedTasteCount > 0 ? `${selectedTasteCount}개 선택됨` : '선택'}</strong>
+                </button>
+              </div>
+
+              {selectedTags.length > 0 ? (
+                <div className="wf-note-editor__selected-tags" aria-label="선택된 태그">
+                  {selectedTags.map((tag) => (
+                    <span key={tag.id} className="wf-note-editor__selected-tag">
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="wf-text-sm wf-note-editor__no-tags">선택된 태그가 없습니다.</p>
+              )}
+            </section>
+
+            <label className="wf-note-editor__draft">
+              <input
+                type="checkbox"
+                checked={isDraft}
+                onChange={(event) => setIsDraft(event.target.checked)}
+              />
+              임시 저장
+            </label>
+
+            {errorMessage ? (
+              <p className="wf-text-sm wf-note-editor__error">{errorMessage}</p>
+            ) : null}
+
+            <div className="wf-detail-reviews__actions wf-write-review-actions wf-note-editor__actions">
+              <Button type="button" variant="ghost" onClick={() => navigate(exitPath)} disabled={saveMutation.isPending}>
+                취소
+              </Button>
+              {isEditMode ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={deleteMutation.isPending}
+                  onClick={async () => {
+                    const ok = await confirmToast({ message: '노트를 삭제하시겠습니까?', danger: true });
+                    if (ok) {
+                      deleteMutation.mutate();
+                    }
+                  }}
+                >
+                  {deleteMutation.isPending ? '삭제 중...' : '삭제'}
+                </Button>
+              ) : null}
+              <Button type="submit" disabled={saveMutation.isPending}>
+                {saveMutation.isPending ? '저장 중...' : isEditMode ? '수정 저장' : '새 노트 저장'}
+              </Button>
+            </div>
+          </form>
+        </main>
+      </div>
 
       {tagModalType ? (
         <div
           role="dialog"
           aria-modal="true"
           aria-label={tagModalTitle}
-          className="wf-note-editor__tag-modal"
+          className="wf-search-tag-modal wf-note-editor__tag-modal"
           onClick={() => setTagModalType(null)}
         >
           <div
-            className="wf-box wf-box--solid wf-note-editor__tag-modal-panel"
+            className="wf-box wf-box--solid wf-search-tag-modal__inner wf-search-tag-modal__inner--glass wf-note-editor__tag-modal-panel"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="wf-note-editor__tag-modal-head">
@@ -444,19 +458,25 @@ export default function TastingNotePage() {
             </div>
 
             <div className="wf-note-editor__tag-modal-grid">
-              {currentTagOptions.map((tag) => {
-                const selected = selectedTagIds.includes(tag.id);
-                return (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    className={`wf-box wf-note-editor__tag-modal-item${selected ? ' wf-box--accent' : ''}`}
-                    onClick={() => setSelectedTagIds((ids) => toggleId(ids, tag.id))}
-                  >
-                    {tag.name}
-                  </button>
-                );
-              })}
+              {currentTagsLoading ? (
+                <p className="wf-search-tag-modal__loading">태그 불러오는 중…</p>
+              ) : currentTagOptions.length === 0 ? (
+                <p className="wf-search-tag-modal__loading">표시할 태그가 없습니다.</p>
+              ) : (
+                currentTagOptions.map((tag) => {
+                  const selected = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      className={`wf-search-tag-option${selected ? ' wf-search-tag-option--selected' : ''}`}
+                      onClick={() => setSelectedTagIds((ids) => toggleId(ids, tag.id))}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

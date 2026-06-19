@@ -9,7 +9,7 @@ import { CabinetFeedEmpty, CabinetFeedLoading } from '@/features/cabinet/compone
 import { userApi } from '@/features/my-page/api/userApi';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import '@/features/cabinet/cabinet.css';
 
 const FOLLOW_PAGE_SIZE = 15;
@@ -40,7 +40,7 @@ function getCurrentIntroduction(): string {
 }
 
 function FollowUserRow({ user }: { user: FollowUser }) {
-  const avatarSrc = resolveMediaUrl(user.profileImageUrl);
+  const avatarSrc = resolveProfileImageUrl(user.profileImageUrl, user.userId);
   const currentUserId = getCurrentUserId();
   const isSelf = currentUserId != null && currentUserId === user.userId;
   const href = isSelf ? PATHS.CABINET : PATHS.USER_PROFILE.replace(':userId', String(user.userId));
@@ -48,8 +48,8 @@ function FollowUserRow({ user }: { user: FollowUser }) {
   return (
     <li>
       <Link to={href} className="wf-cabinet-follow-row">
-        <div className="wf-cabinet-follow-row__avatar wf-placeholder">
-          {avatarSrc ? <img src={avatarSrc} alt="" /> : null}
+        <div className="wf-cabinet-follow-row__avatar">
+          <img src={avatarSrc} alt="" />
         </div>
         <span className="wf-cabinet-follow-row__name">{user.nickname}</span>
         <span className="wf-cabinet-follow-row__chevron" aria-hidden>
@@ -147,6 +147,7 @@ export default function CabinetFollowPage() {
           following={followingCount?.count ?? 0}
           followersHref={`${PATHS.CABINET_FOLLOW}?tab=followers`}
           followingHref={`${PATHS.CABINET_FOLLOW}?tab=followings`}
+          avatarSeed={currentUserId ?? currentNickname}
           isOwner
           section={section}
           barHref={barHref}

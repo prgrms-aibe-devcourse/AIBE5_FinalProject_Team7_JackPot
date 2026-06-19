@@ -55,7 +55,7 @@
   overflow: hidden;
   border: 2px solid var(--wf-accent);
   border-radius: 50%;
-  background: var(--wf-surface-2);
+  background: #f5f0e8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,6 +66,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
+}
+
+.wf-mypage-avatar img[src*='/images/default-avatars/'] {
+  transform: scale(1.32);
 }
 
 .wf-mypage-avatar__initial {

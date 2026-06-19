@@ -4,7 +4,7 @@ import './TopNav.css';
 import { PATHS } from '@/app/router/paths';
 import { authApi } from '@/features/auth/api/authApi';
 import { clearAuthSession } from '@/shared/lib/authSession';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 
 export const PROFILE_UPDATED_EVENT = 'whiskeynote:profile-updated';
 
@@ -27,7 +27,8 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
   const [nickname, setNickname] = useState(() => localStorage.getItem('nickname') || '');
   const [profileImageKey, setProfileImageKey] = useState(() => localStorage.getItem('profileImageUrl') || '');
   const isLoggedIn = !!accessToken;
-  const avatarSrc = resolveMediaUrl(profileImageKey || null);
+  const userId = localStorage.getItem('userId') || '';
+  const avatarSrc = resolveProfileImageUrl(profileImageKey || null, userId || nickname);
 
   useEffect(() => {
     const syncProfile = () => {
@@ -71,11 +72,7 @@ export function TopNav({ searchPlaceholder: _searchPlaceholder }: TopNavProps) {
           <>
             <Link to={PATHS.MY_PAGE} className="wf-topnav__profile">
               <div className="wf-topnav__avatar">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt={nickname} />
-                ) : (
-                  <span>🥃</span>
-                )}
+                <img src={avatarSrc} alt={nickname} />
               </div>
               <span className="wf-topnav__nickname">{nickname}</span>
             </Link>
