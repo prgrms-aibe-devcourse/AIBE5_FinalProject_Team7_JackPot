@@ -1,7 +1,8 @@
 package com.jackpot.whiskeynote.domain.lounge.controller;
 
-import com.jackpot.whiskeynote.domain.lounge.dto.TasteMatchDto;
+import com.jackpot.whiskeynote.domain.recommendation.dto.TasteMatchDto;
 import com.jackpot.whiskeynote.domain.lounge.service.TasteMatchService;
+import com.jackpot.whiskeynote.domain.recommendation.service.UserRecommendationService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TasteMatchController {
 
     private final TasteMatchService tasteMatchService;
+    private final UserRecommendationService userRecommendationService;
 
     /**
      * 라운지 위젯용 — 랜덤 1명
@@ -38,6 +40,6 @@ public class TasteMatchController {
     @GetMapping
     public ApiResponse<List<TasteMatchDto>> getList(
             @AuthenticationPrincipal JwtUserPrincipal principal) {
-        return ApiResponse.ok(tasteMatchService.getTopMatches(principal.userId()));
+        return ApiResponse.ok(userRecommendationService.recommendByAll(principal.userId()));
     }
 }

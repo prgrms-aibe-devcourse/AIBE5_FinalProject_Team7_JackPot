@@ -1,5 +1,6 @@
 package com.jackpot.whiskeynote.domain.taste.survey.entity;
 
+import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -70,6 +71,15 @@ public class UserTasteProfile {
     }
 
     // ── 헬퍼 ────────────────────────────────────────────────────
+
+    public WhiskeyScoreVo getScoreVo() {
+        return new WhiskeyScoreVo(
+            bodyScore.shortValue(),
+            finishScore.shortValue(),
+            smokyScore.shortValue(),
+            spicyScore.shortValue(),
+            sweetScore.shortValue());
+    }
 
     /** 향(nose) 태그 목록 반환 */
     public List<UserTasteProfileTag> getNoseTags() {

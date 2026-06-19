@@ -104,7 +104,7 @@ public class TasteSurveyService {
         tasteTags.forEach(t -> allTagIds.add(t.getTag().getId()));
         Map<Long, Tag> tagMap = fetchTagMap(allTagIds);
 
-        FlavorProfile flavorProfile = new FlavorProfile(
+        FlavorSummary flavorProfile = new FlavorSummary(
                 profile.getSweetScore(), profile.getBodyScore(),
                 profile.getSmokyScore(), profile.getSpicyScore(), profile.getFinishScore(),
                 noseTags.stream()
@@ -213,7 +213,7 @@ public class TasteSurveyService {
         int body = scores[0], finish = scores[1], smoky = scores[2],
             spicy = scores[3], sweet = scores[4];
 
-        FlavorProfile profile = new FlavorProfile(
+        FlavorSummary profile = new FlavorSummary(
                 sweet, body, smoky, spicy, finish,
                 tags.noseTags().stream()
                         .map(t -> new TagInfo(t.getId(), t.getName(), t.getImageUrl())).toList(),

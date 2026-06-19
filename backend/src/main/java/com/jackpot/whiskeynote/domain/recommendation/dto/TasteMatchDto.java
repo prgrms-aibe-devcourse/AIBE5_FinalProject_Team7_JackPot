@@ -1,4 +1,6 @@
-package com.jackpot.whiskeynote.domain.lounge.dto;
+package com.jackpot.whiskeynote.domain.recommendation.dto;
+
+import com.jackpot.whiskeynote.domain.member.entity.Users;
 
 /**
  * 취향 비슷한 유저 응답 DTO
@@ -12,4 +14,12 @@ public record TasteMatchDto(
         String nickname,
         String profileImageUrl,
         double similarity
-) {}
+) {
+    public static TasteMatchDto create(Users user, double score) {
+        return new TasteMatchDto(
+            user.getId(),
+            user.getNickname(),
+            user.getProfileImageUrl(),
+            score);
+    }
+}

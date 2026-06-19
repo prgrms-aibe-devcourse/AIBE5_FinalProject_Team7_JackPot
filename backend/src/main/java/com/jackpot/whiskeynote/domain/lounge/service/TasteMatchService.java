@@ -2,7 +2,7 @@ package com.jackpot.whiskeynote.domain.lounge.service;
 
 import com.jackpot.whiskeynote.domain.collection.pick.entity.MyPick;
 import com.jackpot.whiskeynote.domain.collection.pick.repository.PickRepository;
-import com.jackpot.whiskeynote.domain.lounge.dto.TasteMatchDto;
+import com.jackpot.whiskeynote.domain.recommendation.dto.TasteMatchDto;
 import com.jackpot.whiskeynote.domain.lounge.dto.UserVector;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
