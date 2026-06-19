@@ -8,10 +8,11 @@
   flex-direction: column;
   gap: 8px;
   padding: 2px;
+  margin-bottom: 4px;
 }
 
-.wf-review-pick-intro .wf-search-result-comment {
-  margin: 0;
+.wf-review-pick-intro .wf-page-intro__title {
+  margin-bottom: 0;
 }
 
 .wf-review-pick-intro__hint {

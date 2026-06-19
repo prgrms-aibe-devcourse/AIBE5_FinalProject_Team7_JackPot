@@ -396,7 +396,11 @@ export default function SearchPage() {
           }}
         />
       )}
-      <p className="wf-breadcrumb">홈 / <strong>검색</strong></p>
+      <header className="wf-search-intro">
+        <p className="wf-search-intro__eyebrow">탐색</p>
+        <h1 className="wf-search-intro__title">검색</h1>
+        <p className="wf-search-intro__subtitle">향·맛·도수로 위스키를 찾아보세요.</p>
+      </header>
       <div className={`wf-layout-sidebar wf-search-layout${filtersOpen ? ' wf-search-layout--open' : ''}`}>
         <aside className="wf-sidebar wf-search-sidebar">
           <div className="wf-search-sidebar__inner">
@@ -559,7 +563,7 @@ export default function SearchPage() {
 
           {isError ? (
             <div className="wf-box wf-search-state-box wf-search-error-box">
-              <p className="wf-text-label">Connection issue</p>
+              <p className="wf-text-label">연결 문제</p>
               <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
               <p className="wf-card__meta">{searchErrorMessage}</p>
               <div className="wf-search-state-actions">
@@ -584,7 +588,7 @@ export default function SearchPage() {
           {isInitialLoading ? (
             <div className="wf-search-skeleton-list" aria-label="검색 결과를 불러오는 중">
               <div className="wf-search-skeleton-intro wf-box">
-                <p className="wf-text-label">Curating bottles</p>
+                <p className="wf-text-label">불러오는 중</p>
                 <strong>조건에 맞는 위스키를 정리하고 있어요.</strong>
                 <span>잠시만 기다리면 추천 후보가 차례로 나타납니다.</span>
               </div>
@@ -603,7 +607,7 @@ export default function SearchPage() {
 
           {!isInitialLoading && !isError && results.length === 0 ? (
             <div className="wf-box wf-search-state-box wf-search-empty-box">
-              <p className="wf-text-label">No matches</p>
+              <p className="wf-text-label">결과 없음</p>
               <p className="wf-card__title">검색 결과가 없습니다.</p>
               <p className="wf-card__meta">
                 검색어를 조금 줄이거나 필터를 초기화해보세요. 찾는 위스키가 없다면 등록 요청으로 남길 수 있어요.

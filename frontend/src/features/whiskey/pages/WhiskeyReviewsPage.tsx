@@ -74,8 +74,8 @@ function ReviewCard({ review }: { review: WhiskeyReview }) {
             className={`wf-detail-reviews__note-button${showNote ? ' wf-detail-reviews__note-button--open' : ''}`}
             onClick={() => setShowNote((prev) => !prev)}
             aria-expanded={showNote}
-            aria-label={showNote ? '첨부 My Note 접기' : '첨부 My Note 보기'}
-            title={showNote ? 'My Note 접기' : 'My Note 보기'}
+            aria-label={showNote ? '첨부 노트 접기' : '첨부 노트 보기'}
+            title={showNote ? '노트 접기' : '노트 보기'}
           >
             <span className="wf-detail-reviews__note-icon" aria-hidden>
               {showNote ? '📖' : '📕'}

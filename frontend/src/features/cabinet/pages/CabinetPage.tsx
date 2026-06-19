@@ -542,7 +542,7 @@ export default function CabinetPage() {
             ) : null}
             {tab === 'note' ? (
               <CabinetFeedToolbar>
-                <Link to={PATHS.NOTE_PICK} className="wf-cabinet-feed-toolbar__link">+ Note 작성</Link>
+                <Link to={PATHS.NOTE_PICK} className="wf-cabinet-feed-toolbar__link">+ 노트 작성</Link>
               </CabinetFeedToolbar>
             ) : null}
           {tab === 'reviews' ? (
@@ -702,7 +702,7 @@ export default function CabinetPage() {
                 <CabinetFeedEmpty
                   title="아직 작성한 시음 노트가 없습니다."
                   meta="시음 후 노트를 작성하면 향·맛 태그와 함께 저장됩니다."
-                  actionLabel="Note 작성하기"
+                  actionLabel="노트 작성하기"
                   actionTo={PATHS.NOTE_PICK}
                 />
               )}

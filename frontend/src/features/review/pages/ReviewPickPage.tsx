@@ -80,13 +80,12 @@ export default function ReviewPickPage() {
 
   return (
     <WireframePage>
-      <p className="wf-breadcrumb">홈 / <strong>리뷰 작성</strong></p>
-
       <div className="wf-search-main wf-review-pick-main">
-        <div className="wf-review-pick-intro">
-          <h1 className="wf-search-result-comment">리뷰를 작성할 위스키를 선택하세요</h1>
-          <p className="wf-review-pick-intro__hint">검색해서 원하는 보틀을 고르면 리뷰 작성 화면으로 이동합니다.</p>
-        </div>
+        <header className="wf-review-pick-intro">
+          <p className="wf-page-intro__eyebrow">기록</p>
+          <h1 className="wf-page-intro__title">리뷰 작성</h1>
+          <p className="wf-review-pick-intro__hint">위스키를 검색해 선택하면 리뷰 작성 화면으로 이동합니다.</p>
+        </header>
 
         <form onSubmit={handleSubmit} className="wf-search-form wf-review-pick-form">
           <div className="wf-search-autocomplete">
@@ -127,7 +126,7 @@ export default function ReviewPickPage() {
 
         {isError ? (
           <div className="wf-box wf-search-state-box wf-search-error-box">
-            <p className="wf-text-label">Connection issue</p>
+            <p className="wf-text-label">연결 문제</p>
             <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
             <p className="wf-card__meta">잠시 후 다시 시도해주세요.</p>
           </div>
@@ -136,7 +135,7 @@ export default function ReviewPickPage() {
         {isInitialLoading ? (
           <div className="wf-search-skeleton-list" aria-label="위스키 목록을 불러오는 중">
             <div className="wf-search-skeleton-intro wf-box">
-              <p className="wf-text-label">Curating bottles</p>
+              <p className="wf-text-label">불러오는 중</p>
               <strong>위스키 목록을 정리하고 있어요.</strong>
               <span>잠시만 기다리면 후보가 차례로 나타납니다.</span>
             </div>
@@ -155,7 +154,7 @@ export default function ReviewPickPage() {
 
         {!isInitialLoading && !isError && results.length === 0 ? (
           <div className="wf-box wf-search-state-box wf-search-empty-box">
-            <p className="wf-text-label">No matches</p>
+            <p className="wf-text-label">결과 없음</p>
             <p className="wf-card__title">검색 결과가 없습니다.</p>
             <p className="wf-card__meta">다른 검색어로 다시 찾아보세요.</p>
           </div>

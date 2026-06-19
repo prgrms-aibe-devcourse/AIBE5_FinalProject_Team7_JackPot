@@ -1,5 +1,33 @@
 /* --- 검색 페이지 (SearchPage) --- */
 
+.wf-search-intro {
+  margin-bottom: 18px;
+}
+
+.wf-search-intro__eyebrow,
+.wf-page-intro__eyebrow {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-search-intro__title,
+.wf-page-intro__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wf-search-intro__subtitle {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--wf-muted);
+}
+
 /* Apple 타입 스케일 (위스키 상세 페이지와 동일 기준)
    - Font: SF Pro → 한글 Apple SD Gothic Neo · Weight 400/600/700 (800·900 지양) */
 :where(.wf-search-sidebar, .wf-search-main) {
