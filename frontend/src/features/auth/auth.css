@@ -1,5 +1,14 @@
 /* ───────── Auth — LoginPage ───────── */
 .wf-auth-title { font-size: 22px; letter-spacing: 0; }
+.wf-auth-intro__eyebrow {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+.wf-auth-intro__subtitle {
+  margin: 6px 0 0;
+}
 .wf-register-title { margin-bottom: 6px; }
 .wf-post-title { margin-bottom: 4px; }
 .wf-auth-field-first { margin-top: 20px; }
@@ -108,7 +117,7 @@
 
 /* ───────── Auth — RegisterPage ───────── */
 .wf-register-box { max-width: 440px; }
-.wf-register-header { text-align: center; margin-bottom: 28px; }
+.wf-register-header { text-align: center; margin-bottom: 24px; }
 .wf-register-divider { height: 1px; background: var(--wf-border); margin-bottom: 24px; }
 .wf-register-label {
   font-size: 11px;
@@ -131,6 +140,12 @@
   outline: none;
   box-sizing: border-box;
   font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wf-register-field:focus {
+  border-color: var(--wf-accent);
+  box-shadow: 0 0 0 3px var(--wf-accent-dim);
 }
 .wf-register-field--flex { flex: 1; }
 .wf-register-field-group { margin-bottom: 16px; }
@@ -166,3 +181,61 @@
 }
 .wf-register-footer { text-align: center; margin-top: 18px; color: var(--wf-muted); }
 .wf-register-login-link { color: var(--wf-accent); font-weight: 600; text-decoration: none; }
+
+.wf-register-birthday-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.wf-register-birthday-field {
+  flex: 1;
+}
+
+.wf-register-calendar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.wf-register-calendar-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.wf-register-calendar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  align-self: stretch;
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
+  border-radius: 10px;
+  color: var(--wf-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.wf-register-calendar-btn:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-register-field-error {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--wf-danger);
+}
+
+.wf-register-field-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--wf-muted);
+}

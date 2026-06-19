@@ -153,10 +153,11 @@ export default function RegisterPage() {
         <div className="wf-auth-box wf-box wf-box--solid wf-register-box">
 
           {/* 헤더 */}
-          <div className="wf-register-header">
+          <header className="wf-register-header">
+            <p className="wf-auth-intro__eyebrow">시작하기</p>
             <h2 className="wf-title wf-auth-title wf-register-title">회원가입</h2>
-            <p className="wf-subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
-          </div>
+            <p className="wf-subtitle wf-auth-intro__subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
+          </header>
 
           {/* 구분선 */}
           <div className="wf-register-divider" />
@@ -239,50 +240,31 @@ export default function RegisterPage() {
               <label className="wf-register-label">
                 생년월일 <span className="wf-register-required">*</span>
               </label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
-                {/* 직접 입력 (숫자 8자리) */}
+              <div className="wf-register-birthday-row">
                 <input
-                  className="wf-register-field"
+                  className="wf-register-field wf-register-birthday-field"
                   placeholder="예: 19900115"
                   value={birthday}
                   onChange={(e) => handleBirthdayTextChange(e.target.value)}
                   maxLength={8}
                   inputMode="numeric"
-                  style={{ flex: 1 }}
                   disabled={loading}
                 />
-                {/* 3번: 캘린더 버튼 — showPicker()로 date input 직접 열기 */}
-                <div style={{ position: 'relative', flexShrink: 0, display: 'flex' }}>
-                  {/* 숨긴 date input — ref로 참조 */}
+                <div className="wf-register-calendar-wrap">
                   <input
                     ref={calendarRef}
                     type="date"
+                    className="wf-register-calendar-input"
                     value={calendarValue}
                     max={new Date().toISOString().split('T')[0]}
                     onChange={(e) => handleBirthdayCalendarChange(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      opacity: 0,
-                      pointerEvents: 'none',
-                      width: 0,
-                      height: 0,
-                    }}
+                    tabIndex={-1}
+                    aria-hidden
                   />
                   <button
                     type="button"
+                    className="wf-register-calendar-btn"
                     onClick={() => calendarRef.current?.showPicker()}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '0 12px',
-                      alignSelf: 'stretch',
-                      background: 'var(--wf-surface)',
-                      border: '1px solid var(--wf-border)',
-                      borderRadius: 8,
-                      color: 'var(--wf-muted)',
-                      cursor: 'pointer',
-                    }}
                     title="캘린더에서 날짜 선택"
                     aria-label="캘린더에서 날짜 선택"
                   >
@@ -293,13 +275,10 @@ export default function RegisterPage() {
                   </button>
                 </div>
               </div>
-              {/* 2번: 실시간 에러 메시지 */}
-              {birthdayError && (
-                <p style={{ color: '#f87171', fontSize: 12, margin: '4px 0 0' }}>
-                  {birthdayError}
-                </p>
-              )}
-              <p style={{ color: '#8b8b96', fontSize: 11, margin: '4px 0 0' }}>
+              {birthdayError ? (
+                <p className="wf-register-field-error" role="alert">{birthdayError}</p>
+              ) : null}
+              <p className="wf-register-field-hint">
                 8자리 직접 입력 또는 달력 버튼으로 날짜를 선택하세요.
               </p>
             </div>
