@@ -142,9 +142,6 @@ export function TastingSummaryPanel({
       <div className="wf-detail-section-head">
         <div>
           <h2 className="wf-section-title">시음 요약</h2>
-          <p className="wf-text-xs wf-detail-tasting__note">
-            노트 첨부 리뷰 기반 · 오피셜 없으면 평균 고정
-          </p>
         </div>
         <div
           className="wf-tabs wf-tabs--seg3 wf-detail-tasting__toggle"

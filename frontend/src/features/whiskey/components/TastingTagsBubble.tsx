@@ -5,7 +5,6 @@ import type { WhiskeyTagStat } from '../types';
 const MIN_RADIUS = 42;
 const MAX_RADIUS = 78;
 const TAG_FILTERS = [
-  { value: 'all', label: '전체' },
   { value: 'nose', label: '향' },
   { value: 'taste', label: '맛' },
 ] as const;
@@ -31,35 +30,44 @@ interface TastingTagsBubbleProps {
 }
 
 export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) {
-  const [selectedFilter, setSelectedFilter] = useState<TagFilter>('all');
+  const [selectedFilter, setSelectedFilter] = useState<TagFilter>('nose');
   const sorted = useMemo(() => {
     return [...tags]
-      .filter((tag) => selectedFilter === 'all' || tag.category === selectedFilter)
+      .filter((tag) => tag.category === selectedFilter)
       .sort((a, b) => b.count - a.count);
   }, [selectedFilter, tags]);
   const maxCount = sorted[0]?.count ?? 1;
   const hasIcons = sorted.some((tag) => Boolean(tag.imageUrl));
+  const emptyLabel = selectedFilter === 'nose' ? '향 태그가 아직 없습니다.' : '맛 태그가 아직 없습니다.';
 
   return (
     <section className="wf-detail-tags wf-box wf-box--solid" aria-label="Tasting tags">
-      <h2 className="wf-section-title">TASTING TAGS</h2>
-      <div className="wf-detail-tags__filters" role="group" aria-label="태그 종류 선택">
-        {TAG_FILTERS.map((filter) => (
-          <button
-            key={filter.value}
-            type="button"
-            className={`wf-detail-tags__filter-button ${
-              selectedFilter === filter.value ? 'wf-detail-tags__filter-button--active' : ''
-            }`}
-            onClick={() => setSelectedFilter(filter.value)}
-          >
-            {filter.label}
-          </button>
-        ))}
+      <div className="wf-detail-tags__head">
+        <h2 className="wf-section-title">TASTING TAGS</h2>
+        <div
+          className="wf-tabs wf-detail-tags__toggle"
+          data-active={selectedFilter}
+          role="tablist"
+          aria-label="태그 종류 선택"
+        >
+          <span className="wf-tabs__pill" aria-hidden="true" />
+          {TAG_FILTERS.map((filter) => (
+            <button
+              key={filter.value}
+              type="button"
+              role="tab"
+              aria-selected={selectedFilter === filter.value}
+              className={`wf-tab-item${selectedFilter === filter.value ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setSelectedFilter(filter.value)}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {sorted.length === 0 ? (
-        <p className="wf-text-sm wf-detail-tags__empty">아직 등록된 My Note 태그가 없습니다.</p>
+        <p className="wf-text-sm wf-detail-tags__empty">{emptyLabel}</p>
       ) : (
         <ul className={`wf-detail-tags__grid${hasIcons ? ' wf-detail-tags__grid--icons' : ''}`}>
           {sorted.map((tag) => {

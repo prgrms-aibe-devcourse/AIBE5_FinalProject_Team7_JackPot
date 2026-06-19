@@ -18,6 +18,7 @@ import { RelatedColumns } from '../components/RelatedColumns';
 import { RelatedWhiskeys } from '../components/RelatedWhiskeys';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
+import { WishPickActions } from '../components/WishPickActions';
 import {
   useRelatedColumns,
   useSimilarWhiskeys,
@@ -461,24 +462,14 @@ export default function WhiskeyDetailPage() {
               </span>
             </div>
           )}
-          <div className="wf-detail-sidebar__actions-row">
-            <Button
-              variant={isWished ? 'primary' : 'ghost'}
-              className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
-              onClick={handleWishToggle}
-              disabled={wishLoading}
-            >
-              {isWished ? '위시리스트 취소' : '위시리스트'}
-            </Button>
-            <Button
-              className={`wf-detail-action ${isPicked ? 'wf-detail-action--on' : ''}`}
-              onClick={handlePickToggle}
-              disabled={pickLoading}
-            >
-              {pickLoading ? '처리 중...' : isPicked ? 'My Pick 취소' : 'My Pick'}
-            </Button>
-          </div>
-          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
+          <WishPickActions
+            isWished={isWished}
+            isPicked={isPicked}
+            wishLoading={wishLoading}
+            pickLoading={pickLoading}
+            onWishToggle={handleWishToggle}
+            onPickToggle={handlePickToggle}
+          />
           <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
 
