@@ -170,14 +170,6 @@
   background: var(--wf-surface-2);
 }
 .wf-column-card__thumb img { width: 100%; height: 100%; object-fit: cover; }
-.wf-column-card__thumb-empty {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
 .wf-column-card__body { flex: 1; min-width: 0; }
 .wf-column-card__title {
   font-size: 15px;
