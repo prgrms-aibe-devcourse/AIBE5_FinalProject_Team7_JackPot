@@ -34,12 +34,18 @@
 .wf-detail-hero__title {
   margin: 0 0 8px;
   max-width: 760px;
-  font-size: clamp(34px, 3.8vw, 58px);
-  font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  /* Apple "iPhone 16 구입하기" headline: SF Pro Display Semibold, Korean falls
+     back to Apple SD Gothic Neo (the font Apple uses on its KR pages). */
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  font-size: clamp(34px, 3.8vw, 56px);
+  font-weight: 700;
+  line-height: 1.0834933333;
+  letter-spacing: -0.003em;
   color: var(--wf-text);
   text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .wf-detail-hero__meta {
@@ -1129,45 +1135,73 @@
 }
 
 .wf-detail-tags__image {
-  width: 112%;
-  height: 112%;
+  width: 118%;
+  height: 118%;
   object-fit: contain;
   pointer-events: none;
 }
 
+/* Apple "Liquid Glass" 툴팁 — 라이트 페이지에 어울리는 프로스티드 글래스 */
 .wf-detail-tags__tooltip {
   position: absolute;
   z-index: 30;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 12px);
   left: 50%;
-  transform: translateX(-50%);
-  width: min(280px, 72vw);
-  padding: 12px 14px;
-  border: 1px solid var(--wf-border);
-  border-radius: 12px;
-  background: rgba(18, 18, 22, 0.98);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%) translateY(4px) scale(0.96);
+  width: min(286px, 74vw);
+  padding: 14px 16px;
+  border-radius: 20px;
+  /* 반투명 + 배경 블러/채도 상승이 액체 유리 느낌의 핵심 */
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(22px) saturate(190%);
+  backdrop-filter: blur(22px) saturate(190%);
+  /* 바깥 그림자 + 위쪽 스펙큘러 하이라이트(안쪽 밝은 테두리) */
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 12px 40px rgba(31, 28, 22, 0.18),
+    0 2px 8px rgba(31, 28, 22, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
   color: var(--wf-text);
   text-align: left;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+  overflow: hidden;
+  isolation: isolate;
+  transition: opacity 0.22s ease, visibility 0.22s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 상단에서 흘러내리는 광택(specular sheen) — 액체 유리의 빛 반사 */
+.wf-detail-tags__tooltip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.12) 32%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  pointer-events: none;
 }
 
 .wf-detail-tags__item-wrap:hover .wf-detail-tags__tooltip,
 .wf-detail-tags__item-wrap:focus-within .wf-detail-tags__tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .wf-detail-tags__tooltip-title {
   margin: 0 0 6px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--wf-accent);
+  color: var(--wf-accent-dark);
   line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .wf-detail-tags__tooltip-desc {
@@ -1192,10 +1226,19 @@
 }
 
 .wf-detail-tags__name {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
   font-size: 13px;
   font-weight: 600;
   color: var(--wf-text);
   text-align: center;
+}
+
+.wf-detail-tags__name-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--wf-accent);
 }
 
 .wf-detail-tags__legend {
