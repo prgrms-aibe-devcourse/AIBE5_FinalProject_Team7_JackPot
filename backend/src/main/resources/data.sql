@@ -37,17 +37,17 @@ VALUES
 
 -- ========== whiskey_reviews_batch1.json ==========
 -- whiskeys
-INSERT INTO whiskeys (id, name, type, image_url, abv, age_years, status, country, cask, created_at, updated_at) VALUES
-    (1, '글렌피딕 18년', 'single_malt', 'whiskey/글렌피딕_18년.webp', 40.0, 18, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (2, '오켄토션 12년', 'single_malt', 'whiskey/오켄토션_12년.webp', 40.0, 12, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (3, '에버펠디 12년', 'single_malt', 'whiskey/에버펠디_12년.webp', 40.0, 12, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (4, '글렌모렌지 오리지널 10년', 'single_malt', 'whiskey/글렌모렌지_오리지널_10년.webp', 40.0, 10, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (5, '폴존 피티드 클래식 셀렉트 캐스크', 'single_malt', 'whiskey/폴존_피티드_클래식_셀렉트_캐스크.webp', 55.5, 0, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (6, '글렌피딕 그랑 크루 23년', 'single_malt', 'whiskey/글렌피딕_그랑_크루_23년.webp', 40.0, 23, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (7, '맥캘란 15년 더블 캐스크', 'single_malt', 'whiskey/맥캘란_15년_더블_캐스크.webp', 43.0, 15, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (8, '스페이번 10년', 'single_malt', 'whiskey/스페이번_10년.webp', 40.0, 10, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (9, '로크로몬드 오리지날', 'single_malt', 'whiskey/로크로몬드_오리지날.webp', 40.0, 0, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
-    (10, '로얄 브라클라 21년', 'single_malt', 'whiskey/로얄_브라클라_21년.webp', 46.0, 21, 'active', NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40');
+INSERT INTO whiskeys (id, name, type, etc_detail, image_url, abv, age_years, status, region, country, cask, created_at, updated_at) VALUES
+    (1, '글렌피딕 18년', 'single_malt', NULL, 'whiskey/글렌피딕_18년.webp', 40.0, 18, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (2, '오켄토션 12년', 'single_malt', NULL, 'whiskey/오켄토션_12년.webp', 40.0, 12, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (3, '에버펠디 12년', 'single_malt', NULL, 'whiskey/에버펠디_12년.webp', 40.0, 12, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (4, '글렌모렌지 오리지널 10년', 'single_malt', NULL, 'whiskey/글렌모렌지_오리지널_10년.webp', 40.0, 10, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (5, '폴존 피티드 클래식 셀렉트 캐스크', 'single_malt', NULL, 'whiskey/폴존_피티드_클래식_셀렉트_캐스크.webp', 55.5, 0, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (6, '글렌피딕 그랑 크루 23년', 'single_malt', NULL, 'whiskey/글렌피딕_그랑_크루_23년.webp', 40.0, 23, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (7, '맥캘란 15년 더블 캐스크', 'single_malt', NULL, 'whiskey/맥캘란_15년_더블_캐스크.webp', 43.0, 15, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (8, '스페이번 10년', 'single_malt', NULL, 'whiskey/스페이번_10년.webp', 40.0, 10, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (9, '로크로몬드 오리지날', 'single_malt', NULL, 'whiskey/로크로몬드_오리지날.webp', 40.0, 0, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40'),
+    (10, '로얄 브라클라 21년', 'single_malt', NULL, 'whiskey/로얄_브라클라_21년.webp', 46.0, 21, 'active', NULL, NULL, NULL, '2026-05-26 14:27:40', '2026-05-26 14:27:40');
 
 -- whiskeys_note_cache
 INSERT INTO whiskeys_note_cache (id, whiskey_id, count, body_score, finish_score, smoky_score, spicy_score, sweet_score) VALUES
