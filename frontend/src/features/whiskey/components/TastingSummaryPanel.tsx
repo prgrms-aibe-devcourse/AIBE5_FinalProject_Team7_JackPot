@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import type { TastingAxisView, TastingSummarySource } from '../types';
 
 const CHART_SIZE = 340;
@@ -14,7 +13,6 @@ interface TastingSummaryPanelProps {
   /** 공식 시음 노트 (항목명→설명). 오피셜 탭에서 표시 */
   officialNote?: Record<string, string> | null;
   onSourceChange: (source: TastingSummarySource) => void;
-  reviewPath: string;
 }
 
 function axisPoint(index: number, total: number, ratio: number) {
@@ -50,7 +48,6 @@ export function TastingSummaryPanel({
   hasOfficial,
   officialNote,
   onSourceChange,
-  reviewPath,
 }: TastingSummaryPanelProps) {
   const officialNoteEntries = Object.entries(officialNote ?? {});
   const showOfficialNote = source === 'official' && officialNoteEntries.length > 0;
@@ -169,10 +166,6 @@ export function TastingSummaryPanel({
           </div>
         )
       )}
-
-      <Link to={reviewPath} className="wf-detail-tasting__reviews-link wf-text-sm">
-        리뷰 전체 보기
-      </Link>
     </section>
   );
 }

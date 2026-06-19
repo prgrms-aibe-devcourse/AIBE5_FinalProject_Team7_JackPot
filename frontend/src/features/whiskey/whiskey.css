@@ -70,34 +70,29 @@
 }
 
 .wf-detail-hero__stats {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(92px, 1fr));
-  gap: 10px;
-  width: min(440px, 100%);
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
   flex-shrink: 0;
 }
 
 .wf-detail-hero__stat {
-  min-height: 82px;
-  padding: 14px 15px;
-  border: 1px solid var(--wf-border);
-  border-radius: 14px;
-  background: var(--wf-surface-2);
+  text-align: center;
 }
 
 .wf-detail-hero__stat span {
   display: block;
   color: var(--wf-muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .wf-detail-hero__stat strong {
   display: block;
-  margin-top: 8px;
-  color: var(--wf-accent-light);
-  font-size: 24px;
+  margin-top: 6px;
+  color: var(--wf-text);
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -337,7 +332,7 @@
   line-height: 1.25;
 }
 
-/* 행 라벨(제목)을 기존 그룹 타이틀 스타일로 — 그룹 타이틀은 제거됨 */
+/* 행 라벨(제목)을 그룹 타이틀 스타일로 (중복 제거된 제품 소개 그룹) */
 .wf-detail-main .wf-detail-desc__row .wf-text-label {
   font-size: 18px;
   font-weight: 700;
@@ -345,6 +340,17 @@
   text-transform: none;
   letter-spacing: -0.01em;
   margin-bottom: 6px;
+}
+
+/* 표시되는 그룹 타이틀 (예: 핵심 특징) */
+.wf-detail-main .wf-detail-desc__group-title {
+  font-size: 18px;
+}
+
+/* 그룹 타이틀이 있는 그룹의 하위 요소 제목 — 볼드 해제 */
+.wf-detail-main .wf-detail-desc__row--sub .wf-text-label {
+  font-size: 15px;
+  font-weight: 400;
 }
 
 .wf-detail-main .wf-detail-desc__row .wf-text-sm {
@@ -1099,6 +1105,22 @@
   box-shadow: 0 0 0 2px rgba(213, 173, 69, 0.35);
 }
 
+/* 아이콘 버블 — 단색 원 대신 태그 아이콘, 빈도별 크기 (인라인 width/height) */
+.wf-detail-tags__bubble--icon {
+  border-radius: 0;
+  background: transparent;
+}
+
+.wf-detail-tags__bubble--icon:hover {
+  box-shadow: none;
+}
+
+.wf-detail-tags__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .wf-detail-tags__name {
   font-size: 12px;
   color: var(--wf-muted);
@@ -1163,11 +1185,7 @@
   }
 
   .wf-detail-hero__stats {
-    grid-template-columns: 1fr;
-  }
-
-  .wf-detail-hero__stat {
-    min-height: 78px;
+    gap: 20px;
   }
 
   .wf-detail-hero__chips span {
@@ -1443,10 +1461,17 @@
   padding-top: 16px;
   border-top: 1px solid var(--wf-border, #2e2e38);
 }
+/* 향/맛 등 제목-본문을 핵심 특징 하위 요소와 동일 스타일로 */
 .wf-detail-official-note__row .wf-text-label {
-  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--wf-text);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
 }
 .wf-detail-official-note__row .wf-text-sm {
+  font-size: 16px;
   line-height: 1.6;
 }
 
