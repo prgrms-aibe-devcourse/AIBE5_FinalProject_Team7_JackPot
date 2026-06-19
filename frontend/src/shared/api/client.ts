@@ -12,7 +12,7 @@ declare module 'axios' {
 
 /** 비로그인 조회 허용 API — 401이어도 로그인 페이지로 보내지 않음 */
 const PUBLIC_READ_PATH =
-  /^\/users\/\d+\/(picks|cabinet\/stats)(?:\?|$)|^\/reviews(?:\?|$)/;
+  /^\/users\/\d+\/(picks|cabinet\/stats|profile)(?:\?|$)|^\/reviews(?:\?|$)/;
 
 function isPublicReadRequest(url: string | undefined): boolean {
   if (!url) return false;

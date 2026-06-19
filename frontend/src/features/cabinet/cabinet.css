@@ -1,3 +1,161 @@
+/* ─── Pick·위시 카드 그리드 ─── */
+.wf-cabinet-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 4px;
+}
+
+@media (min-width: 600px) {
+  .wf-cabinet-pick-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .wf-cabinet-pick-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ─── Pick 카드 (세로 카드 스타일) ─── */
+.wf-cabinet-pick-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface-2);
+  overflow: hidden;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wf-cabinet-pick-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(213, 173, 69, 0.35);
+  box-shadow: var(--wf-shadow-md);
+}
+
+.wf-cabinet-pick-card--accent {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-cabinet-pick-card__thumb-link {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--wf-surface);
+}
+
+.wf-cabinet-pick-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.15s, transform 0.2s;
+}
+
+.wf-cabinet-pick-card__thumb-link:hover .wf-cabinet-pick-card__thumb {
+  opacity: 0.88;
+  transform: scale(1.03);
+}
+
+.wf-cabinet-pick-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 10px 6px;
+  flex: 1;
+}
+
+.wf-cabinet-pick-card__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--wf-text);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.wf-cabinet-pick-card__title:hover {
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-pick-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.wf-cabinet-pick-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.wf-cabinet-pick-card__badge--type {
+  background: rgba(240, 202, 104, 0.12);
+  border: 1px solid rgba(240, 202, 104, 0.4);
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-pick-card__badge--abv {
+  background: rgba(100, 116, 139, 0.08);
+  border: 1px solid var(--wf-border);
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-pick-card__footer {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--wf-border-subtle);
+}
+
+.wf-cabinet-pick-card__detail-btn,
+.wf-cabinet-pick-card__remove-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-pick-card__detail-btn {
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-pick-card__detail-btn:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+}
+
+.wf-cabinet-pick-card__remove-btn {
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-pick-card__remove-btn:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
+}
+
 /* --- CabinetPage 위시 탭 레이아웃 --- */
 .wf-cabinet-subtabs-row {
   display: flex;
@@ -5,6 +163,11 @@
   justify-content: space-between;
   gap: 14px;
   margin: 18px 0 14px;
+}
+
+.wf-cabinet-subtabs-row--write-only {
+  justify-content: flex-end;
+  margin: 0 0 6px;
 }
 
 .wf-cabinet-wish-layout {
@@ -20,8 +183,9 @@
   flex-shrink: 0;
   padding: 14px;
   align-self: flex-start;
-  border-color: var(--wf-border);
-  background: var(--wf-surface-2);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--wf-radius-card);
+  background: #f8fafc;
 }
 
 .wf-cabinet-wish-folders__header {
@@ -40,11 +204,11 @@
 .wf-cabinet-wish-folder-input {
   flex: 1;
   min-width: 0;
-  background: var(--wf-surface);
-  border: 1px solid var(--wf-border);
+  background: #fff;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 6px 10px;
-  color: var(--wf-text);
+  color: #1e293b;
   font: inherit;
   font-size: 13px;
   outline: none;
@@ -56,22 +220,24 @@
 }
 
 .wf-cabinet-wish-folder-add-btn {
-  background: var(--wf-accent);
+  background: #f0ca68;
   border: none;
   border-radius: 8px;
   padding: 6px 10px;
-  color: #0c0c0f;
+  color: #1a1303;
   font: inherit;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 4px rgba(240, 202, 104, 0.35);
 }
 
 .wf-cabinet-wish-folder-add-btn:hover {
-  background: var(--wf-accent-light);
+  background: #f7d989;
+  box-shadow: 0 2px 6px rgba(240, 202, 104, 0.45);
 }
 
 .wf-cabinet-wish-folder-item {
@@ -79,26 +245,25 @@
   justify-content: space-between;
   align-items: center;
   min-height: 36px;
-  padding: 6px 7px;
+  padding: 5px 7px;
   border: 1px solid transparent;
   border-radius: 10px;
   cursor: grab;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .wf-cabinet-wish-folder-item:hover {
-  border-color: var(--wf-border);
-  background: var(--wf-surface-2);
-  transform: translateY(-1px);
+  border-color: #e2e8f0;
+  background: #fff;
 }
 
 .wf-cabinet-wish-folder-item--drag-over {
-  background: rgba(213, 173, 69, 0.1);
+  background: rgba(213, 173, 69, 0.08);
   border-color: var(--wf-accent);
 }
 
 .wf-cabinet-wish-folder-handle {
-  color: var(--wf-muted);
+  color: #94a3b8;
   font-size: 12px;
   margin-right: 4px;
   cursor: grab;
@@ -108,7 +273,7 @@
 .wf-cabinet-wish-folder-btn {
   background: none;
   border: none;
-  color: var(--wf-text);
+  color: #334155;
   cursor: pointer;
   font: inherit;
   font-size: 13px;
@@ -123,7 +288,7 @@
 }
 
 .wf-cabinet-wish-folder-btn:hover {
-  color: var(--wf-text);
+  color: #0f172a;
 }
 
 .wf-cabinet-wish-content {
@@ -135,18 +300,18 @@
   display: grid;
   gap: 8px;
   padding: 14px;
-  border: 1px solid var(--wf-border);
+  border: 1px dashed #cbd5e1;
   border-radius: var(--wf-radius-card);
-  background: var(--wf-surface-2);
+  background: #f8fafc;
 }
 
 .wf-cabinet-wish-folder-empty strong {
-  color: var(--wf-text);
+  color: #334155;
   font-size: 13px;
 }
 
 .wf-cabinet-wish-folder-empty span {
-  color: var(--wf-muted);
+  color: #64748b;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -154,10 +319,10 @@
 .wf-cabinet-wish-folder-empty button {
   width: 100%;
   margin-top: 4px;
-  border: 1px solid rgba(240, 202, 104, 0.58);
+  border: 1px solid rgba(213, 173, 69, 0.5);
   border-radius: 10px;
-  background: rgba(240, 202, 104, 0.14);
-  color: var(--wf-accent-light);
+  background: rgba(213, 173, 69, 0.1);
+  color: #92600a;
   cursor: pointer;
   font: inherit;
   font-size: 12px;
@@ -166,7 +331,7 @@
 }
 
 .wf-cabinet-wish-folder-empty button:hover {
-  background: rgba(240, 202, 104, 0.2);
+  background: rgba(213, 173, 69, 0.2);
 }
 
 .wf-cabinet-wish-empty {
@@ -177,23 +342,23 @@
   gap: 10px;
   min-height: 200px;
   padding: 32px 24px;
-  border: 1px solid var(--wf-border);
+  border: 1px solid #e2e8f0;
   border-radius: 18px;
-  background: var(--wf-surface-2);
-  color: var(--wf-muted);
+  background: #f8fafc;
+  color: #64748b;
   font-size: 15px;
   text-align: center;
 }
 
 .wf-cabinet-wish-empty__title {
-  color: var(--wf-text);
+  color: #1e293b;
   font-size: 18px;
   line-height: 1.35;
 }
 
 .wf-cabinet-wish-empty__text {
   max-width: 360px;
-  color: var(--wf-muted);
+  color: #64748b;
   font-size: 14px;
   line-height: 1.65;
 }
@@ -205,23 +370,300 @@
   min-height: 40px;
   margin-top: 4px;
   padding: 0 18px;
-  border: 1px solid rgba(240, 202, 104, 0.58);
+  border: 1px solid rgba(213, 173, 69, 0.6);
   border-radius: 999px;
-  background: rgba(240, 202, 104, 0.14);
-  color: var(--wf-accent-light);
+  background: rgba(213, 173, 69, 0.1);
+  color: #92600a;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
 }
 
 .wf-cabinet-wish-empty__link:hover {
-  background: rgba(240, 202, 104, 0.22);
+  background: rgba(213, 173, 69, 0.2);
 }
 
 .wf-cabinet-wish-empty--loading {
   opacity: 0.86;
 }
 
+/* ═══════════════════════════════════════
+   리뷰 카드 v2  (Letterboxd / Goodreads 스타일)
+   ─ 흰 카드 + 왼쪽 골드 액센트 바 + 인용구 형식 본문
+   ═══════════════════════════════════════ */
+.wf-review-card-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+  /* wf-box 기본 border/shadow 오버라이드 */
+  background: var(--wf-surface) !important;
+  border: 1px solid var(--wf-border-subtle) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07) !important;
+  transition: box-shadow 0.2s ease, transform 0.18s ease;
+}
+
+/* 왼쪽 액센트 바 — 선명한 앰버·오렌지 */
+.wf-review-card-v2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #fbbf24 0%, #f97316 100%);
+  border-radius: inherit 0 0 inherit;
+}
+
+.wf-review-card-v2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11) !important;
+}
+
+/* 헤더 */
+.wf-review-card-v2__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 12px 22px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-review-card-v2__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wf-text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 별점 + 점수 + 배지 라인 */
+.wf-review-card-v2__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px 10px 22px;
+}
+
+.wf-review-card-v2__stars {
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #f59e0b;
+  line-height: 1;
+}
+
+.wf-review-card-v2__rating {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  background: #f97316;
+  padding: 3px 9px;
+  border-radius: 7px;
+  line-height: 1.4;
+}
+
+.wf-review-card-v2__badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* 리뷰 본문 — 인용구 스타일 */
+.wf-review-card-v2__body {
+  margin: 0 18px 16px 22px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--wf-accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--wf-accent-subtle);
+  color: #444;
+  font-size: 14px;
+  line-height: 1.78;
+  white-space: pre-wrap;
+}
+
+
+/* ═══════════════════════════════════════
+   노트 카드 v2  (Notion / Apple Notes 스타일)
+   ─ 흰 카드 + 상단 골드 그라디언트 바 + 해시태그 칩
+   ═══════════════════════════════════════ */
+.wf-note-card-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: var(--wf-surface) !important;
+  border: 1px solid var(--wf-border-subtle) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07) !important;
+  transition: box-shadow 0.2s ease, transform 0.18s ease;
+}
+
+/* 상단 밝은 노란색 바 */
+.wf-note-card-v2::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, #fde047 0%, #f59e0b 100%);
+  flex-shrink: 0;
+}
+
+.wf-note-card-v2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11) !important;
+}
+
+/* 헤더 */
+.wf-note-card-v2__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px 12px 18px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-note-card-v2__head-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-note-card-v2__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wf-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-note-card-v2__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wf-note-card-v2__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(31, 157, 87, 0.1);
+  border: 1px solid rgba(31, 157, 87, 0.25);
+  color: var(--wf-success);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.wf-note-card-v2__status--draft {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.25);
+  color: #c47d0a;
+}
+
+.wf-note-card-v2__date {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+/* 메모 본문 */
+.wf-note-card-v2__body {
+  margin: 0;
+  padding: 14px 18px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.78;
+  white-space: pre-wrap;
+  border-bottom: 1px solid var(--wf-border-subtle);
+  /* 접혀 있을 때 최대 4줄 미리보기 */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 자세히 열린 경우 클램프 해제 */
+.wf-note-card-v2--open .wf-note-card-v2__body {
+  display: block;
+  overflow: visible;
+}
+
+/* 푸터: 태그 + 버튼 */
+.wf-note-card-v2__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 18px;
+}
+
+.wf-note-card-v2__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 해시태그 칩 */
+.wf-note-card-v2__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wf-note-card-v2__tag::before {
+  content: '#';
+  opacity: 0.55;
+  margin-right: 2px;
+  font-weight: 700;
+}
+
+.wf-note-card-v2__tag--more {
+  background: var(--wf-surface-2);
+  color: var(--wf-muted);
+}
+
+.wf-note-card-v2__tag--more::before {
+  display: none;
+}
+
+.wf-note-card-v2__no-tags {
+  font-size: 12px;
+  color: var(--wf-muted);
+  padding: 3px 0;
+}
+
+/* ─── 리뷰 카드 수정 폼 ─── */
 .wf-review-card__edit {
   display: grid;
   gap: 12px;
@@ -380,39 +822,80 @@
 }
 
 .wf-cabinet-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 10px;
-  padding: 10px;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
   margin-bottom: 16px;
-  border-color: var(--wf-border);
+  border: 1px solid var(--wf-border);
+  border-radius: 14px;
+  background: var(--wf-surface);
+  overflow: hidden;
+}
+
+.wf-cabinet-stats__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 14px 8px;
+  position: relative;
+  transition: background 0.15s;
+}
+
+.wf-cabinet-stats__item + .wf-cabinet-stats__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--wf-border);
+}
+
+.wf-cabinet-stats__item:hover {
   background: var(--wf-surface-2);
 }
 
-.wf-cabinet-stats span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid var(--wf-border);
-  border-radius: 12px;
-  background: var(--wf-surface);
-  font-size: 14px;
-  font-weight: 850;
+.wf-cabinet-stats__item--clickable {
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
-.wf-cabinet-stats__pick {
-  color: var(--wf-accent);
+.wf-cabinet-stats__item--clickable:hover {
+  background: var(--wf-accent-subtle);
 }
 
-.wf-cabinet-stats__wish {
-  color: #e85d5d;
+.wf-cabinet-stats__item--on {
+  background: var(--wf-accent-subtle);
+  box-shadow: inset 0 -3px 0 var(--wf-accent);
 }
 
-.wf-cabinet-stats__hint {
+.wf-cabinet-stats__item--on .wf-cabinet-stats__num,
+.wf-cabinet-stats__item--on .wf-cabinet-stats__label {
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-stats__num {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--wf-text);
+}
+
+.wf-cabinet-stats__label {
+  font-size: 11px;
+  font-weight: 700;
   color: var(--wf-muted);
-  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
+
+.wf-cabinet-stats__item--pick .wf-cabinet-stats__num { color: var(--wf-accent); }
+.wf-cabinet-stats__item--wish .wf-cabinet-stats__num { color: #e85d5d; }
 
 .wf-cabinet-sub {
   display: flex;
@@ -575,6 +1058,60 @@
   line-height: 1.65;
 }
 
+/* ─── 캐비넷 카드 액션 버튼 (상세/수정/삭제/자세히) ───
+   wf-btn--primary와 동일한 톤: 흰 배경 + 테두리로 카드(회색) 배경과 구분.
+   hover 시에만 의미별 색상이 들어옴 */
+.wf-cabinet-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* 상세 · 자세히 — accent(골드) hover */
+.wf-cabinet-action-btn--detail:hover,
+.wf-cabinet-action-btn--neutral:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+}
+
+/* 수정 — 블루 hover (상세/삭제와 구분) */
+.wf-cabinet-action-btn--edit:hover {
+  border-color: #4f8ef0;
+  color: #4f8ef0;
+}
+
+/* 삭제 — danger(레드) hover */
+.wf-cabinet-action-btn--delete:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
+}
+
+.wf-cabinet-post__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 18px 16px 22px;
+  border-top: 1px solid var(--wf-border-subtle);
+}
+
 .wf-cabinet-state {
   display: flex;
   align-items: center;
@@ -627,10 +1164,144 @@
   }
 }
 
+/* ─── 리뷰 카드 헤더: whiskey.css 의존성 제거 (새로고침 버그 방지) ─── */
+.wf-review-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* ─── CabinetPagination ─── */
+.wf-cabinet-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 20px 0 4px;
+}
+
+.wf-cabinet-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  line-height: 1;
+}
+
+.wf-cabinet-pagination__btn:hover:not(:disabled) {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-cabinet-pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.wf-cabinet-pagination__page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-pagination__page:hover:not(:disabled) {
+  border-color: rgba(240, 202, 104, 0.4);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-cabinet-pagination__page--on {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle);
+  color: var(--wf-accent-dark);
+  font-weight: 900;
+  cursor: default;
+}
+
+.wf-cabinet-pagination__page:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.wf-cabinet-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 34px;
+  color: var(--wf-muted);
+  font-size: 14px;
+  user-select: none;
+}
+
 /* ─── Phase 7: CabinetProfileHeader ─── */
 .wf-cabinet-profile__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .wf-cabinet-profile__name { font-size: 28px; margin: 0; line-height: 1.2; }
 .wf-cabinet-follow-btn { margin-top: 8px; height: 40px; width: 96px; }
+
+/* 팔로워·팔로잉 분리 통계 */
+.wf-cabinet-follow-stats {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.wf-cabinet-follow-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  padding: 10px 14px;
+  border: 1px solid rgba(240, 202, 104, 0.18);
+  border-radius: 14px;
+  background: rgba(240, 202, 104, 0.055);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-follow-stat:hover {
+  border-color: rgba(240, 202, 104, 0.45);
+  background: rgba(240, 202, 104, 0.1);
+}
+
+.wf-cabinet-follow-stat__num {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--wf-accent-light);
+  line-height: 1.1;
+}
+
+.wf-cabinet-follow-stat__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wf-muted);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
 
 /* ─── Phase 7: CabinetPickItem ─── */
 .wf-cabinet-pick__thumb-link { flex-shrink: 0; display: block; }
@@ -648,10 +1319,12 @@
   padding: 6px 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
+  background: var(--wf-surface);
   color: var(--wf-muted);
   font-size: 13px;
   text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 .wf-cabinet-pick__detail-btn:hover { border-color: var(--wf-accent); color: var(--wf-accent); }
@@ -659,26 +1332,225 @@
   padding: 6px 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: none;
+  background: var(--wf-surface);
   color: var(--wf-muted);
   font-size: 13px;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 .wf-cabinet-pick__remove-btn:hover { border-color: var(--wf-danger); color: var(--wf-danger); }
 
-/* ─── Phase 7: CabinetFollowPage ─── */
-.wf-cabinet-follow {
-  padding: 16px;
-  margin-top: 12px;
-  text-decoration: none;
+/* 위스키 타입·도수 분리 표시 */
+.wf-cabinet-pick__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.wf-cabinet-pick__type {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 2px 9px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.wf-cabinet-pick__abv {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wf-text);
+  padding-left: 2px;
+}
+
+.wf-cabinet-pick__abv-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--wf-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ─── 팔로우 페이지 공통 ─── */
+.wf-follow-page-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 16px;
 }
-.wf-cabinet-follow__avatar { width: 48px; height: 48px; overflow: hidden; flex-shrink: 0; border-radius: 50%; }
-.wf-cabinet-follow__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.wf-follow-back-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.wf-follow-back-btn:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-follow-page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--wf-text);
+}
+
+.wf-follow-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--wf-surface-2);
+}
+
+.wf-follow-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.wf-follow-tab:hover {
+  background: var(--wf-surface);
+  color: var(--wf-text);
+}
+
+.wf-follow-tab--on {
+  background: var(--wf-accent-subtle);
+  color: var(--wf-accent-dark);
+  box-shadow: inset 0 -2px 0 var(--wf-accent);
+}
+
+.wf-follow-tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--wf-border);
+  color: var(--wf-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.wf-follow-tab--on .wf-follow-tab__count {
+  background: rgba(213, 173, 69, 0.25);
+  color: var(--wf-accent-dark);
+}
+
+.wf-follow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 유저 카드 */
+.wf-follow-user-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface-2);
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.wf-follow-user-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.35);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-follow-user-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--wf-border);
+}
+
+.wf-follow-user-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.wf-follow-user-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-follow-user-card__name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--wf-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wf-follow-user-card__label {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+.wf-follow-user-card__arrow {
+  font-size: 20px;
+  color: var(--wf-muted);
+  flex-shrink: 0;
+  line-height: 1;
+}
 
 /* ─── Phase 8: WishFolderModal folder buttons ─── */
 .wf-wish-folder-opt {

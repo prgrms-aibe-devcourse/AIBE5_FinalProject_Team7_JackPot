@@ -26,6 +26,10 @@ public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> 
     @EntityGraph(attributePaths = {"whiskey", "noteTags", "noteTags.tag"})
     Page<TastingNote> findByUserIdOrderByUpdatedAtDesc(Long userId, Pageable pageable);
 
+    // 타인 공개 노트 목록 조회 (isDraft=false만)
+    @EntityGraph(attributePaths = {"whiskey", "noteTags", "noteTags.tag"})
+    Page<TastingNote> findByUserIdAndIsDraftFalseOrderByUpdatedAtDesc(Long userId, Pageable pageable);
+
     //캐비넷 노트 수 집계용
     Long countByUserId(Long userId);
 }
