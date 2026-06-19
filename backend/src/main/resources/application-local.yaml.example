@@ -1,65 +1,31 @@
 # =====================================================
-# [로컬 설정 예시 파일] application-local.yaml.example
-# - 이 파일은 GitHub에 올라가는 예시용 파일입니다.
-# - 실제 사용 시 이 파일을 복사해서 application-local.yaml 로 이름을 바꾸고
-#   본인 환경에 맞게 값을 채워 넣으세요.
-#
-# 사용 방법:
-#   1. 이 파일을 복사: cp application-local.yaml.example application-local.yaml
-#   2. application-local.yaml 에 실제 값 입력
-#   3. application-local.yaml 은 절대 커밋하지 말 것 (gitignore 처리됨)
+# [로컬 설정 예시] application-local.yaml.example
+# cp application-local.yaml.example application-local.yaml
+# application-local.yaml 은 gitignore — 커밋 금지
 # =====================================================
 
 spring:
-
-  # --------------------------------------------------
-  # 데이터베이스 연결 설정 (로컬 MySQL 기준)
-  # --------------------------------------------------
-  datasource:
-    url: jdbc:mysql://localhost:3306/whiskeynote?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: your_mysql_username   # 본인 MySQL 계정으로 변경
-    password: your_mysql_password   # 본인 MySQL 비밀번호로 변경
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  # --------------------------------------------------
-  # JPA 로컬 전용 설정
-  # --------------------------------------------------
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  # Flyway (local) — 기본적으로 비활성 (운영 마이그레이션은 prod에서만 사용)
   flyway:
     enabled: false
 
-  # H2 로컬(mem) 사용 시 — data.sql 시드 후 위스키 S3 image_url 패치
-  # sql:
-  #   init:
-  #     mode: always
-  #     data-locations: classpath:data.sql,classpath:local-whiskey-image-patch.sql
+  datasource:
+    # docker compose mysql (호스트 3307) — RDS 시드 deploy/seed-local.sh 와 함께 사용
+    url: jdbc:mysql://127.0.0.1:3307/whiskeynote?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: localroot
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-# --------------------------------------------------
-# Anthropic Claude API 키 (AI 테이스팅 노트 분석)
-# 각자 anthropic api key를 발급 후 (발급 주소 : https://console.anthropic.com)
-# 아래 코드를 복사 후 application-local.yaml에 추가
-#
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  sql:
+    init:
+      mode: never
+
+# Anthropic / OAuth / JWT 등은 필요 시 아래에 추가 (AI_TASTING_NOTE_SETUP.md 참고)
 # anthropic:
 #   api-key: your_anthropic_api_key
-# --------------------------------------------------
-# kakao:
-#   api-key: your_kakao_api_key
-#
-# jwt:
-#   secret: your_jwt_secret_key
-# 
-# oauth:
-#   google:
-#     client-id: your_google_client_id
-#     redirect-uri: http://localhost:3000/oauth/google/callback
-#   kakao:
-#     client-id: your_kakao_client_id
-#     redirect-uri: http://localhost:3000/oauth/kakao/callback
-#   naver:
-#     client-id: your_naver_client_id
-#     redirect-uri: http://localhost:3000/oauth/naver/callback
-# --------------------------------------------------
