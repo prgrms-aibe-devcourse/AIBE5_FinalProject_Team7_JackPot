@@ -66,6 +66,10 @@ public class Users {
     @Column(name = "profile_image_url", length = 255)
     private String profileImageUrl;
 
+    // 프로필 소개
+    @Column(columnDefinition = "TEXT")
+    private String introduction;
+
     // 권한: user / admin / pro
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
@@ -129,6 +133,11 @@ public class Users {
     // USER-02: 프로필 이미지 (S3 object key)
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    // USER-02: 프로필 소개
+    public void updateIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
     public void updatePasswordHash(String passwordHash) {

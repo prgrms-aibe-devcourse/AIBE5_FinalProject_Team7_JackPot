@@ -21,4 +21,7 @@ public class UpdateUserMeRequest {
      */
     @Size(max = 255, message = "프로필 이미지 경로가 너무 깁니다.")
     private String profileImageUrl;
+
+    @Size(max = 500, message = "소개는 500자 이하여야 합니다.")
+    private String introduction;
 }

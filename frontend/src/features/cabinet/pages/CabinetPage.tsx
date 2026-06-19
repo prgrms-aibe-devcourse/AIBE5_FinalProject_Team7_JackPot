@@ -1,25 +1,50 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PATHS, type CabinetSection, type CabinetTab } from '@/app/router/paths';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { userApi } from '@/features/my-page/api/userApi';
 import { CabinetPickItem } from '@/features/cabinet/components/CabinetPickItem';
 import { CabinetPagination } from '@/features/cabinet/components/CabinetPagination';
-import { CabinetPrimaryTabs } from '@/features/cabinet/components/CabinetPrimaryTabs';
 import { CabinetProfileHeader } from '@/features/cabinet/components/CabinetProfileHeader';
 import { CabinetStatsBar } from '@/features/cabinet/components/CabinetStatsBar';
 import { CabinetCommunitySection } from '@/features/cabinet/components/CabinetCommunitySection';
+import { CabinetFeedEmpty, CabinetFeedLoading, CabinetFeedToolbar } from '@/features/cabinet/components/CabinetFeedParts';
+import { CabinetNoteExpandDetail } from '@/features/cabinet/components/CabinetNoteExpandDetail';
+import { CabinetWishFolderList, type WishFolderSummary } from '@/features/cabinet/components/CabinetWishFolderList';
 import { StarRatingInput } from '@/features/review/components/StarRatingInput';
 import { useDeleteReview, useMyReviews, useUpdateReview } from '@/features/review/hooks/useReviews';
-import { fetchMyTastingNotes, type MyTastingNote, type TastingNoteTag } from '@/features/tasting-note/api/noteApi';
+import { fetchMyTastingNotes, type MyTastingNote } from '@/features/tasting-note/api/noteApi';
 import type { WhiskeyReview } from '@/features/whiskey/types';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
-import { Button } from '@/shared/components/ui/Button';
+import { PROFILE_UPDATED_EVENT } from '@/shared/components/layout/TopNav';
 import { toast } from '@/shared/components/ui/Toast';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import type { CabinetStatsResponse, WishlistFolder, WishlistItem } from '@/features/cabinet/api/cabinetApi';
 import '../cabinet.css';
 import '@/features/whiskey/whiskey.css';
+import '@/features/search/search.css';
+
+function buildFolderSummary(items: WishlistItem[]): WishFolderSummary {
+  return {
+    count: items.length,
+    thumbnails: items.slice(0, 3).map((item) => item.whiskey.imageUrl),
+  };
+}
+
+async function fetchFolderSummaries(folders: WishlistFolder[]) {
+  const summaries: Record<number, WishFolderSummary> = {};
+  let total = 0;
+
+  for (const folder of folders) {
+    const itemRes = await cabinetApi.getWishItems(folder.folderId);
+    const items: WishlistItem[] = itemRes.data.data ?? [];
+    summaries[folder.folderId] = buildFolderSummary(items);
+    total += items.length;
+  }
+
+  return { summaries, total };
+}
 
 // Pick API 응답 타입
 interface PickItem {
@@ -60,143 +85,8 @@ function getCurrentProfileImageUrl(): string | null {
   return value.trim() ? value : null;
 }
 
-const CHART_SIZE = 220;
-const CHART_CENTER = CHART_SIZE / 2;
-const CHART_RADIUS = 70;
-const GRID_LEVELS = [0.25, 0.5, 0.75, 1];
-const SCORE_MAX = 10;
-
-type NoteTagFilter = 'nose' | 'taste';
-
-function axisPoint(index: number, total: number, ratio: number) {
-  const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
-  return {
-    x: CHART_CENTER + Math.cos(angle) * CHART_RADIUS * ratio,
-    y: CHART_CENTER + Math.sin(angle) * CHART_RADIUS * ratio,
-  };
-}
-
-function pointsToString(points: { x: number; y: number }[]) {
-  return points.map((point) => `${point.x},${point.y}`).join(' ');
-}
-
-function normalizeScore(score: number | null) {
-  if (score == null) return 0;
-  return Math.min(Math.max(score, 0), SCORE_MAX);
-}
-
-function buildNoteAxes(note: MyTastingNote) {
-  return [
-    { key: 'body', label: '바디', score: normalizeScore(note.bodyScore) },
-    { key: 'finish', label: '피니시', score: normalizeScore(note.finishScore) },
-    { key: 'smoky', label: '스모키', score: normalizeScore(note.smokyScore) },
-    { key: 'spicy', label: '스파이시', score: normalizeScore(note.spicyScore) },
-    { key: 'sweet', label: '단맛', score: normalizeScore(note.sweetScore) },
-  ];
-}
-
-function noteTagCategoryLabel(category: NoteTagFilter) {
-  return category === 'nose' ? '향 태그' : '맛 태그';
-}
-
-function CabinetNoteRadar({ note }: { note: MyTastingNote }) {
-  const axes = buildNoteAxes(note);
-
-  return (
-    <svg className="wf-attached-note__radar" viewBox={`0 0 ${CHART_SIZE} ${CHART_SIZE}`} role="img" aria-label="시음 노트 점수 그래프">
-      {GRID_LEVELS.map((level) => (
-        <polygon
-          key={level}
-          points={pointsToString(axes.map((_, index) => axisPoint(index, axes.length, level)))}
-          className="wf-attached-note__radar-grid"
-        />
-      ))}
-      {axes.map((_, index) => {
-        const end = axisPoint(index, axes.length, 1);
-        return (
-          <line
-            key={index}
-            x1={CHART_CENTER}
-            y1={CHART_CENTER}
-            x2={end.x}
-            y2={end.y}
-            className="wf-attached-note__radar-axis"
-          />
-        );
-      })}
-      <polygon
-        points={pointsToString(axes.map((axis, index) => axisPoint(index, axes.length, axis.score / SCORE_MAX)))}
-        className="wf-attached-note__radar-fill"
-      />
-      {axes.map((axis, index) => {
-        const labelPoint = axisPoint(index, axes.length, 1.28);
-        return (
-          <g key={axis.key}>
-            <text x={labelPoint.x} y={labelPoint.y} textAnchor="middle" dominantBaseline="middle" className="wf-attached-note__radar-label">
-              {axis.label}
-            </text>
-            <text x={labelPoint.x} y={labelPoint.y + 14} textAnchor="middle" dominantBaseline="middle" className="wf-attached-note__radar-score">
-              {axis.score}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-function CabinetNoteTags({ tags }: { tags: TastingNoteTag[] }) {
-  const [filter, setFilter] = useState<NoteTagFilter>('nose');
-  const filteredTags = useMemo(
-    () => tags.filter((tag) => tag.category === filter),
-    [filter, tags],
-  );
-
-  return (
-    <div className="wf-attached-note__tags">
-      <div className="wf-attached-note__tag-tabs" role="group" aria-label="시음 노트 태그 종류">
-        {(['nose', 'taste'] as const).map((category) => (
-          <button
-            key={category}
-            type="button"
-            data-category={category}
-            className={`wf-attached-note__tag-tab${filter === category ? ' wf-attached-note__tag-tab--on' : ''}`}
-            onClick={() => setFilter(category)}
-          >
-            {noteTagCategoryLabel(category)}
-          </button>
-        ))}
-      </div>
-      {filteredTags.length ? (
-        <div className={`wf-attached-note__tag-list wf-attached-note__tag-list--${filter}`}>
-          {filteredTags.map((tag) => (
-            <span key={tag.id} className="wf-attached-note__tag-chip">
-              {tag.name}
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="wf-text-sm wf-attached-note__empty">{noteTagCategoryLabel(filter)}가 없습니다.</p>
-      )}
-    </div>
-  );
-}
-
-function CabinetNoteDetail({ note }: { note: MyTastingNote }) {
-  return (
-    <section className="wf-attached-note wf-box" aria-label="내 시음 노트 상세">
-      <div className="wf-attached-note__body">
-        <CabinetNoteRadar note={note} />
-        <div className="wf-attached-note__content">
-          <p className="wf-text-label">작성한 한줄평</p>
-          <p className="wf-text-sm wf-attached-note__memo">
-            {note.memo || '작성된 메모가 없습니다.'}
-          </p>
-          <CabinetNoteTags tags={note.tags ?? []} />
-        </div>
-      </div>
-    </section>
-  );
+function getCurrentIntroduction(): string {
+  return localStorage.getItem('profileIntroduction') || '';
 }
 
 function MyNoteItem({ note }: { note: MyTastingNote }) {
@@ -206,57 +96,38 @@ function MyNoteItem({ note }: { note: MyTastingNote }) {
   const tagPreview = note.tags?.slice(0, 4) ?? [];
 
   return (
-    <article className={`wf-note-card-v2 wf-box${isOpen ? ' wf-note-card-v2--open' : ''}`}>
-      {/* 헤더 */}
-      <div className="wf-note-card-v2__head">
-        <div className="wf-note-card-v2__head-body">
-          <h3 className="wf-note-card-v2__title">{note.whiskeyName}</h3>
-          <div className="wf-note-card-v2__meta">
-            <span className={`wf-note-card-v2__status${isDraft ? ' wf-note-card-v2__status--draft' : ''}`}>
-              {isDraft ? '임시저장' : '✓ 작성 완료'}
+    <li className={`wf-cabinet-feed__item${isOpen ? ' wf-cabinet-feed__item--open' : ''}`}>
+      <div className="wf-cabinet-feed__head">
+        <strong className="wf-cabinet-feed__title">{note.whiskeyName}</strong>
+        <span className={`wf-cabinet-feed__badge${isDraft ? ' wf-cabinet-feed__badge--draft' : ''}`}>
+          {isDraft ? '임시저장' : '작성 완료'}
+        </span>
+      </div>
+      <p className="wf-cabinet-feed__meta">{note.updatedAt?.slice(0, 10) ?? '-'}</p>
+      <p className="wf-cabinet-feed__text">{note.memo || '작성된 메모가 없습니다.'}</p>
+
+      {!isOpen && tagPreview.length > 0 ? (
+        <div className="wf-cabinet-feed__tags">
+          {tagPreview.map((tag) => (
+            <span key={tag.id} className="wf-cabinet-feed__tag">{tag.name}</span>
+          ))}
+          {note.tags && note.tags.length > tagPreview.length ? (
+            <span className="wf-cabinet-feed__tag wf-cabinet-feed__tag--more">
+              +{note.tags.length - tagPreview.length}
             </span>
-            <span className="wf-note-card-v2__date">
-              {note.updatedAt?.slice(0, 10) ?? '-'}
-            </span>
-          </div>
+          ) : null}
         </div>
-        <Link to={editPath} className="wf-cabinet-action-btn wf-cabinet-action-btn--edit">
-          수정
-        </Link>
+      ) : null}
+
+      <div className="wf-cabinet-feed__actions">
+        <Link to={editPath} className="wf-cabinet-feed__action">수정</Link>
+        <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsOpen((prev) => !prev)}>
+          {isOpen ? '접기' : '상세 보기'}
+        </button>
       </div>
 
-      {/* 메모 본문 */}
-      <p className="wf-note-card-v2__body">{note.memo || '작성된 메모가 없습니다.'}</p>
-
-      {/* 태그 + 자세히 버튼 */}
-      <footer className="wf-note-card-v2__footer">
-        <div className="wf-note-card-v2__tags">
-          {tagPreview.length > 0 ? (
-            <>
-              {tagPreview.map((tag) => (
-                <span key={tag.id} className="wf-note-card-v2__tag">{tag.name}</span>
-              ))}
-              {note.tags.length > tagPreview.length && (
-                <span className="wf-note-card-v2__tag wf-note-card-v2__tag--more">
-                  +{note.tags.length - tagPreview.length}
-                </span>
-              )}
-            </>
-          ) : (
-            <span className="wf-note-card-v2__no-tags">태그 없음</span>
-          )}
-        </div>
-        <button
-          type="button"
-          className="wf-cabinet-action-btn wf-cabinet-action-btn--neutral"
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          {isOpen ? '접기' : '상세'}
-        </button>
-      </footer>
-
-      {isOpen ? <CabinetNoteDetail note={note} /> : null}
-    </article>
+      {isOpen ? <CabinetNoteExpandDetail note={note} /> : null}
+    </li>
   );
 }
 
@@ -287,70 +158,69 @@ function MyReviewItem({
   };
 
   return (
-    <article className="wf-review-card-v2 wf-box">
-      {/* 헤더: 제목 + 상세 버튼 */}
-      <div className="wf-review-card-v2__head">
-        <h3 className="wf-review-card-v2__title">{whiskeyLabel}</h3>
-        {review.whiskeyId && (
+    <li className="wf-cabinet-feed__item">
+      <div className="wf-cabinet-feed__head">
+        {review.whiskeyId ? (
           <Link
             to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
-            className="wf-cabinet-action-btn wf-cabinet-action-btn--detail"
+            className="wf-cabinet-feed__title wf-cabinet-feed__title--link"
           >
-            상세
+            {whiskeyLabel}
           </Link>
+        ) : (
+          <strong className="wf-cabinet-feed__title">{whiskeyLabel}</strong>
         )}
-      </div>
-
-      {/* 메타: 별점 + 공개 배지 */}
-      <div className="wf-review-card-v2__meta">
-        <span className="wf-review-card-v2__stars">
-          {'★'.repeat(Math.round(Number(review.rating)))}{'☆'.repeat(5 - Math.round(Number(review.rating)))}
+        <span className="wf-cabinet-feed__rating" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
+          ★ {Number(review.rating).toFixed(1)}
         </span>
-        <span className="wf-review-card-v2__rating">{Number(review.rating).toFixed(1)}</span>
-        <span className="wf-review-card-v2__badge">공개 리뷰</span>
       </div>
 
       {isEditing ? (
-        <div className="wf-review-card__edit">
-          <div>
-            <p className="wf-text-label">별점</p>
-            <StarRatingInput value={rating} onChange={setRating} />
-            <p className="wf-review-card__rating-display">{rating}점</p>
-          </div>
+        <div className="wf-cabinet-feed__edit">
+          <StarRatingInput value={rating} onChange={setRating} />
+          <p className="wf-cabinet-feed__meta">{rating}점</p>
           <textarea
             className="wf-review-textarea"
             value={publicText}
             onChange={(event) => setPublicText(event.target.value)}
             rows={4}
           />
-          <div className="wf-review-card__actions">
-            <Button className="wf-review-card__action-button" onClick={handleUpdate} disabled={isBusy}>저장</Button>
-            <Button className="wf-review-card__action-button" variant="ghost" onClick={() => setIsEditing(false)}>취소</Button>
+          <div className="wf-cabinet-feed__actions">
+            <button type="button" className="wf-cabinet-feed__action wf-cabinet-feed__action--primary" onClick={handleUpdate} disabled={isBusy}>
+              저장
+            </button>
+            <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsEditing(false)}>
+              취소
+            </button>
           </div>
         </div>
       ) : (
         <>
-          <p className="wf-review-card-v2__body">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
-          <footer className="wf-cabinet-post__actions">
-            <button
-              type="button"
-              className="wf-cabinet-action-btn wf-cabinet-action-btn--edit"
-              onClick={() => setIsEditing(true)}
-            >
+          <p className="wf-cabinet-feed__text">{review.publicText || '작성된 리뷰 내용이 없습니다.'}</p>
+          <div className="wf-cabinet-feed__actions">
+            {review.whiskeyId ? (
+              <Link
+                to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(review.whiskeyId))}
+                className="wf-cabinet-feed__action"
+              >
+                위스키 보기
+              </Link>
+            ) : null}
+            <button type="button" className="wf-cabinet-feed__action" onClick={() => setIsEditing(true)}>
               수정
             </button>
             <button
               type="button"
-              className="wf-cabinet-action-btn wf-cabinet-action-btn--delete"
+              className="wf-cabinet-feed__action wf-cabinet-feed__action--danger"
               onClick={() => onDelete(review.id)}
               disabled={isBusy}
             >
               삭제
             </button>
-          </footer>
+          </div>
         </>
       )}
-    </article>
+    </li>
   );
 }
 
@@ -362,6 +232,30 @@ export default function CabinetPage() {
   const currentUserId = getCurrentUserId();
   const currentNickname = getCurrentNickname();
   const currentProfileImageUrl = getCurrentProfileImageUrl();
+  const [currentIntroduction, setCurrentIntroduction] = useState(getCurrentIntroduction);
+
+  useEffect(() => {
+    const refreshProfile = () => {
+      setCurrentIntroduction(getCurrentIntroduction());
+    };
+    window.addEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
+  }, []);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    userApi
+      .getMe()
+      .then((data) => {
+        if (data.introduction !== undefined) {
+          const intro = data.introduction ?? '';
+          localStorage.setItem('profileIntroduction', intro);
+          setCurrentIntroduction(intro);
+        }
+      })
+      .catch(() => {});
+  }, [currentUserId]);
 
   // Pick 목록 상태
   const [picks, setPicks] = useState<PickItem[]>([]);
@@ -428,17 +322,15 @@ export default function CabinetPage() {
   const [wishPage, setWishPage] = useState(0);
   const WISH_PAGE_SIZE = 12;
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
+  const [folderSummaries, setFolderSummaries] = useState<Record<number, WishFolderSummary>>({});
 
-  // 위시 총 개수 갱신 함수 (공통)
+  // 위시 총 개수·재생목록 미리보기 갱신
   const refreshTotalWishCount = async () => {
     try {
       const res = await cabinetApi.getWishFolders();
-      const folders = res.data.data ?? [];
-      let total = 0;
-      for (const folder of folders) {
-        const itemRes = await cabinetApi.getWishItems(folder.folderId);
-        total += (itemRes.data.data ?? []).length;
-      }
+      const folders: WishlistFolder[] = res.data.data ?? [];
+      const { summaries, total } = await fetchFolderSummaries(folders);
+      setFolderSummaries(summaries);
       setTotalWishCount(total);
       setCabinetStats((prev) => (prev ? { ...prev, wishCount: total } : prev));
     } catch {
@@ -461,16 +353,11 @@ export default function CabinetPage() {
       .then(async (res) => {
         const folders: WishlistFolder[] = res.data.data ?? [];
         setWishFolders(folders);
-        // 첫 폴더 자동 선택
         if (folders.length > 0 && selectedFolderId === null) {
           setSelectedFolderId(folders[0].folderId);
         }
-        // 위시 총 개수 계산 (모든 폴더 아이템 합산)
-        let total = 0;
-        for (const folder of folders) {
-          const itemRes = await cabinetApi.getWishItems(folder.folderId);
-          total += (itemRes.data.data ?? []).length;
-        }
+        const { summaries, total } = await fetchFolderSummaries(folders);
+        setFolderSummaries(summaries);
         setTotalWishCount(total);
       })
       .catch(() => toast('위시 폴더를 불러오지 못했습니다.', 'error'));
@@ -483,7 +370,14 @@ export default function CabinetPage() {
     setWishLoading(true);
     cabinetApi
       .getWishItems(selectedFolderId)
-      .then((res) => setWishItems(res.data.data ?? []))
+      .then((res) => {
+        const items: WishlistItem[] = res.data.data ?? [];
+        setWishItems(items);
+        setFolderSummaries((prev) => ({
+          ...prev,
+          [selectedFolderId]: buildFolderSummary(items),
+        }));
+      })
       .catch(() => toast('위시 목록을 불러오지 못했습니다.', 'error'))
       .finally(() => setWishLoading(false));
   }, [selectedFolderId]);
@@ -636,54 +530,51 @@ export default function CabinetPage() {
     <WireframePage scroll>
       <div className="wf-cabinet-page">
       <CabinetProfileHeader
-        name={currentNickname ? `${currentNickname} (my)` : '내 캐비넷'}
+        name={currentNickname || '내 캐비넷'}
+        subtitle={currentNickname ? '내 캐비넷' : undefined}
         profileImageUrl={currentProfileImageUrl}
+        introduction={currentIntroduction}
         followers={followerCount?.count ?? 0}
         following={followingCount?.count ?? 0}
         followersHref={`${PATHS.CABINET_FOLLOW}?tab=followers`}
         followingHref={`${PATHS.CABINET_FOLLOW}?tab=followings`}
         isOwner
+        section={section}
+        barHref={barHref}
+        communityHref={communityHref}
       />
 
-      <CabinetPrimaryTabs section={section} isOwner barHref={barHref} communityHref={communityHref} />
-
-      <p className="wf-text-sm wf-cabinet-hint" style={{ display: 'none' }}>
-        {section === 'bar'
-          ? '선택한 메뉴: Bar — Pick·위시·노트·리뷰'
-          : '선택한 메뉴: 커뮤니티 — 작성 글·리뷰·칼럼'}
-      </p>
-
       {section === 'bar' ? (
-        <CabinetStatsBar
-          pick={cabinetStats?.pickCount ?? picks.length}
-          wish={cabinetStats?.wishCount ?? totalWishCount}
-          reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
-          notes={cabinetStats?.noteCount ?? (myNotes?.content.length ?? 0)}
-          active={tab}
-          basePath={`${PATHS.CABINET}?section=bar`}
-        />
-      ) : null}
+        <div className="wf-cabinet-body">
+          <CabinetStatsBar
+            pick={cabinetStats?.pickCount ?? picks.length}
+            wish={cabinetStats?.wishCount ?? totalWishCount}
+            reviews={cabinetStats?.reviewCount ?? (myReviews?.content.length ?? 0)}
+            notes={cabinetStats?.noteCount ?? (myNotes?.content.length ?? 0)}
+            active={tab}
+            basePath={`${PATHS.CABINET}?section=bar`}
+          />
 
-      {section === 'bar' ? (
-        <>
-          {(tab === 'note' || tab === 'reviews') && (
-            <div className="wf-cabinet-subtabs-row wf-cabinet-subtabs-row--write-only">
-              {tab === 'note' && (
-                <Button to={PATHS.NOTE_PICK} size="sm">+ Note 작성</Button>
-              )}
-              {tab === 'reviews' && (
-                <Button to={PATHS.REVIEW_PICK} size="sm">+ 리뷰 작성</Button>
-              )}
-            </div>
-          )}
+          <section className={`wf-cabinet-panel${tab === 'pick' || tab === 'wish' ? ' wf-cabinet-panel--grid' : ' wf-cabinet-panel--feed'}`}>
+            {tab === 'reviews' ? (
+              <CabinetFeedToolbar>
+                <Link to={PATHS.REVIEW_PICK} className="wf-cabinet-feed-toolbar__link">+ 리뷰 작성</Link>
+              </CabinetFeedToolbar>
+            ) : null}
+            {tab === 'note' ? (
+              <CabinetFeedToolbar>
+                <Link to={PATHS.NOTE_PICK} className="wf-cabinet-feed-toolbar__link">+ Note 작성</Link>
+              </CabinetFeedToolbar>
+            ) : null}
           {tab === 'reviews' ? (
             <>
               {currentUserId == null ? (
-                <p className="wf-text-sm wf-cabinet-state">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+                <CabinetFeedLoading message="로그인 정보가 없습니다. 다시 로그인해주세요." />
               ) : reviewsLoading ? (
-                <p className="wf-text-sm wf-cabinet-state">내 리뷰를 불러오는 중입니다.</p>
+                <CabinetFeedLoading message="내 리뷰를 불러오는 중입니다." />
               ) : myReviews?.content.length ? (
                 <>
+                  <ul className="wf-cabinet-feed">
                   {myReviews.content.map((review) => (
                     <MyReviewItem
                       key={review.id}
@@ -693,6 +584,7 @@ export default function CabinetPage() {
                       isBusy={updateReviewMutation.isPending || deleteReviewMutation.isPending}
                     />
                   ))}
+                  </ul>
                   <CabinetPagination
                     page={reviewPage}
                     totalPages={myReviews.totalPages ?? 1}
@@ -701,18 +593,28 @@ export default function CabinetPage() {
                   />
                 </>
               ) : (
-                <p className="wf-text-sm wf-cabinet-state">아직 작성한 리뷰가 없습니다.</p>
+                <CabinetFeedEmpty
+                  title="아직 작성한 리뷰가 없습니다."
+                  meta="위스키 상세에서 한줄평을 남기면 여기에 모입니다."
+                  actionLabel="리뷰 작성하기"
+                  actionTo={PATHS.REVIEW_PICK}
+                />
               )}
             </>
           ) : tab === 'pick' ? (
             // Pick 탭 — API 데이터 렌더링 (백엔드 연동)
             picksLoading ? (
-              <p className="wf-text-sm wf-cabinet-state">픽 목록을 불러오는 중입니다...</p>
+              <CabinetFeedLoading message="픽 목록을 불러오는 중입니다..." />
             ) : picks.length === 0 ? (
-              <p className="wf-text-sm wf-cabinet-state">아직 픽한 위스키가 없습니다.</p>
+              <CabinetFeedEmpty
+                title="아직 픽한 위스키가 없습니다."
+                meta="검색에서 마음에 든 보틀을 Pick 해보세요."
+                actionLabel="위스키 검색하기"
+                actionTo={PATHS.SEARCH}
+              />
             ) : (
               <>
-                <div className="wf-cabinet-pick-grid">
+                <div className="wf-ig-grid">
                   {picks.map((pick) => (
                     <CabinetPickItem
                       key={pick.pickId}
@@ -735,111 +637,47 @@ export default function CabinetPage() {
           ) : tab === 'wish' ? (
             // 위시 탭 — 왼쪽 폴더(고정) + 오른쪽 아이템(고정)
             <div className="wf-cabinet-wish-layout">
+              <CabinetWishFolderList
+                folders={wishFolders}
+                summaries={folderSummaries}
+                selectedFolderId={selectedFolderId}
+                dragOverFolderId={dragOverFolderId}
+                showFolderInput={showFolderInput}
+                newFolderName={newFolderName}
+                onToggleFolderInput={() => setShowFolderInput((value) => !value)}
+                onNewFolderNameChange={setNewFolderName}
+                onCreateFolder={handleCreateFolder}
+                onSelectFolder={(folderId) => { setSelectedFolderId(folderId); setWishPage(0); }}
+                onDeleteFolder={handleDeleteFolder}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragLeave={() => setDragOverFolderId(null)}
+              />
 
-              {/* 왼쪽: 폴더 목록 — 너비 고정, 높이 독립 */}
-              <aside className="wf-box wf-cabinet-wish-folders">
-                <div className="wf-cabinet-wish-folders__header">
-                  <strong className="wf-text-sm">📁 플레이리스트</strong>
-                  <button type="button" className="wf-link wf-text-xs" onClick={() => setShowFolderInput((v) => !v)}>
-                    {showFolderInput ? '취소' : '+ 추가'}
-                  </button>
-                </div>
-
-                {/* 폴더 이름 입력 */}
-                {showFolderInput && (
-                  <div className="wf-cabinet-wish-folders__input-row">
-                    <input
-                      type="text"
-                      placeholder="폴더 이름"
-                      value={newFolderName}
-                      onChange={(e) => setNewFolderName(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
-                      autoFocus
-                      className="wf-cabinet-wish-folder-input"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCreateFolder}
-                      className="wf-cabinet-wish-folder-add-btn"
-                    >
-                      추가
-                    </button>
-                  </div>
-                )}
-
-                {/* 폴더 목록 */}
-                {wishFolders.length === 0 ? (
-                  <div className="wf-cabinet-wish-folder-empty">
-                    <strong>첫 폴더를 만들어보세요.</strong>
-                    <span>검색에서 저장한 위스키를 취향별로 모아둘 수 있어요.</span>
-                    <button type="button" onClick={() => setShowFolderInput(true)}>
-                      폴더 만들기
-                    </button>
-                  </div>
-                ) : (
-                  wishFolders.map((folder) => {
-                    const isActive = selectedFolderId === folder.folderId;
-                    const isDragOver = dragOverFolderId === folder.folderId;
-                    return (
-                      <div
-                        key={folder.folderId}
-                        draggable
-                        onDragStart={() => handleDragStart(folder.folderId)}
-                        onDragOver={(e) => handleDragOver(e, folder.folderId)}
-                        onDrop={() => handleDrop(folder.folderId)}
-                        onDragLeave={() => setDragOverFolderId(null)}
-                        className={`wf-cabinet-wish-folder-item${isDragOver ? ' wf-cabinet-wish-folder-item--drag-over' : ''}`}
-                      >
-                        <span className="wf-cabinet-wish-folder-handle">⠿</span>
-                        <button
-                          type="button"
-                          onClick={() => { setSelectedFolderId(folder.folderId); setWishPage(0); }}
-                          className={`wf-cabinet-wish-folder-btn${isActive ? ' wf-cabinet-wish-folder-btn--active' : ''}`}
-                        >
-                          {folder.name}
-                        </button>
-                        <button
-                          type="button"
-                          className="wf-link wf-text-xs wf-cabinet-wish-folder-del"
-                          onClick={() => handleDeleteFolder(folder.folderId)}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-              </aside>
-
-              {/* 오른쪽: 위시 아이템 — 나머지 공간 차지, 높이 독립 */}
               <div className="wf-cabinet-wish-content">
-                {selectedFolderId === null ? (
-                  <div className="wf-cabinet-wish-empty">
-                    <strong className="wf-cabinet-wish-empty__title">폴더를 선택해주세요.</strong>
-                    <span className="wf-cabinet-wish-empty__text">
-                      저장한 위스키는 폴더별로 정리해서 다시 볼 수 있어요.
-                    </span>
-                  </div>
+                {wishFolders.length === 0 ? (
+                  <CabinetFeedEmpty
+                    title="재생목록이 없습니다."
+                    meta="왼쪽에서 새 재생목록을 만든 뒤 위스키를 저장해보세요."
+                  />
+                ) : selectedFolderId === null ? (
+                  <CabinetFeedEmpty
+                    title="재생목록을 선택해주세요."
+                    meta="저장한 위스키는 재생목록별로 모아볼 수 있어요."
+                  />
                 ) : wishLoading ? (
-                  <div className="wf-cabinet-wish-empty wf-cabinet-wish-empty--loading">
-                    <strong className="wf-cabinet-wish-empty__title">불러오는 중...</strong>
-                    <span className="wf-cabinet-wish-empty__text">
-                      위시 폴더의 위스키를 확인하고 있어요.
-                    </span>
-                  </div>
+                  <CabinetFeedLoading message="위시 목록을 불러오는 중입니다." />
                 ) : wishItems.length === 0 ? (
-                  <div className="wf-cabinet-wish-empty">
-                    <strong className="wf-cabinet-wish-empty__title">아직 담긴 위스키가 없어요.</strong>
-                    <span className="wf-cabinet-wish-empty__text">
-                      검색 페이지에서 마음에 드는 위스키를 이 폴더에 저장해보세요.
-                    </span>
-                    <Link to={PATHS.SEARCH} className="wf-cabinet-wish-empty__link">
-                      위스키 검색하기
-                    </Link>
-                  </div>
+                  <CabinetFeedEmpty
+                    title="아직 담긴 위스키가 없어요."
+                    meta="검색에서 마음에 드는 위스키를 이 재생목록에 저장해보세요."
+                    actionLabel="위스키 검색하기"
+                    actionTo={PATHS.SEARCH}
+                  />
                 ) : (
                   <>
-                    <div className="wf-cabinet-pick-grid">
+                    <div className="wf-ig-grid">
                       {wishItems
                         .slice(wishPage * WISH_PAGE_SIZE, (wishPage + 1) * WISH_PAGE_SIZE)
                         .map((item) => (
@@ -865,12 +703,16 @@ export default function CabinetPage() {
           ) : tab === 'note' ? (
             <>
               {currentUserId == null ? (
-                <p className="wf-text-sm wf-cabinet-state">로그인 정보가 없습니다. 다시 로그인해주세요.</p>
+                <CabinetFeedLoading message="로그인 정보가 없습니다. 다시 로그인해주세요." />
               ) : notesLoading ? (
-                <p className="wf-text-sm wf-cabinet-state">내 시음 노트를 불러오는 중입니다.</p>
+                <CabinetFeedLoading message="내 시음 노트를 불러오는 중입니다." />
               ) : myNotes?.content.length ? (
                 <>
-                  {myNotes.content.map((note) => <MyNoteItem key={note.id} note={note} />)}
+                  <ul className="wf-cabinet-feed">
+                  {myNotes.content.map((note) => (
+                    <MyNoteItem key={note.id} note={note} />
+                  ))}
+                  </ul>
                   <CabinetPagination
                     page={notePage}
                     totalPages={myNotes.totalPages ?? 1}
@@ -879,13 +721,23 @@ export default function CabinetPage() {
                   />
                 </>
               ) : (
-                <p className="wf-text-sm wf-cabinet-state">아직 작성한 시음 노트가 없습니다.</p>
+                <CabinetFeedEmpty
+                  title="아직 작성한 시음 노트가 없습니다."
+                  meta="시음 후 노트를 작성하면 향·맛 태그와 함께 저장됩니다."
+                  actionLabel="Note 작성하기"
+                  actionTo={PATHS.NOTE_PICK}
+                />
               )}
             </>
           ) : null}
-        </>
+          </section>
+        </div>
       ) : (
-        <CabinetCommunitySection authorId={currentUserId} showWriteButton />
+        <div className="wf-cabinet-body">
+          <section className="wf-cabinet-panel wf-cabinet-panel--feed">
+            <CabinetCommunitySection authorId={currentUserId} showWriteButton />
+          </section>
+        </div>
       )}
       </div>
     </WireframePage>

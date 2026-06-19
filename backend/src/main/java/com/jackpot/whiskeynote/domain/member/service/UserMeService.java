@@ -81,6 +81,11 @@ public class UserMeService {
             }
         }
 
+        if (request.getIntroduction() != null) {
+            String intro = request.getIntroduction().trim();
+            user.updateIntroduction(intro.isEmpty() ? null : intro);
+        }
+
         return UserMeDto.from(user);
     }
 

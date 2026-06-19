@@ -27,6 +27,7 @@ export default function MyPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [me, setMe] = useState<UserMeDto | null>(null);
   const [nickname, setNickname] = useState('');
+  const [introduction, setIntroduction] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -44,8 +45,12 @@ export default function MyPage() {
         const data = await userApi.getMe();
         setMe(data);
         setNickname(data.nickname ?? '');
+        setIntroduction(data.introduction ?? '');
         localStorage.setItem('nickname', data.nickname ?? '');
         localStorage.setItem('profileImageUrl', data.profileImageUrl ?? '');
+        if (data.introduction !== undefined) {
+          localStorage.setItem('profileIntroduction', data.introduction ?? '');
+        }
         window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       } catch {
         // MVP: 오류 시에도 페이지는 렌더링(로그인은 TopNav에서 처리)
@@ -55,20 +60,31 @@ export default function MyPage() {
     run();
   }, []);
 
-  // USER-02: 닉네임 저장
-  // 의도: 닉네임만 저장 (프로필 이미지는 별도 핸들러)
-  async function handleSave() {
-    const trimmed = nickname.trim();
-    if (!trimmed) return;
+  // USER-02: 닉네임·소개 저장
+  async function handleSaveProfile() {
+    const trimmedNickname = nickname.trim();
+    if (!trimmedNickname) {
+      toast('닉네임을 입력해주세요.', 'warning');
+      return;
+    }
+
     setSaving(true);
     try {
-      const body: UpdateUserMeRequest = { nickname: trimmed };
+      const body: UpdateUserMeRequest = {
+        nickname: trimmedNickname,
+        introduction: introduction.trim(),
+      };
       const updated = await userApi.updateMe(body);
       setMe(updated);
       setNickname(updated.nickname);
+      const savedIntroduction =
+        updated.introduction !== undefined ? (updated.introduction ?? '') : introduction.trim();
+      setIntroduction(savedIntroduction);
       localStorage.setItem('nickname', updated.nickname);
       localStorage.setItem('profileImageUrl', updated.profileImageUrl ?? '');
+      localStorage.setItem('profileIntroduction', savedIntroduction);
       window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
+      toast('프로필을 저장했습니다.', 'success');
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : '저장에 실패했습니다.', 'error');
     } finally {
@@ -214,20 +230,31 @@ export default function MyPage() {
                 <p className="wf-mypage-kicker">Profile</p>
                 <h2 id="profile-edit-title">프로필 수정</h2>
               </div>
+              <Button variant="primary" size="sm" disabled={saving} onClick={handleSaveProfile}>
+                {saving ? '저장 중...' : '저장'}
+              </Button>
             </div>
             <div className="wf-mypage-form">
-              <div className="wf-mypage-inline-field">
-                <Input
-                  label="닉네임"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  placeholder="닉네임을 입력하세요"
+              <Input
+                label="닉네임"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="닉네임을 입력하세요"
+                disabled={saving}
+              />
+              <label className="wf-mypage-intro-label" htmlFor="profile-introduction">
+                <span className="wf-text-label">소개</span>
+                <textarea
+                  id="profile-introduction"
+                  className="wf-mypage-textarea"
+                  value={introduction}
+                  onChange={(e) => setIntroduction(e.target.value)}
+                  placeholder="소개"
+                  maxLength={500}
+                  rows={1}
                   disabled={saving}
                 />
-                <Button variant="primary" size="sm" disabled={saving} onClick={handleSave}>
-                  {saving ? '저장 중...' : '닉네임 저장'}
-                </Button>
-              </div>
+              </label>
             </div>
           </section>
 

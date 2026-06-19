@@ -117,6 +117,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   margin-top: 16px;
+  align-items: stretch;
 }
 
 .wf-mypage-card {
@@ -125,21 +126,94 @@
   border-radius: var(--wf-radius-card);
   background: var(--wf-surface);
   box-shadow: var(--wf-shadow-sm);
+  box-sizing: border-box;
 }
 
 .wf-mypage-card--primary {
-  min-height: 218px;
+  padding: 14px 20px;
   border-color: var(--wf-border);
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+.wf-mypage-card--primary .wf-mypage-card__header {
+  margin-bottom: 0;
+  align-items: flex-start;
+}
+
+.wf-mypage-card--primary .wf-mypage-card__header .wf-btn {
+  flex-shrink: 0;
+  min-width: 72px;
 }
 
 .wf-mypage-card--primary .wf-mypage-form {
-  margin-top: 20px;
+  margin-top: 6px;
+  gap: 4px;
+  flex: 1;
+}
+
+.wf-mypage-card--primary .wf-text-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.wf-mypage-card--primary .wf-input--labeled,
+.wf-mypage-card--primary .wf-mypage-intro-label .wf-mypage-textarea {
+  margin-top: 6px;
+}
+
+.wf-mypage-card--primary .wf-input,
+.wf-mypage-card--primary .wf-mypage-textarea {
+  height: 40px;
+  min-height: 40px;
+  box-sizing: border-box;
+  border: 1px solid var(--wf-border);
+  border-radius: 12px;
+  background: var(--wf-surface);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wf-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wf-mypage-card--primary .wf-input {
+  padding: 0 12px;
+}
+
+.wf-mypage-card--primary .wf-input--field {
+  height: 100%;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  background: transparent;
+}
+
+.wf-mypage-card--primary .wf-mypage-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  line-height: 1.25;
+  resize: none;
+  overflow: hidden;
+}
+
+.wf-mypage-card--primary .wf-input:focus-within,
+.wf-mypage-card--primary .wf-mypage-textarea:focus {
+  outline: none;
+  border-color: var(--wf-accent);
+  box-shadow: 0 0 0 3px var(--wf-accent-dim);
+}
+
+.wf-mypage-card--primary .wf-mypage-textarea:disabled,
+.wf-mypage-card--primary .wf-input--field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .wf-mypage-card--actions {
-  min-height: 218px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .wf-mypage-card--compact,
@@ -192,7 +266,7 @@
 .wf-mypage-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .wf-mypage-form__actions {
@@ -205,26 +279,13 @@
   min-width: 116px;
 }
 
-.wf-mypage-inline-field {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 8px;
-}
-
-.wf-mypage-inline-field .wf-input-label {
+.wf-mypage-intro-label {
+  display: block;
   min-width: 0;
 }
 
-.wf-mypage-inline-field .wf-text-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.wf-mypage-inline-field .wf-input--field {
-  height: 46px;
-  font-size: 16px;
-  font-weight: 600;
+.wf-mypage-textarea::placeholder {
+  color: var(--wf-muted);
 }
 
 .wf-mypage-form__actions .wf-btn,
@@ -403,15 +464,9 @@
   }
 
   .wf-mypage-form__actions .wf-btn,
-  .wf-mypage-inline-field .wf-btn,
   .wf-mypage-compact-row .wf-btn,
   .wf-mypage-danger-row .wf-btn {
     width: 100%;
-  }
-
-  .wf-mypage-inline-field {
-    grid-template-columns: 1fr;
-    align-items: stretch;
   }
 
   .wf-mypage-compact-row,

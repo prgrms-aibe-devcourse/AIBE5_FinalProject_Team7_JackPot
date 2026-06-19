@@ -10,13 +10,15 @@ import com.jackpot.whiskeynote.domain.member.entity.Users;
 public record PublicUserDto(
         Long userId,
         String nickname,
-        String profileImageUrl
+        String profileImageUrl,
+        String introduction
 ) {
     public static PublicUserDto from(Users user) {
         return new PublicUserDto(
                 user.getId(),
                 user.getNickname(),
-                user.getProfileImageUrl()
+                user.getProfileImageUrl(),
+                user.getIntroduction()
         );
     }
 }
