@@ -25,7 +25,6 @@ export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
     <section className="wf-detail-columns wf-detail-panel" aria-label="비슷한 위스키 추천">
       <div className="wf-detail-section-head">
         <h2 className="wf-section-title">비슷한 위스키 추천</h2>
-        <span className="wf-detail-section-head__count">최대 3개</span>
       </div>
 
       {isLoading ? (

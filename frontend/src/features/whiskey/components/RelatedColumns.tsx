@@ -12,7 +12,6 @@ export function RelatedColumns({ posts, isLoading }: RelatedColumnsProps) {
     <section className="wf-detail-columns wf-detail-panel" aria-label="관련 칼럼">
       <div className="wf-detail-section-head">
         <h2 className="wf-section-title">관련 칼럼</h2>
-        <span className="wf-detail-section-head__count">{posts.length}개</span>
       </div>
 
       {isLoading ? (
