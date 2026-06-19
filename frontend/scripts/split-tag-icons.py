@@ -2,15 +2,22 @@
 """Split frontend/public/images/tags.png into individual tag icons.
 
 The sprite is a regular 5x6 grid. Every cell holds a circular emblem with a
-text label underneath. Measuring all 28 cells shows the circle is consistently
-placed: it spans roughly y[20..189] and is horizontally centred, while the
-label always begins at y>=188. We therefore crop a fixed window around the
-circle (centred horizontally, just above the label), which guarantees the full
-circle is captured without clipping and without pulling in the label text or
-bleed from neighbouring cells at the seams.
+text label underneath, and cells bleed into each other a little at the seams.
+A fixed crop window clips some circles, so we detect the emblem per cell:
+
+  1) build an "ink" mask (anything that is not the near-white background),
+  2) label it into connected components,
+  3) keep only the emblem components, dropping
+       - the label text below the circle,
+       - thin fragments of the upper cell's label at the very top,
+       - bleed from neighbouring cells touching the left/right seams,
+  4) render ONLY the kept components (everything else is made transparent, so
+     padding never re-introduces label pixels),
+  5) crop to the kept bounding box and centre it on a square canvas.
 """
 from __future__ import annotations
 
+from collections import deque
 from pathlib import Path
 
 from PIL import Image
@@ -31,35 +38,157 @@ TAGS = [
 COL_WIDTHS = [251, 251, 251, 251, 250]
 ROW_HEIGHT = 209
 
-# Fixed circle window measured across all cells.
-CIRCLE_TOP = 16          # a touch above the ring top (~20)
-CIRCLE_BOTTOM = 186      # at the ring bottom (~186 median); stays above the label band (>=188)
-CIRCLE_HALF_WIDTH = 92   # half width of the crop; covers ring + right flourish
+SEAM_MARGIN = 6        # ignore bleed within this many px of the left/right seam
+LABEL_Y = 180          # components whose centre is below this are label text
+TOP_BLEED_Y = 15       # thin fragments fully above this are the upper cell's label
+MIN_COMPONENT = 12     # ignore tiny specks
+BBOX_PAD = 12          # padding added around the detected emblem
+CANVAS_MARGIN = 6      # extra transparent breathing room
 TARGET = 256
-CANVAS_MARGIN = 12       # transparent breathing room around the circle
 
 
 def col_x(col: int) -> int:
     return sum(COL_WIDTHS[:col])
 
 
-def export_icon(cell: Image.Image) -> Image.Image:
-    w, h = cell.size
-    cx = w / 2.0
-    left = max(0, int(round(cx - CIRCLE_HALF_WIDTH)))
-    right = min(w, int(round(cx + CIRCLE_HALF_WIDTH)))
-    top = max(0, CIRCLE_TOP)
-    bottom = min(h, CIRCLE_BOTTOM)
+def _seam_clean(cell: Image.Image) -> Image.Image:
+    """Erase neighbour-cell bleed that touches the left/right seams.
 
-    icon = cell.crop((left, top, right, bottom)).convert("RGBA")
-    px = icon.load()
-    iw, ih = icon.size
-    for y in range(ih):
-        for x in range(iw):
+    Adjacent circles overlap slightly, so a neighbour's arc can spill into this
+    cell with no white gap and merge with our circle. Per column we count ink
+    rows; near each seam there is a 'valley' (minimum) between the neighbour's
+    arc and our circle. We blank everything outside those valleys.
+    """
+    rgba = cell.convert("RGBA")
+    px = rgba.load()
+    w, h = rgba.size
+
+    def ink_col(x: int) -> int:
+        n = 0
+        for y in range(h):
             r, g, b, a = px[x, y]
-            if r > 234 and g > 234 and b > 234:
-                px[x, y] = (255, 255, 255, 0)
+            if a >= 12 and not (r > 234 and g > 234 and b > 234):
+                n += 1
+        return n
 
+    cols = [ink_col(x) for x in range(w)]
+
+    # left valley within the seam band
+    band = 50
+    left_cut = 0
+    seg = cols[5:band]
+    if seg:
+        vmin = min(seg)
+        vidx = 5 + seg.index(vmin)
+        # only cut if there is a clear bleed bump to the left of the valley
+        if max(cols[0:vidx], default=0) > vmin + 8:
+            left_cut = vidx
+
+    right_cut = w
+    seg = cols[w - band:w - 5]
+    if seg:
+        vmin = min(seg)
+        vidx = (w - band) + seg.index(vmin)
+        if max(cols[vidx + 1:w], default=0) > vmin + 8:
+            right_cut = vidx + 1
+
+    for y in range(h):
+        for x in range(w):
+            if x < left_cut or x >= right_cut:
+                px[x, y] = (0, 0, 0, 0)
+    return rgba
+
+
+def _label_components(cell: Image.Image):
+    rgba = cell.convert("RGBA")
+    px = rgba.load()
+    w, h = rgba.size
+    labels = [[-1] * w for _ in range(h)]
+    comps: list[dict[str, float]] = []
+    for y0 in range(h):
+        for x0 in range(w):
+            r, g, b, a = px[x0, y0]
+            is_ink = a >= 12 and not (r > 234 and g > 234 and b > 234)
+            if not is_ink or labels[y0][x0] != -1:
+                continue
+            cid = len(comps)
+            q: deque[tuple[int, int]] = deque([(x0, y0)])
+            labels[y0][x0] = cid
+            min_x = max_x = x0
+            min_y = max_y = y0
+            count = 0
+            sum_y = 0
+            while q:
+                x, y = q.popleft()
+                count += 1
+                sum_y += y
+                min_x = min(min_x, x)
+                max_x = max(max_x, x)
+                min_y = min(min_y, y)
+                max_y = max(max_y, y)
+                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                    if 0 <= nx < w and 0 <= ny < h and labels[ny][nx] == -1:
+                        rr, gg, bb, aa = px[nx, ny]
+                        if aa >= 12 and not (rr > 234 and gg > 234 and bb > 234):
+                            labels[ny][nx] = cid
+                            q.append((nx, ny))
+            comps.append(
+                {
+                    "id": cid,
+                    "count": count,
+                    "min_x": min_x,
+                    "min_y": min_y,
+                    "max_x": max_x,
+                    "max_y": max_y,
+                    "cy": sum_y / count,
+                }
+            )
+    return rgba, labels, comps
+
+
+def export_icon(cell: Image.Image) -> Image.Image:
+    rgba, labels, comps = _label_components(_seam_clean(cell))
+    w, h = rgba.size
+
+    kept_ids = set()
+    for c in comps:
+        if c["count"] < MIN_COMPONENT:
+            continue
+        if c["cy"] > LABEL_Y:               # label below the circle
+            continue
+        if c["max_y"] < TOP_BLEED_Y:        # upper cell's label at the top
+            continue
+        kept_ids.add(c["id"])
+
+    if not kept_ids:
+        kept_ids = {max(comps, key=lambda c: c["count"])["id"]}
+
+    kept = [c for c in comps if c["id"] in kept_ids]
+    min_x = min(c["min_x"] for c in kept)
+    min_y = min(c["min_y"] for c in kept)
+    max_x = max(c["max_x"] for c in kept)
+    max_y = max(c["max_y"] for c in kept)
+
+    # Keep only the emblem pixels; drop the rest so padding can't re-introduce
+    # label or bleed pixels.
+    px = rgba.load()
+    for y in range(h):
+        for x in range(w):
+            lid = labels[y][x]
+            if lid not in kept_ids:
+                px[x, y] = (0, 0, 0, 0)
+            else:
+                r, g, b, a = px[x, y]
+                if r > 234 and g > 234 and b > 234:
+                    px[x, y] = (255, 255, 255, 0)
+
+    left = max(0, min_x - BBOX_PAD)
+    top = max(0, min_y - BBOX_PAD)
+    right = min(w, max_x + BBOX_PAD + 1)
+    bottom = min(h, max_y + BBOX_PAD + 1)
+    icon = rgba.crop((left, top, right, bottom))
+
+    iw, ih = icon.size
     side = max(iw, ih) + CANVAS_MARGIN * 2
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     canvas.paste(icon, ((side - iw) // 2, (side - ih) // 2))
