@@ -3,6 +3,7 @@ import '../community.css';
 import { Link, useSearchParams } from 'react-router-dom';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PATHS } from '@/app/router/paths';
+import { CommunityBoardHeader } from '../components/CommunityBoardHeader';
 import { Pagination } from '../components/Pagination';
 import { PostList } from '../components/PostList';
 import { useQnaPosts } from '../hooks/useCommunity';
@@ -29,8 +30,10 @@ export default function QnaPage() {
         <span className="wf-chip wf-chip--on">Q&A</span>
         <Link to={PATHS.COMMUNITY_NOTICES} className="wf-chip">공지·FAQ</Link>
       </nav>
-      <h1 className="wf-title">Q&A</h1>
-      <PostList posts={data?.content ?? []} isLoading={isLoading} />
+      <CommunityBoardHeader title="Q&A" />
+      <div className="wf-community-feed">
+        <PostList posts={data?.content ?? []} isLoading={isLoading} boardCategory="Q" />
+      </div>
       <Pagination page={data?.number ?? 0} totalPages={data?.totalPages ?? 1} onPage={setPage} />
     </WireframePage>
   );

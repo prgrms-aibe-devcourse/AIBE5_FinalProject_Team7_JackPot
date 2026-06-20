@@ -4,6 +4,7 @@ export interface MyTastingNote {
   id: number;
   whiskeyId: number;
   whiskeyName: string;
+  whiskeyImageUrl?: string | null;
   bodyScore: number | null;
   finishScore: number | null;
   smokyScore: number | null;
@@ -65,8 +66,17 @@ export async function fetchMyTastingNotes(page = 0, size = 10): Promise<TastingN
   return data;
 }
 
+export async function fetchUserTastingNotes(userId: number, page = 0, size = 10): Promise<TastingNotePageResponse> {
+  const { data } = await apiClient.get<TastingNotePageResponse>(`/users/${userId}/tasting-notes`, {
+    params: { page, size },
+  });
+  return data;
+}
+
 export async function fetchTastingNote(noteId: number): Promise<MyTastingNote> {
-  const { data } = await apiClient.get<MyTastingNote>(`/tasting-notes/${noteId}`);
+  const { data } = await apiClient.get<MyTastingNote>(`/tasting-notes/${noteId}`, {
+    skipGlobalErrorRedirect: true,
+  });
   return data;
 }
 

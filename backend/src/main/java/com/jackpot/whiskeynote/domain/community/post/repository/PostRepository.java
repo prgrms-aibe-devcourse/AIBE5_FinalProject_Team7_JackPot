@@ -7,7 +7,9 @@ import com.jackpot.whiskeynote.domain.community.post.entity.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -32,4 +34,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     /** 삭제되지 않은 게시글 중 조회수 상위 N개 조회 (커뮤니티 홈 인기 게시글 표시용) */
     List<Post> findByIsDeletedFalseOrderByViewCountDesc(Pageable pageable);
+
+    /** 작성 글 수가 많은 작성자 ID를 내림차순으로 조회 (라운지 팔로우 추천용) */
+    @Query("SELECT p.authorId FROM Post p WHERE p.isDeleted = false " +
+           "GROUP BY p.authorId ORDER BY COUNT(p.id) DESC")
+    List<Long> findActiveAuthorIds(Pageable pageable);
+
+    /** 특정 시각 이후 작성된(=오늘 등) 비삭제 게시글 수 */
+    int countByIsDeletedFalseAndCreatedAtGreaterThanEqual(LocalDateTime since);
+
+    /** 특정 시각 이후 작성된 비삭제 게시글을 조회수 높은 순으로 조회 (오늘의 인기 글) */
+    List<Post> findByIsDeletedFalseAndCreatedAtGreaterThanEqualOrderByViewCountDesc(
+            LocalDateTime since, Pageable pageable);
 }

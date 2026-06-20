@@ -1,21 +1,56 @@
+import { Link } from 'react-router-dom';
+import type { CabinetTab } from '@/app/router/paths';
+
 interface CabinetStatsBarProps {
   pick: number;
   wish?: number;
   reviews: number;
   notes: number;
-  /** 타인 캐비넷: 위시 숨김 */
   hideWish?: boolean;
+  active?: CabinetTab;
+  basePath?: string;
 }
 
-export function CabinetStatsBar({ pick, wish, reviews, notes, hideWish }: CabinetStatsBarProps) {
+const TAB_LABEL: Record<CabinetTab, string> = {
+  pick: 'Pick',
+  wish: '위시',
+  reviews: '리뷰',
+  note: 'Note',
+};
+
+export function CabinetStatsBar({ pick, wish, reviews, notes, hideWish, active, basePath }: CabinetStatsBarProps) {
+  const clickable = active != null && basePath != null;
+  const separator = basePath?.includes('?') ? '&' : '?';
+
+  const items: { key: CabinetTab; value: number }[] = [
+    { key: 'pick', value: pick },
+    ...(!hideWish && wish !== undefined ? [{ key: 'wish' as const, value: wish }] : []),
+    { key: 'reviews', value: reviews },
+    { key: 'note', value: notes },
+  ];
+
   return (
-    <div className="wf-cabinet-stats wf-box wf-box--solid">
-      <span className="wf-cabinet-stats__pick">★ Pick {pick}</span>
-      {!hideWish && wish !== undefined ? (
-        <span className="wf-cabinet-stats__wish">♡ 위시 {wish}</span>
-      ) : null}
-      <span className="wf-cabinet-stats__reviews">💬 리뷰 {reviews}</span>
-      <span className="wf-cabinet-stats__notes">📝 Note {notes}</span>
-    </div>
+    <nav className="wf-ig-tabs" aria-label="Bar 탭">
+      {items.map(({ key, value }) => {
+        const isOn = active === key;
+        const className = `wf-ig-tabs__item${isOn ? ' wf-ig-tabs__item--on' : ''}`;
+        const label = `${TAB_LABEL[key]} ${value}`;
+
+        return clickable ? (
+          <Link
+            key={key}
+            to={`${basePath}${separator}tab=${key}`}
+            className={className}
+            aria-current={isOn ? 'page' : undefined}
+          >
+            {label}
+          </Link>
+        ) : (
+          <span key={key} className={className}>
+            {label}
+          </span>
+        );
+      })}
+    </nav>
   );
 }

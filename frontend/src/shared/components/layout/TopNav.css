@@ -3,15 +3,31 @@
   text-decoration: none;
   color: inherit;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-root .wf-topnav__logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 /* ── 네비게이션 링크 ─────────────────────────── */
+/* 로고 + 네비 묶음을 헤더 정중앙에 배치 (그리드 1fr auto 1fr의 가운데 칸) */
+.app-root .wf-topnav__center {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .app-root .wf-topnav__links {
   display: flex;
   align-items: center;
   gap: 2px;
-  flex: 1;
-  justify-content: center;
 }
 
 .app-root .wf-topnav__links a {
@@ -41,14 +57,14 @@
 
 .app-root .wf-topnav__links a:hover {
   color: var(--wf-text);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-topnav__links a.active,
 .app-root .wf-topnav__links a.is-active {
   color: var(--wf-accent);
   font-weight: 700;
-  background: rgba(213, 173, 69, 0.08);
+  background: var(--wf-accent-dim);
 }
 
 .app-root .wf-topnav__links a.active::after,
@@ -58,6 +74,8 @@
 
 /* ── 유저 영역 ───────────────────────────────── */
 .app-root .wf-topnav__user {
+  grid-column: 3;
+  justify-self: end;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -77,7 +95,7 @@
 
 .app-root .wf-topnav__profile:hover {
   border-color: var(--wf-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface-2);
 }
 
 .app-root .wf-topnav__avatar {
@@ -86,7 +104,7 @@
   border-radius: 50%;
   border: 2px solid var(--wf-accent);
   overflow: hidden;
-  background: var(--wf-surface-2);
+  background: #f5f0e8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,6 +121,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
 }
 
 .app-root .wf-topnav__avatar span {
@@ -139,13 +158,14 @@
 
 .app-root .wf-topnav__login {
   height: 34px;
-  padding: 0 18px;
+  padding: 0 8px;
+  margin-right: -16px;
   border-radius: 8px;
-  border: 1px solid rgba(213, 173, 69, 0.5);
-  background: rgba(213, 173, 69, 0.1);
-  color: var(--wf-accent-light);
-  font-size: 13px;
-  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: var(--wf-muted);
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -155,25 +175,37 @@
 }
 
 .app-root .wf-topnav__login:hover {
-  background: rgba(213, 173, 69, 0.18);
-  border-color: var(--wf-accent-light);
-  transform: translateY(-1px);
+  background: var(--wf-surface-2);
+  color: var(--wf-text);
 }
 
 /* ── 반응형 ──────────────────────────────────── */
 @media (max-width: 960px) {
   .app-root .wf-topnav {
+    display: flex;
     flex-wrap: wrap;
     height: auto;
     padding: 12px 16px;
     gap: 10px;
   }
 
+  .app-root .wf-topnav__center {
+    order: 1;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
   .app-root .wf-topnav__links {
-    order: 3;
     width: 100%;
     justify-content: space-between;
     gap: 0;
+  }
+
+  .app-root .wf-topnav__user {
+    order: 2;
+    justify-self: auto;
+    margin-left: auto;
   }
 
   .app-root .wf-topnav__links a {

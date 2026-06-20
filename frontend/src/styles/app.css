@@ -15,9 +15,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    linear-gradient(180deg, rgba(143, 52, 76, 0.12), transparent 280px),
-    linear-gradient(135deg, #0b0a0d 0%, #121016 44%, #0d0c10 100%);
+  background: var(--wf-bg);
 }
 
 .app-root .wf-page {
@@ -99,10 +97,9 @@ body {
 }
 
 .app-root .wf-detail-tags__image {
-  width: 22px;
-  height: 22px;
+  width: 128%;
+  height: 128%;
   object-fit: contain;
-  margin-bottom: 2px;
   pointer-events: none;
 }
 
@@ -130,7 +127,7 @@ body {
 .app-root .wf-dual-range__track {
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--wf-surface-3);
 }
 
 .app-root .wf-dual-range__active {

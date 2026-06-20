@@ -18,48 +18,37 @@ export function CabinetPickItem({ id, name, meta, imageUrl, highlighted, readonl
   const detailPath = `/whiskey/${id}`;
 
   return (
-    <article className={`wf-cabinet-pick wf-box${highlighted ? ' wf-box--accent' : ''}`}>
-
-      {/* 이미지 — 클릭 시 상세 이동 */}
-      <Link to={detailPath} className="wf-cabinet-pick__thumb-link">
+    <article className={`wf-ig-grid-item${highlighted ? ' wf-ig-grid-item--accent' : ''}`}>
+      <Link to={detailPath} className="wf-ig-grid-item__link" aria-label={`${name} 상세 보기`}>
         {thumbSrc && !imgError ? (
           <img
             src={thumbSrc}
-            alt={name}
-            className="wf-cabinet-pick__thumb"
+            alt=""
+            className="wf-ig-grid-item__img"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="wf-cabinet-pick__thumb wf-placeholder" />
+          <div className="wf-ig-grid-item__img wf-placeholder" aria-hidden />
         )}
+        <div className="wf-ig-grid-item__overlay">
+          <strong className="wf-ig-grid-item__name">{name}</strong>
+          {meta ? <span className="wf-ig-grid-item__meta">{meta}</span> : null}
+        </div>
       </Link>
-
-      {/* 텍스트 영역 */}
-      <div className="wf-cabinet-pick__body">
-        <Link to={detailPath} className="wf-cabinet-pick__title">
-          {name}
-        </Link>
-        <p className="wf-text-sm">{meta}</p>
-      </div>
-
-      {/* 우측 액션 영역 */}
-      <div className="wf-cabinet-pick__actions">
-        {/* 상세보기 버튼 */}
-        <Link to={detailPath} className="wf-cabinet-pick__detail-btn">
-          상세보기
-        </Link>
-
-        {/* 제거 버튼 (본인만) */}
-        {!readonly && onRemove && (
-          <button
-            type="button"
-            className="wf-cabinet-pick__remove-btn"
-            onClick={onRemove}
-          >
-            제거
-          </button>
-        )}
-      </div>
+      {!readonly && onRemove ? (
+        <button
+          type="button"
+          className="wf-ig-grid-item__remove"
+          aria-label={`${name} 제거`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onRemove();
+          }}
+        >
+          제거
+        </button>
+      ) : null}
     </article>
   );
 }

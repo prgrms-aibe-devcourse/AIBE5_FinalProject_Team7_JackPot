@@ -3,6 +3,7 @@ package com.jackpot.whiskeynote.domain.member.controller;
 import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UpdateMyPasswordRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
+import com.jackpot.whiskeynote.domain.member.dto.PublicUserDto;
 import com.jackpot.whiskeynote.domain.member.service.UserMeService;
 import com.jackpot.whiskeynote.global.response.ApiResponse;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
@@ -63,5 +64,13 @@ public class UserMeController {
             @Valid @RequestBody UpdateMyPasswordRequest request
     ) {
         userMeService.updateMyPassword(principal.userId(), request);
+    }
+
+    // 타인 공개 프로필 조회 — 닉네임·프로필 이미지 (로그인 불필요)
+    // 의도: 리뷰/픽 유무와 관계없이 항상 정확한 닉네임·프로필 이미지를 보여주기 위함
+    // "/me"와 경로 충돌 방지를 위해 /{userId}/profile 형태로 분리 (picks·cabinet/stats와 동일 패턴)
+    @GetMapping("/{userId}/profile")
+    public ApiResponse<PublicUserDto> getPublicProfile(@PathVariable Long userId) {
+        return ApiResponse.ok(userMeService.getPublicProfile(userId));
     }
 }

@@ -2,16 +2,20 @@ package com.jackpot.whiskeynote.domain.member.service;
 
 import com.jackpot.whiskeynote.domain.member.dto.UpdateUserMeRequest;
 import com.jackpot.whiskeynote.domain.member.dto.UserMeDto;
+import com.jackpot.whiskeynote.domain.member.dto.PublicUserDto;
 import com.jackpot.whiskeynote.domain.member.dto.UpdateMyPasswordRequest;
 import com.jackpot.whiskeynote.domain.member.entity.AuthProvider;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
+import com.jackpot.whiskeynote.global.exception.BannedUserException;
 import com.jackpot.whiskeynote.global.storage.MediaUploadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 마이페이지 비즈니스 로직
@@ -35,6 +39,18 @@ public class UserMeService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return UserMeDto.from(user);
+    }
+
+    // 타인 공개 프로필 조회 (닉네임·프로필 이미지)
+    // 의도: 리뷰/픽 등 다른 데이터 존재 여부와 무관하게 항상 닉네임·프로필 이미지를 가져올 수 있어야 함
+    // 밴·탈퇴 계정은 타 캐비넷 조회와 동일하게 차단
+    public PublicUserDto getPublicProfile(Long userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."));
+        if (user.isBanned() || user.isDeleted()) {
+            throw new BannedUserException();
+        }
+        return PublicUserDto.from(user);
     }
 
     // USER-02: 내 프로필 수정
@@ -63,6 +79,11 @@ public class UserMeService {
                 MediaUploadService.validateProfileObjectKeyForUser(userId, key);
                 user.updateProfileImageUrl(key);
             }
+        }
+
+        if (request.getIntroduction() != null) {
+            String intro = request.getIntroduction().trim();
+            user.updateIntroduction(intro.isEmpty() ? null : intro);
         }
 
         return UserMeDto.from(user);

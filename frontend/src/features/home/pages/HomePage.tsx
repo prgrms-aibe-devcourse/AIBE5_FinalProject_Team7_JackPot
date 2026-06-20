@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
+import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { tasteMatchApi } from '@/features/discover/api/tasteMatchApi';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
+import { toast } from '@/shared/components/ui/Toast';
 import '../lounge.css';
 
-function stripHtml(html: string) {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+function stripContentPreview(content: string) {
+  const doc = new DOMParser().parseFromString(content, 'text/html');
+  const text = doc.body.textContent || content;
+
+  return text
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[>\-*+]\s+/gm, '')
+    .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
+    .replace(/[*_~]{1,3}([^*_~]+)[*_~]{1,3}/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // 라운지 피드에는 썸네일 필드가 없어 본문(HTML/마크다운)에서 첫 이미지를 추출한다.
@@ -27,32 +40,40 @@ function extractFirstImage(content: string): string | null {
   return mdImg ? mdImg[1] : null;
 }
 
+
+function formatCount(value: number) {
+  if (value >= 10000) return `${(value / 10000).toFixed(1).replace('.0', '')}만`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1).replace('.0', '')}천`;
+  return String(value);
+}
+
 function FeedCard({ post }: { post: LoungePost }) {
   const [thumbError, setThumbError] = useState(false);
   const detailPath = PATHS.COMMUNITY_POST.replace(':postId', String(post.postId));
-  const contentPreview = stripHtml(post.context);
+  const contentPreview = stripContentPreview(post.context);
   const authorName = post.authorNickname || `사용자 #${post.authorId}`;
-  const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
+  const authorImage = resolveProfileImageUrl(post.authorProfileImageUrl, post.authorId);
   const thumbnail = resolveMediaUrl(extractFirstImage(post.context));
+  const visibleWhiskeys = post.whiskeyNames.slice(0, 2);
+  const hiddenWhiskeyCount = Math.max(post.whiskeyNames.length - visibleWhiskeys.length, 0);
+
+  const whiskeyLabel = visibleWhiskeys.length > 0
+    ? visibleWhiskeys.join(' · ') + (hiddenWhiskeyCount > 0 ? ` · 외 ${hiddenWhiskeyCount}개` : '')
+    : null;
 
   return (
     <article className="wf-feed-card wf-box wf-box--solid">
       <div className="wf-feed-card__head">
-        {authorImage ? (
+        <span className="wf-feed-card__avatar-wrap">
           <img
             src={authorImage}
             alt={authorName}
             className="wf-feed-card__avatar"
           />
-        ) : (
-          <div className="wf-feed-card__avatar wf-feed-card__avatar--initial" aria-hidden>
-            {authorName.charAt(0)}
-          </div>
-        )}
+        </span>
         <div className="wf-feed-card__author">
           <div className="wf-feed-card__author-row">
             <strong className="wf-feed-card__author-name">{authorName}</strong>
-            <span className="wf-feed-card__badge wf-feed-card__badge--following">팔로잉</span>
           </div>
           <span className="wf-feed-card__date">{post.createdAt.slice(0, 10)}</span>
         </div>
@@ -74,12 +95,13 @@ function FeedCard({ post }: { post: LoungePost }) {
         ) : null}
       </Link>
 
-      <footer className="wf-feed-card__foot">
-        <span className="wf-feed-card__meta">커뮤니티 포스트</span>
-        <Link to={detailPath} className="wf-feed-card__more">
-          자세히 보기
-        </Link>
-      </footer>
+      <p className="wf-feed-card__meta">
+        {`좋아요 ${post.likeCount} · 댓글 ${post.commentCount} · 조회 ${post.viewCount}`}
+      </p>
+
+      {whiskeyLabel ? (
+        <p className="wf-feed-card__whiskeys">{whiskeyLabel}</p>
+      ) : null}
     </article>
   );
 }
@@ -88,7 +110,7 @@ function FeedCardSkeleton() {
   return (
     <article className="wf-feed-card wf-box wf-box--solid" aria-hidden>
       <div className="wf-feed-card__head">
-        <Skeleton className="wf-feed-card__avatar" circle />
+        <Skeleton className="wf-feed-card__avatar-wrap" width={44} height={44} circle />
         <div className="wf-feed-card__skeleton-lines">
           <Skeleton width="35%" height={13} />
           <Skeleton width="20%" height={11} />
@@ -103,24 +125,28 @@ function FeedCardSkeleton() {
         <Skeleton className="wf-feed-card__thumb" radius={10} />
       </div>
       <div className="wf-feed-card__foot">
-        <Skeleton width={96} height={12} radius={4} />
+        <Skeleton width="72%" height={12} radius={4} />
+        <Skeleton width="48%" height={11} radius={4} />
       </div>
     </article>
   );
 }
 
-function PromoToday() {
+function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
+  const image = whiskey ? resolveMediaUrl(whiskey.imageUrl) : null;
+  const to = whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH;
   return (
-    <section className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
-      <div>
-        <p className="wf-text-label">TODAY</p>
-        <h2 className="wf-feed-promo__title">오늘의 추천</h2>
-        <p className="wf-text-sm">글렌피딕 12 · 가벼운 과일향</p>
+    <Link to={to} className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
+      <div className="wf-feed-promo__head">
+        <div className="wf-feed-promo__copy">
+          <h2 className="wf-feed-promo__title">오늘의 추천</h2>
+          <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
+        </div>
+        {image ? (
+          <img src={image} alt="" aria-hidden className="wf-feed-promo__bottle" loading="lazy" />
+        ) : null}
       </div>
-      <Button to="/whiskey/1" variant="ghost">
-        보러가기
-      </Button>
-    </section>
+    </Link>
   );
 }
 
@@ -155,11 +181,10 @@ function PromoTasteMatch() {
   );
 }
 
-function LoungeHero({ feedCount, authorCount }: { feedCount: number; authorCount: number }) {
+function LoungeHero() {
   return (
     <section className="wf-lounge-hero">
       <div className="wf-lounge-hero__copy">
-        <p className="wf-text-label">WHISKEY NOTE LOUNGE</p>
         <h1 className="wf-lounge-hero__title">취향이 오가는 라운지</h1>
         <p className="wf-lounge-hero__desc">
           팔로우한 유저의 글을 모아 보고, 오늘 마실 위스키와 다음 대화 주제를 가볍게 발견해보세요.
@@ -169,16 +194,6 @@ function LoungeHero({ feedCount, authorCount }: { feedCount: number; authorCount
           <Button to={PATHS.SEARCH} variant="ghost">위스키 검색</Button>
         </div>
       </div>
-      <div className="wf-lounge-hero__stats" aria-label="라운지 요약">
-        <div className="wf-lounge-stat">
-          <span className="wf-lounge-stat__value">{feedCount}</span>
-          <span className="wf-lounge-stat__label">새 피드</span>
-        </div>
-        <div className="wf-lounge-stat">
-          <span className="wf-lounge-stat__value">{authorCount}</span>
-          <span className="wf-lounge-stat__label">작성자</span>
-        </div>
-      </div>
     </section>
   );
 }
@@ -186,51 +201,72 @@ function LoungeHero({ feedCount, authorCount }: { feedCount: number; authorCount
 function LoungeQuickLinks() {
   return (
     <section className="wf-lounge-quick wf-box wf-box--solid">
-      <p className="wf-text-label">바로가기</p>
+      <h2 className="wf-lounge-rail__title">바로가기</h2>
       <Link to={PATHS.COMMUNITY} className="wf-lounge-quick__item">
-        <span>커뮤니티</span>
-        <strong>새 글 둘러보기</strong>
+        <strong>커뮤니티</strong>
+        <span>게시글</span>
       </Link>
       <Link to={PATHS.SEARCH} className="wf-lounge-quick__item">
-        <span>검색</span>
-        <strong>보틀 찾아보기</strong>
+        <strong>검색</strong>
+        <span>위스키</span>
       </Link>
       <Link to={PATHS.SURVEY} className="wf-lounge-quick__item">
-        <span>설문조사</span>
-        <strong>추천 정교화</strong>
+        <strong>설문조사</strong>
+        <span>취향</span>
       </Link>
     </section>
   );
 }
 
-function LoungeAuthors({ posts }: { posts: LoungePost[] }) {
-  const authors = Array.from(
-    new Map(posts.map((post) => [post.authorId, post])).values(),
-  ).slice(0, 4);
+function LoungeSuggestedUsers({ users }: { users: LoungeSuggestedUser[] }) {
+  // 팔로우/처리 중인 유저는 목록에서 즉시 제거(낙관적), 실패 시 토스트
+  const [hidden, setHidden] = useState<Set<number>>(new Set());
+  const [pending, setPending] = useState<Set<number>>(new Set());
 
-  if (!authors.length) return null;
+  const visible = users.filter((u) => !hidden.has(u.userId));
+  if (!visible.length) return null;
+
+  const handleFollow = async (userId: number) => {
+    if (pending.has(userId)) return;
+    setPending((prev) => new Set(prev).add(userId));
+    try {
+      await cabinetApi.followUser(userId);
+      setHidden((prev) => new Set(prev).add(userId));
+      toast('팔로우했습니다.', 'success');
+    } catch {
+      toast('팔로우에 실패했습니다.', 'error');
+    } finally {
+      setPending((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
+  };
 
   return (
-    <section className="wf-lounge-authors wf-box wf-box--solid">
-      <p className="wf-text-label">팔로잉 활동</p>
-      <div className="wf-lounge-authors__list">
-        {authors.map((post) => {
-          const authorName = post.authorNickname || `사용자 #${post.authorId}`;
-          const authorImage = resolveMediaUrl(post.authorProfileImageUrl);
-
+    <section className="wf-lounge-suggest wf-box wf-box--solid">
+      <h2 className="wf-lounge-rail__title">팔로우 추천</h2>
+      <div className="wf-lounge-suggest__list">
+        {visible.map((user) => {
+          const name = user.nickname || `사용자 #${user.userId}`;
+          const image = resolveProfileImageUrl(user.profileImageUrl, user.userId);
           return (
-            <div key={post.authorId} className="wf-lounge-author">
-              {authorImage ? (
-                <img src={authorImage} alt={authorName} className="wf-lounge-author__avatar" />
-              ) : (
-                <span className="wf-lounge-author__avatar wf-lounge-author__avatar--initial">
-                  {authorName.charAt(0)}
+            <div key={user.userId} className="wf-lounge-suggest__item">
+              <Link to={PATHS.USER_PROFILE.replace(':userId', String(user.userId))} className="wf-lounge-suggest__user">
+                <span className="wf-lounge-suggest__avatar-wrap">
+                  <img src={image} alt={name} className="wf-lounge-suggest__avatar" />
                 </span>
-              )}
-              <div>
-                <strong>{authorName}</strong>
-                <span>{post.createdAt.slice(0, 10)}</span>
-              </div>
+                <strong className="wf-lounge-suggest__name">{name}</strong>
+              </Link>
+              <button
+                type="button"
+                className="wf-lounge-suggest__follow"
+                onClick={() => handleFollow(user.userId)}
+                disabled={pending.has(user.userId)}
+              >
+                {pending.has(user.userId) ? '처리 중' : '팔로우'}
+              </button>
             </div>
           );
         })}
@@ -239,32 +275,125 @@ function LoungeAuthors({ posts }: { posts: LoungePost[] }) {
   );
 }
 
+function LoungeTrendingWhiskeys({ whiskeys }: { whiskeys: LoungeTrendingWhiskey[] }) {
+  if (!whiskeys.length) return null;
+
+  return (
+    <section className="wf-lounge-discovery wf-box wf-box--solid">
+      <div className="wf-lounge-discovery__head">
+        <h2 className="wf-lounge-rail__title">많이 언급된 위스키</h2>
+        <Link to={PATHS.SEARCH} className="wf-lounge-discovery__more">검색</Link>
+      </div>
+      <div className="wf-lounge-bottle-list">
+        {whiskeys.slice(0, 5).map((whiskey, index) => (
+          <Link
+            key={whiskey.whiskeyId}
+            to={PATHS.WHISKEY_DETAIL.replace(':whiskeyId', String(whiskey.whiskeyId))}
+            className="wf-lounge-bottle-item"
+          >
+            <span className="wf-lounge-bottle-item__mark">{index + 1}</span>
+            <span className="wf-lounge-bottle-item__name">{whiskey.whiskeyName}</span>
+            <span className="wf-lounge-bottle-item__count">{formatCount(whiskey.mentionCount)}회</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /** svg/pages/06-home.svg — 라운지 타임라인 */
+const FEED_TABS: { key: LoungeFeedTab; label: string }[] = [
+  { key: 'following', label: '팔로잉' },
+  { key: 'popular', label: '인기' },
+  { key: 'latest', label: '최신' },
+];
+
+const TAB_EMPTY: Record<LoungeFeedTab, { title: string; desc: string }> = {
+  following: {
+    title: '팔로잉 글이 없습니다',
+    desc: '유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.',
+  },
+  popular: { title: '아직 인기 게시글이 없습니다', desc: '글이 쌓이면 조회수 높은 글이 여기에 표시됩니다.' },
+  latest: { title: '아직 게시글이 없습니다', desc: '커뮤니티에 글이 올라오면 최신순으로 표시됩니다.' },
+};
+
+const LOUNGE_PAGE_SIZE = 20;
+
 export default function HomePage() {
+  const [tab, setTab] = useState<LoungeFeedTab>('following');
   const {
-    data: feed = [],
+    data: feedPages,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ['lounge', 'feed', 0, 20],
-    queryFn: () => homeApi.getLoungeFeed(0, 20),
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['lounge', 'feed', tab],
+    queryFn: ({ pageParam }) => homeApi.getFeedByTab(tab, pageParam, LOUNGE_PAGE_SIZE),
+    initialPageParam: 0,
+    // 마지막 페이지가 꽉 찼으면(=size와 동일) 다음 페이지가 있다고 판단
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === LOUNGE_PAGE_SIZE ? allPages.length : undefined,
   });
-  const authorCount = new Set(feed.map((post) => post.authorId)).size;
+  const feed = feedPages?.pages.flat() ?? [];
+
+  // 스크롤 하단 감지용 sentinel — 보이면 다음 페이지 로드
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const { data: trendingWhiskeys = [] } = useQuery({
+    queryKey: ['lounge', 'trending-whiskeys', 5],
+    queryFn: () => homeApi.getTrendingWhiskeys(5),
+  });
+  // 오늘의 추천: 화제의 위스키(trending 1위)를 우선, 없으면 카탈로그 첫 위스키로 폴백
+  const featuredWhiskeyId = trendingWhiskeys[0]?.whiskeyId;
+  const { data: featuredWhiskey } = useQuery({
+    queryKey: ['lounge', 'today-pick', featuredWhiskeyId ?? 'fallback'],
+    queryFn: async () => {
+      if (featuredWhiskeyId) return fetchWhiskeyById(featuredWhiskeyId);
+      const page = await fetchWhiskeys({ size: 1 });
+      return page.content[0] ?? null;
+    },
+  });
+  const { data: suggestedUsers = [] } = useQuery({
+    queryKey: ['lounge', 'suggested-users', 5],
+    queryFn: () => homeApi.getSuggestedUsers(5),
+  });
 
   return (
     <WireframePage scroll>
-      <LoungeHero feedCount={feed.length} authorCount={authorCount} />
+      <LoungeHero />
       <div className="wf-lounge-shell">
         <main className="wf-lounge-feed">
-          <div className="wf-lounge-section-head">
-            <div>
-              <p className="wf-text-label">TIMELINE</p>
-              <h2 className="wf-section-title">팔로잉 피드</h2>
-            </div>
-            <span className="wf-lounge-section-count">{feed.length}건</span>
+          <div className="wf-lounge-tabs" role="tablist" aria-label="라운지 피드 탭">
+            {FEED_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={tab === t.key}
+                className={`wf-lounge-tab${tab === t.key ? ' wf-lounge-tab--on' : ''}`}
+                onClick={() => setTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
           {isLoading ? (
-            <div aria-label="팔로잉 피드를 불러오는 중">
+            <div aria-label="피드를 불러오는 중">
               {Array.from({ length: 3 }).map((_, index) => (
                 <FeedCardSkeleton key={index} />
               ))}
@@ -275,18 +404,27 @@ export default function HomePage() {
               <p className="wf-text-sm">잠시 후 다시 라운지에 접속해주세요.</p>
             </section>
           ) : feed.length ? (
-            feed.map((post) => <FeedCard key={post.postId} post={post} />)
+            <>
+              {feed.map((post) => <FeedCard key={post.postId} post={post} />)}
+              {isFetchingNextPage && <FeedCardSkeleton />}
+              {/* 하단 도달 감지 sentinel */}
+              <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
+              {!hasNextPage && (
+                <p className="wf-text-sm wf-lounge-feed-end">모든 글을 확인했어요</p>
+              )}
+            </>
           ) : (
             <section className="wf-box wf-box--solid wf-lounge-empty">
-              <h2 className="wf-section-title">팔로잉 글이 없습니다</h2>
-              <p className="wf-text-sm">유저를 팔로우하거나 팔로우한 유저가 글을 작성하면 여기에 표시됩니다.</p>
+              <h2 className="wf-section-title">{TAB_EMPTY[tab].title}</h2>
+              <p className="wf-text-sm">{TAB_EMPTY[tab].desc}</p>
             </section>
           )}
         </main>
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
-          <PromoToday />
+          <PromoToday whiskey={featuredWhiskey} />
+          <LoungeSuggestedUsers users={suggestedUsers} />
+          <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />
-          <LoungeAuthors posts={feed} />
           <LoungeQuickLinks />
         </aside>
       </div>

@@ -1,3 +1,1011 @@
+/* --- Cabinet / My Bar (Search·Lounge·Whiskey detail과 동일 타입 스케일) --- */
+:where(.wf-cabinet-page, .wf-mypage-page) {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wf-cabinet-page {
+  width: 100%;
+}
+
+.wf-cabinet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+}
+
+/* ─── Instagram-style content tabs (Pick / 위시 / 리뷰 / Note) ─── */
+.wf-ig-tabs {
+  display: flex;
+  align-items: stretch;
+  margin: 0;
+  border-top: 1px solid var(--wf-border-subtle);
+}
+
+.wf-ig-tabs__item {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 8px 10px;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: rgba(115, 115, 115, 0.95);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.wf-ig-tabs__item:hover {
+  color: var(--wf-text);
+}
+
+.wf-ig-tabs__item--on {
+  color: var(--wf-text);
+  border-bottom-color: var(--wf-text);
+}
+
+/* ─── Instagram-style whiskey grid ─── */
+.wf-ig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+
+@media (min-width: 768px) {
+  .wf-ig-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .wf-ig-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.wf-ig-grid-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--wf-surface-2);
+}
+
+.wf-ig-grid-item__link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.wf-ig-grid-item__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: var(--wf-surface-2);
+  transition: transform 0.2s ease;
+}
+
+.wf-ig-grid-item:hover .wf-ig-grid-item__img {
+  transform: scale(1.03);
+}
+
+.wf-ig-grid-item__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.42);
+  color: #fff;
+  opacity: 0;
+  text-align: center;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.wf-ig-grid-item:hover .wf-ig-grid-item__overlay {
+  opacity: 1;
+}
+
+.wf-ig-grid-item__name {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wf-ig-grid-item__meta {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.92;
+}
+
+.wf-ig-grid-item__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  min-height: 26px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.wf-ig-grid-item:hover .wf-ig-grid-item__remove {
+  opacity: 1;
+}
+
+.wf-ig-grid-item__remove:hover {
+  background: rgba(214, 47, 47, 0.88);
+}
+
+.wf-ig-grid-item--accent {
+  outline: 2px solid var(--wf-accent);
+  outline-offset: -2px;
+}
+
+/* ─── Instagram-style profile header ─── */
+.wf-ig-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 16px;
+}
+
+.wf-ig-profile__main {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.wf-ig-profile__avatar-wrap {
+  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f5f0e8;
+}
+
+.wf-ig-profile__avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: center center;
+  border: none;
+  background: transparent;
+}
+
+.wf-ig-profile__info {
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.wf-ig-profile__name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.wf-ig-profile__username {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--wf-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wf-ig-profile__settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--wf-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.wf-ig-profile__settings:hover {
+  background: var(--wf-surface-2);
+}
+
+.wf-ig-profile__display-name {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--wf-text);
+}
+
+.wf-ig-profile__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.wf-ig-profile__stats li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--wf-text);
+}
+
+.wf-ig-profile__stats strong {
+  font-weight: 600;
+}
+
+.wf-ig-profile__stats span {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.wf-ig-profile__stat-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.wf-ig-profile__stat-link:hover {
+  opacity: 0.65;
+}
+
+.wf-ig-profile__bio {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--wf-text);
+}
+
+.wf-ig-profile__actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.wf-ig-profile__actions--with-follow .wf-ig-profile__btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 10px;
+  font-size: 13px;
+}
+
+.wf-ig-profile__btn {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.wf-ig-profile__btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.wf-ig-profile__btn--on {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--wf-text);
+}
+
+.wf-ig-profile__btn--follow {
+  border: 1px solid transparent;
+}
+
+.wf-ig-profile__btn--follow-pending {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.wf-ig-profile__btn--follow-pending:hover:not(:disabled) {
+  background: var(--wf-accent-subtle);
+}
+
+.wf-ig-profile__btn--follow-on:hover:not(:disabled) {
+  border-color: rgba(214, 47, 47, 0.35);
+  background: rgba(214, 47, 47, 0.06);
+  color: var(--wf-danger);
+}
+
+.wf-ig-profile__follow-text--hover {
+  display: none;
+}
+
+.wf-ig-profile__btn--follow-on:hover:not(:disabled) .wf-ig-profile__follow-text:not(.wf-ig-profile__follow-text--hover) {
+  display: none;
+}
+
+.wf-ig-profile__btn--follow-on:hover:not(:disabled) .wf-ig-profile__follow-text--hover {
+  display: inline;
+}
+
+.wf-ig-profile__btn--follow:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wf-ig-profile__btn--secondary {
+  flex: 0 1 auto;
+  min-width: 120px;
+}
+
+.wf-ig-profile__btn--primary {
+  background: var(--wf-accent);
+  color: #fff;
+}
+
+.wf-ig-profile__btn--primary:hover {
+  background: var(--wf-accent-dark);
+}
+
+.wf-ig-profile__btn--following {
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
+}
+
+.wf-ig-profile__btn--full {
+  width: 100%;
+  flex: none;
+}
+
+.wf-ig-profile__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 세그먼트 탭 — Bar/커뮤니티 · Pick/위시/리뷰/Note */
+.wf-tabs--seg2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.wf-tabs--seg2 .wf-tabs__pill {
+  width: calc((100% - 8px) / 2);
+}
+
+.wf-tabs--seg2[data-active='bar'] .wf-tabs__pill {
+  transform: translateX(0);
+}
+
+.wf-tabs--seg2[data-active='community'] .wf-tabs__pill {
+  transform: translateX(100%);
+}
+
+.wf-tabs--seg4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.wf-tabs--seg4 .wf-tabs__pill {
+  width: calc((100% - 8px) / 4);
+}
+
+.wf-tabs--seg4[data-active='pick'] .wf-tabs__pill { transform: translateX(0); }
+.wf-tabs--seg4[data-active='wish'] .wf-tabs__pill { transform: translateX(100%); }
+.wf-tabs--seg4[data-active='reviews'] .wf-tabs__pill { transform: translateX(200%); }
+.wf-tabs--seg4[data-active='note'] .wf-tabs__pill { transform: translateX(300%); }
+
+.wf-tabs--seg3.wf-cabinet-bar-tabs[data-active='pick'] .wf-tabs__pill { transform: translateX(0); }
+.wf-tabs--seg3.wf-cabinet-bar-tabs[data-active='reviews'] .wf-tabs__pill { transform: translateX(100%); }
+.wf-tabs--seg3.wf-cabinet-bar-tabs[data-active='note'] .wf-tabs__pill { transform: translateX(200%); }
+
+.wf-cabinet-bar-tabs {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.wf-cabinet-bar-tabs .wf-tab-item {
+  min-width: 0;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.wf-cabinet-panel {
+  margin-top: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+.wf-cabinet-panel.wf-detail-reviews {
+  padding: 0;
+}
+
+.wf-cabinet-panel--grid {
+  margin-top: 0;
+}
+
+.wf-cabinet-panel--feed {
+  margin-top: 0;
+}
+
+.wf-cabinet-panel--community {
+  margin-top: 0;
+}
+
+/* ─── Follow list (캐비넷 Bar 무드) ─── */
+.wf-cabinet-follow-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wf-cabinet-follow-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+}
+
+.wf-cabinet-follow-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.wf-cabinet-follow-list li:last-child .wf-cabinet-follow-row {
+  border-bottom: none;
+}
+
+.wf-cabinet-follow-row__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f5f0e8;
+}
+
+.wf-cabinet-follow-row__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.wf-cabinet-follow-row__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wf-text);
+}
+
+.wf-cabinet-follow-row__chevron {
+  flex-shrink: 0;
+  color: var(--wf-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ─── Community summary ─── */
+.wf-cabinet-community-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 4px;
+  padding: 0 4px;
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wf-cabinet-community-summary span {
+  white-space: nowrap;
+}
+
+.wf-cabinet-feed__meta--inline {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-cabinet-feed__actions .wf-cabinet-feed__meta--inline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Feed (리뷰 / Note) ─── */
+.wf-cabinet-feed-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 0 12px;
+}
+
+.wf-cabinet-feed-toolbar__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.wf-cabinet-feed-toolbar__link:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.wf-cabinet-feed-loading {
+  margin: 24px 0;
+  padding: 0 4px;
+  color: var(--wf-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.wf-cabinet-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 36px 16px;
+  text-align: center;
+}
+
+.wf-cabinet-empty__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wf-text);
+}
+
+.wf-cabinet-empty__meta {
+  margin: 0;
+  max-width: 320px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-empty__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin-top: 4px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.wf-cabinet-empty__link:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.wf-cabinet-feed {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wf-cabinet-feed__item {
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-cabinet-feed__item:first-child {
+  padding-top: 8px;
+}
+
+.wf-cabinet-feed__item:last-child {
+  border-bottom: none;
+}
+
+.wf-cabinet-feed__item--review {
+  padding: 14px 4px;
+}
+
+.wf-cabinet-feed__item--note {
+  padding: 14px 4px;
+}
+
+.wf-cabinet-feed__row {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.wf-cabinet-feed__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-cabinet-feed__thumb-wrap {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--wf-border-subtle);
+  border-radius: 10px;
+  background: var(--wf-surface-2);
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wf-cabinet-feed__thumb-wrap:hover {
+  border-color: var(--wf-accent-dim);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-cabinet-feed__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border: 0;
+  background: transparent;
+}
+
+.wf-cabinet-feed__thumb.wf-placeholder {
+  min-height: 0;
+}
+
+.wf-cabinet-feed__item--open {
+  padding-bottom: 20px;
+}
+
+.wf-cabinet-feed__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.wf-cabinet-feed__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--wf-text);
+}
+
+.wf-cabinet-feed__title--link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.wf-cabinet-feed__title--link:hover {
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-feed__rating {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-feed__badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.wf-cabinet-feed__badge--draft {
+  background: rgba(214, 47, 47, 0.1);
+  color: var(--wf-danger);
+}
+
+.wf-cabinet-feed__meta {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-feed__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--wf-text);
+  white-space: pre-wrap;
+}
+
+.wf-cabinet-feed__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.wf-cabinet-feed__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wf-cabinet-feed__tag--more {
+  background: transparent;
+}
+
+.wf-cabinet-feed__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.wf-cabinet-feed__action {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.wf-cabinet-feed__action:hover {
+  color: var(--wf-text);
+}
+
+.wf-cabinet-feed__action--primary {
+  color: var(--wf-accent-dark);
+}
+
+.wf-cabinet-feed__action--danger:hover {
+  color: var(--wf-danger);
+}
+
+.wf-cabinet-feed__edit {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.wf-cabinet-feed__item .wf-attached-note {
+  margin-top: 14px;
+}
+
+/* ─── Note expand (피드 내 상세) ─── */
+.wf-cabinet-note-expand {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  gap: 16px 20px;
+  align-items: start;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--wf-border-subtle);
+}
+
+.wf-cabinet-note-expand__radar {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.wf-cabinet-note-expand__tags {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .wf-cabinet-note-expand {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .wf-cabinet-note-expand__radar,
+  .wf-cabinet-note-expand__tags {
+    grid-column: 1;
+  }
+}
+
+.wf-cabinet-note-expand__tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.wf-cabinet-note-expand__tab {
+  min-height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border-subtle);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.wf-cabinet-note-expand__tab--on {
+  border-color: var(--wf-text);
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--wf-text);
+}
+
+.wf-cabinet-note-expand__empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
+.wf-cabinet-note-expand .wf-attached-note__radar {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  margin: 0;
+}
+
+.wf-cabinet-note-expand .wf-cabinet-feed__tags {
+  margin-top: 0;
+}
+
+/* ─── Pick 카드 — 검색 결과 카드 재사용 ─── */
+.wf-cabinet-pick-card {
+  min-height: 430px;
+}
+
+.wf-cabinet-pick-card__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.wf-cabinet-pick-card--accent {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle) !important;
+}
+
+.wf-cabinet-pick-card__remove {
+  background: var(--wf-surface-2) !important;
+  border: 1px solid var(--wf-border) !important;
+  color: var(--wf-muted) !important;
+}
+
+.wf-cabinet-pick-card__remove:hover {
+  border-color: var(--wf-danger) !important;
+  color: var(--wf-danger) !important;
+  background: rgba(214, 47, 47, 0.08) !important;
+}
+
+.wf-cabinet-pick-card__detail {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 20px;
+  border-radius: 980px;
+  background: var(--wf-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.wf-cabinet-pick-card__detail:hover {
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
+}
+
+/* legacy grid — wf-search-grid 로 대체 */
+.wf-cabinet-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
 /* --- CabinetPage 위시 탭 레이아웃 --- */
 .wf-cabinet-subtabs-row {
   display: flex;
@@ -7,170 +1015,318 @@
   margin: 18px 0 14px;
 }
 
+.wf-cabinet-subtabs-row--write-only {
+  justify-content: flex-end;
+  margin: 0 0 6px;
+}
+
 .wf-cabinet-wish-layout {
-  display: flex;
-  gap: 18px;
-  align-items: flex-start;
-  min-height: 400px;
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  min-height: 320px;
 }
 
-.wf-cabinet-wish-folders {
-  width: 238px;
-  min-width: 238px;
-  flex-shrink: 0;
-  padding: 14px;
-  align-self: flex-start;
-  border-color: rgba(240, 202, 104, 0.14);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
-    rgba(255, 255, 255, 0.025);
-}
-
-.wf-cabinet-wish-folders__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.wf-cabinet-wish-folders__input-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.wf-cabinet-wish-folder-input {
-  flex: 1;
+.wf-cabinet-wish-sidebar {
   min-width: 0;
-  background: var(--wf-surface);
-  border: 1px solid var(--wf-border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  color: var(--wf-text);
-  font: inherit;
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.wf-cabinet-wish-folder-input:focus {
-  border-color: var(--wf-accent);
-}
-
-.wf-cabinet-wish-folder-add-btn {
-  background: var(--wf-accent);
-  border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  color: #0c0c0f;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-
-.wf-cabinet-wish-folder-add-btn:hover {
-  background: var(--wf-accent-light);
-}
-
-.wf-cabinet-wish-folder-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 36px;
-  padding: 6px 7px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  cursor: grab;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
-}
-
-.wf-cabinet-wish-folder-item:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.045);
-  transform: translateY(-1px);
-}
-
-.wf-cabinet-wish-folder-item--drag-over {
-  background: rgba(213, 173, 69, 0.1);
-  border-color: var(--wf-accent);
-}
-
-.wf-cabinet-wish-folder-handle {
-  color: var(--wf-muted);
-  font-size: 12px;
-  margin-right: 4px;
-  cursor: grab;
-  user-select: none;
-}
-
-.wf-cabinet-wish-folder-btn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.78);
-  cursor: pointer;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 0;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  transition: color 0.15s;
-}
-
-.wf-cabinet-wish-folder-btn:hover {
-  color: var(--wf-text);
 }
 
 .wf-cabinet-wish-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.wf-cabinet-wish-folder-empty {
-  display: grid;
-  gap: 8px;
-  padding: 14px;
-  border: 1px solid rgba(240, 202, 104, 0.2);
-  border-radius: 14px;
-  background:
-    linear-gradient(135deg, rgba(240, 202, 104, 0.08), rgba(255, 255, 255, 0.025)),
-    rgba(255, 255, 255, 0.03);
+.wf-cabinet-wish-content .wf-cabinet-empty,
+.wf-cabinet-panel--grid .wf-cabinet-empty {
+  flex: 1;
+  min-height: 220px;
 }
 
-.wf-cabinet-wish-folder-empty strong {
-  color: var(--wf-text);
+.wf-yt-playlist-panel .wf-cabinet-empty {
+  min-height: 160px;
+  padding: 28px 12px;
+}
+
+.wf-yt-playlist-panel .wf-cabinet-empty__meta {
   font-size: 13px;
 }
 
-.wf-cabinet-wish-folder-empty span {
-  color: var(--wf-muted);
-  font-size: 12px;
-  line-height: 1.5;
+/* ─── YouTube-style wish playlists ─── */
+.wf-yt-playlist-panel {
+  padding: 4px 0;
 }
 
-.wf-cabinet-wish-folder-empty button {
-  width: 100%;
+.wf-yt-playlist-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.wf-yt-playlist-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wf-text);
+}
+
+.wf-yt-playlist-panel__add {
+  border: none;
+  background: transparent;
+  color: var(--wf-accent-dark);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.wf-yt-playlist-panel__add:hover {
+  text-decoration: underline;
+}
+
+.wf-yt-playlist-panel__create {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.wf-yt-playlist-panel__input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.wf-yt-playlist-panel__input:focus {
+  outline: none;
+  border-color: var(--wf-accent);
+}
+
+.wf-yt-playlist-panel__create-btn {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wf-text);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wf-yt-playlist-panel__create-btn:hover {
+  opacity: 0.88;
+}
+
+.wf-yt-playlist-panel__empty {
+  display: grid;
+  gap: 8px;
+  padding: 20px 12px;
+  border-radius: 12px;
+  background: var(--wf-surface-2);
+  text-align: center;
+}
+
+.wf-yt-playlist-panel__empty strong {
+  font-size: 14px;
+  color: var(--wf-text);
+}
+
+.wf-yt-playlist-panel__empty span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--wf-muted);
+}
+
+.wf-yt-playlist-panel__empty button {
   margin-top: 4px;
-  border: 1px solid rgba(240, 202, 104, 0.58);
+  height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wf-text);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wf-yt-playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.wf-yt-playlist {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   border-radius: 10px;
-  background: rgba(240, 202, 104, 0.14);
-  color: var(--wf-accent-light);
+  transition: background 0.15s;
+}
+
+.wf-yt-playlist:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.wf-yt-playlist--active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.wf-yt-playlist--drag-over {
+  background: var(--wf-accent-subtle);
+}
+
+.wf-yt-playlist__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  text-align: left;
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 8px 10px;
+  color: inherit;
 }
 
-.wf-cabinet-wish-folder-empty button:hover {
-  background: rgba(240, 202, 104, 0.2);
+.wf-yt-playlist__media {
+  position: relative;
+  width: 100px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.wf-yt-playlist__stack {
+  position: absolute;
+  top: 4px;
+  width: 92px;
+  height: 48px;
+  border-radius: 6px;
+  background: #d9d9d9;
+}
+
+.wf-yt-playlist__stack--1 {
+  right: -5px;
+  z-index: 0;
+}
+
+.wf-yt-playlist__stack--2 {
+  right: -10px;
+  top: 8px;
+  z-index: -1;
+  background: #ececec;
+}
+
+.wf-yt-playlist__thumb {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #111;
+}
+
+.wf-yt-playlist__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wf-yt-playlist__img--empty {
+  background: linear-gradient(135deg, #2a2a2a 0%, #4a4a4a 100%);
+}
+
+.wf-yt-playlist__badge {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wf-yt-playlist__badge-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.wf-yt-playlist__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.wf-yt-playlist__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--wf-text);
+}
+
+.wf-yt-playlist__meta {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+.wf-yt-playlist__menu {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--wf-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.wf-yt-playlist:hover .wf-yt-playlist__menu,
+.wf-yt-playlist--active .wf-yt-playlist__menu {
+  opacity: 1;
+}
+
+.wf-yt-playlist__menu:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--wf-text);
 }
 
 .wf-cabinet-wish-empty {
@@ -181,19 +1337,19 @@
   gap: 10px;
   min-height: 200px;
   padding: 32px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(240, 202, 104, 0.09), transparent 38%),
-    rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
   color: var(--wf-muted);
   font-size: 15px;
   text-align: center;
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-wish-empty__title {
   color: var(--wf-text);
   font-size: 18px;
+  font-weight: 700;
   line-height: 1.35;
 }
 
@@ -211,23 +1367,303 @@
   min-height: 40px;
   margin-top: 4px;
   padding: 0 18px;
-  border: 1px solid rgba(240, 202, 104, 0.58);
+  border: none;
   border-radius: 999px;
-  background: rgba(240, 202, 104, 0.14);
-  color: var(--wf-accent-light);
+  background: var(--wf-accent);
+  color: #fff;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: none;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .wf-cabinet-wish-empty__link:hover {
-  background: rgba(240, 202, 104, 0.22);
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
 }
 
 .wf-cabinet-wish-empty--loading {
   opacity: 0.86;
 }
 
+/* ═══════════════════════════════════════
+   리뷰 카드 v2  (Letterboxd / Goodreads 스타일)
+   ─ 흰 카드 + 왼쪽 골드 액센트 바 + 인용구 형식 본문
+   ═══════════════════════════════════════ */
+.wf-review-card-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+  /* wf-box 기본 border/shadow 오버라이드 */
+  background: var(--wf-surface) !important;
+  border: 1px solid var(--wf-border-subtle) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07) !important;
+  transition: box-shadow 0.2s ease, transform 0.18s ease;
+}
+
+/* 왼쪽 액센트 바 — 골드 토큰 */
+.wf-review-card-v2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--wf-accent-light) 0%, var(--wf-accent) 100%);
+  border-radius: inherit 0 0 inherit;
+}
+
+.wf-review-card-v2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11) !important;
+}
+
+/* 헤더 */
+.wf-review-card-v2__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 12px 22px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-review-card-v2__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wf-text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 별점 + 점수 + 배지 라인 */
+.wf-review-card-v2__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px 10px 22px;
+}
+
+.wf-review-card-v2__stars {
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--wf-accent);
+  line-height: 1;
+}
+
+.wf-review-card-v2__rating {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--wf-accent);
+  padding: 3px 9px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+.wf-review-card-v2__badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* 리뷰 본문 — 인용구 스타일 */
+.wf-review-card-v2__body {
+  margin: 0 18px 16px 22px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--wf-accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--wf-accent-subtle);
+  color: var(--wf-text);
+  font-size: 14px;
+  line-height: 1.78;
+  white-space: pre-wrap;
+}
+
+
+/* ═══════════════════════════════════════
+   노트 카드 v2  (Notion / Apple Notes 스타일)
+   ─ 흰 카드 + 상단 골드 그라디언트 바 + 해시태그 칩
+   ═══════════════════════════════════════ */
+.wf-note-card-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: var(--wf-surface) !important;
+  border: 1px solid var(--wf-border-subtle) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07) !important;
+  transition: box-shadow 0.2s ease, transform 0.18s ease;
+}
+
+/* 상단 골드 바 */
+.wf-note-card-v2::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--wf-accent-light) 0%, var(--wf-accent) 100%);
+  flex-shrink: 0;
+}
+
+.wf-note-card-v2:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11) !important;
+}
+
+/* 헤더 */
+.wf-note-card-v2__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px 12px 18px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-note-card-v2__head-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-note-card-v2__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wf-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-note-card-v2__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wf-note-card-v2__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(31, 157, 87, 0.1);
+  border: 1px solid rgba(31, 157, 87, 0.25);
+  color: var(--wf-success);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.wf-note-card-v2__status--draft {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.25);
+  color: #c47d0a;
+}
+
+.wf-note-card-v2__date {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+/* 메모 본문 */
+.wf-note-card-v2__body {
+  margin: 0;
+  padding: 14px 18px;
+  color: var(--wf-text);
+  font-size: 14px;
+  line-height: 1.78;
+  white-space: pre-wrap;
+  border-bottom: 1px solid var(--wf-border-subtle);
+  /* 접혀 있을 때 최대 4줄 미리보기 */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 자세히 열린 경우 클램프 해제 */
+.wf-note-card-v2--open .wf-note-card-v2__body {
+  display: block;
+  overflow: visible;
+}
+
+/* 푸터: 태그 + 버튼 */
+.wf-note-card-v2__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 18px;
+}
+
+.wf-note-card-v2__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 해시태그 칩 */
+.wf-note-card-v2__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wf-note-card-v2__tag::before {
+  content: '#';
+  opacity: 0.55;
+  margin-right: 2px;
+  font-weight: 700;
+}
+
+.wf-note-card-v2__tag--more {
+  background: var(--wf-surface-2);
+  color: var(--wf-muted);
+}
+
+.wf-note-card-v2__tag--more::before {
+  display: none;
+}
+
+.wf-note-card-v2__no-tags {
+  font-size: 12px;
+  color: var(--wf-muted);
+  padding: 3px 0;
+}
+
+/* ─── 리뷰 카드 수정 폼 ─── */
 .wf-review-card__edit {
   display: grid;
   gap: 12px;
@@ -242,7 +1678,7 @@
   padding: 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface);
   color: var(--wf-text);
   font: inherit;
   line-height: 1.6;
@@ -268,7 +1704,7 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: rgba(255, 255, 255, 0.24);
+  color: var(--wf-border);
   font: inherit;
   font-size: 25px;
   line-height: 1;
@@ -309,13 +1745,14 @@
   align-items: center;
   margin-bottom: 18px;
   padding: 22px 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 8% 16%, rgba(240, 202, 104, 0.1), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
-    rgba(255, 255, 255, 0.025);
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.52);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+  backdrop-filter: blur(22px) saturate(185%);
+  box-shadow:
+    0 10px 36px rgba(31, 28, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .wf-cabinet-profile__avatar {
@@ -324,7 +1761,7 @@
   border-radius: 50%;
   border: 2px solid var(--wf-accent);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(213, 173, 69, 0.16);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-profile__stats {
@@ -339,49 +1776,48 @@
   align-items: center;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(240, 202, 104, 0.18);
+  border: 1px solid var(--wf-border);
   border-radius: 999px;
-  background: rgba(240, 202, 104, 0.055);
-  color: var(--wf-accent-light);
-  font-weight: 800;
+  background: var(--wf-surface-2);
+  color: var(--wf-accent-dark);
+  font-weight: 600;
 }
 
 .wf-cabinet-primary {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .wf-cabinet-primary__tab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 116px;
-  min-height: 46px;
-  padding: 0 20px;
-  border-radius: 14px;
+  min-height: auto;
+  min-width: auto;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 800;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-primary__tab:hover {
-  border-color: rgba(240, 202, 104, 0.3);
+  border-color: var(--wf-muted);
   color: var(--wf-text);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .wf-cabinet-primary__tab--on {
-  border-color: rgba(240, 202, 104, 0.7);
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.2), rgba(213, 173, 69, 0.09)),
-    rgba(255, 255, 255, 0.045);
-  color: var(--wf-accent-light);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
+  box-shadow: none;
 }
 
 .wf-cabinet-hint {
@@ -391,40 +1827,84 @@
 }
 
 .wf-cabinet-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-  gap: 10px;
-  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0;
   margin-bottom: 16px;
-  border-color: rgba(240, 202, 104, 0.12);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
-    rgba(255, 255, 255, 0.025);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
 }
 
-.wf-cabinet-stats span {
-  display: inline-flex;
+.wf-cabinet-stats__item {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.035);
-  font-size: 14px;
-  font-weight: 850;
+  justify-content: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: 10px 16px;
+  position: relative;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
 
-.wf-cabinet-stats__pick {
+.wf-cabinet-stats__item + .wf-cabinet-stats__item::before {
+  display: none;
+}
+
+.wf-cabinet-stats__item:hover {
+  background: var(--wf-surface);
+  border-color: var(--wf-muted);
+}
+
+.wf-cabinet-stats__item--clickable {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.wf-cabinet-stats__item--clickable:hover {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+}
+
+.wf-cabinet-stats__item--on {
+  background: var(--wf-accent-dim);
+  border-color: var(--wf-accent);
+  box-shadow: none;
+}
+
+.wf-cabinet-stats__item--on .wf-cabinet-stats__num,
+.wf-cabinet-stats__item--on .wf-cabinet-stats__label {
   color: var(--wf-accent);
 }
 
-.wf-cabinet-stats__wish {
-  color: #e85d5d;
+.wf-cabinet-stats__num {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--wf-text);
 }
 
-.wf-cabinet-stats__hint {
+.wf-cabinet-stats__label {
+  font-size: 11px;
+  font-weight: 600;
   color: var(--wf-muted);
-  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wf-cabinet-stats__item--pick .wf-cabinet-stats__num { color: var(--wf-accent); }
+.wf-cabinet-stats__item--wish .wf-cabinet-stats__num { color: var(--wf-wine); }
+.wf-cabinet-stats__item--on.wf-cabinet-stats__item--pick .wf-cabinet-stats__num,
+.wf-cabinet-stats__item--on.wf-cabinet-stats__item--wish .wf-cabinet-stats__num {
+  color: var(--wf-accent);
 }
 
 .wf-cabinet-sub {
@@ -438,31 +1918,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 84px;
-  min-height: 42px;
-  padding: 0 15px;
-  border-radius: 12px;
+  min-width: auto;
+  min-height: auto;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid var(--wf-border);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface-2);
   color: var(--wf-muted);
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 800;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
 .wf-cabinet-sub__tab:hover {
-  border-color: rgba(240, 202, 104, 0.28);
+  border-color: var(--wf-muted);
   color: var(--wf-text);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .wf-cabinet-sub__tab--on {
-  border-color: rgba(240, 202, 104, 0.68);
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.18), rgba(213, 173, 69, 0.08)),
-    rgba(255, 255, 255, 0.045);
-  color: var(--wf-accent-light);
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent);
 }
 
 .wf-cabinet-pick {
@@ -473,18 +1951,16 @@
   min-height: 92px;
   padding: 14px 16px;
   margin-bottom: 10px;
-  border-color: rgba(255, 255, 255, 0.085);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.1);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-pick:hover {
   transform: translateY(-2px);
   border-color: rgba(213, 173, 69, 0.3);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  background: var(--wf-surface-2);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-pick__thumb {
@@ -499,7 +1975,7 @@
   overflow: hidden;
   color: var(--wf-text);
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
   text-decoration: none;
@@ -510,11 +1986,18 @@
   height: 46px;
   width: 86px;
   border-radius: 10px;
-  border: 1px solid #e85d5d;
-  background: transparent;
-  color: #e85d5d;
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  color: var(--wf-muted);
   cursor: pointer;
   font: inherit;
+  font-weight: 600;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.wf-cabinet-pick__remove:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
 }
 
 .wf-cabinet-pick__readonly {
@@ -525,20 +2008,19 @@
 .wf-cabinet-post {
   display: grid;
   gap: 12px;
-  padding: 18px 20px;
+  padding: 22px;
   margin-top: 10px;
-  border-color: rgba(255, 255, 255, 0.085);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(0, 0, 0, 0.1);
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .wf-cabinet-post:hover {
-  transform: translateY(-1px);
-  border-color: rgba(213, 173, 69, 0.3);
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  border-color: rgba(198, 146, 43, 0.28);
+  box-shadow: var(--wf-shadow-md);
 }
 
 .wf-cabinet-post__title {
@@ -579,7 +2061,7 @@
   gap: 12px;
   margin-top: 2px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--wf-border-subtle);
 }
 
 .wf-cabinet-post__foot .wf-text-sm {
@@ -594,18 +2076,71 @@
   line-height: 1.65;
 }
 
+/* ─── 캐비넷 카드 액션 버튼 (상세/수정/삭제/자세히) ───
+   wf-btn--primary와 동일한 톤: 흰 배경 + 테두리로 카드(회색) 배경과 구분.
+   hover 시에만 의미별 색상이 들어옴 */
+.wf-cabinet-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* 상세 · 자세히 — accent(골드) hover */
+.wf-cabinet-action-btn--detail:hover,
+.wf-cabinet-action-btn--neutral:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+}
+
+/* 수정 — accent hover */
+.wf-cabinet-action-btn--edit:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+}
+
+/* 삭제 — danger(레드) hover */
+.wf-cabinet-action-btn--delete:hover {
+  border-color: var(--wf-danger);
+  color: var(--wf-danger);
+}
+
+.wf-cabinet-post__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 18px 16px 22px;
+  border-top: 1px solid var(--wf-border-subtle);
+}
+
 .wf-cabinet-state {
   display: flex;
   align-items: center;
   min-height: 96px;
   margin: 10px 0 0;
   padding: 22px 24px;
-  border: 1px solid rgba(240, 202, 104, 0.12);
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(240, 202, 104, 0.08), transparent 42%),
-    rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
   color: var(--wf-muted);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-cabinet-follow {
@@ -615,13 +2150,68 @@
 }
 
 @media (max-width: 768px) {
-  .wf-cabinet-wish-layout {
+  .wf-ig-profile__main {
     flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
   }
 
-  .wf-cabinet-wish-folders {
+  .wf-ig-profile__avatar-wrap {
+    width: 86px;
+    height: 86px;
+  }
+
+  .wf-ig-profile__info {
     width: 100%;
-    min-width: 0;
+    padding-top: 0;
+  }
+
+  .wf-ig-profile__name-row {
+    justify-content: center;
+  }
+
+  .wf-ig-profile__stats {
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  .wf-ig-profile__stats li,
+  .wf-ig-profile__stats span {
+    font-size: 14px;
+  }
+
+  .wf-ig-profile__bio {
+    text-align: center;
+  }
+
+  .wf-ig-profile__actions {
+    width: 100%;
+  }
+
+  .wf-ig-tabs__item {
+    min-height: 40px;
+    padding: 10px 4px 8px;
+    font-size: 12px;
+  }
+
+  .wf-ig-grid {
+    gap: 2px;
+  }
+
+  .wf-cabinet-wish-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .wf-yt-playlist-list {
+    max-height: none;
+  }
+
+  .wf-yt-playlist__media {
+    width: 88px;
+    height: 50px;
   }
 
   .wf-cabinet-wish-content {
@@ -648,10 +2238,144 @@
   }
 }
 
+/* ─── 리뷰 카드 헤더: whiskey.css 의존성 제거 (새로고침 버그 방지) ─── */
+.wf-review-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* ─── CabinetPagination ─── */
+.wf-cabinet-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 20px 0 4px;
+}
+
+.wf-cabinet-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  line-height: 1;
+}
+
+.wf-cabinet-pagination__btn:hover:not(:disabled) {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-cabinet-pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.wf-cabinet-pagination__page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-pagination__page:hover:not(:disabled) {
+  border-color: rgba(240, 202, 104, 0.4);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-cabinet-pagination__page--on {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-subtle);
+  color: var(--wf-accent-dark);
+  font-weight: 700;
+  cursor: default;
+}
+
+.wf-cabinet-pagination__page:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.wf-cabinet-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 34px;
+  color: var(--wf-muted);
+  font-size: 14px;
+  user-select: none;
+}
+
 /* ─── Phase 7: CabinetProfileHeader ─── */
 .wf-cabinet-profile__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.wf-cabinet-profile__name { font-size: 28px; margin: 0; line-height: 1.2; }
+.wf-cabinet-profile__name { font-size: 28px; margin: 0; line-height: 1.2; font-weight: 700; }
 .wf-cabinet-follow-btn { margin-top: 8px; height: 40px; width: 96px; }
+
+/* 팔로워·팔로잉 분리 통계 */
+.wf-cabinet-follow-stats {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.wf-cabinet-follow-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  padding: 10px 14px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.wf-cabinet-follow-stat:hover {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+}
+
+.wf-cabinet-follow-stat__num {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--wf-accent);
+  line-height: 1.1;
+}
+
+.wf-cabinet-follow-stat__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wf-muted);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
 
 /* ─── Phase 7: CabinetPickItem ─── */
 .wf-cabinet-pick__thumb-link { flex-shrink: 0; display: block; }
@@ -669,10 +2393,12 @@
   padding: 6px 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
+  background: var(--wf-surface);
   color: var(--wf-muted);
   font-size: 13px;
   text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 .wf-cabinet-pick__detail-btn:hover { border-color: var(--wf-accent); color: var(--wf-accent); }
@@ -680,34 +2406,235 @@
   padding: 6px 12px;
   border: 1px solid var(--wf-border);
   border-radius: 8px;
-  background: none;
+  background: var(--wf-surface);
   color: var(--wf-muted);
   font-size: 13px;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: var(--wf-shadow-sm);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 .wf-cabinet-pick__remove-btn:hover { border-color: var(--wf-danger); color: var(--wf-danger); }
 
-/* ─── Phase 7: CabinetFollowPage ─── */
-.wf-cabinet-follow {
-  padding: 16px;
-  margin-top: 12px;
-  text-decoration: none;
+/* 위스키 타입·도수 분리 표시 */
+.wf-cabinet-pick__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.wf-cabinet-pick__type {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 2px 9px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.wf-cabinet-pick__abv {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wf-text);
+  padding-left: 2px;
+}
+
+.wf-cabinet-pick__abv-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wf-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ─── 팔로우 페이지 공통 ─── */
+.wf-follow-page-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 16px;
 }
-.wf-cabinet-follow__avatar { width: 48px; height: 48px; overflow: hidden; flex-shrink: 0; border-radius: 50%; }
-.wf-cabinet-follow__avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.wf-follow-back-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.wf-follow-back-btn:hover {
+  border-color: var(--wf-accent);
+  color: var(--wf-accent-dark);
+  background: var(--wf-accent-subtle);
+}
+
+.wf-follow-page-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--wf-text);
+}
+
+.wf-follow-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.wf-follow-tab {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface-2);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.wf-follow-tab:hover {
+  border-color: var(--wf-muted);
+  background: var(--wf-surface);
+  color: var(--wf-text);
+}
+
+.wf-follow-tab--on {
+  background: var(--wf-accent-dim);
+  border-color: var(--wf-accent);
+  color: var(--wf-accent);
+  box-shadow: none;
+}
+
+.wf-follow-tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--wf-border);
+  color: var(--wf-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.wf-follow-tab--on .wf-follow-tab__count {
+  background: rgba(213, 173, 69, 0.25);
+  color: var(--wf-accent-dark);
+}
+
+.wf-follow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 유저 카드 */
+.wf-follow-user-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface-2);
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.wf-follow-user-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(213, 173, 69, 0.35);
+  background: var(--wf-surface);
+  box-shadow: var(--wf-shadow-sm);
+}
+
+.wf-follow-user-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--wf-border);
+}
+
+.wf-follow-user-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.wf-follow-user-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-follow-user-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wf-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wf-follow-user-card__label {
+  font-size: 12px;
+  color: var(--wf-muted);
+}
+
+.wf-follow-user-card__arrow {
+  font-size: 20px;
+  color: var(--wf-muted);
+  flex-shrink: 0;
+  line-height: 1;
+}
 
 /* ─── Phase 8: WishFolderModal folder buttons ─── */
 .wf-wish-folder-opt {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
-    rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
+  background: var(--wf-surface-2);
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
   padding: 14px;
   color: var(--wf-text);
   font-size: 14px;
@@ -721,16 +2648,14 @@
   width: 100%;
 }
 .wf-wish-folder-opt--on {
-  background:
-    linear-gradient(135deg, rgba(213, 173, 69, 0.18), rgba(143, 52, 76, 0.12)),
-    rgba(255, 255, 255, 0.04);
-  border-color: rgba(240, 202, 104, 0.7);
-  box-shadow: 0 14px 36px rgba(213, 173, 69, 0.14);
+  background: var(--wf-accent-subtle);
+  border-color: var(--wf-accent);
+  box-shadow: var(--wf-shadow-sm);
 }
 .wf-wish-folder-opt:not(:disabled):hover {
   transform: translateY(-1px);
   border-color: rgba(240, 202, 104, 0.42);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--wf-surface-2);
 }
 .wf-wish-folder-opt--on:not(:disabled):hover { border-color: rgba(239, 84, 84, 0.72); }
 .wf-wish-folder-opt:disabled { cursor: not-allowed; }
@@ -739,28 +2664,26 @@
   min-width: 0;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
+  font-weight: 600;
 }
 .wf-wish-folder-icon {
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border: 1px solid rgba(240, 202, 104, 0.24);
+  border: 1px solid var(--wf-border);
   border-radius: 9px;
-  background:
-    linear-gradient(180deg, rgba(240, 202, 104, 0.3), rgba(213, 173, 69, 0.08)),
-    rgba(255, 255, 255, 0.05);
+  background: var(--wf-accent-dim);
 }
-.wf-wish-folder-status--on { color: var(--wf-accent-light); font-size: 12px; font-weight: 800; white-space: nowrap; }
+.wf-wish-folder-status--on { color: var(--wf-accent); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .wf-wish-folder-status--off { color: var(--wf-muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
 .wf-wish-create-btn {
   background: rgba(240, 202, 104, 0.055);
   border: 1px dashed rgba(240, 202, 104, 0.38);
-  border-radius: 16px;
+  border-radius: var(--wf-radius-card);
   padding: 13px 16px;
   color: var(--wf-accent-light);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   width: 100%;
   text-align: center;
@@ -776,17 +2699,14 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 15px;
-  border: 1px solid rgba(240, 202, 104, 0.26);
-  border-radius: 16px;
-  background:
-    linear-gradient(135deg, rgba(240, 202, 104, 0.14), rgba(255, 255, 255, 0.035)),
-    rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--wf-accent);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-accent-subtle);
 }
 
 .wf-wish-flow-notice--removed {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.045);
+  border-color: var(--wf-border);
+  background: var(--wf-surface-2);
 }
 
 .wf-wish-flow-notice div {
@@ -818,7 +2738,7 @@
   background: var(--wf-accent);
   color: #0c0c0f;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -827,8 +2747,8 @@
 }
 
 .wf-wish-modal-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: var(--wf-surface);
+  border: 1px solid var(--wf-border);
   border-radius: 14px;
   padding: 13px 15px;
   color: var(--wf-text);
@@ -845,8 +2765,26 @@
 
 /* ─── Phase 8: CabinetCommunitySection ─── */
 .wf-community-write-link { text-decoration: none; display: inline-block; }
-.wf-community-write-btn { width: 192px; height: 46px; margin-top: 8px; }
+.wf-community-write-btn {
+  width: auto;
+  min-width: 132px;
+  height: auto;
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wf-accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: none;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.wf-community-write-btn:hover {
+  background: var(--wf-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--wf-shadow-accent);
+}
 
 /* ─── Phase 8: CabinetPage folder buttons ─── */
-.wf-cabinet-wish-folder-btn--active { color: var(--wf-accent) !important; font-weight: 700; }
-.wf-cabinet-wish-folder-del { flex-shrink: 0; margin-left: 4px; }

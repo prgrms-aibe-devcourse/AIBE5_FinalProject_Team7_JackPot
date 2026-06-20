@@ -5,6 +5,8 @@ import { TopNav } from '@/shared/components/layout/TopNav';
 import { Button } from '@/shared/components/ui/Button';
 import { toast } from '@/shared/components/ui/Toast';
 import { surveyApi, type SurveyApiRequest } from '../api/surveyApi';
+import { useTags } from '../hooks/useTags';
+import { SurveySidebar } from '../components/SurveySidebar';
 import '../survey.css';
 
 /* ───────── 설문 정의 ───────── */
@@ -14,7 +16,6 @@ interface ScoreOption {
 }
 interface ScoreQuestion {
   key: 'sweetScore' | 'bodyScore' | 'smokyScore' | 'spicyScore' | 'finishScore';
-  short: string;
   title: string;
   options: ScoreOption[];
 }
@@ -22,7 +23,6 @@ interface ScoreQuestion {
 const SCORE_QUESTIONS: ScoreQuestion[] = [
   {
     key: 'sweetScore',
-    short: 'Sweet',
     title: 'Q1. 평소 어떤 디저트를 더 좋아하세요?',
     options: [
       { text: '크래커, 참크래커 같은 담백한 과자' },
@@ -34,7 +34,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'bodyScore',
-    short: 'Body',
     title: 'Q2. 새로운 술을 마신다면 어떤 스타일에 더 끌리나요?',
     options: [
       { text: '가볍고 부담 없는 스타일' },
@@ -46,7 +45,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'smokyScore',
-    short: 'Smoky',
     title: 'Q3. 고기 굽는 냄새나 캠핑 모닥불 냄새는?',
     options: [
       { text: '정말 싫다' },
@@ -58,7 +56,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'spicyScore',
-    short: 'Spicy',
     title: 'Q4. 시나몬, 생강차, 후추향은?',
     options: [
       { text: '싫다' },
@@ -70,7 +67,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
   },
   {
     key: 'finishScore',
-    short: 'Finish',
     title: 'Q5. 맛있는 음식을 먹고 난 뒤',
     options: [
       { text: '깔끔하게 끝나는 게 좋다' },
@@ -80,66 +76,6 @@ const SCORE_QUESTIONS: ScoreQuestion[] = [
       { text: '오래오래 기억에 남는 여운이 좋다' },
     ],
   },
-];
-
-interface TagItem {
-  id: number;
-  name: string;
-}
-interface TagGroup {
-  group: string;
-  tags: TagItem[];
-}
-
-const NOSE_GROUPS: TagGroup[] = [
-  { group: '과일·꽃', tags: [
-    { id: 1, name: '시트러스' },
-    { id: 2, name: '베리류' },
-    { id: 3, name: '꽃' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 7, name: '꿀' },
-    { id: 8, name: '바닐라' },
-    { id: 9, name: '캐러멜' },
-    { id: 10, name: '초콜릿' },
-  ]},
-  { group: '허브·식물', tags: [
-    { id: 4, name: '허브' },
-    { id: 5, name: '곡물' },
-    { id: 6, name: '견과류' },
-    { id: 11, name: '커피' },
-  ]},
-  { group: '나무·향신료', tags: [
-    { id: 15, name: '오크' },
-    { id: 12, name: '후추' },
-    { id: 13, name: '계피' },
-  ]},
-  { group: '개성 있는 향', tags: [
-    { id: 17, name: '피트' },
-    { id: 18, name: '흙' },
-    { id: 16, name: '가죽' },
-  ]},
-];
-
-const TASTE_GROUPS: TagGroup[] = [
-  { group: '과일', tags: [
-    { id: 101, name: '시트러스' },
-    { id: 102, name: '베리류' },
-  ]},
-  { group: '달콤', tags: [
-    { id: 106, name: '꿀' },
-    { id: 107, name: '바닐라' },
-    { id: 108, name: '캐러멜' },
-    { id: 109, name: '초콜릿' },
-  ]},
-  { group: '기타', tags: [
-    { id: 105, name: '견과류' },
-    { id: 110, name: '커피' },
-    { id: 103, name: '허브' },
-    { id: 111, name: '오크' },
-    { id: 112, name: '피트' },
-    { id: 114, name: '짠맛' },
-  ]},
 ];
 
 /** 우측 네비 스텝 (Q1~Q7) */
@@ -162,6 +98,10 @@ export default function SurveyPage() {
   const [tasteTags, setTasteTags] = useState<number[]>([]);
   const [activeId, setActiveId] = useState<string>('q-sweetScore');
   const [submitting, setSubmitting] = useState(false);
+
+  // 향/맛 태그는 서버에서 조회 (프론트 하드코딩 제거)
+  const { data: noseTagList = [], isLoading: noseLoading } = useTags('nose');
+  const { data: tasteTagList = [], isLoading: tasteLoading } = useTags('taste');
 
   const answeredCount = SCORE_QUESTIONS.filter((q) => scores[q.key] != null).length;
   const allScored = answeredCount === SCORE_QUESTIONS.length;
@@ -234,42 +174,26 @@ export default function SurveyPage() {
 
   return (
     <>
-      <TopNav searchPlaceholder="Whiskey Note" />
+      <TopNav />
 
       <div className="wf-page wf-survey-scroll">
         <div className="wf-survey-layout">
           {/* 본문 */}
           <main className="wf-survey-main">
             <header className="wf-survey-intro">
-              <div>
-                <p className="wf-text-label">설문조사</p>
-                <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
-                <p className="wf-subtitle wf-survey-intro__subtitle">
-                  {typeChosen
-                    ? '7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.'
-                    : '먼저 위스키 경험 수준을 선택해 주세요.'}
-                </p>
-              </div>
-              {typeChosen && (
-                <div className="wf-survey-progress" aria-label={`설문 진행률 ${progressPercent}%`}>
-                  <div className="wf-survey-progress__label">
-                    <span>진행률</span>
-                    <strong>{completedCount}/7</strong>
-                  </div>
-                  <div className="wf-survey-progress__track">
-                    <span style={{ width: `${progressPercent}%` }} />
-                  </div>
-                </div>
-              )}
+              <p className="wf-survey-intro__eyebrow">설문조사</p>
+              <h1 className="wf-title wf-survey-intro__title">나의 위스키 취향 알아보기</h1>
+              <p className="wf-subtitle wf-survey-intro__subtitle">
+                {typeChosen
+                  ? '7개 문항에 답하면 취향에 맞는 위스키를 추천해 드려요.'
+                  : '먼저 위스키 경험 수준을 선택해 주세요.'}
+              </p>
             </header>
 
             {/* 타입 선택: 입문자 / 애호가 */}
             {!typeChosen && (
               <section className="wf-box wf-survey-q wf-survey-type-select">
-                <div className="wf-survey-q__head">
-                  <span className="wf-survey-q__step">Type</span>
-                  <h2 className="wf-title">위스키 경험 수준을 선택해 주세요</h2>
-                </div>
+                <h2 className="wf-title wf-survey-q__title">위스키 경험 수준을 선택해 주세요</h2>
                 <div className="wf-survey-type-options">
                   <button
                     type="button"
@@ -302,10 +226,7 @@ export default function SurveyPage() {
                   ref={(el) => { blockRefs.current[`q-${q.key}`] = el; }}
                   className="wf-box wf-survey-q"
                 >
-                  <div className="wf-survey-q__head">
-                    <span className="wf-survey-q__step">{q.short}</span>
-                    <h2 className="wf-title">{q.title}</h2>
-                  </div>
+                  <h2 className="wf-title wf-survey-q__title">{q.title}</h2>
                   <div className="wf-survey-opts">
                     {q.options.map((opt, oi) => {
                       const choice = oi + 1; // 1~5
@@ -317,8 +238,7 @@ export default function SurveyPage() {
                           className={`wf-opt${on ? ' wf-opt--on' : ''}`}
                           onClick={() => setScore(q.key, choice)}
                         >
-                          <span className="wf-opt__ordinal">{choice}</span>
-                          <span>{opt.text}</span>
+                          {opt.text}
                         </button>
                       );
                     })}
@@ -334,25 +254,23 @@ export default function SurveyPage() {
                 ref={(el) => { blockRefs.current['q-nose'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">nose_tags · 복수 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q6. 좋아하는 향을 골라주세요</h2>
-                {NOSE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                <h2 className="wf-title wf-survey-q__title">Q6. 좋아하는 향을 골라주세요</h2>
+                {noseLoading ? (
+                  <p className="wf-text-sm">향 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {noseTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 
@@ -363,64 +281,45 @@ export default function SurveyPage() {
                 ref={(el) => { blockRefs.current['q-taste'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <p className="wf-text-label">taste_tags · 복수 선택</p>
-                <h2 className="wf-title wf-survey-q__h2">Q7. 좋아하는 맛을 골라주세요</h2>
-                {TASTE_GROUPS.map((g) => (
-                  <div key={g.group} className="wf-survey-tag-group">
-                    <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
-                    <div className="wf-chips">
-                      {g.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                          onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
-                        >
-                          {tag.name}
-                        </button>
-                      ))}
-                    </div>
+                <h2 className="wf-title wf-survey-q__title">Q7. 좋아하는 맛을 골라주세요</h2>
+                {tasteLoading ? (
+                  <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
+                ) : (
+                  <div className="wf-chips">
+                    {tasteTagList.map((tag) => (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                        onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
+                      >
+                        {tag.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </section>
             )}
 
             {typeChosen && canSubmit && (
-              <Button block className="wf-survey-submit" onClick={handleSubmit} disabled={submitting}>
+              <Button block className="wf-survey-submit wf-survey-submit--cta" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? '분석 중...' : '결과 확인하기'}
               </Button>
             )}
           </main>
 
-          {/* 우측 sticky 네비 */}
-          {typeChosen && <nav className="wf-survey-nav" aria-label="설문 문항 이동">
-            <p className="wf-survey-nav__title">문항</p>
-            <ul className="wf-survey-nav__list">
-              {NAV_STEPS.map((step) => {
-                const reachable = availIds.has(step.id);
-                const done = doneIds.has(step.id);
-                const active = activeId === step.id;
-                const cls = [
-                  'wf-survey-nav__item',
-                  done ? 'wf-survey-nav__item--done' : '',
-                  active ? 'wf-survey-nav__item--active' : '',
-                  reachable ? '' : 'wf-survey-nav__item--locked',
-                ].filter(Boolean).join(' ');
-                return (
-                  <li key={step.id}>
-                    <button
-                      type="button"
-                      className={cls}
-                      disabled={!reachable}
-                      onClick={() => goTo(step.id)}
-                    >
-                      {step.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>}
+          {typeChosen ? (
+            <SurveySidebar
+              progressPercent={progressPercent}
+              completedCount={completedCount}
+              totalSteps={NAV_STEPS.length}
+              steps={NAV_STEPS}
+              availIds={availIds}
+              doneIds={doneIds}
+              activeId={activeId}
+              onGoTo={goTo}
+            />
+          ) : null}
         </div>
       </div>
     </>

@@ -60,7 +60,8 @@ public class TastingNoteController {
             @PathVariable Long noteId,
             @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        return tastingNoteService.getMyTastingNote(principal.userId(), noteId);
+        Long userId = principal != null ? principal.userId() : null;
+        return tastingNoteService.getTastingNoteForView(userId, noteId);
     }
     // AI 테이스팅 노트 분석
     @PostMapping("/api/v1/tasting-notes/analyze")
@@ -111,5 +112,15 @@ public class TastingNoteController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return tastingNoteService.getMyTastingNotes(principal.userId(), page, size);
+    }
+
+    // 타인 공개 시음 노트 리스트 조회 (isDraft=false만, 페이징)
+    @GetMapping("/api/v1/users/{userId}/tasting-notes")
+    public Page<TastingNoteResponse> getUserTastingNotes(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return tastingNoteService.getUserPublicTastingNotes(userId, page, size);
     }
 }

@@ -4,8 +4,8 @@ export default function BannedUserPage() {
   return (
     <ErrorPage
       code={403}
-      title="이용이 제한된 계정입니다"
-      message="해당 사용자는 운영 정책에 따라 이용이 제한된 계정입니다."
+      title="잠시 휴식 중인 유저예요"
+      message="위스키를 너무 많이 마셔서 그런지, 잠시 휴식을 취하고 있는 유저예요. 다음에 다시 방문해 주세요 🥃"
     />
   );
 }

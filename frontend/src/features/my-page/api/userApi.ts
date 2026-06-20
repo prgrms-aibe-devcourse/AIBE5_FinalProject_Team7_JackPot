@@ -15,6 +15,7 @@ export interface UserMeDto {
   email: string;
   nickname: string;
   profileImageUrl: string | null;
+  introduction: string | null;
   flavorProfile: unknown | null;
 }
 
@@ -22,6 +23,7 @@ export interface UpdateUserMeRequest {
   nickname?: string | null;
   /** S3 object key (profiles/{userId}/...) */
   profileImageUrl?: string | null;
+  introduction?: string | null;
 }
 
 export interface UpdateMyPasswordRequest {

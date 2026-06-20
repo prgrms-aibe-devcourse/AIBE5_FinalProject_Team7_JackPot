@@ -12,6 +12,8 @@ type TagFilter = 'nose' | 'taste';
 
 interface AttachedNotePanelProps {
   noteId: number;
+  /** 리뷰 피드 등 상위에서 이미 Note 라벨이 있을 때 헤더 생략 */
+  embedded?: boolean;
 }
 
 function axisPoint(index: number, total: number, ratio: number) {
@@ -139,7 +141,7 @@ function NoteTags({ tags }: { tags: TastingNoteTag[] }) {
   );
 }
 
-export function AttachedNotePanel({ noteId }: AttachedNotePanelProps) {
+export function AttachedNotePanel({ noteId, embedded = false }: AttachedNotePanelProps) {
   const { data: note, isLoading, isError } = useQuery({
     queryKey: ['tasting-note', 'attached', noteId],
     queryFn: () => fetchTastingNote(noteId),
@@ -154,11 +156,16 @@ export function AttachedNotePanel({ noteId }: AttachedNotePanelProps) {
   }
 
   return (
-    <section className="wf-attached-note wf-box" aria-label="첨부된 My Note">
-      <div>
-        <p className="wf-text-label">첨부된 My Note</p>
-        <h3 className="wf-attached-note__title">{note.whiskeyName}</h3>
-      </div>
+    <section
+      className={`wf-attached-note${embedded ? ' wf-attached-note--embedded' : ' wf-box'}`}
+      aria-label={embedded ? '첨부 노트' : '첨부된 노트'}
+    >
+      {!embedded ? (
+        <div>
+          <p className="wf-text-label">첨부된 노트</p>
+          <h3 className="wf-attached-note__title">{note.whiskeyName}</h3>
+        </div>
+      ) : null}
       <div className="wf-attached-note__body">
         <NoteRadar note={note} />
         <div className="wf-attached-note__content">

@@ -1,7 +1,7 @@
 :root {
-  color: #1a1208;
-  background: #f7f3eb;
-  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  color: var(--wf-text);
+  background: var(--wf-bg);
+  font-family: 'Roboto Flex', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   line-height: 1.5;
 }
 
@@ -33,7 +33,7 @@ a {
 }
 
 .app-header {
-  border-bottom: 1px solid #e5dcc8;
+  border-bottom: 1px solid var(--wf-border);
   padding: 0.75rem 1rem;
 }
 
@@ -50,15 +50,15 @@ a {
   grid-template-columns: repeat(5, 1fr);
   gap: 0.25rem;
   padding: 0.5rem;
-  background: #fffdf8;
-  border-top: 1px solid #e5dcc8;
+  background: var(--wf-surface);
+  border-top: 1px solid var(--wf-border);
   text-align: center;
   font-size: 0.85rem;
 }
 
 .global-nav a.is-active {
   font-weight: 700;
-  color: #8b5a2b;
+  color: var(--wf-accent);
 }
 
 .page-loader,
@@ -68,10 +68,10 @@ a {
 
 .page-placeholder__screen-id {
   font-size: 0.75rem;
-  color: #6b5b4b;
+  color: var(--wf-muted);
 }
 
 .page-placeholder__phase {
-  color: #8b5a2b;
+  color: var(--wf-accent);
   font-size: 0.875rem;
 }

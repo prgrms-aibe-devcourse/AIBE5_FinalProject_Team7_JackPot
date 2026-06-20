@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { toast } from '@/shared/components/ui/Toast';
-import { Link, useParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { PageLoader } from '@/shared/components/ui/PageLoader';
 import { Button } from '@/shared/components/ui/Button';
-import { AttachedNotePanel } from '@/features/review/components/AttachedNotePanel';
+import { ReviewAttachedNote } from '@/features/review/components/ReviewAttachedNote';
 import { useToggleReviewLike } from '@/features/review/hooks/useReviews';
 import { fetchMyTastingNoteForWhiskey, type MyTastingNote } from '@/features/tasting-note/api/noteApi';
 import { whiskeyApi } from '../api/whiskeyApi';
@@ -18,20 +17,21 @@ import { RelatedColumns } from '../components/RelatedColumns';
 import { RelatedWhiskeys } from '../components/RelatedWhiskeys';
 import { TastingSummaryPanel } from '../components/TastingSummaryPanel';
 import { TastingTagsBubble } from '../components/TastingTagsBubble';
+import { WishPickActions } from '../components/WishPickActions';
 import {
   useRelatedColumns,
   useSimilarWhiskeys,
   useWhiskeyDetail,
-  useWhiskeyReviews,
+  useWhiskeyReviewsInfinite,
   useWhiskeyReviewStats,
 } from '../hooks/useWhiskeyDetail';
-import type { TastingSummarySource, WhiskeyReview } from '../types';
-import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
+import type { TastingAxisKey, TastingAxisView, TastingSummarySource, WhiskeyReview } from '../types';
+import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { UserProfileLink } from '@/shared/components/UserProfileLink';
 import { buildTastingAxes, hasOfficialNote } from '../utils/tastingSummary';
 import '../whiskey.css';
 
-type DetailTab = 'info' | 'reviews' | 'note';
+type DetailTab = 'info' | 'reviews';
 
 function formatType(type: string): string {
   const map: Record<string, string> = {
@@ -73,11 +73,20 @@ function getCurrentUserId(): number | null {
   return Number.isFinite(userId) ? userId : null;
 }
 
-function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
-  const [showNote, setShowNote] = useState(false);
+const KEEP_NOTES_OPEN_KEY = 'wf-keep-review-notes-open';
+
+function ReviewPreviewCard({
+  review,
+  defaultNoteOpen,
+}: {
+  review: WhiskeyReview;
+  defaultNoteOpen: boolean;
+}) {
   const currentUserId = getCurrentUserId();
   const likeMutation = useToggleReviewLike(currentUserId);
   const navigate = useNavigate();
+  const avatarSrc = resolveProfileImageUrl(review.profileImageUrl, review.userId);
+  const [avatarError, setAvatarError] = useState(false);
 
   const handleLikeClick = () => {
     if (currentUserId == null) {
@@ -93,144 +102,89 @@ function ReviewPreviewCard({ review }: { review: WhiskeyReview }) {
   };
 
   return (
-    <li className="wf-detail-reviews__item wf-box">
+    <li className="wf-detail-reviews__item">
       <div className="wf-detail-reviews__header">
-        <div>
-          <UserProfileLink userId={review.userId}>
-            <strong>{review.nickname}</strong>
-          </UserProfileLink>
-          <span className="wf-text-xs"> · {formatReviewDate(review.createdAt)}</span>
-        </div>
-        <span className="wf-detail-reviews__rating">{Number(review.rating).toFixed(1)}</span>
+        <UserProfileLink userId={review.userId} className="wf-detail-reviews__author-link">
+          <span className="wf-detail-reviews__avatar-wrap">
+            {!avatarError ? (
+              <img
+                src={avatarSrc}
+                alt=""
+                className="wf-detail-reviews__avatar"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <span className="wf-detail-reviews__avatar wf-detail-reviews__avatar--fallback" aria-hidden />
+            )}
+          </span>
+          <span className="wf-detail-reviews__meta-line">
+            <strong className="wf-detail-reviews__nickname">{review.nickname}</strong>
+            <span className="wf-detail-reviews__meta-sep" aria-hidden>·</span>
+            <span className="wf-detail-reviews__date">{formatReviewDate(review.createdAt)}</span>
+            <span className="wf-detail-reviews__meta-sep" aria-hidden>·</span>
+            <span className="wf-detail-reviews__rating-inline" aria-label={`평점 ${Number(review.rating).toFixed(1)}`}>
+              <span className="wf-stars" aria-hidden>★</span>
+              {Number(review.rating).toFixed(1)}
+            </span>
+          </span>
+        </UserProfileLink>
       </div>
-      <p className="wf-text-sm wf-detail-reviews__text">
+
+      <p className="wf-detail-reviews__text">
         {review.publicText || '작성된 리뷰 내용이 없습니다.'}
       </p>
-      <button
-        type="button"
-        className={`wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
-        onClick={handleLikeClick}
-        disabled={likeMutation.isPending}
-      >
-        {review.likedByMe ? '♥' : '♡'} {review.likeCount ?? 0}
-      </button>
-      {review.hasAttachedNote && review.attachedNoteId && (
-        <>
-          <button
-            type="button"
-            className="wf-detail-reviews__note-button"
-            onClick={() => setShowNote((prev) => !prev)}
-          >
-            {showNote ? 'My Note 접기' : 'My Note 자세히'}
-          </button>
-          {showNote && <AttachedNotePanel noteId={review.attachedNoteId} />}
-        </>
-      )}
+
+      <div className="wf-detail-reviews__footer">
+        <button
+          type="button"
+          className={`wf-detail-reviews__action wf-review-like${review.likedByMe ? ' wf-review-like--on' : ''}`}
+          onClick={handleLikeClick}
+          disabled={likeMutation.isPending}
+        >
+          좋아요 {review.likeCount ?? 0}
+        </button>
+      </div>
+
+      {review.hasAttachedNote && review.attachedNoteId ? (
+        <ReviewAttachedNote noteId={review.attachedNoteId} defaultOpen={defaultNoteOpen} />
+      ) : null}
     </li>
   );
 }
 
-function PersonalNotePanel({
-  note,
-  isLoading,
-  notePath,
-  currentUserId,
-}: {
-  note: MyTastingNote | null | undefined;
-  isLoading: boolean;
-  notePath: string;
-  currentUserId: number | null;
-}) {
-  if (currentUserId == null) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-        </div>
-        <p className="wf-text-sm">로그인 후 이 위스키에 대한 개인 시음 노트를 남길 수 있습니다.</p>
-        <Button to={PATHS.LOGIN} className="wf-detail-personal-note__cta">로그인하기</Button>
-      </section>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-        </div>
-        <div className="wf-skeleton-line" style={{ width: '45%', height: 14 }} />
-        <div className="wf-skeleton-line" style={{ width: '88%', height: 14, marginTop: 12 }} />
-      </section>
-    );
-  }
-
-  if (!note) {
-    return (
-      <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-        <div className="wf-detail-section-head">
-          <h2 className="wf-section-title">개인 노트</h2>
-          <span className="wf-detail-section-head__count">미작성</span>
-        </div>
-        <p className="wf-text-sm">아직 작성한 시음 노트가 없습니다. 향, 맛, 피니시를 기록해두면 다음 선택이 더 쉬워집니다.</p>
-        <Button to={notePath} className="wf-detail-personal-note__cta">My Note 작성</Button>
-      </section>
-    );
-  }
-
-  const scoreItems = [
-    ['바디', note.bodyScore],
-    ['피니시', note.finishScore],
-    ['스모키', note.smokyScore],
-    ['스파이시', note.spicyScore],
-    ['단맛', note.sweetScore],
+/** 내 시음 노트 점수를 레이더 축 데이터로 변환 */
+function buildMyNoteAxes(note: MyTastingNote | null | undefined): TastingAxisView[] {
+  if (!note) return [];
+  const items: [TastingAxisKey, string, number | null | undefined][] = [
+    ['body', '바디', note.bodyScore],
+    ['finish', '피니시', note.finishScore],
+    ['smoky', '스모키', note.smokyScore],
+    ['spicy', '스파이시', note.spicyScore],
+    ['sweet', '단맛', note.sweetScore],
   ];
-
-  return (
-    <section className="wf-detail-panel wf-detail-personal-note" aria-label="개인 노트">
-      <div className="wf-detail-section-head">
-        <h2 className="wf-section-title">개인 노트</h2>
-        <span className="wf-detail-section-head__count">
-          {note.isDraft ?? note.draft ? '임시저장' : '작성 완료'}
-        </span>
-      </div>
-      <div className="wf-detail-personal-note__scores">
-        {scoreItems.map(([label, score]) => (
-          <span key={label}>
-            <strong>{label}</strong>
-            {formatTenPointScore(typeof score === 'number' ? score : undefined)}
-          </span>
-        ))}
-      </div>
-      <p className="wf-text-sm wf-detail-personal-note__memo">
-        {note.memo || '작성된 메모가 없습니다.'}
-      </p>
-      {note.tags?.length ? (
-        <div className="wf-detail-personal-note__tags">
-          {note.tags.slice(0, 8).map((tag) => (
-            <span key={tag.id}>{tag.name}</span>
-          ))}
-        </div>
-      ) : null}
-      <Button to={`${notePath}?noteId=${note.id}`} className="wf-detail-personal-note__cta">
-        My Note 수정
-      </Button>
-    </section>
-  );
+  return items
+    .filter(([, , score]) => typeof score === 'number')
+    .map(([key, label, score]) => ({ key, label, score: score as number, tagLabels: [] }));
 }
 
 export default function WhiskeyDetailPage() {
   const { whiskeyId } = useParams();
   const navigate = useNavigate();
   const id = whiskeyId ?? '1';
-  const reviewPath = PATHS.WHISKEY_REVIEWS.replace(':whiskeyId', id);
   const notePath = PATHS.TASTING_NOTE.replace(':whiskeyId', id);
   const currentUserId = getCurrentUserId();
+  const reviewSentinelRef = useRef<HTMLDivElement | null>(null);
 
   const { data: detail, isLoading, isError } = useWhiskeyDetail(id);
   const { data: relatedPosts = [], isLoading: columnsLoading } = useRelatedColumns(id);
   const { data: similarWhiskeys = [], isLoading: similarLoading } = useSimilarWhiskeys(id);
-  const { data: reviews, isLoading: reviewsLoading } = useWhiskeyReviews(id, 0, 5);
+  const {
+    data: reviewPages,
+    isLoading: reviewsLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useWhiskeyReviewsInfinite(id, 10);
   const { data: reviewStats } = useWhiskeyReviewStats(id);
   const { data: myNote, isLoading: myNoteLoading } = useQuery({
     queryKey: ['tasting-note', 'my', currentUserId, id],
@@ -240,6 +194,35 @@ export default function WhiskeyDetailPage() {
 
   const [activeTab, setActiveTab] = useState<DetailTab>('info');
   const [summarySource, setSummarySource] = useState<TastingSummarySource>('official');
+  const [keepNotesOpen, setKeepNotesOpen] = useState(
+    () => localStorage.getItem(KEEP_NOTES_OPEN_KEY) === '1',
+  );
+
+  const reviewList = useMemo(
+    () => reviewPages?.pages.flatMap((page) => page.content ?? []) ?? [],
+    [reviewPages],
+  );
+
+  useEffect(() => {
+    localStorage.setItem(KEEP_NOTES_OPEN_KEY, keepNotesOpen ? '1' : '0');
+  }, [keepNotesOpen]);
+
+  useEffect(() => {
+    if (activeTab !== 'reviews') return;
+    const el = reviewSentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '240px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [activeTab, hasNextPage, isFetchingNextPage, fetchNextPage, reviewList.length]);
 
   // Pick 상태
   const [isPicked, setIsPicked] = useState(false);
@@ -249,7 +232,6 @@ export default function WhiskeyDetailPage() {
   const [wishModalOpen, setWishModalOpen] = useState(false);
   const [isWished, setIsWished] = useState(false);
   const [wishLoading, setWishLoading] = useState(false);
-  const [wishedItemId, setWishedItemId] = useState<number | null>(null);
   const [imgError, setImgError] = useState(false);
 
   // 위스키가 바뀌면 이미지 에러 상태 초기화
@@ -316,7 +298,6 @@ export default function WhiskeyDetailPage() {
           const found = items.find((item: { whiskey: { id: number }; itemId: number }) => item.whiskey.id === Number(id));
           if (found) {
             setIsWished(true);
-            setWishedItemId(found.itemId);
             return;
           }
         }
@@ -337,12 +318,18 @@ export default function WhiskeyDetailPage() {
 
     setWishLoading(true);
     try {
-      if (isWished && wishedItemId !== null) {
-        // 위시 삭제
+      if (isWished) {
+        // 위시 삭제 — 등록된 모든 폴더에서 제거
         try {
-          await cabinetApi.removeWish(wishedItemId, 0);
+          const folderRes = await cabinetApi.getWishedFolderIds(Number(id));
+          const folderIds: number[] = folderRes.data.data ?? [];
+          for (const folderId of folderIds) {
+            const itemRes = await cabinetApi.getWishItems(folderId);
+            const items = (itemRes.data.data ?? []) as { whiskey: { id: number }; itemId: number }[];
+            const target = items.find((it) => it.whiskey.id === Number(id));
+            if (target) await cabinetApi.removeWish(target.itemId, folderId);
+          }
           setIsWished(false);
-          setWishedItemId(null);
           toast('위시리스트에서 제거되었습니다.', 'info');
         } catch {
           toast('위시 제거에 실패했습니다.', 'error');
@@ -406,6 +393,8 @@ export default function WhiskeyDetailPage() {
     () => (detail ? buildTastingAxes(detail) : []),
     [detail],
   );
+  const myNoteAxes = useMemo(() => buildMyNoteAxes(myNote), [myNote]);
+  const summaryAxes = effectiveSource === 'myNote' ? myNoteAxes : tastingAxes;
 
   if (isLoading) {
     return (
@@ -434,24 +423,14 @@ export default function WhiskeyDetailPage() {
     );
   }
 
-  const ageLabel = detail.ageYears > 0 ? `${detail.ageYears}년` : 'NAS';
   const metaLine = [
     formatType(detail.type),
     detail.country,
     `${detail.abv}%`,
-    '700ml',
+    detail.volume ? `${detail.volume}ml` : null,
   ].filter(Boolean).join(' · ');
   const imageSrc = resolveMediaUrl(detail.imageUrl);
   const displayRating = reviewStats?.avgRating ?? detail.avgRating;
-  const reviewCount = reviewStats?.reviewCount ?? detail.reviewCount ?? 0;
-  const heroChips = [
-    formatType(detail.type),
-    detail.country,
-    detail.region,
-    ageLabel,
-    `${detail.abv}% ABV`,
-  ].filter(Boolean);
-
   return (
     <WireframePage scroll>
       {wishModalOpen && (
@@ -463,54 +442,47 @@ export default function WhiskeyDetailPage() {
       )}
       <header className="wf-detail-hero">
         <div className="wf-detail-hero__copy">
-          <p className="wf-detail-hero__eyebrow">{detail.distillery ?? detail.country}</p>
           <h1 className="wf-title wf-detail-hero__title">{detail.name}</h1>
           <p className="wf-detail-hero__meta">{metaLine}</p>
-          <div className="wf-detail-hero__chips" aria-label="위스키 주요 정보">
-            {heroChips.map((chip, index) => (
-              <span key={`${chip}-${index}`}>{chip}</span>
-            ))}
-          </div>
         </div>
-        <div className="wf-detail-hero__stats" aria-label="위스키 요약">
-          <div className="wf-detail-hero__stat">
-            <span>시음 점수</span>
-            <strong>{formatTenPointScore(detail.noteSummary?.bodyScore)}</strong>
+        <div className="wf-detail-hero__aside">
+          <div className="wf-tabs" data-active={activeTab} role="tablist">
+            <span className="wf-tabs__pill" aria-hidden="true" />
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'info'}
+              className={`wf-tab-item${activeTab === 'info' ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setActiveTab('info')}
+            >
+              정보
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'reviews'}
+              className={`wf-tab-item${activeTab === 'reviews' ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              리뷰
+            </button>
           </div>
-          <div className="wf-detail-hero__stat">
-            <span>리뷰 평점</span>
-            <strong>{formatFivePointScore(displayRating)}</strong>
-          </div>
-          <div className="wf-detail-hero__stat">
-            <span>노트</span>
-            <strong>{detail.noteSummary?.noteCount ?? 0}</strong>
+          <div className="wf-detail-hero__stats" aria-label="위스키 요약">
+            <div className="wf-detail-hero__stat">
+              <span>시음 점수</span>
+              <strong>{formatTenPointScore(detail.noteSummary?.bodyScore)}</strong>
+            </div>
+            <div className="wf-detail-hero__stat">
+              <span>리뷰 평점</span>
+              <strong>{formatFivePointScore(displayRating)}</strong>
+            </div>
+            <div className="wf-detail-hero__stat">
+              <span>노트</span>
+              <strong>{detail.noteSummary?.noteCount ?? 0}</strong>
+            </div>
           </div>
         </div>
       </header>
-
-      <div className="wf-tabs">
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'info' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('info')}
-        >
-          정보
-        </button>
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'reviews' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('reviews')}
-        >
-          리뷰
-        </button>
-        <button
-          type="button"
-          className={`wf-tab-item${activeTab === 'note' ? ' wf-tab-item--on' : ''}`}
-          onClick={() => setActiveTab('note')}
-        >
-          개인 노트
-        </button>
-      </div>
 
       <div className="wf-layout-detail-v2">
         <aside className="wf-detail-sidebar">
@@ -528,40 +500,32 @@ export default function WhiskeyDetailPage() {
             )}
             <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
-          <div className="wf-detail-sidebar__actions">
-            <div className="wf-detail-sidebar__actions-head">
-              <span>Save to cabinet</span>
-              <strong>내 취향 보관</strong>
+          {detail.price != null && (
+            <div className="wf-box wf-detail-price">
+              <span className="wf-text-xs">가격</span>
+              <span className="wf-detail-price__value">
+                {detail.price.toLocaleString()}원
+                {detail.costUrl ? (
+                  <span className="wf-detail-price__source">
+                    {' - '}
+                    <a href={detail.costUrl} target="_blank" rel="noopener noreferrer">
+                      {detail.costUrlSource || '바로가기'}
+                    </a>
+                  </span>
+                ) : detail.costUrlSource ? (
+                  <span className="wf-detail-price__source"> - {detail.costUrlSource}</span>
+                ) : null}
+              </span>
             </div>
-            <Button
-              variant={isWished ? 'primary' : 'ghost'}
-              className={`wf-detail-action ${isWished ? 'wf-detail-action--on' : ''}`}
-              onClick={handleWishToggle}
-              disabled={wishLoading}
-            >
-              {isWished ? '♥ 위시리스트 취소' : '♡ 위시리스트'}
-            </Button>
-            <Button
-              className={`wf-detail-action ${isPicked ? 'wf-detail-action--on' : ''}`}
-              onClick={handlePickToggle}
-              disabled={pickLoading}
-            >
-              {pickLoading ? '처리 중...' : isPicked ? '★ My Pick 취소' : '★ My Pick'}
-            </Button>
-          </div>
-          <p className="wf-detail-sidebar__hint">위시는 마시고 싶은 술, My Pick은 추천하고 싶은 술로 저장돼요.</p>
-          <div className="wf-grid2">
-            {[
-              ['숙성', ageLabel],
-              ['도수', `${detail.abv}%`],
-              ['지역', detail.region],
-            ].map(([k, v]) => (
-              <div key={k} className="wf-box wf-grid2__item">
-                <div className="wf-text-xs">{k}</div>
-                <div>{v}</div>
-              </div>
-            ))}
-          </div>
+          )}
+          <WishPickActions
+            isWished={isWished}
+            isPicked={isPicked}
+            wishLoading={wishLoading}
+            pickLoading={pickLoading}
+            onWishToggle={handleWishToggle}
+            onPickToggle={handlePickToggle}
+          />
           <TastingTagsBubble tags={detail.tastingTags} />
         </aside>
 
@@ -571,21 +535,56 @@ export default function WhiskeyDetailPage() {
               <section className="wf-detail-info wf-detail-panel">
                 <div className="wf-detail-section-head">
                   <h2 className="wf-section-title">제품 정보</h2>
-                  <span className="wf-detail-section-head__count">리뷰 {reviewCount}개</span>
                 </div>
-                {detail.description ? (
-                  <p className="wf-text-sm">{detail.description}</p>
-                ) : (
-                  <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
-                )}
+                {(() => {
+                  const intro = Object.entries(detail.description?.introduction ?? {});
+                  const feature = Object.entries(detail.description?.feature ?? {});
+                  if (intro.length === 0 && feature.length === 0) {
+                    return (
+                      <p className="wf-text-sm wf-detail-info__empty">공식 설명이 아직 없습니다.</p>
+                    );
+                  }
+                  const groups = ([
+                    { title: '제품 소개', rows: intro },
+                    { title: '핵심 특징', rows: feature },
+                  ] as { title: string; rows: [string, string][] }[])
+                    .filter((g) => g.rows.length > 0)
+                    // 그룹 타이틀이 첫 행 라벨과 중복되면 숨김(예: 제품 소개), 아니면 표시(예: 핵심 특징)
+                    .map((g) => ({ ...g, showTitle: g.rows[0]?.[0] !== g.title }));
+                  return (
+                    <div className="wf-detail-desc">
+                      {groups.map((g) => (
+                        <div key={g.title} className="wf-detail-desc__group">
+                          {g.showTitle && (
+                            <h3 className="wf-detail-desc__group-title">{g.title}</h3>
+                          )}
+                          {g.rows.map(([label, text]) => (
+                            <div
+                              key={label}
+                              className={`wf-detail-desc__row${g.showTitle ? ' wf-detail-desc__row--sub' : ''}`}
+                            >
+                              <p className="wf-text-label">{label}</p>
+                              <p className="wf-text-sm">{text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </section>
 
               <TastingSummaryPanel
-                axes={tastingAxes}
+                axes={summaryAxes}
                 source={effectiveSource}
                 hasOfficial={hasOfficialNote(detail)}
+                officialNote={detail.note?.note ?? null}
                 onSourceChange={setSummarySource}
-                reviewPath={reviewPath}
+                isLoggedIn={currentUserId != null}
+                myNoteLoading={myNoteLoading}
+                hasMyNote={Boolean(myNote)}
+                notePath={myNote ? `${notePath}?noteId=${myNote.id}` : notePath}
+                loginPath={PATHS.LOGIN}
               />
 
               <RelatedWhiskeys items={similarWhiskeys} isLoading={similarLoading} />
@@ -608,9 +607,14 @@ export default function WhiskeyDetailPage() {
                   )}
                 </h2>
                 <div className="wf-detail-reviews__actions">
-                  <Link to={reviewPath} className="wf-detail-reviews__more">
-                    전체 보기 →
-                  </Link>
+                  <label className="wf-detail-reviews__note-pref">
+                    <input
+                      type="checkbox"
+                      checked={keepNotesOpen}
+                      onChange={(event) => setKeepNotesOpen(event.target.checked)}
+                    />
+                    <span>노트 열어두기</span>
+                  </label>
                   <Button to={PATHS.WRITE_REVIEW.replace(':whiskeyId', id)} size="sm">
                     리뷰 작성
                   </Button>
@@ -620,7 +624,7 @@ export default function WhiskeyDetailPage() {
               {reviewsLoading ? (
                 <ul className="wf-detail-reviews__list" aria-hidden>
                   {[0, 1, 2].map((i) => (
-                    <li key={i} className="wf-detail-reviews__item wf-box">
+                    <li key={i} className="wf-detail-reviews__item">
                       <div className="wf-skeleton-line" style={{ width: '42%', height: 13 }} />
                       <div className="wf-skeleton-line" style={{ width: '100%', marginTop: 12, height: 13 }} />
                       <div className="wf-skeleton-line" style={{ width: '68%', marginTop: 6, height: 13 }} />
@@ -628,12 +632,22 @@ export default function WhiskeyDetailPage() {
                     </li>
                   ))}
                 </ul>
-              ) : reviews?.content.length ? (
-                <ul className="wf-detail-reviews__list">
-                  {reviews.content.map((review) => (
-                    <ReviewPreviewCard key={review.id} review={review} />
-                  ))}
-                </ul>
+              ) : reviewList.length ? (
+                <>
+                  <ul className="wf-detail-reviews__list">
+                    {reviewList.map((review) => (
+                      <ReviewPreviewCard
+                        key={review.id}
+                        review={review}
+                        defaultNoteOpen={keepNotesOpen}
+                      />
+                    ))}
+                  </ul>
+                  {isFetchingNextPage ? (
+                    <p className="wf-detail-reviews__loadmore">리뷰 불러오는 중…</p>
+                  ) : null}
+                  <div ref={reviewSentinelRef} className="wf-detail-reviews__sentinel" aria-hidden />
+                </>
               ) : (
                 <div className="wf-detail-reviews__empty">
                   <p className="wf-text-sm">아직 등록된 리뷰가 없습니다.</p>
@@ -644,15 +658,6 @@ export default function WhiskeyDetailPage() {
                 </div>
               )}
             </section>
-          ) : null}
-
-          {activeTab === 'note' ? (
-            <PersonalNotePanel
-              note={myNote}
-              isLoading={myNoteLoading}
-              notePath={notePath}
-              currentUserId={currentUserId}
-            />
           ) : null}
         </main>
 

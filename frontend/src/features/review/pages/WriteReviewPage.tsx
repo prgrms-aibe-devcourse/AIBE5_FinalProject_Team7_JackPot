@@ -1,13 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
+import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { StarRatingInput } from '../components/StarRatingInput';
 import { useCreateReview, useMyReviews, useUpdateReview } from '../hooks/useReviews';
 import { useWhiskeyDetail } from '@/features/whiskey/hooks/useWhiskeyDetail';
 import { fetchMyTastingNoteForWhiskey } from '@/features/tasting-note/api/noteApi';
+import '@/features/whiskey/whiskey.css';
 import '../review.css';
 
 function getCurrentUserId(): number | null {
@@ -18,9 +20,20 @@ function getCurrentUserId(): number | null {
   return Number.isFinite(userId) ? userId : null;
 }
 
+function formatType(type: string): string {
+  const map: Record<string, string> = {
+    single_malt: '싱글몰트',
+    blended: '블렌디드',
+    bourbon: '버번',
+    rye: '라이',
+  };
+  return map[type] ?? type;
+}
+
 export default function WriteReviewPage() {
   const { whiskeyId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const id = whiskeyId ?? '1';
   const currentUserId = getCurrentUserId();
   const { data: whiskey } = useWhiskeyDetail(id);
@@ -36,11 +49,19 @@ export default function WriteReviewPage() {
   const [publicText, setPublicText] = useState('');
   const [attachNote, setAttachNote] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [imgError, setImgError] = useState(false);
 
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
+  const cabinetReviewsPath = `${PATHS.CABINET}?section=bar&tab=reviews`;
+  const returnTo = searchParams.get('returnTo');
+  const exitPath = returnTo === 'cabinet-reviews' ? cabinetReviewsPath : detailPath;
   const existingReview = myReviews?.content.find((review) => Number(review.whiskeyId) === Number(id));
   const isEditMode = Boolean(existingReview);
   const isSaving = createReviewMutation.isPending || updateReviewMutation.isPending;
+
+  useEffect(() => {
+    setImgError(false);
+  }, [id]);
 
   useEffect(() => {
     if (!existingReview) return;
@@ -80,77 +101,96 @@ export default function WriteReviewPage() {
         await createReviewMutation.mutateAsync(body);
       }
 
-      navigate(detailPath);
+      navigate(exitPath);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : '리뷰 저장에 실패했습니다.');
     }
   };
 
+  const metaLine = whiskey
+    ? [
+        formatType(whiskey.type),
+        whiskey.country,
+        whiskey.abv != null ? `${whiskey.abv}%` : null,
+        whiskey.volume ? `${whiskey.volume}ml` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : null;
+  const imageSrc = resolveMediaUrl(whiskey?.imageUrl);
+  const pageTitle = myReviewsLoading ? '리뷰 확인 중' : isEditMode ? '리뷰 수정' : '리뷰 작성';
+
   return (
-    <WireframePage>
-      <form className="wf-write-review-form" onSubmit={handleSubmit}>
-        <header className="wf-write-review-hero wf-box">
-          <div>
-            <p className="wf-text-label">Whiskey review</p>
-            <h2 className="wf-title">{myReviewsLoading ? '리뷰 확인 중' : isEditMode ? '리뷰 수정' : '리뷰 작성'}</h2>
-            <p className="wf-text-sm">{whiskey?.name ?? '위스키 정보를 불러오는 중입니다.'}</p>
+    <WireframePage scroll>
+      <p className="wf-breadcrumb">
+        홈 / <Link to={detailPath}>{whiskey?.name ?? '위스키'}</Link> / <strong>{pageTitle}</strong>
+      </p>
+
+      <div className="wf-layout-detail-v2 wf-write-review-layout">
+        <aside className="wf-detail-sidebar wf-write-review-sidebar">
+          <div className="wf-detail-sidebar__image-frame wf-write-review-image-frame">
+            <div className="wf-write-review-product">
+              <p className="wf-write-review-product__name">{whiskey?.name ?? '위스키 정보를 불러오는 중입니다.'}</p>
+              {metaLine ? <p className="wf-write-review-product__meta">{metaLine}</p> : null}
+            </div>
+            {imageSrc && !imgError ? (
+              <img
+                src={imageSrc}
+                alt={whiskey?.name ?? '위스키'}
+                className="wf-detail-sidebar__image wf-write-review-image-frame__image"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="wf-placeholder wf-detail-sidebar__image wf-write-review-image-frame__image" aria-hidden />
+            )}
+            <span className="wf-detail-sidebar__image-shadow" aria-hidden />
           </div>
-          <span className="wf-write-review-hero__badge">{isEditMode ? '수정 모드' : '새 리뷰'}</span>
-        </header>
+        </aside>
 
-        <div className="wf-write-review-layout">
-          <aside className="wf-write-review-guide wf-box" aria-label="리뷰 작성 안내">
-            <p className="wf-text-label">Review flow</p>
-            <ol>
-              <li>
-                <strong>별점</strong>
-                <span>첫인상에 가까운 점수를 선택하세요.</span>
-              </li>
-              <li>
-                <strong>공개 리뷰</strong>
-                <span>다른 사람이 읽을 한 줄 이상의 감상을 남깁니다.</span>
-              </li>
-              <li>
-                <strong>My Note</strong>
-                <span>개인 시음 노트가 있으면 함께 공개할 수 있습니다.</span>
-              </li>
-            </ol>
-            {isEditMode ? (
-              <p className="wf-text-sm wf-write-review-edit-hint">
-                이미 작성한 리뷰가 있어 수정 화면으로 열었습니다.
-              </p>
-            ) : null}
-          </aside>
+        <main className="wf-detail-main wf-write-review-main">
+          <form className="wf-detail-reviews wf-write-review-form" onSubmit={handleSubmit}>
+            <div className="wf-detail-reviews__title-row wf-write-review-form__intro">
+              <div>
+                <h1 className="wf-section-title">{pageTitle}</h1>
+                {isEditMode ? (
+                  <p className="wf-text-sm wf-write-review-edit-hint">
+                    이미 작성한 리뷰가 있어 수정 화면으로 열었습니다.
+                  </p>
+                ) : null}
+              </div>
+            </div>
 
-          <div className="wf-write-review-editor">
-            <section className="wf-write-review-section wf-box">
-              <div className="wf-write-review-section__head">
-                <div>
-                  <p className="wf-text-label">Rating</p>
-                  <h3>별점</h3>
-                </div>
-                <span>{rating}점</span>
+            <section className="wf-write-review-block">
+              <div className="wf-detail-reviews__title-row wf-write-review-block__head">
+                <h2 className="wf-section-title">별점</h2>
+                <span className="wf-detail-reviews__rating" aria-live="polite">
+                  <span className="wf-stars" aria-hidden>★</span>
+                  {rating.toFixed(1)}
+                </span>
               </div>
               <StarRatingInput value={rating} onChange={setRating} />
             </section>
 
-            <section className="wf-write-review-section wf-box">
+            <section className="wf-write-review-block">
+              <div className="wf-detail-reviews__title-row wf-write-review-block__head">
+                <h2 className="wf-section-title">공개 리뷰</h2>
+              </div>
               <label className="wf-write-review-label">
-                <span className="wf-text-label">공개 리뷰</span>
+                <span className="wf-text-sm wf-write-review-label__hint">다른 사람에게 보여줄 리뷰를 적어주세요.</span>
                 <textarea
                   className="wf-review-textarea"
                   value={publicText}
                   onChange={(event) => setPublicText(event.target.value)}
-                  placeholder="다른 사람에게 보여줄 리뷰를 적어주세요."
+                  placeholder="향, 맛, 전체적인 인상을 자유롭게 적어주세요."
                   rows={7}
                 />
               </label>
             </section>
 
-            <section className="wf-review-note-attach wf-box">
+            <section className="wf-write-review-block wf-review-note-attach">
               <div className="wf-review-note-attach__head">
                 <div>
-                  <p className="wf-text-label">My Note 첨부</p>
+                  <h2 className="wf-section-title">노트 첨부</h2>
                   <p className="wf-text-sm wf-write-review-note-hint">
                     이 위스키에 작성한 시음 노트를 리뷰에 함께 표시할 수 있습니다.
                   </p>
@@ -185,32 +225,21 @@ export default function WriteReviewPage() {
               )}
             </section>
 
-            {errorMessage && (
-              <p className="wf-text-sm wf-write-review-error">
-                {errorMessage}
-              </p>
-            )}
+            {errorMessage ? (
+              <p className="wf-text-sm wf-write-review-error">{errorMessage}</p>
+            ) : null}
 
-            <div className="wf-write-review-actions">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => navigate(detailPath)}
-                disabled={isSaving}
-              >
+            <div className="wf-detail-reviews__actions wf-write-review-actions">
+              <Button type="button" variant="ghost" onClick={() => navigate(exitPath)} disabled={isSaving}>
                 취소
               </Button>
-              <Button
-                type="submit"
-                disabled={isSaving || myReviewsLoading}
-                className="wf-write-review-submit"
-              >
+              <Button type="submit" disabled={isSaving || myReviewsLoading} className="wf-write-review-submit">
                 {isSaving ? '저장 중...' : isEditMode ? '수정 저장' : '등록'}
               </Button>
             </div>
-          </div>
-        </div>
-      </form>
+          </form>
+        </main>
+      </div>
     </WireframePage>
   );
 }

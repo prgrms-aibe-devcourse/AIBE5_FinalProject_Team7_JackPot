@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
+import { getTagTooltip } from '../constants/tagDescriptions';
 import type { WhiskeyTagStat } from '../types';
 
-const MIN_RADIUS = 22;
-const MAX_RADIUS = 36;
+const MIN_RADIUS = 42;
+const MAX_RADIUS = 78;
 const TAG_FILTERS = [
-  { value: 'all', label: '전체' },
   { value: 'nose', label: '향' },
   { value: 'taste', label: '맛' },
 ] as const;
@@ -30,76 +30,102 @@ interface TastingTagsBubbleProps {
 }
 
 export function TastingTagsBubble({ tags, onTagClick }: TastingTagsBubbleProps) {
-  const [selectedFilter, setSelectedFilter] = useState<TagFilter>('all');
+  const [selectedFilter, setSelectedFilter] = useState<TagFilter>('nose');
   const sorted = useMemo(() => {
     return [...tags]
-      .filter((tag) => selectedFilter === 'all' || tag.category === selectedFilter)
+      .filter((tag) => tag.category === selectedFilter)
       .sort((a, b) => b.count - a.count);
   }, [selectedFilter, tags]);
   const maxCount = sorted[0]?.count ?? 1;
+  const hasIcons = sorted.some((tag) => Boolean(tag.imageUrl));
+  const emptyLabel = selectedFilter === 'nose' ? '향 태그가 아직 없습니다.' : '맛 태그가 아직 없습니다.';
 
   return (
     <section className="wf-detail-tags wf-box wf-box--solid" aria-label="Tasting tags">
-      <p className="wf-detail-tags__eyebrow">TASTING TAGS</p>
-      <h2 className="wf-section-title">TASTING TAGS</h2>
-      <p className="wf-text-sm wf-detail-tags__hint">맛 태그 빈도 (원=히트맵)</p>
-      <p className="wf-text-xs wf-detail-tags__sub">
-        이 위스키에서 인식한 맛을 클릭해 태그 추가
-      </p>
-      <div className="wf-detail-tags__filters" role="group" aria-label="태그 종류 선택">
-        {TAG_FILTERS.map((filter) => (
-          <button
-            key={filter.value}
-            type="button"
-            className={`wf-detail-tags__filter-button ${
-              selectedFilter === filter.value ? 'wf-detail-tags__filter-button--active' : ''
-            }`}
-            onClick={() => setSelectedFilter(filter.value)}
-          >
-            {filter.label}
-          </button>
-        ))}
+      <div className="wf-detail-tags__head">
+        <h2 className="wf-section-title">TASTING TAGS</h2>
+        <div
+          className="wf-tabs wf-detail-tags__toggle"
+          data-active={selectedFilter}
+          role="tablist"
+          aria-label="태그 종류 선택"
+        >
+          <span className="wf-tabs__pill" aria-hidden="true" />
+          {TAG_FILTERS.map((filter) => (
+            <button
+              key={filter.value}
+              type="button"
+              role="tab"
+              aria-selected={selectedFilter === filter.value}
+              className={`wf-tab-item${selectedFilter === filter.value ? ' wf-tab-item--on' : ''}`}
+              onClick={() => setSelectedFilter(filter.value)}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {sorted.length === 0 ? (
-        <p className="wf-text-sm wf-detail-tags__empty">아직 등록된 My Note 태그가 없습니다.</p>
+        <p className="wf-text-sm wf-detail-tags__empty">{emptyLabel}</p>
       ) : (
-        <ul className="wf-detail-tags__grid">
+        <ul className={`wf-detail-tags__grid${hasIcons ? ' wf-detail-tags__grid--icons' : ''}`}>
           {sorted.map((tag) => {
             const ratio = tag.count / maxCount;
             const radius = bubbleSize(tag.count, maxCount);
+            const tooltip = getTagTooltip(tag.name);
+
             return (
-              <li key={tag.tagId}>
-                <button
-                  type="button"
-                  className="wf-detail-tags__bubble"
-                  style={{
-                    width: radius * 2,
-                    height: radius * 2,
-                    backgroundColor: heatColor(ratio),
-                  }}
-                  onClick={() => onTagClick?.(tag)}
-                  title={`${tag.name} (${tag.count})`}
-                >
-                  {tag.imageUrl ? (
-                    <img src={tag.imageUrl} alt="" className="wf-detail-tags__image" />
+              <li key={tag.tagId} className="wf-detail-tags__item">
+                <div className="wf-detail-tags__item-wrap">
+                  <button
+                    type="button"
+                    className={`wf-detail-tags__bubble${tag.imageUrl ? ' wf-detail-tags__bubble--icon' : ''}`}
+                    style={
+                      tag.imageUrl
+                        ? { width: radius * 2, height: radius * 2 }
+                        : {
+                            width: radius * 2,
+                            height: radius * 2,
+                            backgroundColor: heatColor(ratio),
+                          }
+                    }
+                    onClick={() => onTagClick?.(tag)}
+                    aria-describedby={tooltip ? `tag-tooltip-${tag.tagId}` : undefined}
+                  >
+                    {tag.imageUrl ? (
+                      <img src={tag.imageUrl} alt={tag.name} className="wf-detail-tags__image" />
+                    ) : (
+                      <span className="wf-detail-tags__count">{tag.count}</span>
+                    )}
+                  </button>
+
+                  {tooltip ? (
+                    <div
+                      id={`tag-tooltip-${tag.tagId}`}
+                      className="wf-detail-tags__tooltip"
+                      role="tooltip"
+                    >
+                      <p className="wf-detail-tags__tooltip-title">
+                        {tooltip.englishName} / {tag.name}
+                      </p>
+                      <p className="wf-detail-tags__tooltip-desc">{tooltip.description}</p>
+                      <p className="wf-detail-tags__tooltip-examples">
+                        <span className="wf-detail-tags__tooltip-label">예시</span>
+                        {tooltip.examples}
+                      </p>
+                    </div>
                   ) : null}
-                  <span className="wf-detail-tags__count">{tag.count}</span>
-                </button>
-                <span className="wf-detail-tags__name">{tag.name}</span>
+                </div>
+                <span className="wf-detail-tags__name">
+                  {tag.name}
+                  <span className="wf-detail-tags__name-count">({tag.count})</span>
+                </span>
               </li>
             );
           })}
         </ul>
       )}
-
-      <div className="wf-detail-tags__legend" aria-hidden>
-        <span className="wf-text-xs">적음</span>
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--low" />
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--mid" />
-        <span className="wf-detail-tags__legend-bar wf-detail-tags__legend-bar--high" />
-        <span className="wf-text-xs">많음</span>
-      </div>
     </section>
   );
 }

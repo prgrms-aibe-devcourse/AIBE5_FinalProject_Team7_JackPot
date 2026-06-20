@@ -53,7 +53,12 @@ public class SecurityConfig {
                                 "/api/v1/follows/status",
                                 "/api/v1/followers/list",
                                 "/api/v1/followings/list",
-                                "/api/v1/lounge/feed"
+                                "/api/v1/lounge/feed",
+                                "/api/v1/lounge/popular",
+                                "/api/v1/lounge/latest",
+                                "/api/v1/lounge/trending-whiskeys",
+                                "/api/v1/lounge/suggested-users",
+                                "/api/v1/lounge/today"
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
@@ -79,11 +84,13 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.POST,
                                 "/api/v1/taste/survey"
                         ).permitAll()
-                        // 타인 캐비넷·픽 목록 조회 — 비로그인 허용 (/users/** 보다 위에 둘 것)
+                        // 타인 캐비넷·픽 목록·공개 프로필·공개 노트 조회 — 비로그인 허용 (/users/** 보다 위에 둘 것)
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
                                 "/api/v1/users/*/picks",
-                                "/api/v1/users/*/cabinet/stats"
+                                "/api/v1/users/*/cabinet/stats",
+                                "/api/v1/users/*/profile",
+                                "/api/v1/users/*/tasting-notes"
                         ).permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .requestMatchers("/api/v1/uploads/**").authenticated()
@@ -118,13 +125,16 @@ public class SecurityConfig {
                                 org.springframework.http.HttpMethod.DELETE,
                                 "/api/v1/whiskeys/*/pick"
                         ).authenticated()
-                        // 시음 노트는 개인 데이터이므로 JWT 인증 유저 기준으로만 접근
+                        // 시음 노트 — my/작성은 인증, 단건 조회는 리뷰 첨부 공개 노트 허용
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
                                 "/api/v1/tasting-notes/my",
-                                "/api/v1/tasting-notes/*",
                                 "/api/v1/whiskeys/*/notes/my"
                         ).authenticated()
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/tasting-notes/*"
+                        ).permitAll()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,
                                 "/api/v1/tasting-notes",

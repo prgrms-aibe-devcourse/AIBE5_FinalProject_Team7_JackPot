@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PATHS } from '@/app/router/paths';
 import { TopNav } from '@/shared/components/layout/TopNav';
 import { toast } from '@/shared/components/ui/Toast';
+import { Button } from '@/shared/components/ui/Button';
 import { authApi } from '../api/authApi';
 import '../auth.css';
 
@@ -152,11 +153,11 @@ export default function RegisterPage() {
         <div className="wf-auth-box wf-box wf-box--solid wf-register-box">
 
           {/* 헤더 */}
-          <div className="wf-register-header">
-            <div className="wf-register-emoji">🥃</div>
+          <header className="wf-register-header">
+            <p className="wf-auth-intro__eyebrow">시작하기</p>
             <h2 className="wf-title wf-auth-title wf-register-title">회원가입</h2>
-            <p className="wf-subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
-          </div>
+            <p className="wf-subtitle wf-auth-intro__subtitle">취향 설문 후 맞춤 위스키를 추천받아보세요</p>
+          </header>
 
           {/* 구분선 */}
           <div className="wf-register-divider" />
@@ -239,75 +240,53 @@ export default function RegisterPage() {
               <label className="wf-register-label">
                 생년월일 <span className="wf-register-required">*</span>
               </label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                {/* 직접 입력 (숫자 8자리) */}
+              <div className="wf-register-birthday-row">
                 <input
-                  className="wf-register-field"
+                  className="wf-register-field wf-register-birthday-field"
                   placeholder="예: 19900115"
                   value={birthday}
                   onChange={(e) => handleBirthdayTextChange(e.target.value)}
                   maxLength={8}
                   inputMode="numeric"
-                  style={{ flex: 1 }}
                   disabled={loading}
                 />
-                {/* 3번: 캘린더 버튼 — showPicker()로 date input 직접 열기 */}
-                <div style={{ position: 'relative', flexShrink: 0 }}>
-                  {/* 숨긴 date input — ref로 참조 */}
+                <div className="wf-register-calendar-wrap">
                   <input
                     ref={calendarRef}
                     type="date"
+                    className="wf-register-calendar-input"
                     value={calendarValue}
                     max={new Date().toISOString().split('T')[0]}
                     onChange={(e) => handleBirthdayCalendarChange(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      opacity: 0,
-                      pointerEvents: 'none',
-                      width: 0,
-                      height: 0,
-                    }}
+                    tabIndex={-1}
+                    aria-hidden
                   />
                   <button
                     type="button"
+                    className="wf-register-calendar-btn"
                     onClick={() => calendarRef.current?.showPicker()}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '8px 12px',
-                      background: '#2e2e38',
-                      border: '1px solid #3e3e48',
-                      borderRadius: 8,
-                      color: '#c9a227',
-                      fontSize: 16,
-                      cursor: 'pointer',
-                    }}
                     title="캘린더에서 날짜 선택"
+                    aria-label="캘린더에서 날짜 선택"
                   >
-                    📅
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <rect x="3" y="4" width="18" height="18" rx="2" />
+                      <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
                   </button>
                 </div>
               </div>
-              {/* 2번: 실시간 에러 메시지 */}
-              {birthdayError && (
-                <p style={{ color: '#f87171', fontSize: 12, margin: '4px 0 0' }}>
-                  {birthdayError}
-                </p>
-              )}
-              <p style={{ color: '#8b8b96', fontSize: 11, margin: '4px 0 0' }}>
-                8자리 직접 입력 또는 📅 버튼으로 날짜를 선택하세요.
+              {birthdayError ? (
+                <p className="wf-register-field-error" role="alert">{birthdayError}</p>
+              ) : null}
+              <p className="wf-register-field-hint">
+                8자리 직접 입력 또는 달력 버튼으로 날짜를 선택하세요.
               </p>
             </div>
 
-            {/* 회원가입 버튼 */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="wf-register-submit"
-            >
+            {/* 회원가입 버튼 — 로그인 버튼과 동일 스타일 */}
+            <Button type="submit" block disabled={loading} className="wf-auth-submit">
               {loading ? '가입 중...' : '회원가입'}
-            </button>
+            </Button>
           </form>
 
           {/* 로그인 링크 */}

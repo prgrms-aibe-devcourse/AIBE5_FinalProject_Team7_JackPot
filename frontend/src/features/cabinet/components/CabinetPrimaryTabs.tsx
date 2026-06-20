@@ -3,25 +3,28 @@ import type { CabinetSection } from '@/app/router/paths';
 
 interface CabinetPrimaryTabsProps {
   section: CabinetSection;
+  isOwner?: boolean;
   ownerLabel?: string;
   barHref: string;
   communityHref: string;
 }
 
-export function CabinetPrimaryTabs({ section, ownerLabel = '내', barHref, communityHref }: CabinetPrimaryTabsProps) {
+export function CabinetPrimaryTabs({ section, isOwner, ownerLabel, barHref, communityHref }: CabinetPrimaryTabsProps) {
+  const prefix = isOwner ? '내 ' : (ownerLabel && ownerLabel !== '내' ? '' : ownerLabel ? '내 ' : '');
+
   return (
-    <nav className="wf-cabinet-primary" aria-label="캐비넷 메뉴">
+    <nav className="wf-lounge-tabs wf-cabinet-primary" aria-label="캐비넷 메뉴">
       <Link
         to={barHref}
-        className={`wf-cabinet-primary__tab${section === 'bar' ? ' wf-cabinet-primary__tab--on' : ''}`}
+        className={`wf-lounge-tab${section === 'bar' ? ' wf-lounge-tab--on' : ''}`}
       >
-        {ownerLabel} Bar
+        {prefix}Bar
       </Link>
       <Link
         to={communityHref}
-        className={`wf-cabinet-primary__tab${section === 'community' ? ' wf-cabinet-primary__tab--on' : ''}`}
+        className={`wf-lounge-tab${section === 'community' ? ' wf-lounge-tab--on' : ''}`}
       >
-        {ownerLabel} 커뮤니티
+        {prefix}커뮤니티
       </Link>
     </nav>
   );

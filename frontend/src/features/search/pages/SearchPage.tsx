@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { confirmToast } from '@/shared/components/ui/ConfirmToast';
 import { Input } from '@/shared/components/ui/Input';
-import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { WhiskeyRequestModal } from '@/features/admin/components/WhiskeyRequestModal';
+import { WishFolderModal } from '@/features/cabinet/components/WishFolderModal';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
+import { useTags } from '@/features/survey/hooks/useTags';
 import { PATHS } from '@/app/router/paths';
-import { SearchPagination } from '../components/SearchPagination';
 import {
   autocompleteWhiskeys,
   correctWhiskeyKeyword,
@@ -35,47 +35,6 @@ const WHISKEY_TYPE_OPTIONS: { label: string; value: WhiskeyType }[] = [
   { label: '버번', value: 'bourbon' },
   { label: '라이', value: 'rye' },
   { label: '기타', value: 'etc' },
-];
-
-const NOSE_TAGS = [
-  '시트러스',
-  '베리류',
-  '꽃향',
-  '허브향',
-  '곡물향',
-  '견과향',
-  '꿀향',
-  '바닐라향',
-  '캐러멜향',
-  '초콜릿향',
-  '커피향',
-  '후추향',
-  '계피향',
-  '정향',
-  '우디(나무, 오크)',
-  '가죽향',
-  '스모키',
-  '피트향',
-  '흙내음',
-  '약품향',
-];
-
-const TASTE_TAGS = [
-  '시트러스',
-  '베리류',
-  '허브맛',
-  '곡물맛',
-  '견과류맛',
-  '꿀맛',
-  '바닐라맛',
-  '캐러멜맛',
-  '초콜릿맛',
-  '커피맛',
-  '우디(나무, 오크)',
-  '스모키',
-  '피트감',
-  '흙맛',
-  '짠맛',
 ];
 
 type TagModalType = 'nose' | 'taste' | null;
@@ -181,12 +140,12 @@ export default function SearchPage() {
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
 
   // 위시 상태 — { whiskeyId: itemId } 맵으로 관리
-  const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
-  const [wishTargetId, setWishTargetId] = useState<number | null>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [wishedMap, setWishedMap] = useState<Record<number, number>>({});
+  const [wishTargetId, setWishTargetId] = useState<number | null>(null);
+  const pageSize = DEFAULT_PAGE_SIZE;
   const suggestionKeyword = inputValue.trim();
   // 키 입력마다 자동완성 API가 호출되지 않도록 입력이 잠시 멈춘 뒤에만 요청
   const [debouncedSuggestion, setDebouncedSuggestion] = useState(suggestionKeyword);
@@ -199,17 +158,24 @@ export default function SearchPage() {
     minAge,
     maxAge,
   );
-
-  useEffect(() => {
-    setPage(0);
-  }, [keyword, selectedTypes, selectedNoseTags, selectedTasteTags, minAbv, maxAbv, minAge, maxAge]);
+  const { data: noseTags = [], isLoading: noseTagsLoading } = useTags('nose');
+  const { data: tasteTags = [], isLoading: tasteTagsLoading } = useTags('taste');
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSuggestion(suggestionKeyword), 250);
     return () => clearTimeout(timer);
   }, [suggestionKeyword]);
 
-  const { data, error, isError, isFetching, isLoading, refetch } = useQuery({
+  const {
+    data,
+    error,
+    isError,
+    isLoading,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: [
       'whiskeys',
       'search',
@@ -221,10 +187,9 @@ export default function SearchPage() {
       maxAbv,
       minAge,
       maxAge,
-      page,
       pageSize,
     ],
-    queryFn: () => {
+    queryFn: ({ pageParam }) => {
       if (isFilterActive) {
         return filterWhiskeys({
           keyword: keyword || undefined,
@@ -235,17 +200,21 @@ export default function SearchPage() {
           maxAbv: Math.max(minAbv, maxAbv),
           minAge: Math.min(minAge, maxAge),
           maxAge: Math.max(minAge, maxAge),
-          page,
+          page: pageParam,
           size: pageSize,
         });
       }
 
       if (keyword) {
-        return searchWhiskeys({ q: keyword, page, size: pageSize });
+        return searchWhiskeys({ q: keyword, page: pageParam, size: pageSize });
       }
 
-      return fetchWhiskeys({ page, size: pageSize });
+      return fetchWhiskeys({ page: pageParam, size: pageSize });
     },
+    initialPageParam: 0,
+    // 받아온 페이지 수가 전체 페이지 수보다 적으면 다음 페이지 존재
+    getNextPageParam: (lastPage, allPages) =>
+      allPages.length < (lastPage.totalPages ?? 0) ? allPages.length : undefined,
     placeholderData: (previousData) => previousData,
   });
 
@@ -256,10 +225,26 @@ export default function SearchPage() {
     retry: false,
   });
 
-  const results = data?.content ?? [];
-  const totalCount = data?.totalElements ?? 0;
-  const totalPages = data?.totalPages ?? 0;
+  const results = data?.pages.flatMap((p) => p.content ?? []) ?? [];
+  const totalCount = data?.pages[0]?.totalElements ?? 0;
   const isInitialLoading = isLoading && results.length === 0;
+
+  // 스크롤 하단 감지용 sentinel — 보이면 다음 페이지 로드
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const searchErrorMessage =
     error instanceof Error && error.message !== '요청에 실패했습니다.'
       ? error.message
@@ -302,19 +287,8 @@ export default function SearchPage() {
     correction?.correctedKeyword && correction.correctedKeyword !== keyword
       ? correction.correctedKeyword
       : null;
-  const activeFilterChips = [
-    ...selectedTypes.map((type) => WHISKEY_TYPE_OPTIONS.find((option) => option.value === type)?.label ?? type),
-    ...selectedNoseTags.map((tag) => `향 ${tag}`),
-    ...selectedTasteTags.map((tag) => `맛 ${tag}`),
-    minAbv !== ABV_RANGE_MIN || maxAbv !== ABV_RANGE_MAX
-      ? `도수 ${Math.min(minAbv, maxAbv)}-${Math.max(minAbv, maxAbv)}%`
-      : null,
-    minAge !== AGE_RANGE_MIN || maxAge !== AGE_RANGE_MAX
-      ? `숙성 ${Math.min(minAge, maxAge)}-${Math.max(minAge, maxAge)}년`
-      : null,
-  ].filter(Boolean) as string[];
 
-  // 위시 버튼 클릭 — 항상 모달 열기 (B방법)
+  // 위시 버튼 클릭 — 미담김이면 폴더 모달 열기, 담긴 상태면 모든 폴더에서 제거(토글)
   const handleWishClick = async (e: React.MouseEvent, whiskeyId: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -326,25 +300,36 @@ export default function SearchPage() {
       return;
     }
 
-    // 등록 여부 상관없이 항상 모달 열기
+    // 이미 담긴 상태 → 등록된 모든 폴더에서 제거
+    if (wishedMap[whiskeyId] !== undefined) {
+      try {
+        const folderRes = await cabinetApi.getWishedFolderIds(whiskeyId);
+        const folderIds: number[] = folderRes.data.data ?? [];
+        for (const folderId of folderIds) {
+          const itemRes = await cabinetApi.getWishItems(folderId);
+          const items = (itemRes.data.data ?? []) as { whiskey: { id: number }; itemId: number }[];
+          const target = items.find((it) => it.whiskey.id === whiskeyId);
+          if (target) await cabinetApi.removeWish(target.itemId, folderId);
+        }
+      } catch {
+        // 제거 실패는 무시 (상태만 동기화)
+      }
+      setWishedMap((prev) => {
+        const next = { ...prev };
+        delete next[whiskeyId];
+        return next;
+      });
+      return;
+    }
+
+    // 미담김 → 폴더 선택 모달 열기
     setWishTargetId(whiskeyId);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSuggestionOpen(false);
-    setPage(0);
     setKeyword(inputValue.trim());
-  };
-
-  const handlePageChange = (nextPage: number) => {
-    setPage(nextPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handlePageSizeChange = (nextSize: number) => {
-    setPageSize(nextSize);
-    setPage(0);
   };
 
   const selectSuggestion = (suggestion: string) => {
@@ -369,7 +354,10 @@ export default function SearchPage() {
     setMaxAge(AGE_RANGE_MAX);
   };
 
-  const currentTagOptions = tagModalType === 'nose' ? NOSE_TAGS : TASTE_TAGS;
+  const currentTagOptions = tagModalType === 'nose'
+    ? noseTags.map((tag) => tag.name)
+    : tasteTags.map((tag) => tag.name);
+  const currentTagsLoading = tagModalType === 'nose' ? noseTagsLoading : tasteTagsLoading;
   const currentSelectedTags = tagModalType === 'nose' ? selectedNoseTags : selectedTasteTags;
   const tagModalTitle = tagModalType === 'nose' ? '향 태그' : '맛 태그';
 
@@ -408,12 +396,26 @@ export default function SearchPage() {
           }}
         />
       )}
-      <p className="wf-breadcrumb">홈 / <strong>검색</strong></p>
-      <div className="wf-layout-sidebar">
+      <header className="wf-search-intro">
+        <p className="wf-search-intro__eyebrow">탐색</p>
+        <h1 className="wf-search-intro__title">검색</h1>
+        <p className="wf-search-intro__subtitle">향·맛·도수로 위스키를 찾아보세요.</p>
+      </header>
+      <div className={`wf-layout-sidebar wf-search-layout${filtersOpen ? ' wf-search-layout--open' : ''}`}>
         <aside className="wf-sidebar wf-search-sidebar">
+          <div className="wf-search-sidebar__inner">
           <div className="wf-search-filter-header">
             <p className="wf-text-label">필터</p>
-            <button type="button" className="wf-link" onClick={resetFilters}>
+            <button
+              type="button"
+              className="wf-link"
+              onClick={() => {
+                setInputValue('');
+                setKeyword('');
+                setIsSuggestionOpen(false);
+                resetFilters();
+              }}
+            >
               초기화
             </button>
           </div>
@@ -495,9 +497,18 @@ export default function SearchPage() {
           >
             + 원하는 위스키 등록 요청
           </button>
+          </div>
         </aside>
         <div className="wf-search-main">
           <form onSubmit={handleSubmit} className="wf-search-form">
+            <button
+              type="button"
+              className={`wf-search-filter-toggle${isFilterActive ? ' wf-search-filter-toggle--active' : ''}`}
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              필터 {filtersOpen ? '✕' : '＋'}
+            </button>
             <div className="wf-search-autocomplete">
               <Input
                 aria-label="위스키 검색어"
@@ -526,44 +537,14 @@ export default function SearchPage() {
                 </div>
               ) : null}
             </div>
-            <Button type="submit" className="wf-search-form__btn" disabled={isFetching}>
-              검색
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="wf-search-form__reset"
-              onClick={() => {
-                setInputValue('');
-                setKeyword('');
-                setPage(0);
-                setIsSuggestionOpen(false);
-                resetFilters();
-              }}
-            >
-              전체 목록
-            </Button>
           </form>
 
           <div className="wf-search-result-status">
-            <div>
-              <p className="wf-text-label">Search result</p>
-              <strong>
-                {isInitialLoading ? '위스키를 찾는 중입니다' : keyword ? `"${keyword}" 검색 결과` : '전체 위스키'}
-              </strong>
-              {activeFilterChips.length > 0 ? (
-                <div className="wf-search-active-filters" aria-label="적용된 필터">
-                  {activeFilterChips.map((chip) => (
-                    <span key={chip}>{chip}</span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <span className="wf-search-result-status__count">
-              {isInitialLoading ? 'Loading' : `${totalCount.toLocaleString()}건`}
-              {isFilterActive ? ' · 필터 적용' : ''}
-              {isFetching && !isInitialLoading ? ' · 갱신 중' : ''}
-            </span>
+            {isInitialLoading || keyword ? (
+              <h2 className="wf-search-result-comment">
+                {isInitialLoading ? '위스키를 찾는 중입니다' : `"${keyword}" 검색 결과`}
+              </h2>
+            ) : null}
           </div>
 
           {correctedKeyword ? (
@@ -582,7 +563,7 @@ export default function SearchPage() {
 
           {isError ? (
             <div className="wf-box wf-search-state-box wf-search-error-box">
-              <p className="wf-text-label">Connection issue</p>
+              <p className="wf-text-label">연결 문제</p>
               <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
               <p className="wf-card__meta">{searchErrorMessage}</p>
               <div className="wf-search-state-actions">
@@ -595,7 +576,6 @@ export default function SearchPage() {
                   onClick={() => {
                     setInputValue('');
                     setKeyword('');
-                    setPage(0);
                     resetFilters();
                   }}
                 >
@@ -608,7 +588,7 @@ export default function SearchPage() {
           {isInitialLoading ? (
             <div className="wf-search-skeleton-list" aria-label="검색 결과를 불러오는 중">
               <div className="wf-search-skeleton-intro wf-box">
-                <p className="wf-text-label">Curating bottles</p>
+                <p className="wf-text-label">불러오는 중</p>
                 <strong>조건에 맞는 위스키를 정리하고 있어요.</strong>
                 <span>잠시만 기다리면 추천 후보가 차례로 나타납니다.</span>
               </div>
@@ -627,7 +607,7 @@ export default function SearchPage() {
 
           {!isInitialLoading && !isError && results.length === 0 ? (
             <div className="wf-box wf-search-state-box wf-search-empty-box">
-              <p className="wf-text-label">No matches</p>
+              <p className="wf-text-label">결과 없음</p>
               <p className="wf-card__title">검색 결과가 없습니다.</p>
               <p className="wf-card__meta">
                 검색어를 조금 줄이거나 필터를 초기화해보세요. 찾는 위스키가 없다면 등록 요청으로 남길 수 있어요.
@@ -648,29 +628,21 @@ export default function SearchPage() {
                 >
                   위스키 등록 요청하기
                 </button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setInputValue('');
-                    setKeyword('');
-                    setPage(0);
-                    resetFilters();
-                  }}
-                >
-                  전체 목록 보기
-                </Button>
               </div>
             </div>
           ) : null}
 
+          <div className="wf-search-grid">
           {results.map((whiskey) => {
             const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
-            const isWished = wishedMap[whiskey.id] !== undefined;
             const meta = buildMeta(whiskey);
+            const typeLabel = WHISKEY_TYPE_OPTIONS.find((o) => o.value === whiskey.type)?.label ?? whiskey.type;
+            const isWished = wishedMap[whiskey.id] !== undefined;
             return (
               <Link key={whiskey.id} to={`/whiskey/${whiskey.id}`} className="wf-card wf-box wf-card--clickable wf-search-card">
+                <div className="wf-search-card__head">
+                  <div className="wf-search-card__name">{whiskey.name}</div>
+                </div>
                 <div className="wf-search-card__media">
                   {thumbSrc && !imgErrors.has(whiskey.id) ? (
                     <img
@@ -683,40 +655,30 @@ export default function SearchPage() {
                     <div className="wf-placeholder wf-search-card__thumb" />
                   )}
                 </div>
-                <div className="wf-card__body">
-                  <div className="wf-search-card__content">
-                    <div>
-                      <div className="wf-card__title">{whiskey.name}</div>
-                      {meta ? <div className="wf-card__meta">{meta}</div> : null}
-                    </div>
-                    <span className="wf-search-card__type">{whiskey.type || 'Whiskey'}</span>
-                  </div>
-                  <div className="wf-search-card__actions">
-                    <span className="wf-search-card__hint">상세 보기</span>
-                    <Button
-                      variant="ghost"
-                      className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
-                      onClick={(e) => handleWishClick(e, whiskey.id)}
-                    >
-                      ♥ 위시
-                    </Button>
-                  </div>
+                <div className="wf-search-card__footer">
+                  {meta || typeLabel ? (
+                    <span className="wf-search-card__spec">
+                      {[meta, typeLabel].filter(Boolean).join(' · ')}
+                    </span>
+                  ) : null}
+                  <Button
+                    variant="ghost"
+                    className={`wf-search-card__wish${isWished ? ' wf-search-card__wish--on' : ''}`}
+                    onClick={(e) => handleWishClick(e, whiskey.id)}
+                  >
+                    {isWished ? '담김' : '위시'}
+                  </Button>
                 </div>
               </Link>
             );
           })}
+          </div>
 
-          {!isLoading && !isError && totalCount > 0 ? (
-            <SearchPagination
-              page={page}
-              pageSize={pageSize}
-              totalPages={totalPages}
-              totalElements={totalCount}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              disabled={isFetching}
-            />
+          {isFetchingNextPage ? (
+            <p className="wf-search-loadmore">불러오는 중…</p>
           ) : null}
+          {/* 하단 도달 감지 sentinel */}
+          <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
         </div>
       </div>
 
@@ -729,7 +691,7 @@ export default function SearchPage() {
           onClick={() => setTagModalType(null)}
         >
           <div
-            className="wf-box wf-box--solid wf-search-tag-modal__inner"
+            className="wf-box wf-box--solid wf-search-tag-modal__inner wf-search-tag-modal__inner--glass"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="wf-search-tag-modal__header">
@@ -742,26 +704,32 @@ export default function SearchPage() {
               </Button>
             </div>
             <div className="wf-search-tag-modal__grid">
-              {currentTagOptions.map((tag) => {
-                const selected = currentSelectedTags.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    aria-pressed={selected}
-                    className={`wf-box wf-search-tag-option${selected ? ' wf-box--accent wf-search-tag-option--selected' : ''}`}
-                    onClick={() => {
-                      if (tagModalType === 'nose') {
-                        setSelectedNoseTags((tags) => toggleItem(tags, tag));
-                        return;
-                      }
-                      setSelectedTasteTags((tags) => toggleItem(tags, tag));
-                    }}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
+              {currentTagsLoading ? (
+                <p className="wf-search-tag-modal__loading">태그 불러오는 중…</p>
+              ) : currentTagOptions.length === 0 ? (
+                <p className="wf-search-tag-modal__loading">표시할 태그가 없습니다.</p>
+              ) : (
+                currentTagOptions.map((tag) => {
+                  const selected = currentSelectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      aria-pressed={selected}
+                      className={`wf-search-tag-option${selected ? ' wf-search-tag-option--selected' : ''}`}
+                      onClick={() => {
+                        if (tagModalType === 'nose') {
+                          setSelectedNoseTags((tags) => toggleItem(tags, tag));
+                          return;
+                        }
+                        setSelectedTasteTags((tags) => toggleItem(tags, tag));
+                      }}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

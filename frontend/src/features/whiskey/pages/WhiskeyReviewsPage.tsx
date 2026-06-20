@@ -64,16 +64,22 @@ function ReviewCard({ review }: { review: WhiskeyReview }) {
         onClick={handleLikeClick}
         disabled={likeMutation.isPending}
       >
-        {review.likedByMe ? '♥' : '♡'} {review.likeCount ?? 0}
+        <span className="wf-review-like__icon" aria-hidden>👍</span>
+        {review.likeCount ?? 0}
       </button>
       {review.hasAttachedNote && review.attachedNoteId && (
         <>
           <button
             type="button"
-            className="wf-detail-reviews__note-button"
+            className={`wf-detail-reviews__note-button${showNote ? ' wf-detail-reviews__note-button--open' : ''}`}
             onClick={() => setShowNote((prev) => !prev)}
+            aria-expanded={showNote}
+            aria-label={showNote ? '첨부 노트 접기' : '첨부 노트 보기'}
+            title={showNote ? '노트 접기' : '노트 보기'}
           >
-            {showNote ? 'My Note 접기' : 'My Note 자세히'}
+            <span className="wf-detail-reviews__note-icon" aria-hidden>
+              {showNote ? '📖' : '📕'}
+            </span>
           </button>
           {showNote && <AttachedNotePanel noteId={review.attachedNoteId} />}
         </>

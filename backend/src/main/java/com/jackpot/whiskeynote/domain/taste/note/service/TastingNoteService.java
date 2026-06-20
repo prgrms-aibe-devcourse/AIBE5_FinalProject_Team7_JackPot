@@ -14,6 +14,7 @@ import com.jackpot.whiskeynote.domain.taste.note.repository.TastingNoteRepositor
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
+import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,6 +38,7 @@ public class TastingNoteService {
     private final WhiskeyRepository whiskeyRepository;
     private final UsersRepository usersRepository;
     private final TagRepository tagRepository;
+    private final ReviewRepository reviewRepository;
 
     /**
      * 테이스팅 노트를 새로 생성합니다.
@@ -213,22 +215,59 @@ public class TastingNoteService {
                 });
     }
 
-    // 내 노트 단건 조회
+    // 시음 노트 단건 조회 — 본인 노트 또는 리뷰에 첨부된 공개 노트
     @Transactional(readOnly = true)
-    public TastingNoteResponse getMyTastingNote(Long userId, Long noteId) {
+    public TastingNoteResponse getTastingNoteForView(Long viewerUserId, Long noteId) {
         TastingNote note = tastingNoteRepository.findByIdWithTags(noteId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "시음 노트를 찾을 수 없습니다."
                 ));
 
-        validateOwner(note, userId, "본인의 시음 노트만 조회할 수 있습니다.");
+        boolean isOwner = viewerUserId != null && note.getUser().getId().equals(viewerUserId);
+        if (!isOwner) {
+            if (Boolean.TRUE.equals(note.getIsDraft())) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "시음 노트를 찾을 수 없습니다.");
+            }
+            if (!reviewRepository.existsByAttachedNoteId(noteId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "조회할 수 없는 시음 노트입니다.");
+            }
+        }
 
+        return toResponse(note);
+    }
+
+    // 내 노트 단건 조회 (본인 전용 편집 화면 등)
+    @Transactional(readOnly = true)
+    public TastingNoteResponse getMyTastingNote(Long userId, Long noteId) {
+        return getTastingNoteForView(userId, noteId);
+    }
+
+    private TastingNoteResponse toResponse(TastingNote note) {
         List<TastingNoteTagResponse> tagResponses = note.getNoteTags().stream()
                 .map(noteTag -> TastingNoteTagResponse.from(noteTag.getTag()))
                 .toList();
-
         return TastingNoteResponse.from(note, tagResponses);
+    }
+
+    // 타인 공개 노트 목록 조회
+    @Transactional(readOnly = true)
+    public Page<TastingNoteResponse> getUserPublicTastingNotes(Long targetUserId, int page, int size) {
+        if (!usersRepository.existsById(targetUserId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+        }
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "updatedAt")
+        );
+        return tastingNoteRepository.findByUserIdAndIsDraftFalseOrderByUpdatedAtDesc(targetUserId, pageRequest)
+                .map(note -> {
+                    List<TastingNoteTagResponse> tagResponses = note.getNoteTags().stream()
+                            .map(noteTag -> TastingNoteTagResponse.from(noteTag.getTag()))
+                            .toList();
+                    return TastingNoteResponse.from(note, tagResponses);
+                });
     }
 
     private void validateOwner(TastingNote note, Long userId, String message) {

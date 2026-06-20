@@ -23,6 +23,13 @@ export interface FollowUser {
   profileImageUrl: string | null;
 }
 
+export interface PublicUserProfile {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+  introduction: string | null;
+}
+
 // 위시 폴더 응답 타입
 export interface WishlistFolder {
   folderId: number;
@@ -127,6 +134,12 @@ export const cabinetApi = {
   getUserCabinetStats: async (userId: number): Promise<CabinetStatsResponse> => {
     const res = await apiClient.get<ApiResponse<CabinetStatsResponse>>(`/users/${userId}/cabinet/stats`);
     return unwrapApiData(res.data);
+  },
+
+  // 타인 공개 프로필 조회 — 닉네임·프로필 이미지 (리뷰/픽 유무와 무관, 로그인 불필요)
+  getPublicProfile: async (userId: number): Promise<PublicUserProfile> => {
+    const res = await apiClient.get<ApiResponse<PublicUserProfile> | PublicUserProfile>(`/users/${userId}/profile`);
+    return unwrapMaybeApiData(res.data);
   },
 
   // 나를 팔로우하는 사람 수 조회 (로그인 필요)

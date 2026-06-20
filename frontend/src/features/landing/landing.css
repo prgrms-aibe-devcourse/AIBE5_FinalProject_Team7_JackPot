@@ -28,11 +28,11 @@
   width: 340px;
   padding: 28px 32px;
   border-radius: 14px;
-  background: rgba(11, 10, 13, 0.68);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(213, 173, 69, 0.22);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--wf-border);
+  box-shadow: var(--wf-shadow-lg);
 }
 
 .wf-landing-cta {
@@ -46,7 +46,7 @@
 }
 
 .wf-landing-stats .wf-stat {
-  border-color: rgba(255, 255, 255, 0.075);
+  border-color: var(--wf-border);
 }
 
 @media (max-width: 960px) {

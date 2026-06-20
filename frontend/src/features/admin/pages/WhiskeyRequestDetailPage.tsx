@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { PATHS } from '@/app/router/paths';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
+import { Button } from '@/shared/components/ui/Button';
 import { adminApi, type WhiskeyRequest, type WhiskeyRequestStatus } from '../api/adminApi';
 import { toast } from '@/shared/components/ui/Toast';
+import '../whiskey-request.css';
 
 const STATUS_LABEL: Record<WhiskeyRequestStatus, string> = {
   pending: '대기중',
   approved: '승인됨',
   rejected: '반려됨',
-};
-
-const STATUS_COLOR: Record<WhiskeyRequestStatus, string> = {
-  pending: '#c9a227',
-  approved: '#4ade80',
-  rejected: '#f87171',
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -23,6 +20,13 @@ const TYPE_LABEL: Record<string, string> = {
   rye: '라이',
   etc: '기타',
 };
+
+function fieldValue(value: unknown): string | null {
+  if (value == null) return null;
+  if (typeof value === 'string' && value.trim()) return value;
+  if (typeof value === 'number' && !Number.isNaN(value)) return String(value);
+  return null;
+}
 
 /**
  * 내 위스키 등록 요청 상세 페이지
@@ -45,7 +49,9 @@ export default function WhiskeyRequestDetailPage() {
   if (loading) {
     return (
       <WireframePage scroll>
-        <p style={{ color: '#8b8b96' }}>불러오는 중...</p>
+        <div className="wf-whiskey-req-page">
+          <p className="wf-whiskey-req-loading">불러오는 중…</p>
+        </div>
       </WireframePage>
     );
   }
@@ -53,119 +59,94 @@ export default function WhiskeyRequestDetailPage() {
   if (!request) {
     return (
       <WireframePage scroll>
-        <p style={{ color: '#8b8b96' }}>요청 정보를 찾을 수 없습니다.</p>
+        <div className="wf-whiskey-req-page">
+          <div className="wf-whiskey-req-empty">요청 정보를 찾을 수 없습니다.</div>
+          <div className="wf-whiskey-req-back">
+            <Button variant="ghost" to={PATHS.WHISKEY_REQUEST}>목록으로</Button>
+          </div>
+        </div>
       </WireframePage>
     );
   }
 
-  const desc = request.description as any;
+  const desc = request.description;
+  const name = fieldValue(desc.name) ?? '—';
+  const type = fieldValue(desc.type);
+  const abv = fieldValue(desc.abv);
+  const country = fieldValue(desc.country);
+  const memo = fieldValue(desc.memo);
 
   return (
     <WireframePage scroll>
-      <p className="wf-breadcrumb">
-        홈 / 마이페이지 /&nbsp;
+      <div className="wf-whiskey-req-page">
         <button
           type="button"
-          onClick={() => navigate('/whiskey-requests')}
-          style={{ background: 'none', border: 'none', color: '#8b8b96', cursor: 'pointer', padding: 0, fontSize: 13 }}
+          className="wf-whiskey-req-back-link"
+          onClick={() => navigate(PATHS.WHISKEY_REQUEST)}
         >
-          위스키 등록 요청
+          ← 목록으로
         </button>
-        &nbsp;/ <strong>{desc?.name ?? '상세'}</strong>
-      </p>
 
-      <div className="wf-box" style={{ padding: 20, marginBottom: 12 }}>
-        {/* 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <span style={{
-            display: 'inline-block',
-            padding: '4px 12px',
-            borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 600,
-            background: STATUS_COLOR[request.status] + '22',
-            color: STATUS_COLOR[request.status],
-            border: `1px solid ${STATUS_COLOR[request.status]}44`,
-          }}>
-            {STATUS_LABEL[request.status]}
-          </span>
-          <p style={{ color: '#8b8b96', fontSize: 12, margin: 0 }}>
-            요청일: {new Date(request.createdAt).toLocaleDateString()}
-          </p>
-        </div>
+        <header className="wf-whiskey-req-intro">
+          <p className="wf-whiskey-req-intro__eyebrow">등록 요청</p>
+          <h1 className="wf-whiskey-req-intro__title">{name}</h1>
+        </header>
 
-        {/* 위스키 정보 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div>
-            <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>위스키 이름</p>
-            <p style={{ color: '#ececf0', fontSize: 18, fontWeight: 700, margin: 0 }}>
-              {desc?.name ?? '—'}
+        <article className="wf-whiskey-req-detail">
+          <div className="wf-whiskey-req-detail__head">
+            <span className={`wf-whiskey-req-status wf-whiskey-req-status--${request.status}`}>
+              {STATUS_LABEL[request.status]}
+            </span>
+            <p className="wf-whiskey-req-detail__date">
+              요청일 {new Date(request.createdAt).toLocaleDateString('ko-KR')}
             </p>
           </div>
 
-          {desc?.type && (
+          <div className="wf-whiskey-req-fields">
             <div>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>종류</p>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0 }}>
-                {TYPE_LABEL[desc.type] ?? desc.type}
+              <p className="wf-whiskey-req-field__label">위스키 이름</p>
+              <p className="wf-whiskey-req-field__value wf-whiskey-req-field__value--title">{name}</p>
+            </div>
+
+            {type && (
+              <div>
+                <p className="wf-whiskey-req-field__label">종류</p>
+                <p className="wf-whiskey-req-field__value">{TYPE_LABEL[type] ?? type}</p>
+              </div>
+            )}
+
+            {abv && (
+              <div>
+                <p className="wf-whiskey-req-field__label">도수</p>
+                <p className="wf-whiskey-req-field__value">{abv}%</p>
+              </div>
+            )}
+
+            {country && (
+              <div>
+                <p className="wf-whiskey-req-field__label">생산국</p>
+                <p className="wf-whiskey-req-field__value">{country}</p>
+              </div>
+            )}
+
+            {memo && (
+              <div>
+                <p className="wf-whiskey-req-field__label">추가 설명</p>
+                <p className="wf-whiskey-req-field__value">{memo}</p>
+              </div>
+            )}
+          </div>
+
+          {request.status !== 'pending' && (
+            <div className={`wf-whiskey-req-result wf-whiskey-req-result--${request.status}`}>
+              <p className="wf-whiskey-req-field__label">처리 결과</p>
+              <p className={`wf-whiskey-req-field__value wf-whiskey-req-status wf-whiskey-req-status--${request.status}`}>
+                {STATUS_LABEL[request.status]}
               </p>
             </div>
           )}
-
-          {desc?.abv && (
-            <div>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>도수</p>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0 }}>{desc.abv}%</p>
-            </div>
-          )}
-
-          {desc?.country && (
-            <div>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>생산국</p>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0 }}>{desc.country}</p>
-            </div>
-          )}
-
-          {desc?.memo && (
-            <div>
-              <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>추가 설명</p>
-              <p style={{ color: '#ececf0', fontSize: 14, margin: 0, lineHeight: 1.6 }}>{desc.memo}</p>
-            </div>
-          )}
-        </div>
-
-        {/* 처리 결과 */}
-        {request.status !== 'pending' && (
-          <div style={{
-            marginTop: 16,
-            padding: 12,
-            background: '#0c0c0f',
-            borderRadius: 8,
-            borderLeft: `3px solid ${STATUS_COLOR[request.status]}`,
-          }}>
-            <p style={{ color: '#8b8b96', fontSize: 12, margin: '0 0 4px' }}>처리 결과</p>
-            <p style={{ color: STATUS_COLOR[request.status], fontSize: 14, fontWeight: 600, margin: 0 }}>
-              {STATUS_LABEL[request.status]}
-            </p>
-          </div>
-        )}
+        </article>
       </div>
-
-      <button
-        type="button"
-        onClick={() => navigate('/whiskey-requests')}
-        style={{
-          background: 'none',
-          border: '1px solid #2e2e38',
-          borderRadius: 8,
-          padding: '8px 16px',
-          color: '#8b8b96',
-          fontSize: 13,
-          cursor: 'pointer',
-        }}
-      >
-        ← 목록으로
-      </button>
     </WireframePage>
   );
 }

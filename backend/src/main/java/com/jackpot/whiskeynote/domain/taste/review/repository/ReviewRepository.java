@@ -39,6 +39,9 @@ public interface ReviewRepository extends JpaRepository<Review,Long> {
     // 캐비넷 리뷰수 조회용
     long countByUserId(Long userId);
 
+    // 리뷰에 첨부된 공개 시음 노트 조회 허용 판별
+    boolean existsByAttachedNoteId(Long attachedNoteId);
+
     @Query("SELECT count(r) as reviewCount, avg(r.rating) as avgRating " +
         "FROM Review r " +
         "WHERE r.whiskey.id = :whiskeyId")

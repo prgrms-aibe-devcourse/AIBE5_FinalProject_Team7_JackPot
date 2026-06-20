@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { resolveMediaUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
-import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { PATHS } from '@/app/router/paths';
 import {
@@ -12,12 +11,22 @@ import {
   searchWhiskeys,
   fetchWhiskeys,
   type WhiskeyCard,
+  type WhiskeyType,
 } from '@/features/search/api/whiskeyApi';
+import '@/features/search/search.css';
 import '../review.css';
+
+const WHISKEY_TYPE_OPTIONS: { label: string; value: WhiskeyType }[] = [
+  { label: '싱글몰트', value: 'single_malt' },
+  { label: '블렌디드', value: 'blended' },
+  { label: '버번', value: 'bourbon' },
+  { label: '라이', value: 'rye' },
+  { label: '기타', value: 'etc' },
+];
 
 function buildMeta(whiskey: WhiskeyCard) {
   const age = whiskey.ageYears == null ? null : whiskey.ageYears === 0 ? 'NAS' : `${whiskey.ageYears}년`;
-  return [whiskey.region, whiskey.country, whiskey.abv != null ? `${whiskey.abv}%` : null, age, whiskey.cask]
+  return [whiskey.region, whiskey.country, whiskey.abv != null ? `${whiskey.abv}%` : null, age]
     .filter(Boolean)
     .join(' · ');
 }
@@ -30,7 +39,6 @@ export default function ReviewPickPage() {
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
 
   const suggestionKeyword = inputValue.trim();
-  // 키 입력마다 자동완성 API가 호출되지 않도록 입력이 잠시 멈춘 뒤에만 요청
   const [debouncedSuggestion, setDebouncedSuggestion] = useState(suggestionKeyword);
 
   useEffect(() => {
@@ -52,6 +60,7 @@ export default function ReviewPickPage() {
 
   const results = data?.content ?? [];
   const suggestions = autocompleteItems.filter((item) => item.keyword !== suggestionKeyword);
+  const isInitialLoading = isLoading && results.length === 0;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,82 +79,127 @@ export default function ReviewPickPage() {
   };
 
   return (
-    <WireframePage scroll>
-      <h1 className="wf-title">리뷰 작성 · 위스키 선택</h1>
-      <p className="wf-subtitle wf-pick-subtitle">리뷰를 작성할 위스키를 검색해서 선택하세요</p>
+    <WireframePage>
+      <div className="wf-search-main wf-review-pick-main">
+        <header className="wf-review-pick-intro">
+          <p className="wf-page-intro__eyebrow">기록</p>
+          <h1 className="wf-page-intro__title">리뷰 작성</h1>
+          <p className="wf-review-pick-intro__hint">위스키를 검색해 선택하면 리뷰 작성 화면으로 이동합니다.</p>
+        </header>
 
-      <form onSubmit={handleSubmit} className="wf-pick-form">
-        <div className="wf-search-autocomplete wf-pick-input-wrap">
-          <Input
-            aria-label="위스키 검색어"
-            placeholder="위스키 이름을 검색해보세요"
-            value={inputValue}
-            autoComplete="off"
-            onFocus={() => setIsSuggestionOpen(true)}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setIsSuggestionOpen(true);
-            }}
-          />
-          {isSuggestionOpen && suggestions.length > 0 && (
-            <div className="wf-search-autocomplete__menu">
-              {suggestions.map((item) => (
-                <button
-                  key={item.keyword}
-                  type="button"
-                  className="wf-search-autocomplete__item"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => selectSuggestion(item.keyword)}
-                >
-                  {item.keyword}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <Button type="submit" className="wf-pick-search-btn">검색</Button>
-      </form>
-
-      {isLoading && <p className="wf-text-sm">불러오는 중...</p>}
-
-      {isError && (
-        <div className="wf-box wf-pick-msg-box">
-          <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
-        </div>
-      )}
-
-      {!isLoading && !isError && results.length === 0 && (
-        <div className="wf-box wf-pick-msg-box">
-          <p className="wf-card__title">검색 결과가 없습니다.</p>
-          <p className="wf-card__meta">다른 검색어로 다시 찾아보세요.</p>
-        </div>
-      )}
-
-      {results.map((whiskey) => {
-        const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
-        return (
-          <div
-            key={whiskey.id}
-            className="wf-card wf-box wf-card--clickable wf-pick-card"
-            onClick={() => handleSelect(whiskey.id)}
-          >
-            {thumbSrc && !imgErrors.has(whiskey.id) ? (
-              <img
-                src={thumbSrc}
-                alt={whiskey.name}
-                className="wf-card__thumb wf-pick-card-thumb"
-                onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
-              />
-            ) : (
-              <div className="wf-card__thumb wf-placeholder wf-pick-card-thumb" />
-            )}
-            <div className="wf-card__body">
-              <div className="wf-card__title">{whiskey.name}</div>
-              <div className="wf-card__meta">{buildMeta(whiskey)}</div>
-            </div>
+        <form onSubmit={handleSubmit} className="wf-search-form wf-review-pick-form">
+          <div className="wf-search-autocomplete">
+            <Input
+              aria-label="위스키 검색어"
+              placeholder="위스키 이름을 검색해보세요"
+              value={inputValue}
+              autoComplete="off"
+              onFocus={() => setIsSuggestionOpen(true)}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setIsSuggestionOpen(true);
+              }}
+            />
+            {isSuggestionOpen && suggestions.length > 0 ? (
+              <div className="wf-search-autocomplete__menu">
+                {suggestions.map((item) => (
+                  <button
+                    key={item.keyword}
+                    type="button"
+                    className="wf-search-autocomplete__item"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => selectSuggestion(item.keyword)}
+                  >
+                    {item.keyword}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
-        );
-      })}
+        </form>
+
+        <div className="wf-search-result-status">
+          {!isInitialLoading && keyword ? (
+            <h2 className="wf-search-result-comment">&quot;{keyword}&quot; 검색 결과</h2>
+          ) : null}
+        </div>
+
+        {isError ? (
+          <div className="wf-box wf-search-state-box wf-search-error-box">
+            <p className="wf-text-label">연결 문제</p>
+            <p className="wf-card__title">위스키 목록을 불러오지 못했습니다.</p>
+            <p className="wf-card__meta">잠시 후 다시 시도해주세요.</p>
+          </div>
+        ) : null}
+
+        {isInitialLoading ? (
+          <div className="wf-search-skeleton-list" aria-label="위스키 목록을 불러오는 중">
+            <div className="wf-search-skeleton-intro wf-box">
+              <p className="wf-text-label">불러오는 중</p>
+              <strong>위스키 목록을 정리하고 있어요.</strong>
+              <span>잠시만 기다리면 후보가 차례로 나타납니다.</span>
+            </div>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="wf-box wf-search-skeleton-card">
+                <div className="wf-search-skeleton-card__thumb" />
+                <div className="wf-search-skeleton-card__body">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {!isInitialLoading && !isError && results.length === 0 ? (
+          <div className="wf-box wf-search-state-box wf-search-empty-box">
+            <p className="wf-text-label">결과 없음</p>
+            <p className="wf-card__title">검색 결과가 없습니다.</p>
+            <p className="wf-card__meta">다른 검색어로 다시 찾아보세요.</p>
+          </div>
+        ) : null}
+
+        <div className="wf-search-grid">
+          {results.map((whiskey) => {
+            const thumbSrc = resolveMediaUrl(whiskey.imageUrl);
+            const meta = buildMeta(whiskey);
+            const typeLabel = WHISKEY_TYPE_OPTIONS.find((o) => o.value === whiskey.type)?.label ?? whiskey.type;
+            return (
+              <button
+                key={whiskey.id}
+                type="button"
+                className="wf-card wf-box wf-card--clickable wf-search-card wf-review-pick-card"
+                onClick={() => handleSelect(whiskey.id)}
+              >
+                <div className="wf-search-card__head">
+                  <div className="wf-search-card__name">{whiskey.name}</div>
+                </div>
+                <div className="wf-search-card__media">
+                  {thumbSrc && !imgErrors.has(whiskey.id) ? (
+                    <img
+                      src={thumbSrc}
+                      alt={whiskey.name}
+                      className="wf-search-card__thumb"
+                      onError={() => setImgErrors((prev) => new Set(prev).add(whiskey.id))}
+                    />
+                  ) : (
+                    <div className="wf-placeholder wf-search-card__thumb" />
+                  )}
+                </div>
+                <div className="wf-search-card__footer">
+                  {meta || typeLabel ? (
+                    <span className="wf-search-card__spec">
+                      {[meta, typeLabel].filter(Boolean).join(' · ')}
+                    </span>
+                  ) : null}
+                  <span className="wf-review-pick-card__cta">선택</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </WireframePage>
   );
 }

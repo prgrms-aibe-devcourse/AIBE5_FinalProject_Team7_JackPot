@@ -1,0 +1,256 @@
+/* 위스키 등록 요청 (마이페이지 연계 · 설문·추천과 동일 톤) */
+:where(.wf-whiskey-req-page) {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wf-whiskey-req-page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 28px;
+}
+
+.wf-whiskey-req-intro {
+  margin-bottom: 20px;
+}
+
+.wf-whiskey-req-intro__eyebrow {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-whiskey-req-intro__title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wf-whiskey-req-intro__subtitle {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--wf-muted);
+}
+
+.wf-whiskey-req-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.wf-whiskey-req-filter {
+  padding: 8px 14px;
+  border: 1px solid var(--wf-border);
+  border-radius: 999px;
+  background: var(--wf-surface);
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.wf-whiskey-req-filter:hover {
+  border-color: rgba(198, 146, 43, 0.45);
+  color: var(--wf-text);
+}
+
+.wf-whiskey-req-filter--active {
+  border-color: var(--wf-accent);
+  background: var(--wf-accent-dim);
+  color: var(--wf-accent-dark);
+}
+
+.wf-whiskey-req-empty,
+.wf-whiskey-req-loading {
+  padding: 28px 20px;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+  text-align: center;
+  color: var(--wf-muted);
+  font-size: 14px;
+}
+
+.wf-whiskey-req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wf-whiskey-req-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--wf-border);
+  border-radius: 14px;
+  background: var(--wf-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.wf-whiskey-req-item:hover {
+  border-color: rgba(198, 146, 43, 0.4);
+  background: var(--wf-surface-2);
+}
+
+.wf-whiskey-req-item__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.wf-whiskey-req-item__name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--wf-text);
+}
+
+.wf-whiskey-req-item__meta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
+.wf-whiskey-req-item__chevron {
+  flex-shrink: 0;
+  color: var(--wf-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.wf-whiskey-req-status {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wf-whiskey-req-status--pending {
+  color: var(--wf-accent-dark);
+}
+
+.wf-whiskey-req-status--approved {
+  color: var(--wf-success);
+}
+
+.wf-whiskey-req-status--rejected {
+  color: var(--wf-danger);
+}
+
+.wf-whiskey-req-detail {
+  padding: 24px;
+  border: 1px solid var(--wf-border);
+  border-radius: var(--wf-radius-card);
+  background: var(--wf-surface);
+}
+
+.wf-whiskey-req-detail__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--wf-border-subtle);
+}
+
+.wf-whiskey-req-detail__date {
+  margin: 0;
+  font-size: 13px;
+  color: var(--wf-muted);
+}
+
+.wf-whiskey-req-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wf-whiskey-req-field__label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wf-muted);
+}
+
+.wf-whiskey-req-field__value {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--wf-text);
+}
+
+.wf-whiskey-req-field__value--title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.wf-whiskey-req-result {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--wf-border);
+  border-radius: 12px;
+  background: var(--wf-surface-2);
+}
+
+.wf-whiskey-req-result--approved {
+  border-color: rgba(31, 157, 87, 0.25);
+  background: rgba(31, 157, 87, 0.06);
+}
+
+.wf-whiskey-req-result--rejected {
+  border-color: rgba(214, 47, 47, 0.2);
+  background: rgba(214, 47, 47, 0.05);
+}
+
+.wf-whiskey-req-back {
+  margin-top: 16px;
+}
+
+.wf-whiskey-req-back-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--wf-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.wf-whiskey-req-back-link:hover {
+  color: var(--wf-accent-dark);
+}
+
+@media (max-width: 560px) {
+  .wf-whiskey-req-intro__title {
+    font-size: 24px;
+  }
+
+  .wf-whiskey-req-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wf-whiskey-req-item__chevron {
+    display: none;
+  }
+}

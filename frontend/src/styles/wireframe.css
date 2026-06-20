@@ -1,32 +1,43 @@
 /* Whiskey Note — Figma import wireframes (390×844 frames) */
 
 :root {
-  --wf-bg: #0b0a0d;
-  --wf-surface: #17151b;
-  --wf-surface-2: #211f27;
-  --wf-surface-3: #2b2832;
-  --wf-border: #383340;
-  --wf-border-subtle: #28242d;
-  --wf-text: #f3f0ea;
-  --wf-muted: #a29aa8;
-  --wf-accent: #d5ad45;
-  --wf-accent-light: #f0ca68;
-  --wf-accent-dark: #9b7629;
-  --wf-accent-dim: rgba(213, 173, 69, 0.12);
-  --wf-accent-subtle: rgba(213, 173, 69, 0.06);
+  /* 라이트 테마 (애플식: 회색 캔버스 + 흰 카드 대비) */
+  --wf-bg: #f5f5f7;        /* 배경 = 라이트 그레이 캔버스 */
+  --wf-surface: #ffffff;   /* 카드 = 순백 → 회색 위에서 떠오름 */
+  --wf-surface-2: #ececef; /* 보조 면 (배경보다 한 단계 진하게) */
+  --wf-surface-3: #e2e2e6;
+  /* 강조(블랙) 카드 — 포인트 영역 전용 */
+  --wf-surface-dark: #1d1d1f;
+  --wf-surface-dark-text: #f5f5f7;
+  --wf-surface-dark-muted: #a1a1a6;
+  --wf-border: #e2e2e6;
+  --wf-border-subtle: #ededf0;
+  --wf-text: #222222;
+  --wf-muted: #6e6e73;
+  /* 포인트 = 골드 (버튼·링크·활성·로고·강조) — 위스키 무드 */
+  --wf-accent: #c6922b;
+  --wf-accent-light: #d8a84a;
+  --wf-accent-dark: #7a5230;
+  --wf-accent-dim: rgba(198, 146, 43, 0.12);
+  --wf-accent-subtle: rgba(198, 146, 43, 0.06);
+  /* 보조색 = 브라운 */
+  --wf-brown: #7a5230;
+  --wf-brown-light: #946a3e;
+  --wf-brown-dim: rgba(122, 82, 48, 0.12);
   --wf-wine: #8f344c;
-  --wf-wine-dim: rgba(143, 52, 76, 0.16);
-  --wf-success: #4ade80;
-  --wf-danger: #f87171;
+  --wf-wine-dim: rgba(143, 52, 76, 0.1);
+  --wf-success: #1f9d57;
+  --wf-danger: #d62f2f;
   --wf-frame-w: 390px;
   --wf-frame-h: 844px;
   --wf-radius: 12px;
-  --wf-font: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --wf-radius-card: 18px; /* 애플 타일 라운드 (카드·패널) */
+  --wf-font: "Roboto Flex", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 
-  --wf-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.2);
-  --wf-shadow-md: 0 18px 44px rgba(0, 0, 0, 0.34);
-  --wf-shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.48);
-  --wf-shadow-accent: 0 12px 32px rgba(213, 173, 69, 0.2);
+  --wf-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --wf-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --wf-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --wf-shadow-accent: 0 8px 24px rgba(198, 146, 43, 0.18);
 }
 
 *,
@@ -38,7 +49,7 @@
 body {
   margin: 0;
   font-family: var(--wf-font);
-  background: #e8e8ec;
+  background: #f5f5f7;
   color: var(--wf-text);
 }
 
@@ -220,7 +231,7 @@ body {
 .wf-box {
   background: var(--wf-surface);
   border: 1px solid var(--wf-border-subtle);
-  border-radius: var(--wf-radius);
+  border-radius: var(--wf-radius-card);
   box-shadow: var(--wf-shadow-sm);
 }
 
@@ -229,9 +240,9 @@ body {
 }
 
 .wf-box--accent {
-  border: 1px solid rgba(213, 173, 69, 0.38);
-  background: linear-gradient(180deg, rgba(213, 173, 69, 0.16), rgba(143, 52, 76, 0.08));
-  box-shadow: var(--wf-shadow-accent);
+  border: 1px solid var(--wf-accent-dim);
+  background: var(--wf-accent-subtle);
+  box-shadow: var(--wf-shadow-sm);
 }
 
 .wf-placeholder {
@@ -312,25 +323,25 @@ body {
 }
 
 .wf-btn--primary {
-  background: linear-gradient(180deg, var(--wf-accent-light), var(--wf-accent));
-  color: #15100a;
-  box-shadow: var(--wf-shadow-accent);
+  background: var(--wf-surface);
+  color: var(--wf-text);
+  border: 1px solid var(--wf-border);
 }
 
 .wf-btn--primary:hover {
-  background: linear-gradient(180deg, #f7d884, var(--wf-accent));
-  box-shadow: 0 14px 34px rgba(213, 173, 69, 0.3);
+  background: var(--wf-surface-2);
+  border-color: var(--wf-accent);
 }
 
 .wf-btn--ghost {
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--wf-surface);
   border: 1px solid var(--wf-border);
   color: var(--wf-text);
 }
 
 .wf-btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.075);
-  border-color: rgba(213, 173, 69, 0.45);
+  background: var(--wf-surface-2);
+  border-color: var(--wf-accent);
 }
 
 .wf-btn--danger {
@@ -352,7 +363,7 @@ body {
 
 .wf-input {
   height: 46px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--wf-surface);
   border: 1px solid var(--wf-border);
   border-radius: 12px;
   padding: 0 14px;
@@ -365,8 +376,8 @@ body {
 
 .wf-input:focus-within {
   border-color: var(--wf-accent);
-  background: rgba(255, 255, 255, 0.065);
-  box-shadow: 0 0 0 3px rgba(213, 173, 69, 0.16);
+  background: var(--wf-surface);
+  box-shadow: 0 0 0 3px var(--wf-accent-dim);
   outline: none;
 }
 
@@ -379,7 +390,7 @@ body {
   font-size: 13px;
   border: 1px solid var(--wf-border);
   color: var(--wf-muted);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--wf-surface-2);
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
   cursor: pointer;
 }
@@ -392,12 +403,12 @@ body {
 .wf-chip--on {
   border-color: var(--wf-accent);
   background: var(--wf-accent-dim);
-  color: var(--wf-accent);
+  color: var(--wf-accent-dark);
 }
 
 .wf-chip--on:hover {
-  background: rgba(213, 173, 69, 0.22);
-  border-color: var(--wf-accent-light);
+  background: var(--wf-accent-dim);
+  border-color: var(--wf-accent-dark);
 }
 
 .wf-chip--strong {
@@ -714,4 +725,10 @@ body {
 a.wf-preview-link {
   color: inherit;
   text-decoration: none;
+}
+
+/* 디폴트 프로필 PNG 내 여백 보정 — overflow:hidden 원형 래퍼 안에서 사용 */
+img[src*='/images/default-avatars/'] {
+  transform: scale(1.52);
+  transform-origin: center center;
 }
