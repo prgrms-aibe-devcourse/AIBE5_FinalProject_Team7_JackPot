@@ -14,6 +14,9 @@ export interface SurveyApiRequest {
   tasteTagWeights?: Record<number, 1 | 2>;
   styleTags?: string[];
   explorationLevel?: 1 | 2 | 3;
+  // 애호가 Q9 — 선호 숙성 연수 범위(소프트 필터). null이면 제한 없음
+  ageMin?: number | null;
+  ageMax?: number | null;
 }
 
 export interface TagInfo {
