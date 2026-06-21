@@ -25,14 +25,7 @@ public record NoteVector(
         );
     }
 
-    public static NoteVector fromSurvey(WhiskeyScoreVo scoreVo, Set<Long> tagIdSet) {
-        double[] scoreVec = {
-            (scoreVo.bodyScore() - 1) * 8.0 / 100,
-            (scoreVo.finishScore() - 1) * 8.0 / 100,
-            (scoreVo.smokyScore() - 1) * 8.0 / 100,
-            (scoreVo.spicyScore() - 1) * 8.0 / 100,
-            (scoreVo.sweetScore() - 1) * 8.0 / 100
-        };
+    public static NoteVector fromSurvey(double[] scoreVec, Set<Long> tagIdSet) {
         Map<Long, Double> tagVector = new HashMap<>();
         for (Long tagId : tagIdSet) {
             tagVector.put(tagId, 1.0);

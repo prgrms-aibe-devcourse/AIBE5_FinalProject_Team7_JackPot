@@ -2,11 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
-import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
+import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser, type LoungeRecommendedWhiskey } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
-import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
 import { tasteMatchApi } from '@/features/discover/api/tasteMatchApi';
 import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
+import { isLoggedIn } from '@/shared/lib/authSession';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
@@ -132,21 +132,175 @@ function FeedCardSkeleton() {
   );
 }
 
-function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
-  const image = whiskey ? resolveMediaUrl(whiskey.imageUrl) : null;
-  const to = whiskey ? `/whiskey/${whiskey.id}` : PATHS.SEARCH;
+const RECO_TYPE_LABEL: Record<string, string> = {
+  single_malt: '싱글몰트',
+  blended: '블렌디드',
+  bourbon: '버번',
+  rye: '라이',
+};
+const RECO_AUTOPLAY_MS = 10000;
+
+function RecoSlide({ whiskey }: { whiskey: LoungeRecommendedWhiskey }) {
+  const image = resolveMediaUrl(whiskey.imageUrl);
+  const meta = [
+    RECO_TYPE_LABEL[whiskey.type] ?? whiskey.type,
+    whiskey.country,
+    whiskey.ageYears > 0 ? `${whiskey.ageYears}년` : 'NAS',
+  ].filter(Boolean).join(' · ');
+
   return (
-    <Link to={to} className="wf-feed-promo wf-feed-promo--today wf-box wf-box--accent">
-      <div className="wf-feed-promo__head">
-        <div className="wf-feed-promo__copy">
-          <h2 className="wf-feed-promo__title">오늘의 추천</h2>
-          <p className="wf-text-sm">{whiskey?.name ?? '오늘의 위스키를 둘러보세요'}</p>
-        </div>
-        {image ? (
-          <img src={image} alt="" aria-hidden className="wf-feed-promo__bottle" loading="lazy" />
-        ) : null}
+    <Link to={`/whiskey/${whiskey.id}`} className="wf-reco-slide" draggable={false}>
+      {image ? (
+        <img src={image} alt={whiskey.name} className="wf-reco-slide__thumb" draggable={false} loading="lazy" />
+      ) : (
+        <div className="wf-reco-slide__thumb wf-placeholder" aria-hidden />
+      )}
+      <div className="wf-reco-slide__body">
+        <p className="wf-reco-slide__name">{whiskey.name}</p>
+        <p className="wf-text-xs wf-reco-slide__meta">{meta}</p>
+        {whiskey.avgRating > 0 && (
+          <p className="wf-reco-slide__rating"><span className="wf-stars">★</span> {whiskey.avgRating.toFixed(1)}</p>
+        )}
+        {whiskey.reason ? <p className="wf-text-sm wf-reco-slide__reason">{whiskey.reason}</p> : null}
       </div>
     </Link>
+  );
+}
+
+// 자동 순환 + 드래그/스와이프 캐러셀
+function RecoCarousel({ items }: { items: LoungeRecommendedWhiskey[] }) {
+  const [index, setIndex] = useState(0);
+  const [dragDelta, setDragDelta] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startXRef = useRef(0);
+  const movedRef = useRef(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const n = items.length;
+
+  // 자동 순환 (드래그 중에는 멈춤)
+  useEffect(() => {
+    if (n <= 1 || dragging) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % n), RECO_AUTOPLAY_MS);
+    return () => clearInterval(id);
+  }, [n, dragging]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    startXRef.current = e.clientX;
+    movedRef.current = false;
+    setDragging(true);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    const delta = e.clientX - startXRef.current;
+    if (Math.abs(delta) > 5) movedRef.current = true;
+    setDragDelta(delta);
+  };
+  const endDrag = () => {
+    if (!dragging) return;
+    const threshold = (viewportRef.current?.offsetWidth ?? 300) * 0.2;
+    if (dragDelta < -threshold) setIndex((i) => (i + 1) % n);
+    else if (dragDelta > threshold) setIndex((i) => (i - 1 + n) % n);
+    setDragDelta(0);
+    setDragging(false);
+  };
+  // 드래그였으면 슬라이드 클릭(이동) 막기
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (movedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      movedRef.current = false;
+    }
+  };
+
+  return (
+    <div className="wf-reco-carousel__viewport" ref={viewportRef}>
+      <div
+        className="wf-reco-carousel__track"
+        style={{
+          transform: `translateX(calc(${-index * 100}% + ${dragDelta}px))`,
+          transition: dragging ? 'none' : 'transform 0.4s ease',
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+      >
+        {items.map((w) => (
+          <div key={w.id} className="wf-reco-carousel__cell">
+            <RecoSlide whiskey={w} />
+          </div>
+        ))}
+      </div>
+      {n > 1 && (
+        <div className="wf-reco-carousel__dots">
+          {items.map((w, i) => (
+            <button
+              key={w.id}
+              type="button"
+              className={`wf-reco-carousel__dot${i === index ? ' is-active' : ''}`}
+              aria-label={`${i + 1}번째 추천`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RecommendedWhiskeys() {
+  const loggedIn = isLoggedIn();
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ['lounge', 'recommended-whiskeys'],
+    queryFn: homeApi.getRecommendedWhiskeys,
+    enabled: loggedIn,
+  });
+
+  const header = (
+    <div className="wf-reco__head">
+      <p className="wf-text-label">FOR YOU</p>
+      <h2 className="wf-feed-promo__title">당신에게 추천하는 위스키</h2>
+    </div>
+  );
+
+  // 비로그인 — 로그인 유도
+  if (!loggedIn) {
+    return (
+      <section className="wf-box wf-box--accent wf-reco wf-reco--prompt">
+        {header}
+        <p className="wf-text-sm">로그인하면 취향에 맞는 위스키를 추천해드려요.</p>
+        <Button to={PATHS.LOGIN} variant="ghost">로그인</Button>
+      </section>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <section className="wf-box wf-reco">
+        {header}
+        <Skeleton width="100%" height={140} radius={10} />
+      </section>
+    );
+  }
+
+  // 로그인했으나 추천 내역 없음 — 활동 유도
+  if (items.length === 0) {
+    return (
+      <section className="wf-box wf-reco wf-reco--prompt">
+        {header}
+        <p className="wf-text-sm">위스키를 둘러보고 노트를 남기면 더 정확한 추천을 받을 수 있어요.</p>
+        <Button to={PATHS.SEARCH} variant="ghost">위스키 둘러보기</Button>
+      </section>
+    );
+  }
+
+  return (
+    <section className="wf-box wf-reco">
+      {header}
+      <RecoCarousel items={items} />
+    </section>
   );
 }
 
@@ -358,16 +512,6 @@ export default function HomePage() {
     queryKey: ['lounge', 'trending-whiskeys', 5],
     queryFn: () => homeApi.getTrendingWhiskeys(5),
   });
-  // 오늘의 추천: 화제의 위스키(trending 1위)를 우선, 없으면 카탈로그 첫 위스키로 폴백
-  const featuredWhiskeyId = trendingWhiskeys[0]?.whiskeyId;
-  const { data: featuredWhiskey } = useQuery({
-    queryKey: ['lounge', 'today-pick', featuredWhiskeyId ?? 'fallback'],
-    queryFn: async () => {
-      if (featuredWhiskeyId) return fetchWhiskeyById(featuredWhiskeyId);
-      const page = await fetchWhiskeys({ size: 1 });
-      return page.content[0] ?? null;
-    },
-  });
   const { data: suggestedUsers = [] } = useQuery({
     queryKey: ['lounge', 'suggested-users', 5],
     queryFn: () => homeApi.getSuggestedUsers(5),
@@ -421,7 +565,7 @@ export default function HomePage() {
           )}
         </main>
         <aside className="wf-lounge-rail" aria-label="라운지 추천">
-          <PromoToday whiskey={featuredWhiskey} />
+          <RecommendedWhiskeys />
           <LoungeSuggestedUsers users={suggestedUsers} />
           <LoungeTrendingWhiskeys whiskeys={trendingWhiskeys} />
           <PromoTasteMatch />

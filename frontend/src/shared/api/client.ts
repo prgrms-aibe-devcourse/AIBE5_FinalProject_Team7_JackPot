@@ -118,11 +118,15 @@ apiClient.interceptors.response.use(
     }
 
     // 500번대 서버 오류 → 에러 페이지로 이동
+    // ⚠️ [임시 디버그] 500 원인 추적용으로 redirect를 잠시 끔. 원인 찾으면 아래 블록 주석 해제하고 이 줄도 삭제.
     if (error.response?.status >= 500) {
-      if (!originalRequest?.skipGlobalErrorRedirect) {
-        window.location.href = '/error/500';
-      }
+      console.error('[500 DEBUG] 500 응답 발생:', originalRequest?.method, originalRequest?.url, error.response?.data);
     }
+    // if (error.response?.status >= 500) {
+    //   if (!originalRequest?.skipGlobalErrorRedirect) {
+    //     window.location.href = '/error/500';
+    //   }
+    // }
 
     return Promise.reject(new Error(message));
   },

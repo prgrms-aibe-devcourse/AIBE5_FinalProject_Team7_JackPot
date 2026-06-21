@@ -34,6 +34,23 @@ export interface LoungeToday {
   topWhiskeyName: string | null;
 }
 
+/**
+ * 당신에게 추천하는 위스키 — 백엔드 WhiskeyRecommendationResponse
+ * 주의: 백엔드 필드명이 `adv`(도수 ABV의 오타)이지만 JSON 키가 그대로 `adv`라 맞춰 둔다.
+ */
+export interface LoungeRecommendedWhiskey {
+  id: number;
+  name: string;
+  type: string;
+  imageUrl: string | null;
+  adv: number | null;
+  country: string;
+  ageYears: number;
+  avgRating: number;
+  score: number;
+  reason: string;
+}
+
 export type LoungeFeedTab = 'following' | 'popular' | 'latest';
 
 const FEED_PATH: Record<LoungeFeedTab, string> = {
@@ -69,6 +86,11 @@ export const homeApi = {
   },
   getToday: async (): Promise<LoungeToday> => {
     const res = await apiClient.get<LoungeToday>('/lounge/today');
+    return res.data;
+  },
+  // 당신에게 추천하는 위스키 (로그인 유저 맞춤 추천 목록)
+  getRecommendedWhiskeys: async (): Promise<LoungeRecommendedWhiskey[]> => {
+    const res = await apiClient.get<LoungeRecommendedWhiskey[]>('/lounge/recommend-whiskey');
     return res.data;
   },
 };

@@ -222,7 +222,7 @@ public class TasteSurveyService {
         );
         String[] typeAndDesc = classifyUserType(sweet, body, smoky, spicy, finish);
         List<WhiskeyRecommendationResponse> recs = whiskeyRecommendationService.recommendBySurvey(
-                scoreToVo(body, finish, smoky, spicy, sweet), tags.allTagIds());
+            scoreToScoreVec(body, finish, smoky, spicy, sweet), tags.allTagIds());
 
         return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recs);
     }
@@ -236,14 +236,14 @@ public class TasteSurveyService {
                 .stream().collect(Collectors.toMap(Tag::getId, t -> t));
     }
 
-    private WhiskeyScoreVo scoreToVo(int body, int finish, int smoky, int spicy, int sweet) {
-        return new WhiskeyScoreVo(
-                (short) (body   / 25 * 2 + 1),
-                (short) (finish / 25 * 2 + 1),
-                (short) (smoky  / 25 * 2 + 1),
-                (short) (spicy  / 25 * 2 + 1),
-                (short) (sweet  / 25 * 2 + 1)
-        );
+    private double[] scoreToScoreVec(int body, int finish, int smoky, int spicy, int sweet) {
+        return new double[]{
+            (double) body / 10,
+            (double) finish / 10,
+            (double) smoky / 10,
+            (double) spicy / 10,
+            (double) sweet / 10
+        };
     }
 
     /** 선택지(1~5) → 점수(0, 25, 50, 75, 100) */

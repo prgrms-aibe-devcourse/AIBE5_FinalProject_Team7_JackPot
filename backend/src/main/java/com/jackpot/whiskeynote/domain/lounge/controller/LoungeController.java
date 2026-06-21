@@ -5,6 +5,8 @@ import com.jackpot.whiskeynote.domain.lounge.dto.LoungeSuggestedUserResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTodayResponse;
 import com.jackpot.whiskeynote.domain.lounge.dto.LoungeTrendingWhiskeyResponse;
 import com.jackpot.whiskeynote.domain.lounge.service.LoungeService;
+import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
+import com.jackpot.whiskeynote.domain.recommendation.service.WhiskeyRecommendationService;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoungeController {
     private final LoungeService loungeService;
+    private final WhiskeyRecommendationService whiskeyRecommendationService;
 
     // 팔로우한 사람 게시물 조회
     @GetMapping("/api/v1/lounge/feed")
@@ -52,6 +55,13 @@ public class LoungeController {
             @RequestParam(defaultValue = "5") int limit
     ) {
         return loungeService.getTrendingWhiskeys(limit);
+    }
+
+    @GetMapping("/api/v1/lounge/recommend-whiskey")
+    public List<WhiskeyRecommendationResponse> getRecommendWhiskeys(
+        @AuthenticationPrincipal JwtUserPrincipal principal
+    ) {
+        return whiskeyRecommendationService.recommendByAll(principal.userId());
     }
 
     // 오늘의 라운지 — 오늘 새 글 수 / 인기 글 / 화제의 위스키

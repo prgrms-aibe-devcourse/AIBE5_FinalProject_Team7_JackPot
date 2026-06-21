@@ -56,6 +56,7 @@ public class FlavorProfile {
         FlavorProfile flavorProfile = new FlavorProfile();
         flavorProfile.userId = userId;
         flavorProfile.update(scoreVo, tags);
+        flavorProfile.createdAt = LocalDateTime.now();
         return flavorProfile;
     }
 
@@ -63,6 +64,7 @@ public class FlavorProfile {
         FlavorProfile flavorProfile = new FlavorProfile();
         flavorProfile.userId = userId;
         flavorProfile.update(scoreArray[0], scoreArray[1], scoreArray[2], scoreArray[3], scoreArray[4], tags);
+        flavorProfile.createdAt = LocalDateTime.now();
         return flavorProfile;
     }
 
