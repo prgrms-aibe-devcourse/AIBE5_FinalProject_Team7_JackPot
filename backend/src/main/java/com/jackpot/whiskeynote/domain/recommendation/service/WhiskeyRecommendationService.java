@@ -69,10 +69,8 @@ public class WhiskeyRecommendationService {
     }
 
     private List<WhiskeyRecommendationResponse> getRecommendList(NoteVector targetVector, List<WhiskeysNoteCache> caches, Set<Long> excludes, int limit) {
-        // 추천이 불가능한 상황: 점수가 기준치 미달 -> 빈 list 반환
-        for (double value : targetVector.scoreVec()) {
-            if (value == 0.0) return new ArrayList<>();
-        }
+        // 추천이 불가능한 상황 -> 빈 list 반환
+        if (targetVector == null) return new ArrayList<>();
 
         // 계산
         List<WhiskeyRecommendationResponse> responses = new ArrayList<>();
