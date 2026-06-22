@@ -692,6 +692,118 @@
   border-radius: var(--wf-radius-card);
 }
 
+/* ───────── 당신에게 추천하는 위스키 (캐러셀) ───────── */
+.wf-reco {
+  padding: 20px;
+  border: 1px solid var(--wf-border);
+  background: var(--wf-surface);
+  border-radius: var(--wf-radius-card);
+}
+
+.wf-reco__head {
+  margin-bottom: 14px;
+}
+
+.wf-reco--prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.wf-reco--prompt .wf-reco__head {
+  margin-bottom: 0;
+}
+
+.wf-reco--prompt .wf-btn {
+  width: 100%;
+  height: 40px;
+}
+
+/* 캐러셀 */
+.wf-reco-carousel__viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.wf-reco-carousel__track {
+  display: flex;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+  will-change: transform;
+}
+
+.wf-reco-carousel__track:active {
+  cursor: grabbing;
+}
+
+.wf-reco-carousel__cell {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.wf-reco-slide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.wf-reco-slide__thumb {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--wf-border);
+  background: #f5f0e8;
+  pointer-events: none;
+}
+
+.wf-reco-slide__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--wf-text);
+}
+
+.wf-reco-slide__meta {
+  color: var(--wf-muted);
+}
+
+.wf-reco-slide__rating {
+  color: var(--wf-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wf-reco-slide__reason {
+  line-height: 1.5;
+  color: var(--wf-text);
+}
+
+.wf-reco-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.wf-reco-carousel__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--wf-border);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.wf-reco-carousel__dot.is-active {
+  background: var(--wf-accent);
+}
+
 @media (max-width: 1040px) {
   .wf-lounge-shell {
     grid-template-columns: 1fr;

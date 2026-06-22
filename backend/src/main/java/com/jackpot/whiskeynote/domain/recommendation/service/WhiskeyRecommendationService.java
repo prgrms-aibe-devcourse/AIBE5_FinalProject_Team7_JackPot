@@ -4,6 +4,8 @@ import com.jackpot.whiskeynote.domain.recommendation.dto.NoteVector;
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
+import com.jackpot.whiskeynote.domain.taste.survey.entity.UserTasteProfile;
+import com.jackpot.whiskeynote.domain.taste.survey.repository.UserTasteProfileRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.WhiskeysNoteCache;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeysNoteCacheRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +24,20 @@ public class WhiskeyRecommendationService {
     private final WhiskeysNoteCacheRepository whiskeysNoteCacheRepository;
     private final ReviewService reviewService;
     private final RecommendationScoreService recommendationScoreService;
+    private final UserTasteProfileRepository userTasteProfileRepository;
+
+    // @Transactional(readOnly = true)
+    public List<WhiskeyRecommendationResponse> recommendByAll(Long userId) {
+        if (userId == null) return Collections.emptyList();
+
+        List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
+        NoteVector targetVector = recommendationScoreService.calculateScoreByUser(userId);
+
+        // 제외 목록
+        // 그런데 이 추천에서는 제외를 하는 것이 의미가 있는가?
+
+        return getRecommendList(targetVector, caches, Collections.emptySet(), WHISKEY_RECOMMENDATION_SIZE);
+    }
 
     @Transactional(readOnly = true)
     public List<WhiskeyRecommendationResponse> recommendByWhiskeyLog(Long userId) {
@@ -32,9 +48,9 @@ public class WhiskeyRecommendationService {
     }
 
     @Transactional(readOnly = true)
-    public List<WhiskeyRecommendationResponse> recommendBySurvey(WhiskeyScoreVo scoreVo, Set<Long> allTagIdSet) {
+    public List<WhiskeyRecommendationResponse> recommendBySurvey(double[] scoreVec, Set<Long> allTagIdSet) {
         List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
-        NoteVector targetVector = NoteVector.fromSurvey(scoreVo, allTagIdSet);
+        NoteVector targetVector = NoteVector.fromSurvey(scoreVec, allTagIdSet);
 
         return getRecommendList(targetVector, caches, Collections.emptySet(), WHISKEY_RECOMMENDATION_SIZE);
     }
