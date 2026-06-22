@@ -71,8 +71,11 @@ export default function TastingNotePage() {
   const targetNoteId = Number.isFinite(parsedNoteId) && parsedNoteId > 0 ? parsedNoteId : null;
   const returnTo = searchParams.get('returnTo');
   const { data: whiskey } = useWhiskeyDetail(id);
-  const { data: noseTags = [], isLoading: noseTagsLoading } = useTags('nose');
-  const { data: tasteTags = [], isLoading: tasteTagsLoading } = useTags('taste');
+  const { data: noseGroups = [], isLoading: noseTagsLoading } = useTags('nose');
+  const { data: tasteGroups = [], isLoading: tasteTagsLoading } = useTags('taste');
+  // 이 화면은 그룹 구분 없이 평탄한 태그 목록을 사용 → 그룹을 펼쳐서 사용
+  const noseTags = useMemo(() => noseGroups.flatMap((g) => g.tags), [noseGroups]);
+  const tasteTags = useMemo(() => tasteGroups.flatMap((g) => g.tags), [tasteGroups]);
   const { data: existingNote, isLoading: noteLoading } = useQuery({
     queryKey: targetNoteId
       ? ['tasting-note', 'detail', currentUserId, targetNoteId]
