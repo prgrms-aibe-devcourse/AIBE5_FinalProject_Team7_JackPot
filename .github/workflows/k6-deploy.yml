@@ -1,0 +1,27 @@
+name: Deploy k6 Scripts
+
+# stress-test 스크립트가 바뀌면 k6 전용 EC2 로 자동 복사한다.
+# (Termius 로 k6 서버 접속 → ~/stress-test 에서 k6 run 실행)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'stress-test/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy scripts to k6 EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.K6_SERVER_HOST }}
+          username: ${{ secrets.K6_SERVER_USER }}
+          key: ${{ secrets.K6_SERVER_KEY }}
+          source: "stress-test/scripts/*"
+          target: "/home/ubuntu/stress-test"
+          strip_components: 1
