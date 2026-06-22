@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,6 +64,13 @@ public class LoungeController {
         @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
         return whiskeyRecommendationService.recommendByAll(principal.userId());
+    }
+
+    @GetMapping("/api/v1/lounge/ad-whiskey")
+    public List<WhiskeyRecommendationResponse> getAdvertisementWhiskeys(
+        @RequestParam(required = false) List<Long> excludeIds) {
+        Set<Long> excludes = excludeIds == null ? Set.of() : new HashSet<>(excludeIds);
+        return whiskeyRecommendationService.recommendAdvertisementWhiskey(excludes);
     }
 
     // 오늘의 라운지 — 오늘 새 글 수 / 인기 글 / 화제의 위스키

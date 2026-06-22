@@ -751,6 +751,10 @@
   text-decoration: none;
 }
 
+.wf-reco-slide__thumb-wrap {
+  position: relative;
+}
+
 .wf-reco-slide__thumb {
   width: 100%;
   height: 150px;
@@ -759,6 +763,21 @@
   border: 1px solid var(--wf-border);
   background: #f5f0e8;
   pointer-events: none;
+}
+
+/* 광고 배지 */
+.wf-reco-slide__ad {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .wf-reco-slide__name {

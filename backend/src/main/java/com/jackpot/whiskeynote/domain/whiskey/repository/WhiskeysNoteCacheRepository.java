@@ -16,8 +16,16 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
     @Query("SELECT nc FROM WhiskeysNoteCache nc " +
         "LEFT JOIN FETCH nc.avgWhiskeyTags at " +
         "LEFT JOIN FETCH at.tag " +
-        "WHERE nc.whiskey.id = :whiskeyId")
+        "LEFT JOIN FETCH nc.whiskey w " +
+        "WHERE w.id = :whiskeyId")
     Optional<WhiskeysNoteCache> findByWhiskeyIdWithAvgTags(@Param("whiskeyId") Long whiskeyId);
+
+    @Query("SELECT nc FROM WhiskeysNoteCache nc " +
+        "LEFT JOIN FETCH nc.avgWhiskeyTags at " +
+        "LEFT JOIN FETCH at.tag " +
+        "LEFT JOIN FETCH nc.whiskey w " +
+        "WHERE w.id IN :whiskeyIds")
+    List<WhiskeysNoteCache> findAllWithTagsAndWhiskey(@Param("whiskeyIds") Collection<Long> whiskeyIds);
 
     @Query("SELECT nc FROM WhiskeysNoteCache nc LEFT JOIN FETCH nc.avgWhiskeyTags awt LEFT JOIN FETCH awt.tag LEFT JOIN FETCH nc.whiskey")
     List<WhiskeysNoteCache> findAllWithTagsAndWhiskey();
