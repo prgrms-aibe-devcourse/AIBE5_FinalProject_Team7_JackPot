@@ -73,7 +73,7 @@ export function CabinetWishFolderList({
     <aside className="wf-cabinet-wish-sidebar">
       <div className="wf-yt-playlist-panel">
         <div className="wf-yt-playlist-panel__header">
-          <h3 className="wf-yt-playlist-panel__title">재생목록</h3>
+          <h3 className="wf-yt-playlist-panel__title">위시리스트</h3>
           <button type="button" className="wf-yt-playlist-panel__add" onClick={onToggleFolderInput}>
             {showFolderInput ? '취소' : '새로 만들기'}
           </button>
@@ -83,7 +83,7 @@ export function CabinetWishFolderList({
           <div className="wf-yt-playlist-panel__create">
             <input
               type="text"
-              placeholder="재생목록 이름"
+              placeholder="위시리스트 이름"
               value={newFolderName}
               onChange={(event) => onNewFolderNameChange(event.target.value)}
               onKeyDown={(event) => event.key === 'Enter' && onCreateFolder()}
@@ -98,8 +98,8 @@ export function CabinetWishFolderList({
 
         {folders.length === 0 ? (
           <CabinetFeedEmpty
-            title="재생목록이 없습니다."
-            meta="위스키를 취향별로 모아볼 재생목록을 만들어 보세요."
+            title="위시리스트가 없습니다."
+            meta="위스키를 취향별로 모아볼 위시리스트를 만들어 보세요."
           />
         ) : (
           <ul className="wf-yt-playlist-list">
