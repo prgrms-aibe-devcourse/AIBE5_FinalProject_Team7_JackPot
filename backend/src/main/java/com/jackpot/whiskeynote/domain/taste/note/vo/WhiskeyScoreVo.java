@@ -4,6 +4,8 @@ import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteCreateRequest;
 import com.jackpot.whiskeynote.domain.taste.note.dto.TastingNoteUpdateRequest;
 import com.jackpot.whiskeynote.domain.taste.note.entity.TastingNote;
 
+import java.util.Arrays;
+
 public record WhiskeyScoreVo(
     Short bodyScore,
     Short finishScore,
@@ -29,5 +31,9 @@ public record WhiskeyScoreVo(
             request.spicyScore(),
             request.sweetScore()
         );
+    }
+
+    public short[] toArray() {
+        return new short[]{bodyScore, finishScore, smokyScore, spicyScore, sweetScore};
     }
 }

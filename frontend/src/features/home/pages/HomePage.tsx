@@ -5,6 +5,7 @@ import { PATHS } from '@/app/router/paths';
 import { homeApi, type LoungePost, type LoungeTrendingWhiskey, type LoungeFeedTab, type LoungeSuggestedUser } from '@/features/home/api/homeApi';
 import { cabinetApi } from '@/features/cabinet/api/cabinetApi';
 import { fetchWhiskeyById, fetchWhiskeys, type WhiskeyCard } from '@/features/search/api/whiskeyApi';
+import { tasteMatchApi } from '@/features/discover/api/tasteMatchApi';
 import { resolveMediaUrl, resolveProfileImageUrl } from '@/shared/lib/mediaUrl';
 import { WireframePage } from '@/shared/components/layout/WireframePage';
 import { Button } from '@/shared/components/ui/Button';
@@ -150,16 +151,33 @@ function PromoToday({ whiskey }: { whiskey?: WhiskeyCard | null }) {
 }
 
 function PromoTasteMatch() {
+  const {
+    data: match,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['taste-match', 'random'],
+    queryFn: tasteMatchApi.getRandom,
+    retry: false,
+  });
+
   return (
-    <Link to={PATHS.TASTE_MATCH} className="wf-feed-promo wf-feed-promo--match wf-box">
-      <div className="wf-feed-promo__head">
-        <div className="wf-feed-promo__copy">
-          <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
-          <p className="wf-text-sm">피트러버_서울 · 89% 일치</p>
-        </div>
-        <span className="wf-feed-promo__avatar" aria-hidden>피</span>
+    <section className="wf-feed-promo wf-box wf-feed-promo--match">
+      <div>
+        <p className="wf-text-label">MATCH</p>
+        <h2 className="wf-feed-promo__title">취향 비슷한 유저</h2>
+        {isLoading ? (
+          <Skeleton width="70%" height={13} />
+        ) : isError || !match ? (
+          <p className="wf-text-sm">설문을 완료하면 매칭 결과를 볼 수 있어요.</p>
+        ) : (
+          <p className="wf-text-sm">{match.nickname} · {match.similarity}% 일치</p>
+        )}
       </div>
-    </Link>
+      <Button to={PATHS.TASTE_MATCH} variant="ghost">
+        더보기
+      </Button>
+    </section>
   );
 }
 

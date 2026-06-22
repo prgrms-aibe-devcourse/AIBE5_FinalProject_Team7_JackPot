@@ -13,6 +13,10 @@ public interface UserTasteProfileTagRepository extends JpaRepository<UserTastePr
     @Query("SELECT t FROM UserTasteProfileTag t JOIN FETCH t.tag WHERE t.profile.id = :profileId")
     List<UserTasteProfileTag> findByProfileId(@Param("profileId") Long profileId);
 
+    // 유저 매칭용 — 여러 프로필의 태그를 한 번에 조회 (N+1 방지)
+    @Query("SELECT t FROM UserTasteProfileTag t JOIN FETCH t.tag WHERE t.profile.id IN :profileIds")
+    List<UserTasteProfileTag> findByProfileIdIn(@Param("profileIds") java.util.Collection<Long> profileIds);
+
     // 향(nose) 태그만 조회
     @Query("SELECT t FROM UserTasteProfileTag t JOIN FETCH t.tag WHERE t.profile.id = :profileId AND t.category = 'nose'")
     List<UserTasteProfileTag> findNoseTagsByProfileId(@Param("profileId") Long profileId);

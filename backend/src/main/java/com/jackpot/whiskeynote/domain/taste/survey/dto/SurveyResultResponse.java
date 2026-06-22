@@ -5,12 +5,12 @@ import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationRe
 import java.util.List;
 
 public record SurveyResultResponse(
-        FlavorProfile profile,
+        FlavorSummary summary,
         String userType,
         String userTypeDescription,
         List<WhiskeyRecommendationResponse> recommendations
 ) {
-    public record FlavorProfile(
+    public record FlavorSummary(
             int sweetScore,
             int bodyScore,
             int smokyScore,

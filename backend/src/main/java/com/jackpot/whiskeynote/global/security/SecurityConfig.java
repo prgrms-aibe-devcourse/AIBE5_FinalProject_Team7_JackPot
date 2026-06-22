@@ -72,7 +72,9 @@ public class SecurityConfig {
                         // 취향 설문 — 결과 조회·저장은 인증 필수, 계산만은 비인증 허용
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.GET,
-                                "/api/v1/taste/survey/me"
+                                "/api/v1/taste/survey/me",
+                                "/api/v1/lounge/match",
+                                "/api/v1/lounge/match/random"
                         ).authenticated()
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,

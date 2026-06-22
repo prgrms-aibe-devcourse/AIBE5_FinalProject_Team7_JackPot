@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> {
@@ -25,6 +26,10 @@ public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> 
     // 내 노트 목록 조회
     @EntityGraph(attributePaths = {"whiskey", "noteTags", "noteTags.tag"})
     Page<TastingNote> findByUserIdOrderByUpdatedAtDesc(Long userId, Pageable pageable);
+
+    // 유저 매칭용 — 공개 노트 전체 (태그 포함)
+    @Query("SELECT n FROM TastingNote n JOIN FETCH n.noteTags nt JOIN FETCH nt.tag WHERE n.user.id = :userId AND n.isDraft = false")
+    List<TastingNote> findAllByUserIdAndIsDraftFalseWithTags(@Param("userId") Long userId);
 
     // 타인 공개 노트 목록 조회 (isDraft=false만)
     @EntityGraph(attributePaths = {"whiskey", "noteTags", "noteTags.tag"})

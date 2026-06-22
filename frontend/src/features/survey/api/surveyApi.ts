@@ -58,19 +58,39 @@ export interface SurveyResult {
   recommendations: WhiskeyRecommendation[];
 }
 
+/**
+ * 백엔드 원본 응답 — 풍미 프로필이 `summary` 키로 옴.
+ * 프론트는 `profile`로 통일해서 쓰므로 normalizeSurveyResult로 매핑한다.
+ */
+interface SurveyResultRaw {
+  summary: FlavorProfile;
+  userType: string;
+  userTypeDescription: string;
+  recommendations: WhiskeyRecommendation[] | null;
+}
+
+export function normalizeSurveyResult(raw: SurveyResultRaw): SurveyResult {
+  return {
+    profile: raw.summary,
+    userType: raw.userType,
+    userTypeDescription: raw.userTypeDescription,
+    recommendations: raw.recommendations ?? [],
+  };
+}
+
 export const surveyApi = {
   submit: async (payload: SurveyApiRequest): Promise<SurveyResult> => {
-    const { data } = await apiClient.post<SurveyResult>('/taste/survey', payload);
-    return data;
+    const { data } = await apiClient.post<SurveyResultRaw>('/taste/survey', payload);
+    return normalizeSurveyResult(data);
   },
 
   save: async (payload: SurveyApiRequest): Promise<SurveyResult> => {
-    const { data } = await apiClient.post<SurveyResult>('/taste/survey/save', payload);
-    return data;
+    const { data } = await apiClient.post<SurveyResultRaw>('/taste/survey/save', payload);
+    return normalizeSurveyResult(data);
   },
 
   getMyProfile: async (): Promise<SurveyResult> => {
-    const { data } = await apiClient.get<SurveyResult>('/taste/survey/me');
-    return data;
+    const { data } = await apiClient.get<SurveyResultRaw>('/taste/survey/me');
+    return normalizeSurveyResult(data);
   },
 };

@@ -8,8 +8,11 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review,Long> {
 
@@ -24,6 +27,14 @@ public interface ReviewRepository extends JpaRepository<Review,Long> {
 
     // 리뷰 생성 전 중복 작성 여부 확인용. user_id + whiskey_id 조합은 서비스 정책상 1건만 허용한다.
     boolean existsByUserIdAndWhiskeyId(Long userId, Long whiskeyId);
+
+    // 유저 매칭용 — 유저의 모든 리뷰 (위스키 포함)
+    @Query("SELECT r FROM Review r JOIN FETCH r.whiskey WHERE r.user.id = :userId")
+    List<Review> findAllByUserIdWithWhiskey(@Param("userId") Long userId);
+
+    // 유저 매칭용 (배치) — 여러 유저의 리뷰를 한 번에 조회 (N+1 방지)
+    @Query("SELECT r FROM Review r JOIN FETCH r.whiskey JOIN FETCH r.user WHERE r.user.id IN :userIds")
+    List<Review> findAllByUserIdInWithWhiskey(@Param("userIds") Collection<Long> userIds);
 
     // 캐비넷 리뷰수 조회용
     long countByUserId(Long userId);

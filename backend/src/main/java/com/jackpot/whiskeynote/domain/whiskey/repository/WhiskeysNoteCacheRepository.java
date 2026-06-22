@@ -22,9 +22,11 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
     @Query("SELECT nc FROM WhiskeysNoteCache nc LEFT JOIN FETCH nc.avgWhiskeyTags awt LEFT JOIN FETCH awt.tag LEFT JOIN FETCH nc.whiskey")
     List<WhiskeysNoteCache> findAllWithTagsAndWhiskey();
 
+    // TODO: 현재 위스키의 cachenote의 값이 비어있는 경우를 처리하지 않고 있음.
     @Query("SELECT nc " +
         "FROM WhiskeysNoteCache nc " +
         "LEFT JOIN FETCH nc.avgWhiskeyTags " +
+        "JOIN FETCH nc.whiskey " +
         "WHERE nc.whiskey.id IN :whiskeyIds")
     List<WhiskeysNoteCache> findAllByWhiskeyIdWithTags(@Param("whiskeyIds") Collection<Long> whiskeyId);
 }
