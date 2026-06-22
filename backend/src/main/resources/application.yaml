@@ -35,17 +35,25 @@ spring:
 server:
   port: 8080
 
-# 헬스체크 — 배포·Docker healthcheck·RDS 스키마 오류(기동 실패) 확인용
+# 헬스체크 + 메트릭 — 배포·Docker healthcheck·RDS 스키마 오류 확인 + Prometheus 수집용
+# - prometheus 엔드포인트는 /actuator/prometheus 로 노출 (nginx는 /api/ 만 프록시하므로 외부 비공개, 내부망 scrape 전용)
 management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
   endpoint:
     health:
       probes:
         enabled: true
       show-details: never
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: whiskeynote
 
 # --------------------------------------------------
 # JWT 설정 (민감 정보는 application-local.yaml에서 오버라이드)
