@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,6 +26,25 @@ public class WhiskeyRecommendationService {
     private final ReviewService reviewService;
     private final RecommendationScoreService recommendationScoreService;
     private final UserTasteProfileRepository userTasteProfileRepository;
+
+    private static final Set<Long> advertisementWhiskeyIds = Set.of(
+        37L, 51L, 67L, 78L, 107L, 164L, 188L, 209L, 213L
+    );
+
+    public List<WhiskeyRecommendationResponse> recommendAdvertisementWhiskey(Set<Long> excludeIds) {
+        List<WhiskeysNoteCache> candidates =
+            whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey(advertisementWhiskeyIds).stream()
+                .filter(c -> !excludeIds.contains(c.getWhiskey().getId()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(candidates);
+        return candidates.stream().limit(2)
+            .map(cache -> {
+                WhiskeyRecommendationResponse res = WhiskeyRecommendationResponse.from(cache, 0.0);
+                Double avg = reviewService.getAverageRating(res.id()).getAvgRating();
+                return res.withAvgRating(avg == null ? 0.0 : avg);
+            })
+            .toList();
+    }
 
     // @Transactional(readOnly = true)
     public List<WhiskeyRecommendationResponse> recommendByAll(Long userId) {

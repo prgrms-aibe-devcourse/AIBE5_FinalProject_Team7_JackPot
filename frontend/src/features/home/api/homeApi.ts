@@ -93,4 +93,12 @@ export const homeApi = {
     const res = await apiClient.get<LoungeRecommendedWhiskey[]>('/lounge/recommend-whiskey');
     return res.data;
   },
+  // 광고 위스키 (추천 캐러셀 맨 뒤에 노출)
+  // excludeIds: 이미 추천에 노출된 위스키 id — 광고에서 중복 제외 (서버 재계산 방지용으로 프론트가 전달)
+  getAdWhiskeys: async (excludeIds: number[] = []): Promise<LoungeRecommendedWhiskey[]> => {
+    const res = await apiClient.get<LoungeRecommendedWhiskey[]>('/lounge/ad-whiskey', {
+      params: excludeIds.length ? { excludeIds } : undefined,
+    });
+    return res.data;
+  },
 };

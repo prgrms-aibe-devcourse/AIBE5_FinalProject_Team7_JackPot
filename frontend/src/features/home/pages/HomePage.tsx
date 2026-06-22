@@ -140,7 +140,10 @@ const RECO_TYPE_LABEL: Record<string, string> = {
 };
 const RECO_AUTOPLAY_MS = 10000;
 
-function RecoSlide({ whiskey }: { whiskey: LoungeRecommendedWhiskey }) {
+// 캐러셀 항목: 추천 위스키 + 광고 여부 플래그
+type RecoCarouselItem = LoungeRecommendedWhiskey & { isAd?: boolean };
+
+function RecoSlide({ whiskey, onClick }: { whiskey: RecoCarouselItem; onClick?: (e: React.MouseEvent) => void }) {
   const image = resolveMediaUrl(whiskey.imageUrl);
   const meta = [
     RECO_TYPE_LABEL[whiskey.type] ?? whiskey.type,
@@ -149,12 +152,15 @@ function RecoSlide({ whiskey }: { whiskey: LoungeRecommendedWhiskey }) {
   ].filter(Boolean).join(' · ');
 
   return (
-    <Link to={`/whiskey/${whiskey.id}`} className="wf-reco-slide" draggable={false}>
-      {image ? (
-        <img src={image} alt={whiskey.name} className="wf-reco-slide__thumb" draggable={false} loading="lazy" />
-      ) : (
-        <div className="wf-reco-slide__thumb wf-placeholder" aria-hidden />
-      )}
+    <Link to={`/whiskey/${whiskey.id}`} className="wf-reco-slide" draggable={false} onClick={onClick}>
+      <div className="wf-reco-slide__thumb-wrap">
+        {whiskey.isAd && <span className="wf-reco-slide__ad">광고</span>}
+        {image ? (
+          <img src={image} alt={whiskey.name} className="wf-reco-slide__thumb" draggable={false} loading="lazy" />
+        ) : (
+          <div className="wf-reco-slide__thumb wf-placeholder" aria-hidden />
+        )}
+      </div>
       <div className="wf-reco-slide__body">
         <p className="wf-reco-slide__name">{whiskey.name}</p>
         <p className="wf-text-xs wf-reco-slide__meta">{meta}</p>
@@ -168,11 +174,12 @@ function RecoSlide({ whiskey }: { whiskey: LoungeRecommendedWhiskey }) {
 }
 
 // 자동 순환 + 드래그/스와이프 캐러셀
-function RecoCarousel({ items }: { items: LoungeRecommendedWhiskey[] }) {
+function RecoCarousel({ items }: { items: RecoCarouselItem[] }) {
   const [index, setIndex] = useState(0);
   const [dragDelta, setDragDelta] = useState(0);
   const [dragging, setDragging] = useState(false);
   const startXRef = useRef(0);
+  const deltaRef = useRef(0);
   const movedRef = useRef(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const n = items.length;
@@ -184,31 +191,42 @@ function RecoCarousel({ items }: { items: LoungeRecommendedWhiskey[] }) {
     return () => clearInterval(id);
   }, [n, dragging]);
 
+  // 드래그 중에는 전역 리스너로 추적(요소 밖으로 나가도 됨). 포인터 캡처는 쓰지 않음 → 클릭 정상 동작
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e: PointerEvent) => {
+      const dx = e.clientX - startXRef.current;
+      if (Math.abs(dx) > 5) movedRef.current = true;
+      deltaRef.current = dx;
+      setDragDelta(dx);
+    };
+    const onUp = () => {
+      const threshold = (viewportRef.current?.offsetWidth ?? 300) * 0.2;
+      if (deltaRef.current < -threshold) setIndex((i) => (i + 1) % n);
+      else if (deltaRef.current > threshold) setIndex((i) => (i - 1 + n) % n);
+      deltaRef.current = 0;
+      setDragDelta(0);
+      setDragging(false);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [dragging, n]);
+
   const onPointerDown = (e: React.PointerEvent) => {
     startXRef.current = e.clientX;
+    deltaRef.current = 0;
     movedRef.current = false;
     setDragging(true);
-    e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging) return;
-    const delta = e.clientX - startXRef.current;
-    if (Math.abs(delta) > 5) movedRef.current = true;
-    setDragDelta(delta);
-  };
-  const endDrag = () => {
-    if (!dragging) return;
-    const threshold = (viewportRef.current?.offsetWidth ?? 300) * 0.2;
-    if (dragDelta < -threshold) setIndex((i) => (i + 1) % n);
-    else if (dragDelta > threshold) setIndex((i) => (i - 1 + n) % n);
-    setDragDelta(0);
-    setDragging(false);
-  };
-  // 드래그였으면 슬라이드 클릭(이동) 막기
-  const onClickCapture = (e: React.MouseEvent) => {
+
+  // 드래그한 경우에만 Link 이동 막기 (단순 클릭이면 통과 → 상세로 이동)
+  const onSlideClick = (e: React.MouseEvent) => {
     if (movedRef.current) {
       e.preventDefault();
-      e.stopPropagation();
       movedRef.current = false;
     }
   };
@@ -222,14 +240,10 @@ function RecoCarousel({ items }: { items: LoungeRecommendedWhiskey[] }) {
           transition: dragging ? 'none' : 'transform 0.4s ease',
         }}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onClickCapture={onClickCapture}
       >
         {items.map((w) => (
           <div key={w.id} className="wf-reco-carousel__cell">
-            <RecoSlide whiskey={w} />
+            <RecoSlide whiskey={w} onClick={onSlideClick} />
           </div>
         ))}
       </div>
@@ -252,10 +266,17 @@ function RecoCarousel({ items }: { items: LoungeRecommendedWhiskey[] }) {
 
 function RecommendedWhiskeys() {
   const loggedIn = isLoggedIn();
-  const { data: items = [], isLoading } = useQuery({
+  const { data: recs = [], isLoading } = useQuery({
     queryKey: ['lounge', 'recommended-whiskeys'],
     queryFn: homeApi.getRecommendedWhiskeys,
     enabled: loggedIn,
+  });
+  const recIds = recs.map((r) => r.id);
+  // 추천이 로드된 뒤에 광고 조회 (추천 id를 excludes로 전달 → 서버 재계산/동시쓰기 방지)
+  const { data: ads = [] } = useQuery({
+    queryKey: ['lounge', 'ad-whiskeys', recIds],
+    queryFn: () => homeApi.getAdWhiskeys(recIds),
+    enabled: loggedIn && recs.length > 0,
   });
 
   const header = (
@@ -286,7 +307,7 @@ function RecommendedWhiskeys() {
   }
 
   // 로그인했으나 추천 내역 없음 — 활동 유도
-  if (items.length === 0) {
+  if (recs.length === 0) {
     return (
       <section className="wf-box wf-reco wf-reco--prompt">
         {header}
@@ -295,6 +316,12 @@ function RecommendedWhiskeys() {
       </section>
     );
   }
+
+  // 추천 뒤에 광고 최대 2개 append (광고 플래그 표시)
+  const items: RecoCarouselItem[] = [
+    ...recs,
+    ...ads.slice(0, 2).map((w) => ({ ...w, isAd: true })),
+  ];
 
   return (
     <section className="wf-box wf-reco">
