@@ -9,6 +9,8 @@ import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationRe
 import com.jackpot.whiskeynote.domain.recommendation.service.WhiskeyRecommendationService;
 import com.jackpot.whiskeynote.global.security.JwtUserPrincipal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class LoungeController {
@@ -63,7 +66,21 @@ public class LoungeController {
     public List<WhiskeyRecommendationResponse> getRecommendWhiskeys(
         @AuthenticationPrincipal JwtUserPrincipal principal
     ) {
-        return whiskeyRecommendationService.recommendByAll(principal.userId());
+        // 동시 갱신으로 낙관적 락 충돌이 나면 재시도. 재시도 시엔 프로필이 이미 fresh라
+        // calculateScoreByUser가 재계산 없이 통과 → 정상 추천 반환.
+        // StaleObjectState는 트랜잭션 커밋(=서비스 메서드 반환) 시점에 던져지므로 여기서 잡힌다.
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                return whiskeyRecommendationService.recommendByAll(principal.userId());
+            } catch (ObjectOptimisticLockingFailureException e) {
+                log.warn("추천 낙관적 락 충돌, 재시도 {}/3 userId={}", attempt, principal.userId());
+            } catch (Exception e) {
+                log.warn("추천 계산 실패 userId={}", principal.userId(), e);
+                return List.of();
+            }
+        }
+        // 재시도 모두 실패 시에도 500 대신 빈 목록
+        return List.of();
     }
 
     @GetMapping("/api/v1/lounge/ad-whiskey")

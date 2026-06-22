@@ -22,13 +22,14 @@ import java.util.stream.Collectors;
 public class UserRecommendationService {
     private static final int USER_RECOMMENDATION_SIZE = 10;
 
-    private RecommendationScoreService recommendationScoreService;
-    private UsersRepository usersRepository;
-    private FlavorProfileRepository flavorProfileRepository;
-    private TagRepository tagRepository;
+    private final RecommendationScoreService recommendationScoreService;
+    private final UsersRepository usersRepository;
+    private final FlavorProfileRepository flavorProfileRepository;
 
     public List<TasteMatchDto> recommendByAll(Long userId) {
         NoteVector targetVector = recommendationScoreService.calculateScoreByUser(userId);
+        // 본인 취향 데이터(설문/픽/리뷰)가 없으면 매칭 불가 → 빈 목록 (프론트는 "활동하면 매칭 가능" 안내)
+        if (targetVector == null) return Collections.emptyList();
 
         // user - flavorProfile 연결
         List<Users> users = usersRepository.findAll();
@@ -43,17 +44,28 @@ public class UserRecommendationService {
         for (Users user : users) {
             if (user.getId().equals(userId)) continue;
 
-            NoteVector userNoteVector;
-            if (flavorProfileByUserId.containsKey(user.getId())) {
-                FlavorProfile userFlavorProfile = flavorProfileByUserId.get(user.getId());
-                userNoteVector = NoteVector.from(
-                    userFlavorProfile.getScoreArray(),
-                    userFlavorProfile.getTags().stream()
-                        .collect(Collectors.toMap(t -> t.getTag().getId(), FlavorProfileTag::getWeight))
-                    );
-            } else {
-                userNoteVector = recommendationScoreService.calculateScoreByUser(user.getId());
-            }
+            // NoteVector userNoteVector;
+            // if (flavorProfileByUserId.containsKey(user.getId())) {
+            //     FlavorProfile userFlavorProfile = flavorProfileByUserId.get(user.getId());
+            //     userNoteVector = NoteVector.from(
+            //         userFlavorProfile.getScoreArray(),
+            //         userFlavorProfile.getTags().stream()
+            //             .collect(Collectors.toMap(t -> t.getTag().getId(), FlavorProfileTag::getWeight))
+            //     );
+            // } else {
+            //     userNoteVector = recommendationScoreService.calculateScoreByUser(user.getId());
+            // }
+            // if (userNoteVector == null) continue;   // ← 취향 데이터 전혀 없는 유저만 스킵
+
+            FlavorProfile userFlavorProfile = flavorProfileByUserId.get(user.getId());
+            if (userFlavorProfile == null) continue;   // 프로필 없으면 스킵 (스케줄러가 주기적으로 생성)
+
+            NoteVector userNoteVector = NoteVector.from(
+                userFlavorProfile.getScoreArray(),
+                userFlavorProfile.getTags().stream()
+                    .collect(Collectors.toMap(t -> t.getTag().getId(), FlavorProfileTag::getWeight))
+            );
+
             double score = recommendationScoreService.calcScore(targetVector, userNoteVector);
             tasteMatchDtos.add(TasteMatchDto.create(user, score));
         }
