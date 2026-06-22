@@ -314,7 +314,7 @@ export default function CabinetPage() {
   const [dragOverFolderId, setDragOverFolderId] = useState<number | null>(null);
   const [folderSummaries, setFolderSummaries] = useState<Record<number, WishFolderSummary>>({});
 
-  // 위시 총 개수·재생목록 미리보기 갱신
+  // 위시 총 개수·위시리스트 미리보기 갱신
   const refreshTotalWishCount = async () => {
     try {
       const res = await cabinetApi.getWishFolders();
@@ -636,20 +636,20 @@ export default function CabinetPage() {
               <div className="wf-cabinet-wish-content">
                 {wishFolders.length === 0 ? (
                   <CabinetFeedEmpty
-                    title="재생목록이 없습니다."
-                    meta="왼쪽에서 새 재생목록을 만든 뒤 위스키를 저장해보세요."
+                    title="위시리스트가 없습니다."
+                    meta="왼쪽에서 새 위시리스트를 만든 뒤 위스키를 저장해보세요."
                   />
                 ) : selectedFolderId === null ? (
                   <CabinetFeedEmpty
-                    title="재생목록을 선택해주세요."
-                    meta="저장한 위스키는 재생목록별로 모아볼 수 있어요."
+                    title="위시리스트를 선택해주세요."
+                    meta="저장한 위스키는 위시리스트별로 모아볼 수 있어요."
                   />
                 ) : wishLoading ? (
                   <CabinetFeedLoading message="위시 목록을 불러오는 중입니다." />
                 ) : wishItems.length === 0 ? (
                   <CabinetFeedEmpty
                     title="아직 담긴 위스키가 없어요."
-                    meta="검색에서 마음에 드는 위스키를 이 재생목록에 저장해보세요."
+                    meta="검색에서 마음에 드는 위스키를 이 위시리스트에 저장해보세요."
                     actionLabel="위스키 검색하기"
                     actionTo={PATHS.SEARCH}
                   />
