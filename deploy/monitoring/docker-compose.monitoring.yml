@@ -1,0 +1,93 @@
+# =====================================================
+# 모니터링 스택 (Spring Boot → Prometheus → Grafana + Loki/Promtail)
+# - 메인 배포 compose(docker-compose.yml)와 분리된 별도 스택.
+# - backend 컨테이너와 같은 네트워크에 붙어 backend:8080/actuator/prometheus 를 scrape.
+# - 포트(9090/3000/3100)는 호스트에만 노출 → 보안그룹은 열지 말고 SSH 터널로 접속 권장.
+#     ssh -L 3000:localhost:3000 -L 9090:localhost:9090 ubuntu@<EC2_HOST>
+#
+# 실행 (EC2 ~/whiskeynote 에서):
+#   docker compose -f deploy/monitoring/docker-compose.monitoring.yml up -d
+# 중지:
+#   docker compose -f deploy/monitoring/docker-compose.monitoring.yml down
+# =====================================================
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: whiskeynote-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    restart: always
+    networks:
+      - backend-net
+    logging: &default-logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: whiskeynote-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: always
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - backend-net
+    logging: *default-logging
+
+  loki:
+    image: grafana/loki:latest
+    container_name: whiskeynote-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: always
+    networks:
+      - backend-net
+    logging: *default-logging
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: whiskeynote-promtail
+    user: root
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./loki/promtail-config.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    restart: always
+    networks:
+      - backend-net
+    logging: *default-logging
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+
+networks:
+  # 메인 배포 compose 가 만드는 네트워크에 외부로 합류한다.
+  # EC2 에서 docker compose 를 ~/whiskeynote 에서 실행하므로 프로젝트명 = whiskeynote,
+  # 기본 네트워크명 = whiskeynote_default. 다른 이름이면 BACKEND_NETWORK 로 덮어쓰기.
+  backend-net:
+    external: true
+    name: ${BACKEND_NETWORK:-whiskeynote_default}
