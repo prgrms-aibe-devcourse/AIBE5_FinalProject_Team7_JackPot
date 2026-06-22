@@ -14,3 +14,13 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: ['backend:8080']
+        labels:
+          application: whiskeynote
+
+  # test RDS backend (backend-test 컨테이너 — run-backend-test.sh start 후 scrape)
+  - job_name: 'whiskeynote-backend-test'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend-test:8080']
+        labels:
+          application: whiskeynote-test

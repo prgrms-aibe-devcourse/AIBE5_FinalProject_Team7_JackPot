@@ -4,7 +4,8 @@
 #
 # 사용 예:
 #   BASE_URL=https://whiskey-note.site/api/v1 ./run-standardized-3x.sh
-#   RATE=80 DURATION=5m RUNS=3 BASE_URL=https://whiskey-note.site/api/v1 ./run-standardized-3x.sh
+#   TARGET=prod  SCENARIO=standardized RUNS=3 ./run-load.sh
+#   TARGET=test  SCENARIO=standardized SCRIPT_NAME=review-list-rps.js RUNS=3 ./run-load.sh
 #
 # 인증이 필요한 엔드포인트를 칠 때만 TOKEN 을 export 하세요.
 set -euo pipefail

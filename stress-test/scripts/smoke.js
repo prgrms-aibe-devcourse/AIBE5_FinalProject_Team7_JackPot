@@ -14,8 +14,12 @@ export const options = {
   },
 };
 
+const WHISKEY_ID = __ENV.WHISKEY_ID || '1';
+
 const ENDPOINTS = [
   { method: 'GET', path: '/whiskeys?page=0&size=20', name: 'whiskey-list' },
+  { method: 'GET', path: `/whiskeys/${WHISKEY_ID}/reviews?page=0&size=5`, name: 'review-list' },
+  { method: 'GET', path: `/whiskeys/${WHISKEY_ID}/reviewstats`, name: 'review-stats' },
   { method: 'GET', path: '/lounge/feed', name: 'lounge-feed' },
   { method: 'GET', path: '/tags', name: 'tags' },
 ];
