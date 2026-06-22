@@ -51,15 +51,6 @@ public class FlavorProfile {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-
-    public static FlavorProfile create(Long userId, WhiskeyScoreVo scoreVo, Map<Tag, Double> tags) {
-        FlavorProfile flavorProfile = new FlavorProfile();
-        flavorProfile.userId = userId;
-        flavorProfile.update(scoreVo, tags);
-        flavorProfile.createdAt = LocalDateTime.now();
-        return flavorProfile;
-    }
-
     public static FlavorProfile create(Long userId, double[] scoreArray, Map<Tag, Double> tags) {
         FlavorProfile flavorProfile = new FlavorProfile();
         flavorProfile.userId = userId;
@@ -78,15 +69,6 @@ public class FlavorProfile {
         this.smokyScore  = smokyScore;
         this.spicyScore  = spicyScore;
         this.sweetScore  = sweetScore;
-        updateTags(tags);
-    }
-
-    public void update(WhiskeyScoreVo scoreVo, Map<Tag, Double> tags) {
-        this.bodyScore   = Double.valueOf(scoreVo.bodyScore());
-        this.finishScore = Double.valueOf(scoreVo.finishScore());
-        this.smokyScore  = Double.valueOf(scoreVo.smokyScore());
-        this.spicyScore  = Double.valueOf(scoreVo.smokyScore());
-        this.sweetScore  = Double.valueOf(scoreVo.sweetScore());
         updateTags(tags);
     }
 

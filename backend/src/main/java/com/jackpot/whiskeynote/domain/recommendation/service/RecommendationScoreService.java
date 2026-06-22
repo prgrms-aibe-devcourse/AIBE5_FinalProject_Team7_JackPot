@@ -11,6 +11,7 @@ import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.taste.review.entity.Review;
 import com.jackpot.whiskeynote.domain.taste.review.repository.ReviewRepository;
 import com.jackpot.whiskeynote.domain.taste.survey.entity.FlavorProfile;
+import com.jackpot.whiskeynote.domain.taste.survey.entity.FlavorProfileTag;
 import com.jackpot.whiskeynote.domain.taste.survey.entity.UserTasteProfile;
 import com.jackpot.whiskeynote.domain.taste.survey.entity.UserTasteProfileTag;
 import com.jackpot.whiskeynote.domain.taste.survey.repository.FlavorProfileRepository;
@@ -238,6 +239,19 @@ public class RecommendationScoreService {
         Map<Long, Double> tagVector = new HashMap<>();
         double weight = 0;
 
+        // 5분 이내의 값이 존재 그 값을 사용.
+        Optional<FlavorProfile> flavorProfileOpt = flavorProfileRepository.findByUserId(userId);
+        if (flavorProfileOpt.isPresent()) {
+            FlavorProfile flavorProfile = flavorProfileOpt.get();
+            if (Duration.between(flavorProfile.getUpdatedAt(), LocalDateTime.now()).compareTo(Duration.ofMinutes(5)) < 0) {
+                scoreVec = flavorProfile.getScoreArray();
+                tagVector.putAll(flavorProfile.getTags().stream().collect(Collectors.toMap(
+                    t -> t.getTag().getId(), FlavorProfileTag::getWeight
+                )));
+                return NoteVector.from(scoreVec, tagVector);
+            }
+        }
+
         // 설문 기반
         Optional<UserTasteProfile> myProfileOpt = userTasteProfileRepository.findByUserIdWithTags(userId);
         if (myProfileOpt.isPresent()) {
@@ -339,16 +353,33 @@ public class RecommendationScoreService {
             tagVector.put(key, tagVector.get(key) / weight);
         }
 
-        flavorProfileRepository.save(
-            FlavorProfile.create(
-                userId,
-                scoreVec,
+        // 기존 값이 존재하는 경우
+        if (flavorProfileOpt.isPresent()) {
+            FlavorProfile flavorProfile = flavorProfileOpt.get();
+            flavorProfile.update(
+                scoreVec[BODY_SCORE_INDEX],
+                scoreVec[FINISH_SCORE_INDEX],
+                scoreVec[SMOKY_SCORE_INDEX],
+                scoreVec[SPICY_SCORE_INDEX],
+                scoreVec[SWEET_SCORE_INDEX],
                 tagVector.entrySet().stream()
                     .collect(Collectors.toMap(
                         e -> tagMap.get(e.getKey()),
                         Map.Entry::getValue
                     ))
-            ));
+            );
+        } else {
+            flavorProfileRepository.save(
+                FlavorProfile.create(
+                    userId,
+                    scoreVec,
+                    tagVector.entrySet().stream()
+                        .collect(Collectors.toMap(
+                            e -> tagMap.get(e.getKey()),
+                            Map.Entry::getValue
+                        ))
+                ));
+        }
 
         return NoteVector.from(scoreVec, tagVector);
     }
