@@ -69,7 +69,7 @@ public class TasteSurveyService {
     public SurveyResultResponse calculateEnthusiast(SurveyRequest req) {
         int[] scores   = parseScores(req);
         TagBundle tags = loadTags(req.noseTags(), req.tasteTags());
-        return buildResponse(scores, tags);
+        return buildResponseEnthusiast(scores, tags, req.ageMin(), req.ageMax());
     }
 
     /** 결과 계산 + DB 저장 (로그인 필수) */
@@ -83,7 +83,7 @@ public class TasteSurveyService {
         saveTags(profile, tags);
         completeOnboarding(userId);
 
-        return buildResponse(scores, tags);
+        return buildResponseEnthusiast(scores, tags, req.ageMin(), req.ageMax());
     }
 
     // ==========================================================================
@@ -226,7 +226,18 @@ public class TasteSurveyService {
 
         return new SurveyResultResponse(profile, typeAndDesc[0], typeAndDesc[1], recs);
     }
-
+    
+    private SurveyResultResponse buildResponseEnthusiast(int[] scores, TagBundle tags,
+        Integer ageMin, Integer ageMax) {
+        int body=scores[0], finish=scores[1], smoky=scores[2], spicy=scores[3], sweet=scores[4];
+        FlavorSummary profile = new FlavorSummary(sweet, body, smoky, spicy, finish,
+            tags.noseTags().stream().map(t -> new TagInfo(t.getId(), t.getName(), t.getImageUrl())).toList(),
+            tags.tasteTags().stream().map(t -> new TagInfo(t.getId(), t.getName(), t.getImageUrl())).toList());
+        String[] td = classifyUserType(sweet, body, smoky, spicy, finish);
+        List<WhiskeyRecommendationResponse> recs = whiskeyRecommendationService.recommendBySurvey(
+            scoreToScoreVec(body, finish, smoky, spicy, sweet), tags.allTagIds(), ageMin, ageMax);
+        return new SurveyResultResponse(profile, td[0], td[1], recs);
+    }
     // ==========================================================================
     // Private — 점수 변환 유틸
     // ==========================================================================

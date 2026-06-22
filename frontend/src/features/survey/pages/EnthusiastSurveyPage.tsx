@@ -113,22 +113,23 @@ const STYLE_GROUPS: StyleGroup[] = [
 /* ───────── Q7 Nose 태그 ───────── */
 
 
-/* ───────── Q9 탐험 성향 ───────── */
+/* ───────── Q9 숙성 연수 선호 ───────── */
 
-const EXPLORATION_OPTIONS = [
-  { level: 1 as const, label: '아니요, 평소 좋아하는 취향 위주로 추천해주세요.', sub: '익숙한 스타일 위주' },
-  { level: 2 as const, label: '비슷한 스타일이면 좋아요.', sub: '비슷한 취향 추천' },
-  { level: 3 as const, label: '네, 평소 취향과 다른 위스키도 추천받고 싶어요.', sub: '새로운 스타일도 환영' },
-];
+const AGE_OPTIONS = [
+  { key: 'any',    label: '숙성 연수는 상관없어요', sub: '전체에서 추천',   min: null, max: null },
+  { key: 'entry',  label: '엔트리급이 좋아요',       sub: 'NAS · 8년 이하', min: null, max: 8 },
+  { key: 'middle', label: '적당히 숙성된 게 좋아요',  sub: '9~15년',         min: 9,    max: 15 },
+  { key: 'old',    label: '오래 숙성된 게 좋아요',    sub: '16년 이상',      min: 16,   max: null },
+] as const;
 
 /* ───────── Nav 스텝 ───────── */
 
 const NAV_STEPS = [
   ...SCORE_QUESTIONS.map((q, i) => ({ id: `q-${q.key}`, label: `Q${i + 1}` })),
   { id: 'q-style',       label: 'Q6' },
-  { id: 'q-nose',        label: 'Q7' },
-  { id: 'q-taste',       label: 'Q8' },
-  { id: 'q-exploration', label: 'Q9' },
+  { id: 'q-age',         label: 'Q7' },
+  { id: 'q-nose',        label: 'Q8' },
+  { id: 'q-taste',       label: 'Q9' },
 ];
 const TOTAL_STEPS = NAV_STEPS.length;
 
@@ -142,7 +143,7 @@ export default function EnthusiastSurveyPage() {
   // 단순 선택/해제 (가중치 없음)
   const [noseTags,  setNoseTags]  = useState<number[]>([]);
   const [tasteTags, setTasteTags] = useState<number[]>([]);
-  const [exploration, setExploration] = useState<1 | 2 | 3 | null>(null);
+  const [agePref, setAgePref] = useState<string | null>(null);
   const [activeId, setActiveId]       = useState<string>('q-bodyScore');
   const [submitting, setSubmitting]   = useState(false);
 
@@ -153,17 +154,18 @@ export default function EnthusiastSurveyPage() {
   const answeredCount = SCORE_QUESTIONS.filter((q) => scores[q.key] != null).length;
   const allScored     = answeredCount === SCORE_QUESTIONS.length;
   const showStyle     = allScored;
-  const showNose      = showStyle && styleTags.length > 0;
-  const showTaste     = showNose  && noseTags.length > 0;
-  const showExplore   = showTaste && tasteTags.length > 0;
-  const canSubmit     = showExplore && exploration != null;
+  const showAge       = showStyle && styleTags.length > 0;
+  const showNose      = showAge && agePref != null;
+  // Q8(향)·Q9(맛)은 숙성 연수를 고르면 동시에 등장
+  const showTaste     = showNose;
+  const canSubmit     = showNose && noseTags.length > 0 && tasteTags.length > 0;
 
   const completedCount =
     answeredCount +
     (styleTags.length > 0  ? 1 : 0) +
     (noseTags.length > 0   ? 1 : 0) +
     (tasteTags.length > 0  ? 1 : 0) +
-    (exploration != null   ? 1 : 0);
+    (agePref != null       ? 1 : 0);
   const progressPercent = Math.round((completedCount / TOTAL_STEPS) * 100);
 
   const doneIds = new Set<string>();
@@ -171,16 +173,16 @@ export default function EnthusiastSurveyPage() {
   if (styleTags.length > 0) doneIds.add('q-style');
   if (noseTags.length > 0)  doneIds.add('q-nose');
   if (tasteTags.length > 0) doneIds.add('q-taste');
-  if (exploration != null)  doneIds.add('q-exploration');
+  if (agePref != null)      doneIds.add('q-age');
 
   const availIds = new Set<string>(['q-bodyScore']);
   SCORE_QUESTIONS.forEach((q, i) => {
     if (i > 0 && scores[SCORE_QUESTIONS[i - 1].key] != null) availIds.add(`q-${q.key}`);
   });
   if (allScored)    availIds.add('q-style');
+  if (showAge)      availIds.add('q-age');
   if (showNose)     availIds.add('q-nose');
   if (showTaste)    availIds.add('q-taste');
-  if (showExplore)  availIds.add('q-exploration');
 
   const blockRefs = useRef<Record<string, HTMLElement | null>>({});
   useEffect(() => {
@@ -195,10 +197,23 @@ export default function EnthusiastSurveyPage() {
     );
     Object.values(blockRefs.current).forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
-  }, [answeredCount, allScored, showNose, showTaste, showExplore]);
+  }, [answeredCount, allScored, showStyle, showAge, showNose]);
 
-  const setScore = (key: ScoreQuestion['key'], choice: number) =>
+  // 점수 선택 후 다음 문항으로 자동 스크롤 (마지막 점수 → 스타일)
+  const setScore = (key: ScoreQuestion['key'], choice: number) => {
     setScores((prev) => ({ ...prev, [key]: choice }));
+    const idx = SCORE_QUESTIONS.findIndex((q) => q.key === key);
+    const nextId = idx < SCORE_QUESTIONS.length - 1
+      ? `q-${SCORE_QUESTIONS[idx + 1].key}`
+      : 'q-style';
+    window.setTimeout(() => goTo(nextId), 120);
+  };
+
+  // 숙성 연수 선택(단일) 후 향/맛으로 스크롤
+  const chooseAge = (key: string) => {
+    setAgePref(key);
+    window.setTimeout(() => goTo('q-nose'), 120);
+  };
 
   const toggleStyle = (key: string) =>
     setStyleTags((prev) =>
@@ -215,16 +230,18 @@ export default function EnthusiastSurveyPage() {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
+      const ageOpt = AGE_OPTIONS.find((o) => o.key === agePref);
       const payload: SurveyApiRequest = {
         bodyChoice:       scores.bodyScore!,
         finishChoice:     scores.finishScore!,
         smokyChoice:      scores.smokyScore!,
         spicyChoice:      scores.spicyScore!,
         sweetChoice:      scores.sweetScore!,
-        styleTags,
+        styleTags,        // 더미: 현재 추천엔 미반영 (UI 표시용)
         noseTags,
         tasteTags,
-        explorationLevel: exploration!,
+        ageMin: ageOpt?.min ?? null,
+        ageMax: ageOpt?.max ?? null,
       };
       const result = await enthusiastSurveyApi.submit(payload);
       navigate(PATHS.RECOMMEND, { state: { result, payload, surveyType: 'enthusiast' } });
@@ -310,75 +327,21 @@ export default function EnthusiastSurveyPage() {
               </section>
             )}
 
-            {/* Q7 Nose 태그 */}
-            {showNose && (
+            {/* Q7 숙성 연수 선호 */}
+            {showAge && (
               <section
-                id="q-nose"
-                ref={(el) => { blockRefs.current['q-nose'] = el; }}
+                id="q-age"
+                ref={(el) => { blockRefs.current['q-age'] = el; }}
                 className="wf-box wf-survey-q"
               >
-                <h2 className="wf-title wf-survey-q__title">Q7. 좋아하는 향을 골라주세요</h2>
-                {noseLoading ? (
-                  <p className="wf-text-sm">향 목록을 불러오는 중…</p>
-                ) : (
-                  <div className="wf-chips">
-                    {noseTagList.map((tag) => (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                        onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* Q8 Taste 태그 */}
-            {showTaste && (
-              <section
-                id="q-taste"
-                ref={(el) => { blockRefs.current['q-taste'] = el; }}
-                className="wf-box wf-survey-q"
-              >
-                <h2 className="wf-title wf-survey-q__title">Q8. 좋아하는 맛을 골라주세요</h2>
-                {tasteLoading ? (
-                  <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
-                ) : (
-                  <div className="wf-chips">
-                    {tasteTagList.map((tag) => (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                        onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* Q9 탐험 성향 */}
-            {showExplore && (
-              <section
-                id="q-exploration"
-                ref={(el) => { blockRefs.current['q-exploration'] = el; }}
-                className="wf-box wf-survey-q"
-              >
-                <h2 className="wf-title wf-survey-q__title">Q9. 새로운 스타일을 탐험해보고 싶으신가요?</h2>
+                <h2 className="wf-title wf-survey-q__title">Q7. 어느 정도 숙성된 위스키를 선호하세요?</h2>
                 <div className="wf-survey-opts">
-                  {EXPLORATION_OPTIONS.map((opt) => (
+                  {AGE_OPTIONS.map((opt) => (
                     <button
-                      key={opt.level}
+                      key={opt.key}
                       type="button"
-                      className={`wf-opt${exploration === opt.level ? ' wf-opt--on' : ''}`}
-                      onClick={() => setExploration(opt.level)}
+                      className={`wf-opt${agePref === opt.key ? ' wf-opt--on' : ''}`}
+                      onClick={() => chooseAge(opt.key)}
                     >
                       <span>
                         {opt.label}
@@ -387,6 +350,70 @@ export default function EnthusiastSurveyPage() {
                     </button>
                   ))}
                 </div>
+              </section>
+            )}
+
+            {/* Q8 Nose 태그 */}
+            {showNose && (
+              <section
+                id="q-nose"
+                ref={(el) => { blockRefs.current['q-nose'] = el; }}
+                className="wf-box wf-survey-q"
+              >
+                <h2 className="wf-title wf-survey-q__title">Q8. 좋아하는 향을 골라주세요</h2>
+                {noseLoading ? (
+                  <p className="wf-text-sm">향 목록을 불러오는 중…</p>
+                ) : (
+                  noseTagList.map((g) => (
+                    <div key={g.group} className="wf-survey-tag-group">
+                      <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
+                      <div className="wf-chips">
+                        {g.tags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                            onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </section>
+            )}
+
+            {/* Q9 Taste 태그 */}
+            {showTaste && (
+              <section
+                id="q-taste"
+                ref={(el) => { blockRefs.current['q-taste'] = el; }}
+                className="wf-box wf-survey-q"
+              >
+                <h2 className="wf-title wf-survey-q__title">Q9. 좋아하는 맛을 골라주세요</h2>
+                {tasteLoading ? (
+                  <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
+                ) : (
+                  tasteTagList.map((g) => (
+                    <div key={g.group} className="wf-survey-tag-group">
+                      <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
+                      <div className="wf-chips">
+                        {g.tags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                            onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
               </section>
             )}
 

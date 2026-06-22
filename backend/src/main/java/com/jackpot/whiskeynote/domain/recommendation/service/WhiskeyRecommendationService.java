@@ -56,6 +56,23 @@ public class WhiskeyRecommendationService {
     }
 
     @Transactional(readOnly = true)
+    public List<WhiskeyRecommendationResponse> recommendBySurvey(double[] scoreVec, Set<Long> allTagIdSet, Integer ageMin, Integer ageMax) {
+        List<WhiskeysNoteCache> caches;
+        if (ageMin == null && ageMax == null) {
+            caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
+        } else {
+            caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskeyInAgeRange(ageMin, ageMax);
+            if (caches.size() < WHISKEY_RECOMMENDATION_SIZE) {
+                caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
+            }
+        }
+
+        NoteVector targetVector = NoteVector.fromSurvey(scoreVec, allTagIdSet);
+
+        return getRecommendList(targetVector, caches, Collections.emptySet(), WHISKEY_RECOMMENDATION_SIZE);
+    }
+
+    @Transactional(readOnly = true)
     public List<WhiskeyRecommendationResponse> recommendByWhiskey(Long targetWhiskeyId) {
         List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
         WhiskeysNoteCache target = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(targetWhiskeyId)

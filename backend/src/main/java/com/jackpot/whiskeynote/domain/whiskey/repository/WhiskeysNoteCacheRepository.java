@@ -22,6 +22,18 @@ public interface WhiskeysNoteCacheRepository extends JpaRepository<WhiskeysNoteC
     @Query("SELECT nc FROM WhiskeysNoteCache nc LEFT JOIN FETCH nc.avgWhiskeyTags awt LEFT JOIN FETCH awt.tag LEFT JOIN FETCH nc.whiskey")
     List<WhiskeysNoteCache> findAllWithTagsAndWhiskey();
 
+    @Query("""
+    SELECT nc FROM WhiskeysNoteCache nc
+    LEFT JOIN FETCH nc.avgWhiskeyTags awt
+    LEFT JOIN FETCH awt.tag
+    LEFT JOIN FETCH nc.whiskey w
+    WHERE (:ageMin IS NULL OR COALESCE(w.ageYears, 0) >= :ageMin)
+      AND (:ageMax IS NULL OR COALESCE(w.ageYears, 0) <= :ageMax)
+    """)
+    List<WhiskeysNoteCache> findAllWithTagsAndWhiskeyInAgeRange(
+        @Param("ageMin") Integer ageMin,
+        @Param("ageMax") Integer ageMax);
+
     // TODO: 현재 위스키의 cachenote의 값이 비어있는 경우를 처리하지 않고 있음.
     @Query("SELECT nc " +
         "FROM WhiskeysNoteCache nc " +

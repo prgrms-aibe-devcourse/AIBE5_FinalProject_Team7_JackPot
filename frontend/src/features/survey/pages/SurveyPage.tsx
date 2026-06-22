@@ -106,8 +106,9 @@ export default function SurveyPage() {
   const answeredCount = SCORE_QUESTIONS.filter((q) => scores[q.key] != null).length;
   const allScored = answeredCount === SCORE_QUESTIONS.length;
   const showNose = allScored;
-  const showTaste = showNose && noseTags.length > 0;
-  const canSubmit = showTaste && tasteTags.length > 0;
+  // Q6(향)·Q7(맛)은 점수 문항을 모두 마치면 동시에 등장
+  const showTaste = showNose;
+  const canSubmit = showNose && noseTags.length > 0 && tasteTags.length > 0;
   const completedCount = answeredCount + (noseTags.length > 0 ? 1 : 0) + (tasteTags.length > 0 ? 1 : 0);
   const progressPercent = Math.round((completedCount / NAV_STEPS.length) * 100);
 
@@ -140,9 +141,18 @@ export default function SurveyPage() {
     return () => obs.disconnect();
   }, [answeredCount, allScored, showTaste]);
 
-  // choice 1~5 저장
-  const setScore = (key: ScoreQuestion['key'], choice: number) =>
+  // choice 1~5 저장 후 다음 문항으로 자동 스크롤
+  // (Q5 → Q6은 스크롤하지만, Q6 → Q7 사이에는 스크롤하지 않음 — toggleTag는 스크롤 없음)
+  const setScore = (key: ScoreQuestion['key'], choice: number) => {
     setScores((prev) => ({ ...prev, [key]: choice }));
+    const idx = SCORE_QUESTIONS.findIndex((q) => q.key === key);
+    const nextId =
+      idx < SCORE_QUESTIONS.length - 1
+        ? `q-${SCORE_QUESTIONS[idx + 1].key}`
+        : 'q-nose';
+    // 다음 문항이 렌더된 뒤 스크롤되도록 약간의 지연
+    window.setTimeout(() => goTo(nextId), 120);
+  };
 
   const toggleTag = (list: number[], set: (v: number[]) => void, id: number) =>
     set(list.includes(id) ? list.filter((t) => t !== id) : [...list, id]);
@@ -258,18 +268,23 @@ export default function SurveyPage() {
                 {noseLoading ? (
                   <p className="wf-text-sm">향 목록을 불러오는 중…</p>
                 ) : (
-                  <div className="wf-chips">
-                    {noseTagList.map((tag) => (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                        onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
-                  </div>
+                  noseTagList.map((g) => (
+                    <div key={g.group} className="wf-survey-tag-group">
+                      <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
+                      <div className="wf-chips">
+                        {g.tags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            className={`wf-chip${noseTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                            onClick={() => toggleTag(noseTags, setNoseTags, tag.id)}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
                 )}
               </section>
             )}
@@ -285,18 +300,23 @@ export default function SurveyPage() {
                 {tasteLoading ? (
                   <p className="wf-text-sm">맛 목록을 불러오는 중…</p>
                 ) : (
-                  <div className="wf-chips">
-                    {tasteTagList.map((tag) => (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
-                        onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
-                      >
-                        {tag.name}
-                      </button>
-                    ))}
-                  </div>
+                  tasteTagList.map((g) => (
+                    <div key={g.group} className="wf-survey-tag-group">
+                      <p className="wf-text-sm wf-survey-tag-label">{g.group}</p>
+                      <div className="wf-chips">
+                        {g.tags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            className={`wf-chip${tasteTags.includes(tag.id) ? ' wf-chip--on' : ''}`}
+                            onClick={() => toggleTag(tasteTags, setTasteTags, tag.id)}
+                          >
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))
                 )}
               </section>
             )}

@@ -31,6 +31,9 @@ public record SurveyRequest(
         // 애호가: 위스키 스타일 선택
         List<String> styleTags,
 
+        Integer ageMin,   // null 가능
+        Integer ageMax,   // null 가능
+
         // 애호가: 탐험 성향 1=보수형 2=균형형 3=탐험형
         @Min(1) @Max(3) Integer explorationLevel
 ) {}

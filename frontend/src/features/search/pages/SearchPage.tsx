@@ -354,9 +354,9 @@ export default function SearchPage() {
     setMaxAge(AGE_RANGE_MAX);
   };
 
-  const currentTagOptions = tagModalType === 'nose'
-    ? noseTags.map((tag) => tag.name)
-    : tasteTags.map((tag) => tag.name);
+  const currentTagOptions = (tagModalType === 'nose' ? noseTags : tasteTags)
+    .flatMap((group) => group.tags)
+    .map((tag) => tag.name);
   const currentTagsLoading = tagModalType === 'nose' ? noseTagsLoading : tasteTagsLoading;
   const currentSelectedTags = tagModalType === 'nose' ? selectedNoseTags : selectedTasteTags;
   const tagModalTitle = tagModalType === 'nose' ? '향 태그' : '맛 태그';

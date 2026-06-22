@@ -4,9 +4,8 @@ import { apiClient } from '@/shared/api/client';
 export type TagCategory = 'nose' | 'taste';
 
 /**
- * GET /api/v1/tags 응답 (raw 배열, 래퍼 없음) — 백엔드 TagResponse DTO
- * - pairedTag를 제외한 Tag 엔티티 필드
- * - imageUrl은 현재 비어 있으므로 이미지 렌더에 사용하지 않는다.
+ * 태그 1건 — 백엔드 TagResponse DTO (pairedTag 제외)
+ * imageUrl은 현재 비어 있으므로 이미지 렌더에 사용하지 않는다.
  */
 export interface Tag {
   id: number;
@@ -19,18 +18,36 @@ export interface Tag {
   imageUrl: string | null;
 }
 
+/** 중분류 그룹 (백엔드 TagGroup label 기준) + 소속 태그 */
+export interface TagGroupView {
+  group: string;
+  tags: Tag[];
+}
+
+/** GET /api/v1/tags 응답 — 백엔드 TagMapResponse: { tags: { 그룹라벨: TagResponse[] } } */
+interface TagMapResponse {
+  tags: Record<string, Tag[]>;
+}
+
 /**
  * GET /api/v1/tags?category=nose|taste
- * - category 생략 시 전체 태그 반환
- * - displayOrder 기준 정렬 (백엔드 정렬 보장이 없어 프론트에서 보정)
+ * - 백엔드가 중분류 그룹 맵으로 반환 (그룹 순서·내부 displayOrder 정렬 보장)
+ * - 빈 그룹은 제외하고, JSON 객체 키 순서(=백엔드 enum 순서)를 유지해 배열로 변환
+ * - 구버전 평탄 배열 응답이 와도 단일 그룹으로 감싸 안전 처리
  */
-export async function fetchTags(category?: TagCategory): Promise<Tag[]> {
-  const { data } = await apiClient.get<Tag[]>('/tags', {
+export async function fetchTags(category?: TagCategory): Promise<TagGroupView[]> {
+  const { data } = await apiClient.get<TagMapResponse | Tag[]>('/tags', {
     params: category ? { category } : undefined,
   });
-  // 서버가 category 필터를 적용하지 않더라도 중복 노출되지 않도록 한 번 더 거른다.
-  const filtered = category ? data.filter((t) => t.category === category) : data;
-  return [...filtered].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
+  // 구버전: 평탄 배열로 오는 경우 → 단일 그룹으로 감쌈
+  if (Array.isArray(data)) {
+    return data.length ? [{ group: '전체', tags: data }] : [];
+  }
+
+  return Object.entries(data?.tags ?? {})
+    .filter(([, tags]) => tags.length > 0)
+    .map(([group, tags]) => ({ group, tags }));
 }
 
 export const tagApi = { fetchTags };
