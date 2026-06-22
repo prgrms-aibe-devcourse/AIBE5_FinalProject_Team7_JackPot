@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { PATHS } from '@/app/router/paths';
@@ -333,14 +333,20 @@ function RecommendedWhiskeys() {
 
 function PromoTasteMatch() {
   const {
-    data: match,
+    data: matches = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['taste-match', 'random'],
-    queryFn: tasteMatchApi.getRandom,
+    queryKey: ['taste-match', 'list'],
+    queryFn: tasteMatchApi.getList,
     retry: false,
   });
+
+  // 목록(최대 10명) 중 1명 랜덤. 리렌더마다 안 바뀌게 useMemo로 고정.
+  const match = useMemo(
+    () => (matches.length ? matches[Math.floor(Math.random() * matches.length)] : null),
+    [matches],
+  );
 
   return (
     <section className="wf-feed-promo wf-box wf-feed-promo--match">
@@ -352,7 +358,7 @@ function PromoTasteMatch() {
         ) : isError || !match ? (
           <p className="wf-text-sm">설문을 완료하면 매칭 결과를 볼 수 있어요.</p>
         ) : (
-          <p className="wf-text-sm">{match.nickname} · {match.similarity}% 일치</p>
+          <p className="wf-text-sm">{match.nickname} · {(match.similarity * 100).toFixed(2)}% 일치</p>
         )}
       </div>
       <Button to={PATHS.TASTE_MATCH} variant="ghost">

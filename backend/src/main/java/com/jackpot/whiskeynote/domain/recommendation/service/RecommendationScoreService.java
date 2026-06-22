@@ -240,7 +240,7 @@ public class RecommendationScoreService {
         double weight = 0;
 
         // 5분 이내의 값이 존재 그 값을 사용.
-        Optional<FlavorProfile> flavorProfileOpt = flavorProfileRepository.findByUserId(userId);
+        Optional<FlavorProfile> flavorProfileOpt = flavorProfileRepository.findByUserIdForUpdate(userId);
         if (flavorProfileOpt.isPresent()) {
             FlavorProfile flavorProfile = flavorProfileOpt.get();
             if (Duration.between(flavorProfile.getUpdatedAt(), LocalDateTime.now()).compareTo(Duration.ofMinutes(5)) < 0) {
@@ -292,6 +292,7 @@ public class RecommendationScoreService {
 
             for (WhiskeysNoteCache noteCache : noteCacheList) {
                 Integer noteCount = noteCache.getCount();
+                if (noteCount == null || noteCount == 0) continue;
                 localScoreVec[BODY_SCORE_INDEX] += (double) noteCache.getBodyScore() / noteCount;
                 localScoreVec[FINISH_SCORE_INDEX] += (double) noteCache.getFinishScore() / noteCount;
                 localScoreVec[SMOKY_SCORE_INDEX] += (double) noteCache.getSmokyScore() / noteCount;
@@ -339,8 +340,12 @@ public class RecommendationScoreService {
             }
 
             // 합산
-            mergeVector(scoreVec, localScoreVec, REVIEW_WEIGHT / count);
-            mergeVector(tagVector, localTagVector, REVIEW_WEIGHT / count);
+            if (count == 0) {
+                weight -= MY_PICK_WEIGHT;          // 기여가 없었으니 더했던 가중치 취소
+            } else {
+                mergeVector(scoreVec, localScoreVec, MY_PICK_WEIGHT / count);   // (참고: SURVEY_WEIGHT → MY_PICK_WEIGHT 오타도 같이 점검)
+                mergeVector(tagVector, localTagVector, MY_PICK_WEIGHT / count);
+            }
         }
 
         // 추천을 위한 셋팅이 이루어지지 못한다면 = (weight == 0)
@@ -395,5 +400,4 @@ public class RecommendationScoreService {
             orgVector.merge(e.getKey(), e.getValue() * weight, Double::sum);
         }
     }
-
 }

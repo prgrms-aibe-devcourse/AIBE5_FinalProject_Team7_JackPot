@@ -55,7 +55,7 @@ export default function TasteMatchPage() {
                 )}
                 <div>
                   <strong>{user.nickname}</strong>
-                  <p className="wf-text-sm">매칭 {user.similarity}%</p>
+                  <p className="wf-text-sm">매칭 {(user.similarity * 100).toFixed(2)}%</p>
                 </div>
               </div>
               <Button to={profilePath} variant="ghost" className="wf-taste-match-profile-btn">
