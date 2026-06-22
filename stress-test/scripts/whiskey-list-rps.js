@@ -4,6 +4,8 @@ import { check } from 'k6';
 // 고정 RPS 부하 — 위스키 목록 조회 (인증 불필요)
 // 실행 예:
 //   k6 run -e BASE_URL=https://whiskey-note.site/api/v1 -e RATE=50 -e DURATION=3m scripts/whiskey-list-rps.js
+//   TARGET=prod  SCENARIO=whiskey-list ./run-load.sh
+//   TARGET=test  SCENARIO=whiskey-list ./run-load.sh   # backend-test :8081 필요
 const BASE = __ENV.BASE_URL || 'https://whiskey-note.site/api/v1';
 const ENDPOINT = __ENV.ENDPOINT || '/whiskeys?page=0&size=20';
 const RATE = Number(__ENV.RATE || 50);

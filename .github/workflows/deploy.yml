@@ -89,7 +89,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: "deploy/docker-compose.ec2.yml,deploy/verify-deploy.sh,deploy/monitoring/**"
+          source: "deploy/docker-compose.ec2.yml,deploy/verify-deploy.sh,deploy/run-backend-test.sh,deploy/test-db-bulk-seed.sh,deploy/monitoring/**"
           target: /home/ubuntu/whiskeynote/deploy/
           strip_components: 1
 
