@@ -53,8 +53,21 @@ public class PickService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
 
         // 위스키 존재 확인
-        Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다."));
+        // findById 대신 getReferenceById 사용 이유:
+        // findById → Whiskey를 영속성 컨텍스트에 완전히 로드
+        // → picks 저장 시 flush 발생 → Hibernate가 모든 영속 엔티티 dirty check
+        // → Whiskey의 JSON 타입 필드(description, note)는 비교 불가 → 항상 dirty 판단
+        // → 불필요한 UPDATE whiskeys 발생 → 동시 요청 시 같은 행 락 경합 → 데드락
+        // getReferenceById → 프록시만 참조 (실제 로드 없음) → dirty check 대상 제외
+
+//        Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다."));
+
+        if (!whiskeyRepository.existsById(whiskeyId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다.");
+        }
+
+        Whiskey whiskey = whiskeyRepository.getReferenceById(whiskeyId);
 
         // 중복 픽 방지
         if (pickRepository.existsByUserIdAndWhiskeyId(userId, whiskeyId)) {
