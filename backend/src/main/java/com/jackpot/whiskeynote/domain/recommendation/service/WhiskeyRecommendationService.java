@@ -1,6 +1,7 @@
 package com.jackpot.whiskeynote.domain.recommendation.service;
 
 import com.jackpot.whiskeynote.domain.recommendation.dto.NoteVector;
+import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyCandidate;
 import com.jackpot.whiskeynote.domain.taste.note.vo.WhiskeyScoreVo;
 import com.jackpot.whiskeynote.domain.taste.review.service.ReviewService;
 import com.jackpot.whiskeynote.domain.recommendation.dto.WhiskeyRecommendationResponse;
@@ -26,6 +27,7 @@ public class WhiskeyRecommendationService {
     private final ReviewService reviewService;
     private final RecommendationScoreService recommendationScoreService;
     private final UserTasteProfileRepository userTasteProfileRepository;
+    private final WhiskeyCandidateCache whiskeyCandidateCache;
 
     private static final Set<Long> advertisementWhiskeyIds = Set.of(
         37L, 51L, 67L, 78L, 107L, 164L, 188L, 209L, 213L
@@ -50,13 +52,10 @@ public class WhiskeyRecommendationService {
     public List<WhiskeyRecommendationResponse> recommendByAll(Long userId) {
         if (userId == null) return Collections.emptyList();
 
-        List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
+        List<WhiskeyCandidate> candidates = whiskeyCandidateCache.get();
         NoteVector targetVector = recommendationScoreService.calculateScoreByUser(userId);
 
-        // 제외 목록
-        // 그런데 이 추천에서는 제외를 하는 것이 의미가 있는가?
-
-        return getRecommendList(targetVector, caches, Collections.emptySet(), WHISKEY_RECOMMENDATION_SIZE);
+        return getRecommendListFromCandidates(targetVector, candidates, WHISKEY_RECOMMENDATION_SIZE);
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +103,28 @@ public class WhiskeyRecommendationService {
         excludes.add(targetWhiskeyId);
 
         return getRecommendList(targetVector, caches, excludes, WHISKEY_RECOMMENDATION_SIZE);
+    }
+
+    /** 캐시된 후보(WhiskeyCandidate)로 점수 계산 — recommendByAll 전용 경로 */
+    private List<WhiskeyRecommendationResponse> getRecommendListFromCandidates(
+            NoteVector targetVector, List<WhiskeyCandidate> candidates, int limit) {
+        if (targetVector == null) return new ArrayList<>();
+
+        List<WhiskeyRecommendationResponse> responses = new ArrayList<>();
+        for (WhiskeyCandidate candidate : candidates) {
+            double score = recommendationScoreService.calcScore(targetVector, candidate.vector());
+            responses.add(candidate.base().withScore(score));
+        }
+        responses.sort(Comparator.comparingDouble(WhiskeyRecommendationResponse::score).reversed());
+
+        List<WhiskeyRecommendationResponse> res = new ArrayList<>();
+        for (WhiskeyRecommendationResponse response : responses.subList(0, Integer.min(responses.size(), limit))) {
+            Double avgScore = reviewService.getAverageRating(response.id()).getAvgRating();
+            if (avgScore == null) avgScore = 0.0;
+            res.add(response.withAvgRating(avgScore));
+        }
+
+        return res;
     }
 
     private List<WhiskeyRecommendationResponse> getRecommendList(NoteVector targetVector, List<WhiskeysNoteCache> caches, Set<Long> excludes, int limit) {
