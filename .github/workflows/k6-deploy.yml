@@ -22,7 +22,7 @@ jobs:
           host: ${{ secrets.K6_SERVER_HOST }}
           username: ${{ secrets.K6_SERVER_USER }}
           key: ${{ secrets.K6_SERVER_KEY }}
-          source: "stress-test/scripts/*"
-          # run-load.sh, review-list-rps.js 등 scripts/ 전체가 k6 서버 ~/stress-test 로 복사됨
+          source: "stress-test/scripts/**"
+          # scripts/ 직속 파일 + helpers/ 등 하위 폴더까지 k6 서버 ~/stress-test 로 복사
           target: "/home/ubuntu/stress-test"
           strip_components: 1
