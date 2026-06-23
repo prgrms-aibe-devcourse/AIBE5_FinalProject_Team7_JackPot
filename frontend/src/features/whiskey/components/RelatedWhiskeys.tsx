@@ -21,6 +21,9 @@ function formatSimilarityScore(score: number) {
 }
 
 export function RelatedWhiskeys({ items, isLoading }: RelatedWhiskeysProps) {
+  // 추천 결과 없음(대상 위스키 노트캐시 없음 등) → 섹션 자체를 숨김
+  if (!isLoading && items.length === 0) return null;
+
   return (
     <section className="wf-detail-columns wf-detail-panel" aria-label="비슷한 위스키 추천">
       <div className="wf-detail-section-head">

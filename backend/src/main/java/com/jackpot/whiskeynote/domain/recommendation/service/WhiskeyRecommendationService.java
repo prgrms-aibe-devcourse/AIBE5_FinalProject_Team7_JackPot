@@ -94,11 +94,12 @@ public class WhiskeyRecommendationService {
 
     @Transactional(readOnly = true)
     public List<WhiskeyRecommendationResponse> recommendByWhiskey(Long targetWhiskeyId) {
-        List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
-        WhiskeysNoteCache target = whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(targetWhiskeyId)
-            .orElseThrow(() -> new EntityNotFoundException("whiskey not found"));
-        NoteVector targetVector = NoteVector.fromCache(target);
+        Optional<WhiskeysNoteCache> targetOpt =
+            whiskeysNoteCacheRepository.findByWhiskeyIdWithAvgTags(targetWhiskeyId);
+        if (targetOpt.isEmpty()) return Collections.emptyList();
+        NoteVector targetVector = NoteVector.fromCache(targetOpt.get());
 
+        List<WhiskeysNoteCache> caches = whiskeysNoteCacheRepository.findAllWithTagsAndWhiskey();
         Set<Long> excludes = new HashSet<>();
         excludes.add(targetWhiskeyId);
 
