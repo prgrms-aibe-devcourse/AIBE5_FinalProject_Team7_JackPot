@@ -155,6 +155,7 @@ public class RecommendationScoreService {
         Users user = usersRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("Not found User"));
         List<WhiskeyViewLog> logs = whiskeyViewLogRepository.findAllByUserIdWithWhiskey(userId);
+        if (logs.isEmpty()) return null;
 
         double[] scores = new double[5];
         Map<Long, Double> tagScores = new HashMap<>();
@@ -183,7 +184,7 @@ public class RecommendationScoreService {
                 log.getCreatedAt(),
                 LocalDateTime.now()
             ).toDays();
-            double weight = Math.exp(-days / 30.0);
+            double weight = Math.exp(-days / 60.0);
             totalWeight += weight;
 
             WhiskeysNoteCache noteCache = noteCacheMap.get(log.getWhiskey().getId());
@@ -199,13 +200,12 @@ public class RecommendationScoreService {
         }
 
         // 실제 점수로 변환
-        if (totalWeight != 0.0) {
-            for (int i = 0; i < scores.length; i++) {
-                scores[i] /= totalWeight;
-            }
-            for (Long key : tagScores.keySet()) {
-                tagScores.put(key, tagScores.get(key) / totalWeight);
-            }
+        if (totalWeight == 0.0) return null;
+        for (int i = 0; i < scores.length; i++) {
+            scores[i] /= totalWeight;
+        }
+        for (Long key : tagScores.keySet()) {
+            tagScores.put(key, tagScores.get(key) / totalWeight);
         }
 
         // 점수가 1 ~ 10점 이내에 존재하는 지 확인
@@ -223,10 +223,10 @@ public class RecommendationScoreService {
     private final PickRepository pickRepository;
     private final ReviewRepository reviewRepository;
     private final TagRepository tagRepository;
-    private final double SURVEY_WEIGHT = 0.4;
-    private final double MY_PICK_WEIGHT = 0.4;
-    private final double REVIEW_WEIGHT = 0.4;
-    private final double LOG_WEIGHT = 0.4;
+    private final double SURVEY_WEIGHT = 2;
+    private final double MY_PICK_WEIGHT = 4;
+    private final double REVIEW_WEIGHT = 4;
+    private final double LOG_WEIGHT = 1;
 
     public NoteVector calculateScoreByUser(Long userId) {
         Users user = usersRepository.findById(userId)
@@ -305,8 +305,12 @@ public class RecommendationScoreService {
             }
 
             // 합산
-            mergeVector(scoreVec, localScoreVec, SURVEY_WEIGHT / count);
-            mergeVector(tagVector, localTagVector, SURVEY_WEIGHT / count);
+            if (count == 0) {
+                weight -= MY_PICK_WEIGHT;
+            } else {
+                mergeVector(scoreVec, localScoreVec, MY_PICK_WEIGHT / count);
+                mergeVector(tagVector, localTagVector, MY_PICK_WEIGHT / count);
+            }
         }
 
         // review 기반
@@ -328,6 +332,7 @@ public class RecommendationScoreService {
 
             for (WhiskeysNoteCache noteCache : noteCacheList) {
                 Integer noteCount = noteCache.getCount();
+                if (noteCount == null || noteCount == 0) continue;
                 localScoreVec[BODY_SCORE_INDEX] += (double) noteCache.getBodyScore() / noteCount;
                 localScoreVec[FINISH_SCORE_INDEX] += (double) noteCache.getFinishScore() / noteCount;
                 localScoreVec[SMOKY_SCORE_INDEX] += (double) noteCache.getSmokyScore() / noteCount;
@@ -341,11 +346,19 @@ public class RecommendationScoreService {
 
             // 합산
             if (count == 0) {
-                weight -= MY_PICK_WEIGHT;          // 기여가 없었으니 더했던 가중치 취소
+                weight -= REVIEW_WEIGHT;          // 기여가 없었으니 더했던 가중치 취소
             } else {
-                mergeVector(scoreVec, localScoreVec, MY_PICK_WEIGHT / count);   // (참고: SURVEY_WEIGHT → MY_PICK_WEIGHT 오타도 같이 점검)
-                mergeVector(tagVector, localTagVector, MY_PICK_WEIGHT / count);
+                mergeVector(scoreVec, localScoreVec, REVIEW_WEIGHT / count);   // (참고: SURVEY_WEIGHT → MY_PICK_WEIGHT 오타도 같이 점검)
+                mergeVector(tagVector, localTagVector, REVIEW_WEIGHT / count);
             }
+        }
+
+        // log 기반
+        NoteVector logNoteVector = calculateScoreFromLog(userId);
+        if (logNoteVector != null) {
+            weight += LOG_WEIGHT;
+            mergeVector(scoreVec, logNoteVector.scoreVec(), LOG_WEIGHT);
+            mergeVector(tagVector, logNoteVector.tagVector(), LOG_WEIGHT);
         }
 
         // 추천을 위한 셋팅이 이루어지지 못한다면 = (weight == 0)
@@ -391,7 +404,7 @@ public class RecommendationScoreService {
 
     private void mergeVector(double[] orgVector, double[] inputVector, double weight) {
         for (int i = 0 ; i < orgVector.length; i++) {
-            orgVector[i] = inputVector[i] * weight;
+            orgVector[i] += inputVector[i] * weight;
         }
     }
 
