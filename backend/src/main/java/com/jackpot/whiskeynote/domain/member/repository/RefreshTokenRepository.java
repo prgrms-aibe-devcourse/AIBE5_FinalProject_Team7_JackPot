@@ -2,7 +2,11 @@ package com.jackpot.whiskeynote.domain.member.repository;
 
 import com.jackpot.whiskeynote.domain.member.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -21,4 +25,19 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     // 로그아웃 시 토큰 삭제
     void deleteByUserId(Long userId);
+
+    /**
+     * 동시 로그인 레이스 컨디션 방지용 원자적 upsert
+     * - INSERT ... ON DUPLICATE KEY UPDATE: user_id 유니크 키 충돌 시 UPDATE로 전환
+     * - findByUserId → saveAndFlush 패턴은 동시 요청 시 Duplicate entry 500 에러 발생
+     */
+    @Modifying
+    @Query(value = """
+            INSERT INTO refresh_tokens (user_id, token, expires_at)
+            VALUES (:userId, :token, :expiresAt)
+            ON DUPLICATE KEY UPDATE token = :token, expires_at = :expiresAt
+            """, nativeQuery = true)
+    void upsertToken(@Param("userId") Long userId,
+                     @Param("token") String token,
+                     @Param("expiresAt") LocalDateTime expiresAt);
 }

@@ -1,7 +1,6 @@
 package com.jackpot.whiskeynote.domain.member.service;
 
 import com.jackpot.whiskeynote.domain.member.dto.TokenResponse;
-import com.jackpot.whiskeynote.domain.member.entity.RefreshToken;
 import com.jackpot.whiskeynote.domain.member.entity.Users;
 import com.jackpot.whiskeynote.domain.member.repository.RefreshTokenRepository;
 import com.jackpot.whiskeynote.global.security.JwtProvider;
@@ -24,29 +23,26 @@ public class TokenIssuer {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // JWT 발급
-    // 의도: 로컬·소셜 로그인 공통 — Access/Refresh 쌍 발급 및 refresh_tokens upsert
+    /**
+     * JWT 발급 및 refresh_tokens upsert
+     *
+     * 기존 findByUserId → saveAndFlush 패턴은 동시 로그인 시 레이스 컨디션 발생:
+     *   두 트랜잭션이 동시에 "토큰 없음"으로 읽고 둘 다 INSERT 시도
+     *   → Duplicate entry for key 'UK_user_id' (500 에러)
+     *
+     * 해결: MySQL ON DUPLICATE KEY UPDATE로 원자적 upsert 처리
+     *   INSERT 시도 → user_id 충돌 시 자동으로 UPDATE로 전환 (단일 쿼리, 락 불필요)
+     */
     @Transactional
     public TokenResponse issueTokens(Users user) {
-        String accessToken = jwtProvider.createAccessToken(user.getId(), user.getRole().name());
+        String accessToken  = jwtProvider.createAccessToken(user.getId(), user.getRole().name());
         String refreshToken = jwtProvider.createRefreshToken(user.getId());
 
         LocalDateTime expiresAt = LocalDateTime.now()
                 .plusSeconds(jwtProvider.getRefreshTokenExpiryMs() / 1000);
 
-        RefreshToken tokenEntity = refreshTokenRepository.findByUserId(user.getId())
-                .map(existing -> {
-                    existing.updateToken(refreshToken, expiresAt);
-                    return existing;
-                })
-                .orElseGet(() -> RefreshToken.builder()
-                        .userId(user.getId())
-                        .token(refreshToken)
-                        .expiresAt(expiresAt)
-                        .build()
-                );
-
-        refreshTokenRepository.saveAndFlush(tokenEntity);
+        // 원자적 upsert — 동시 요청에도 Duplicate entry 에러 없음
+        refreshTokenRepository.upsertToken(user.getId(), refreshToken, expiresAt);
 
         return new TokenResponse(
                 accessToken,
