@@ -9,6 +9,8 @@ import com.jackpot.whiskeynote.domain.member.repository.UsersRepository;
 import com.jackpot.whiskeynote.domain.whiskey.entity.Whiskey;
 import com.jackpot.whiskeynote.domain.whiskey.repository.WhiskeyRepository;
 import com.jackpot.whiskeynote.global.exception.BannedUserException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,9 @@ public class PickService {
     private final PickRepository pickRepository;
     private final UsersRepository usersRepository;
     private final WhiskeyRepository whiskeyRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     // Pick 목록
     @Transactional(readOnly = true)
@@ -52,21 +57,13 @@ public class PickService {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
 
-        // 위스키 존재 확인
-        // findById 대신 getReferenceById 사용 이유:
-        // findById → Whiskey를 영속성 컨텍스트에 완전히 로드
-        // → picks 저장 시 flush 발생 → Hibernate가 모든 영속 엔티티 dirty check
-        // → Whiskey의 JSON 타입 필드(description, note)는 비교 불가 → 항상 dirty 판단
-        // → 불필요한 UPDATE whiskeys 발생 → 동시 요청 시 같은 행 락 경합 → 데드락
-        // getReferenceById → 프록시만 참조 (실제 로드 없음) → dirty check 대상 제외
-
-//        Whiskey whiskey = whiskeyRepository.findById(whiskeyId)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다."));
-
+        // Whiskey의 @JdbcTypeCode(SqlTypes.JSON) 필드(description, note)는 equals() 비교가 불가능해
+        // Hibernate dirty check 시 항상 변경된 것으로 판단된다.
+        // findById 대신 getReferenceById를 사용해 Whiskey를 영속성 컨텍스트에 로드하지 않고
+        // 프록시만 참조함으로써 dirty check 대상에서 제외한다.
         if (!whiskeyRepository.existsById(whiskeyId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "위스키를 찾을 수 없습니다.");
         }
-
         Whiskey whiskey = whiskeyRepository.getReferenceById(whiskeyId);
 
         // 중복 픽 방지
@@ -75,7 +72,13 @@ public class PickService {
         }
 
         MyPick savePick = pickRepository.save(MyPick.create(user, whiskey));
-        return PickResponse.from(savePick);
+
+        // PickResponse.from()은 pick.getWhiskey()를 호출해 프록시를 초기화한다.
+        // 응답 빌드 완료 후 즉시 detach하여 트랜잭션 종료 시 flush 대상에서 제거한다.
+        // (detach를 from() 이전에 하면 LazyInitializationException 발생)
+        PickResponse response = PickResponse.from(savePick);
+        entityManager.detach(whiskey);
+        return response;
     }
 
     // Pick 삭제
