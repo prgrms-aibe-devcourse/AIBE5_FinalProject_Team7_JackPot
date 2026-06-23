@@ -180,6 +180,9 @@ public class RecommendationScoreService {
             // 이미 삭제된 위스키를 봤다면, 반영하지 않음
             if (log.getWhiskey() == null) continue;
 
+            WhiskeysNoteCache noteCache = noteCacheMap.get(log.getWhiskey().getId());
+            if (noteCache == null) continue;
+
             double days = Duration.between(
                 log.getCreatedAt(),
                 LocalDateTime.now()
@@ -187,7 +190,6 @@ public class RecommendationScoreService {
             double weight = Math.exp(-days / 60.0);
             totalWeight += weight;
 
-            WhiskeysNoteCache noteCache = noteCacheMap.get(log.getWhiskey().getId());
             scores[BODY_SCORE_INDEX] += weight * noteCache.getBodyScore();
             scores[FINISH_SCORE_INDEX] += weight * noteCache.getFinishScore();
             scores[SMOKY_SCORE_INDEX] += weight * noteCache.getSmokyScore();
