@@ -146,7 +146,7 @@
   top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .wf-lounge-feed-end {
@@ -509,11 +509,19 @@
   border-radius: var(--wf-radius-card);
 }
 
+/* 팔로우 추천 바로 아래일 때 섹션 간 여백 보강 */
+.wf-lounge-suggest + .wf-lounge-discovery {
+  margin-top: 4px;
+}
+
 .wf-lounge-discovery__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--wf-border-subtle);
 }
 
 .wf-lounge-discovery__more {
@@ -530,7 +538,7 @@
 .wf-lounge-bottle-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
 }
 
 .wf-lounge-bottle-item {
@@ -538,11 +546,13 @@
   grid-template-columns: 26px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
-  min-height: 38px;
-  padding: 9px 0;
-  border-top: 1px solid var(--wf-border-subtle);
+  padding: 10px 0;
   color: inherit;
   text-decoration: none;
+}
+
+.wf-lounge-bottle-item + .wf-lounge-bottle-item {
+  border-top: 1px solid var(--wf-border-subtle);
 }
 
 .wf-lounge-bottle-item__mark {
