@@ -36,4 +36,11 @@ public record WhiskeyRecommendationResponse(
         );
     }
 
+    public WhiskeyRecommendationResponse withScore(Double score) {
+        return new WhiskeyRecommendationResponse(
+            id, name, type, imageUrl, adv, country, ageYears,
+            avgRating, score, reason
+        );
+    }
+
 }
