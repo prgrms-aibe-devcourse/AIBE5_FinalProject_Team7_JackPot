@@ -26,12 +26,11 @@ public class UserRecommendationService {
     private final UsersRepository usersRepository;
     private final FlavorProfileRepository flavorProfileRepository;
 
+    // 저장된 프로필을 "읽기만" 한다(쓰기 없음). 프로필 갱신은 추천(/recommend-whiskey)과
+    // 스케줄러가 담당하므로, 매칭은 같은 프로필을 동시에 쓰지 않아 낙관적 락 충돌이 발생하지 않는다.
+    @Transactional(readOnly = true)
     public List<TasteMatchDto> recommendByAll(Long userId) {
-        NoteVector targetVector = recommendationScoreService.calculateScoreByUser(userId);
-        // 본인 취향 데이터(설문/픽/리뷰)가 없으면 매칭 불가 → 빈 목록 (프론트는 "활동하면 매칭 가능" 안내)
-        if (targetVector == null) return Collections.emptyList();
-
-        // user - flavorProfile 연결
+        // user - flavorProfile 연결 (본인 포함 모두 저장된 프로필을 읽는다)
         List<Users> users = usersRepository.findAll();
         List<FlavorProfile> flavorProfiles = flavorProfileRepository.findAllWithTag();
         Map<Long, FlavorProfile> flavorProfileByUserId = new HashMap<>();
@@ -39,23 +38,19 @@ public class UserRecommendationService {
             flavorProfileByUserId.put(flavorProfile.getUserId(), flavorProfile);
         }
 
+        // 본인 취향 벡터: 저장된 프로필을 읽는다(실시간 재계산 X). 없으면 매칭 불가 → 빈 목록
+        FlavorProfile myProfile = flavorProfileByUserId.get(userId);
+        if (myProfile == null) return Collections.emptyList();
+        NoteVector targetVector = NoteVector.from(
+            myProfile.getScoreArray(),
+            myProfile.getTags().stream()
+                .collect(Collectors.toMap(t -> t.getTag().getId(), FlavorProfileTag::getWeight))
+        );
+
         // matching
         List<TasteMatchDto> tasteMatchDtos = new ArrayList<>();
         for (Users user : users) {
             if (user.getId().equals(userId)) continue;
-
-            // NoteVector userNoteVector;
-            // if (flavorProfileByUserId.containsKey(user.getId())) {
-            //     FlavorProfile userFlavorProfile = flavorProfileByUserId.get(user.getId());
-            //     userNoteVector = NoteVector.from(
-            //         userFlavorProfile.getScoreArray(),
-            //         userFlavorProfile.getTags().stream()
-            //             .collect(Collectors.toMap(t -> t.getTag().getId(), FlavorProfileTag::getWeight))
-            //     );
-            // } else {
-            //     userNoteVector = recommendationScoreService.calculateScoreByUser(user.getId());
-            // }
-            // if (userNoteVector == null) continue;   // ← 취향 데이터 전혀 없는 유저만 스킵
 
             FlavorProfile userFlavorProfile = flavorProfileByUserId.get(user.getId());
             if (userFlavorProfile == null) continue;   // 프로필 없으면 스킵 (스케줄러가 주기적으로 생성)
