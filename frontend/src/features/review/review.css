@@ -256,6 +256,15 @@
   margin-top: 14px;
 }
 
+.wf-review-note-attach__empty {
+  margin-top: 14px;
+}
+
+.wf-review-note-attach__empty .wf-review-note-attach__message {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
 .wf-review-note-attach__preview {
   padding: 16px;
   border: 1px solid rgba(213, 173, 69, 0.14);

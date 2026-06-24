@@ -107,7 +107,18 @@ export default function TastingNotePage() {
   const isEditMode = Boolean(existingNote);
   const detailPath = PATHS.WHISKEY_DETAIL.replace(':whiskeyId', id);
   const cabinetNotePath = `${PATHS.CABINET}?section=bar&tab=note`;
-  const exitPath = returnTo === 'cabinet-note' ? cabinetNotePath : detailPath;
+  const writeReviewPath = (() => {
+    const params = new URLSearchParams({ attachNote: '1' });
+    const reviewReturnTo = searchParams.get('reviewReturnTo');
+    if (reviewReturnTo) params.set('returnTo', reviewReturnTo);
+    return `${PATHS.WRITE_REVIEW.replace(':whiskeyId', id)}?${params}`;
+  })();
+  const exitPath =
+    returnTo === 'cabinet-note'
+      ? cabinetNotePath
+      : returnTo === 'write-review'
+        ? writeReviewPath
+        : detailPath;
 
   useEffect(() => {
     setImgError(false);
