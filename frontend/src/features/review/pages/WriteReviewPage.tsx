@@ -55,6 +55,12 @@ export default function WriteReviewPage() {
   const cabinetReviewsPath = `${PATHS.CABINET}?section=bar&tab=reviews`;
   const returnTo = searchParams.get('returnTo');
   const exitPath = returnTo === 'cabinet-reviews' ? cabinetReviewsPath : detailPath;
+  const noteWritePath = (() => {
+    const params = new URLSearchParams({ returnTo: 'write-review' });
+    if (returnTo) params.set('reviewReturnTo', returnTo);
+    return `${PATHS.TASTING_NOTE.replace(':whiskeyId', id)}?${params}`;
+  })();
+  const attachNoteFromUrl = searchParams.get('attachNote') === '1';
   const existingReview = myReviews?.content.find((review) => Number(review.whiskeyId) === Number(id));
   const isEditMode = Boolean(existingReview);
   const isSaving = createReviewMutation.isPending || updateReviewMutation.isPending;
@@ -70,6 +76,12 @@ export default function WriteReviewPage() {
     setPublicText(existingReview.publicText ?? '');
     setAttachNote(Boolean(existingReview.attachedNoteId));
   }, [existingReview]);
+
+  useEffect(() => {
+    if (attachNoteFromUrl && myNote) {
+      setAttachNote(true);
+    }
+  }, [attachNoteFromUrl, myNote]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -219,9 +231,14 @@ export default function WriteReviewPage() {
                   </p>
                 </div>
               ) : (
-                <p className="wf-text-sm wf-review-note-attach__message">
-                  이 위스키에 작성한 시음 노트가 없습니다.
-                </p>
+                <div className="wf-review-note-attach__empty">
+                  <p className="wf-text-sm wf-review-note-attach__message">
+                    이 위스키에 작성한 시음 노트가 없습니다. 노트를 작성하면 리뷰에 함께 첨부할 수 있습니다.
+                  </p>
+                  <Button to={noteWritePath} size="sm">
+                    노트 작성하기
+                  </Button>
+                </div>
               )}
             </section>
 
