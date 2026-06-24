@@ -7,6 +7,6 @@ export function isRichEditorHtml(context: string): boolean {
 export function htmlImgsToMarkdown(context: string): string {
   return context.replace(
     /<img\s+[^>]*?\bsrc=["']([^"']+)["'][^>]*?(?:\balt=["']([^"']*)["'])?[^>]*\/?>/gi,
-    (_, src, alt) => `![${alt ?? ''}](${src})`,
+    (_, src, alt) => `![${alt ?? ''}](${src})\n\n`,
   );
 }
