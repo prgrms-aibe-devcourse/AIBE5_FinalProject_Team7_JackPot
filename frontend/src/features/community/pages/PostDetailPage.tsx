@@ -166,7 +166,7 @@ export default function PostDetailPage() {
             <span className="wf-post-header__avatar-wrap">
               {!authorAvatarError ? (
                 <img
-                  src={resolveProfileImageUrl(null, post.authorId)}
+                  src={resolveProfileImageUrl(post.authorProfileImageUrl, post.authorId)}
                   alt=""
                   className="wf-post-header__avatar"
                   onError={() => setAuthorAvatarError(true)}

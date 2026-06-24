@@ -32,6 +32,7 @@ export interface PostDetailDto {
   id: number;
   authorId: number;
   authorNickname: string;
+  authorProfileImageUrl: string | null;
   postType: PostType;
   category: PostCategory;
   title: string;

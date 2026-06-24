@@ -41,6 +41,14 @@ public class PostService {
                 .orElse("알 수 없는 사용자");
     }
 
+    /** 작성자 ID로 프로필 이미지 URL(S3 key) 조회. */
+    private String resolveAuthorProfileImageUrl(Long authorId) {
+        return usersRepository.findById(authorId)
+                .filter(user -> !user.isDeleted())
+                .map(Users::getProfileImageUrl)
+                .orElse(null);
+    }
+
     // POST-01: 글 상세
     /**
      * 게시글 단건 상세 조회 — 매 요청마다 viewCount를 1 증가.
@@ -61,6 +69,7 @@ public class PostService {
         int commentCount = postCommentRepository.countByPostIdAndIsDeletedFalse(postId);
 
         return PostDetailDto.from(post, resolveAuthorNickname(post.getAuthorId()),
+                resolveAuthorProfileImageUrl(post.getAuthorId()),
                 isLiked, isOwner, whiskeyIds, commentCount);
     }
 
@@ -123,7 +132,8 @@ public class PostService {
                 .stream().map(PostWhiskey::getWhiskeyId).toList();
 
         // 수정 시 isLiked=false 고정: 좋아요 상태 재조회를 생략해 DB 쿼리를 줄이기 위한 선택
-        return PostDetailDto.from(post, resolveAuthorNickname(post.getAuthorId()), false, true, whiskeyIds,
+        return PostDetailDto.from(post, resolveAuthorNickname(post.getAuthorId()),
+                resolveAuthorProfileImageUrl(post.getAuthorId()), false, true, whiskeyIds,
                 postCommentRepository.countByPostIdAndIsDeletedFalse(postId));
     }
 
