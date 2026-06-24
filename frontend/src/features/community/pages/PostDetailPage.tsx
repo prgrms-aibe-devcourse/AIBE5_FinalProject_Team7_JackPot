@@ -1,7 +1,7 @@
 // 게시글 상세 페이지 — 본문·좋아요·댓글 스레드·관련 위스키 링크를 통합 표시
 // COLUMN 타입은 ReactMarkdown으로 렌더링해 칼럼 고유 디자인 유지
 import '../community.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
@@ -25,6 +25,25 @@ import {
   usePost,
 } from '../hooks/useCommunity';
 import { getPostDetailTopicLabel } from '../utils/postCategoryDisplay';
+import { htmlImgsToMarkdown, isRichEditorHtml } from '../utils/postBodyRender';
+
+const MARKDOWN_BODY_COMPONENTS = {
+  h1: ({ children }: { children?: ReactNode }) => <h2>{children}</h2>,
+  h2: ({ children }: { children?: ReactNode }) => <h3>{children}</h3>,
+  h3: ({ children }: { children?: ReactNode }) => <h4>{children}</h4>,
+  img: ({ src, alt }: { src?: string; alt?: string }) => (
+    <span className="wf-markdown-img-wrap">
+      <img
+        src={src}
+        alt={alt}
+        onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+      />
+    </span>
+  ),
+  a: ({ href, children }: { href?: string; children?: ReactNode }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>
+  ),
+};
 
 // ISO 8601 문자열에서 분 단위까지만 잘라 'YYYY-MM-DD HH:mm' 형태로 표시
 function formatDate(iso: string): string {
@@ -206,13 +225,13 @@ export default function PostDetailPage() {
         </header>
 
         {/* 본문 렌더링:
-            - COLUMN + HTML(RichEditor 작성): dangerouslySetInnerHTML — 서버 sanitize 필수
-            - COLUMN + 마크다운(마이그레이션 데이터): ReactMarkdown으로 칼럼 고유 디자인 적용
-            - 그 외 HTML('<' 시작): dangerouslySetInnerHTML
+            - COLUMN + RichEditor HTML(p/h2 등 block 태그): dangerouslySetInnerHTML
+            - COLUMN + 마크다운(앞에 <img>만 붙은 마이그레이션 데이터 포함): ReactMarkdown
+            - 그 외 HTML('<' 시작 + block 태그): dangerouslySetInnerHTML
             - 그 외: pre-wrap 일반 텍스트 */}
         {post.postType === 'COLUMN' ? (
           <div className="wf-box wf-post-body wf-post-body--column wf-markdown-body">
-            {post.context.startsWith('<') ? (
+            {isRichEditorHtml(post.context) ? (
               <>
                 {/* RichEditor 작성 HTML 내부 img 스타일 — dangerouslySetInnerHTML은 인라인 CSS로 자식 요소를 제어할 수 없어 scoped style 사용 */}
                 <style>{`
@@ -232,26 +251,8 @@ export default function PostDetailPage() {
                 <div className="column-html-body" dangerouslySetInnerHTML={{ __html: post.context }} />
               </>
             ) : (
-              <ReactMarkdown
-                components={{
-                  h1: ({ children }) => <h2>{children}</h2>,
-                  h2: ({ children }) => <h3>{children}</h3>,
-                  h3: ({ children }) => <h4>{children}</h4>,
-                  img: ({ src, alt }) => (
-                    <span className="wf-markdown-img-wrap">
-                      <img
-                        src={src}
-                        alt={alt}
-                        onError={e => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
-                      />
-                    </span>
-                  ),
-                  a: ({ href, children }) => (
-                    <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>
-                  ),
-                }}
-              >
-                {post.context}
+              <ReactMarkdown components={MARKDOWN_BODY_COMPONENTS}>
+                {htmlImgsToMarkdown(post.context)}
               </ReactMarkdown>
             )}
           </div>
