@@ -107,9 +107,9 @@
 
 ## 🏗 시스템 아키텍처
 
-```
-
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1298b63c-663d-46cf-b147-4168590e571a" width="70%" alt="Image" />
+</p>
 
 ---
 
