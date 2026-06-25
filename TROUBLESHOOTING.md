@@ -1,6 +1,6 @@
 # 트러블슈팅 기록
 
-커뮤니티 칼럼 기능 개발 과정에서 발생한 주요 문제와 해결 방법을 기록합니다.
+커뮤니티 기능 개발 및 시드 데이터 작업 과정에서 발생한 주요 문제와 해결 방법을 기록합니다.
 
 ---
 
@@ -187,4 +187,79 @@ function injectImageIntoMarkdown(markdown: string, imageUrl: string): string {
   // fallback: 두 번째 빈 줄 이후
   ...
 }
+```
+
+---
+
+## 10. Flyway 마이그레이션 버전 번호 중복 충돌
+
+**발생 상황**
+배포 서버 기동 시 애플리케이션이 시작 단계에서 바로 크래시.
+로그:
+```
+Found more than one migration with version 27
+```
+
+**원인**
+서로 다른 브랜치에서 작업한 팀원들이 동일한 버전 번호(`V27`)를 사용한 SQL 파일을 각자 생성해 `main`에 병합. Flyway는 버전이 중복되면 무조건 기동을 거부한다.
+
+동일한 사고가 2회 발생:
+1. `V27__tag_images.sql` vs 우리 팀의 `V27__seed_post_whiskeys.sql`
+2. `V27__tag_images.sql` vs 다른 팀원의 `V27__whiskey_aliases_final.sql`
+
+**해결**
+중복된 우리 측 파일을 `git mv`로 비어 있는 가장 높은 버전 번호로 리네임 후 재커밋:
+```bash
+git mv V27__seed_post_whiskeys.sql V32__seed_post_whiskeys.sql
+git mv V27__whiskey_aliases_final.sql V33__whiskey_aliases_final.sql
+```
+
+**예방 규칙**
+새 마이그레이션 파일 생성 전 반드시 `main` 브랜치 기준으로 현재 최고 버전을 확인:
+```bash
+ls backend/src/main/resources/db/migration/ | sort -V | tail -5
+```
+PR 머지 타이밍이 겹치면 충돌이 발생할 수 있으므로, 버전 번호는 PR 머지 직전에 확정하는 것을 권장.
+
+---
+
+## 11. 배포 환경에서 자유게시판 댓글이 칼럼 게시글에 표시되는 문제
+
+**발생 상황**
+로컬에서는 자유게시판 게시글에 댓글이 정상적으로 달려 있으나, 배포 환경에서 동일한 댓글이 칼럼 게시글에 표시됨. 자유게시판 조회수도 0으로 표시.
+
+**원인**
+`V25__seed_free_board_posts.sql`에서 자유게시판 게시글을 `INSERT IGNORE INTO posts`로 삽입할 때 명시적 ID 없이 auto_increment에 의존함.
+
+로컬과 배포 환경에서 `V11__seed_column_posts.sql` 실행 시 `whiskey_columns` 테이블의 행 수가 달라 COLUMN 게시글 수(= auto_increment 시작 오프셋)가 달랐고, 결과적으로 V25 자유게시판 게시글이 로컬(ID 45~69)과 배포(다른 ID)에서 서로 다른 ID를 할당받았다.
+
+`V26__seed_comments_and_viewcounts.sql`은 로컬 기준 ID(45~69)를 하드코딩했기 때문에, 배포 DB에서는 해당 ID가 COLUMN 게시글을 가리켜 댓글과 조회수가 잘못된 게시글에 적용됨. `V30`(카테고리), `V32`(post_whiskeys)도 동일한 원인으로 영향받음.
+
+**해결**
+`V34__fix_free_post_references.sql` 마이그레이션 추가:
+```sql
+-- 첫 번째 FREE 게시글의 실제 ID를 title로 조회하여 오프셋 계산
+SET @actual_start = (
+  SELECT id FROM posts
+  WHERE post_type = 'FREE'
+    AND title = '위스키 처음 시작하는데 뭐부터 마셔야 할까요?'
+  LIMIT 1
+);
+SET @offset = IFNULL(@actual_start, 45) - 45;
+
+-- 오프셋이 0이면 로컬 환경 → 변경 없음
+UPDATE post_comments SET post_id = post_id + @offset
+WHERE post_id BETWEEN 45 AND 69 AND @offset <> 0;
+```
+조회수·카테고리는 title 기반으로 재적용하여 환경 무관하게 항상 정확히 적용.
+
+**예방 규칙**
+시드 데이터에서 다른 시드 데이터를 참조할 때는 하드코딩된 ID 대신 title/unique 컬럼 기반 서브쿼리를 사용:
+```sql
+-- 나쁜 예
+UPDATE posts SET view_count = 524 WHERE id = 45;
+
+-- 좋은 예
+UPDATE posts SET view_count = 524
+WHERE post_type = 'FREE' AND title = '위스키 처음 시작하는데 뭐부터 마셔야 할까요?';
 ```
