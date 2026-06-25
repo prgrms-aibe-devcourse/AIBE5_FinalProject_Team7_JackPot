@@ -124,7 +124,6 @@
 | ORM | JPA / Hibernate |
 | Database | MySQL |
 | Search | Elasticsearch 9.2.8 + Spring Data 6.x |
-| Cache | Redis |
 | Auth | JWT (Access + Refresh Token), OAuth 2.0 (Google) |
 | Storage | AWS S3 |
 
@@ -158,7 +157,8 @@
 | **skyun-ui** | 윤석규 | 프론트 UI/UX 전체, 캐비넷, CI/CD 인프라 (GitHub Actions → AWS) |
 | **GyuSikYoon** | 윤규식 | 커뮤니티 백+프론트 연동, 설문 API 연동, 위스키 칼럼, 검색 버그픽스 |
 | **Mi-no-Kim** | 김민호 | 위스키 추천 알고리즘 (코사인+자카드), 설문 백엔드, 추천 페이지 |
-| **최준열** | 최준열 | 회원인증 (JWT/OAuth), 위시리스트, 위스키 등록 요청, 초기 설정, PR 머지 관리, 캐비넷 연동 |
+| **최준열** | 최준열 | 회원인증 (JWT/OAuth), 위시리스트, 위스키 등록 요청, 초기 설정 |
+| **cjy** | — | PR 머지 관리, 캐비넷 연동 |
 
 ---
 
@@ -499,7 +499,7 @@ AIBE5_FinalProject_Team7_JackPot/
 - [x] 서비스 기획 및 설계
 - [x] API 명세서 v2 완성
 - [x] 기능 명세서 v1.1 완성
-- [ ] **Phase 1 — MVP**
+- [x] **Phase 1 — MVP**
   - [x] 인증 (이메일 + Google OAuth)
   - [x] 취향 설문 & 추천 (코사인+자카드 알고리즘)
   - [x] 위스키 검색(Elasticsearch)·상세
@@ -510,12 +510,12 @@ AIBE5_FinalProject_Team7_JackPot/
   - [x] 위스키 등록 요청 (UGC)
   - [x] 위스키 칼럼 (AI 작성 한국어 20개)
   - [x] CI/CD (GitHub Actions → AWS)
-  - [x] 관리자 (진행 중)
-- [ ] **Phase 2**
-  - [ ] My Note (테이스팅 노트 + AI 분석)
-  - [ ] 커뮤니티 게시판 4종 고도화
+  - [x] 관리자
+- [x] **Phase 2**
+  - [x] My Note (테이스팅 노트 + AI 분석)
+  - [x] 커뮤니티 게시판 3종 고도화
   - [x] Kakao 소셜 로그인
-  - [ ] 시각화 고도화
+  - [x] 시각화 고도화
 
 ---
 
