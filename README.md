@@ -12,7 +12,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-005571?style=flat-square&logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
-[![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
 
@@ -109,46 +108,8 @@
 ## 🏗 시스템 아키텍처
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                        Client layer                           │
-│   React Web App (TS)  │  Admin Dashboard  │  Mobile (예정)   │
-└─────────────────────┬────────────────────────────────────────┘
-                      │ HTTPS
-┌─────────────────────▼────────────────────────────────────────┐
-│                     API Gateway                               │
-│         JWT 인증 · 라우팅 · Rate Limit · CORS                 │
-└──┬─────────┬──────────┬──────────┬──────────┬───────────────┘
-   │         │          │          │          │
-┌──▼──┐  ┌───▼──┐  ┌────▼───┐  ┌──▼──────┐  ┌▼──────────┐
-│Auth │  │User  │  │Whiskey │  │Recommend│  │Review/Note│
-│     │  │      │  │(ES 검색)│  │(코사인+  │  │           │
-│JWT  │  │팔로우 │  │        │  │ 자카드)  │  │테이스팅   │
-│OAuth│  │프로필 │  │        │  │         │  │노트       │
-└─────┘  └──────┘  └────────┘  └─────────┘  └───────────┘
-┌──────┐  ┌──────┐  ┌────────┐  ┌─────────────────────────┐
-│Feed  │  │Cabin │  │Survey  │  │ Admin                   │
-│      │  │-et   │  │        │  │                         │
-│라운지 │  │Pick  │  │설문    │  │위스키 등록요청 · 신고    │
-│게시글 │  │위시  │  │취향분석 │  │회원 관리                │
-└──────┘  └──────┘  └────────┘  └─────────────────────────┘
-              Spring Boot / Java 21 / JPA · Hibernate
-┌─────────────────────────────────────────────────────────────┐
-│                        Data layer                             │
-│  MySQL (Primary)  │  Redis (Cache)  │  AWS S3  │    ES      │
-│  users·whiskeys   │  AccessToken    │  이미지   │  키워드    │
-│  reviews·posts    │  RefreshToken   │  저장     │  검색      │
-│  cabinet·survey   │  세션 캐싱      │           │            │
-└─────────────────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────────────────┐
-│              CI/CD — GitHub Actions                           │
-│     Build → Docker → ECR push → EC2 SSH 자동 배포            │
-└─────────────────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────────────────┐
-│              Infrastructure — AWS                             │
-│  EC2/ECS  │  RDS(MySQL)  │  CloudFront  │  Route 53  │Docker│
-│                        담당: skyun-ui                         │
-└─────────────────────────────────────────────────────────────┘
-```
+
+
 
 ---
 
